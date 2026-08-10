@@ -1,10 +1,10 @@
 # R-YORS Integration Boundary
 
-STR8-N owns all current STR8 source, worker code, payload tooling, protected
-top-sector layout, and ABI documentation. R-YORS must not compile or carry a
-second live copy of those files.
+STR8-N owns its source, worker, payload tools, 4K protected-sector layout, and
+ABI documentation. R-YORS consumes an exact external artifact and must not
+compile a second live STR8-N source copy.
 
-`make` publishes these integration artifacts:
+STR8-N publishes:
 
 ```text
 BUILD/bin/str8n-bank3-f000-ffff.bin
@@ -12,15 +12,36 @@ BUILD/s19/str8n-worker-0200.s19
 BUILD/str8n-manifest.json
 ```
 
-R-YORS consumes the 4096-byte top-sector BIN. Its dependency lock records the
-exact STR8-N Git commit and SHA-256. The R-YORS build verifies the manifest,
-image length, protected layout, fixed gates, ABI version/capabilities, vectors,
-and hashes before combining the top sector with HIMON and ASM.
+R-YORS's `STR8N.lock.json` records the required repository commit, top-sector
+SHA-256, worker SHA-256, worker RAM span, and record-service version. Its build
+verifies those values plus the protected layout, retired gates, fixed service
+addresses, and vectors before constructing Bank 3.
 
-For a two-folder VS Code workspace, R-YORS receives the sibling STR8-N path in
-`STR8N_HOME`. A release or clean-clone build must check out the locked commit,
-run `make` in STR8-N, and then build R-YORS. R-YORS never silently accepts a
-different or dirty STR8-N artifact.
+The normal two-folder workspace is:
 
-Historical V1.02 board transcripts, archived TopWriter samples, and frozen
-release records remain in R-YORS as evidence. They are not current build input.
+```text
+parent/
+  R-YORS/
+  STR8-N Refactor/
+```
+
+From R-YORS, `STR8N_HOME` may name a differently located checkout. A release
+build requires the exact locked commit and a clean STR8-N worktree.
+
+```text
+make -C SRC str8n-external-check
+make all STR8N_HOME="C:/path/to/STR8-N"
+```
+
+The Bank-3 ownership boundary is:
+
+```text
+$8000-$BFFF  ASM-F2, built by R-YORS
+$C000-$EFFF  HIMON, built by R-YORS
+$F000-$FFFF  STR8-N, verified external 4096-byte BIN
+```
+
+R-YORS code that calls STR8-N binds only to the published interfaces in the
+[Technical Guide](TECHNICAL_GUIDE.md#public-interface). Its RAM helper at
+`$0500` remains above STR8-N's complete `$0200-$0453` worker; the build rejects
+an overlap if that contract changes.

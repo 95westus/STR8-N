@@ -40,13 +40,14 @@ WORKER_S19 := $(S19_DIR)/str8n-worker-0200.s19
 TOP_BIN_TOOL := tools/build_str8n_top_bin.ps1
 LAYOUT_CHECK_TOOL := tools/check_str8n_layout.ps1
 MANIFEST_TOOL := tools/write_str8n_manifest.ps1
+RANGE_MATRIX_TOOL := tools/test_s19_range_matrix.ps1
 TOP_BIN := $(BIN_DIR)/str8n-bank3-f000-ffff.bin
 MANIFEST := $(BUILD_DIR)/str8n-manifest.json
 
 .NOTPARALLEL:
-.PHONY: all resident workers programmer-bin manifest layout-check embedded-layout-check clean help dirs
+.PHONY: all resident workers programmer-bin manifest layout-check embedded-layout-check range-matrix-check clean help dirs
 
-all: manifest
+all: manifest range-matrix-check
 
 resident: $(STR8_S19)
 
@@ -60,6 +61,9 @@ layout-check: $(STR8_S19) $(WORKER_S19) $(LAYOUT_CHECK_TOOL)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(LAYOUT_CHECK_TOOL)
 
 embedded-layout-check: layout-check
+
+range-matrix-check: $(RANGE_MATRIX_TOOL)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RANGE_MATRIX_TOOL)
 
 dirs:
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "@('$(OBJ_DIR)','$(LST_DIR)','$(SYM_DIR)','$(S19_DIR)','$(BIN_DIR)') | ForEach-Object { New-Item -ItemType Directory -Force -Path $$_ | Out-Null }"
@@ -104,6 +108,7 @@ help:
 	@echo make manifest - build the verified artifact manifest used by R-YORS
 	@echo make layout-check - require the protected-sector layout and 32-byte margin
 	@echo make embedded-layout-check - alias for layout-check
+	@echo make range-matrix-check - validate every documented 4K-aligned install size
 	@echo make clean    - remove STR8N/BUILD only
 
 clean:

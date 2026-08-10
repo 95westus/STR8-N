@@ -1,102 +1,82 @@
-# Bank 0-2 Guest Images And STR8-N V2 S19 Requirements
+# Bank 0-2 Guest S19 Quick Reference
 
-Banks 0-2 can contain completely user-owned W65C02 systems. They do not need
-STR8-N, a HIMON marker, or any fixed service address. A full image owns the
-visible ROM window and vectors:
+Banks 0–2 may hold independent W65C02 systems. A guest does not need STR8-N,
+HIMON, or any STR8-N service address.
+
+## Full 32K guest
 
 ```text
 $8000-$FFF9  guest code, data, and explicit padding
 $FFFA-$FFFB  NMI vector
-$FFFC-$FFFD  RESET vector used by STR8-N Jn
+$FFFC-$FFFD  RESET vector, low byte first
 $FFFE-$FFFF  IRQ/BRK vector
 ```
 
-> [!WARNING]
-> Keep a known-good Bank-3 image and external-programmer recovery. Do not
-> remove power or press NMI while STR8-N is erasing or programming flash.
+The install file contains the payload only. Do not put RAM-worker records at
+`$0200` in front of it.
 
-## Payload-only transport
+## File rules
 
-V2 embeds and verifies its worker. Send only the guest payload when `I` prints
-`S19`. A historical V1.02 stream beginning with worker records at `$0200` is
-invalid and will be rejected.
+- Select a 4K-aligned range of 4K, 8K, 12K, 16K, 20K, 24K, 28K, or 32K.
+- Use at most one leading S0 record.
+- Use ascending, nonempty S1 records covering every byte in the selected
+  range. `$FF` bytes must be present too.
+- Do not use gaps, overlaps, duplicate addresses, backward records, or other
+  S-record types.
+- End with exactly one S9 record and nothing after it.
+- For a full `$8000-$FFFF` image, S9 must match the non-erased RESET vector at
+  `$FFFC-$FFFD` (stored low byte, then high byte).
+- For a partial image, S9 is `$FFFF` or an address inside the selected range.
 
-The selected range may be 4K, 8K, 12K, 16K, 20K, 24K, 28K, or 32K. It starts
-on a 4K boundary at or above `$8000` and ends no later than `$10000`. The S19
-must contain:
+## Top-aligned size table
 
-- at most one initial S0;
-- dense, ascending S1 data covering every selected byte, including `$FF`;
-- no gap, overlap, duplicate, empty, backward, or unsupported record; and
-- exactly one final S9 with a valid checksum and nothing after it.
+Every one of these Bank 0-2 ranges is accepted:
 
-For a complete `$8000-$FFFF` Bank 0-2 image, S9 must equal the non-erased
-little-endian RESET vector stored at `$FFFC-$FFFD`. For a partial image, S9 is
-`$FFFF` or points inside the selected range.
+```text
+ 4K  F      $F000-$FFFF
+ 8K  E-F    $E000-$FFFF
+12K  D-F    $D000-$FFFF
+16K  C-F    $C000-$FFFF
+20K  B-F    $B000-$FFFF
+24K  A-F    $A000-$FFFF
+28K  9-F    $9000-$FFFF
+32K  8-F    $8000-$FFFF
+```
 
-## Convert a BIN
+They include sector F and therefore carry the hardware vectors. STR8-N still
+launches through the RESET vector at `$FFFC-$FFFD`, not through S9, so that
+vector must point to code that is present in the bank. Upper alignment is
+optional; any contiguous 4K-aligned span inside `$8000-$FFFF` is legal.
 
-The converter accepts any 4K-aligned 4K-32K BIN. Byte zero maps to the supplied
-base address:
+## Convert a binary
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools/convert_guest_bin_to_s19.ps1 `
-  -BinPath C:\IMAGES\wozmon-bank.bin `
+  -BinPath C:\IMAGES\guest.bin `
   -BaseAddress 32768 `
   -Bank 0 `
-  -S19Path BUILD/s19/wozmon-8000-ffff.s19
+  -S19Path BUILD/s19/guest-bank0-8000-ffff.s19
 ```
 
-For a full Bank 0-2 image the converter derives S9 from RESET. For a partial
-image its default is `$FFFF`; use `-EntryAddress` to publish an in-range entry.
-The default S1 record payload is 32 bytes.
+For a full image the converter reads S9 from RESET. For a partial image it
+uses `$FFFF` unless `-EntryAddress` supplies an in-range entry.
 
-## Validate an existing S19
-
-The historical composer name is retained so existing scripts have an obvious
-migration path, but it no longer composes a worker. It validates and writes a
-payload-only stream:
+## Validate a payload S19
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools/compose_str8n_install_s19.ps1 `
-  -PayloadS19Path BUILD/s19/wozmon-8000-ffff.s19 `
+  -PayloadS19Path BUILD/s19/guest-bank0-8000-ffff.s19 `
   -PayloadStart 32768 `
   -PayloadEndExclusive 65536 `
   -Bank 0 `
-  -S19Path BUILD/s19/str8n-i-wozmon.s19
+  -S19Path BUILD/s19/str8n-i-guest.s19
 ```
 
-It reports the exact extent, S1 count, S9, per-sector CRC-16, and SHA-256.
+The validator reports the exact range, record count, S9, per-sector CRC-16,
+and whole-file SHA-256.
 
-## Install
-
-At the STR8-N prompt, enter `I`, choose Bank 0, 1, or 2, and enter the sector
-range (for example `8-F` for 32K). A new directory row also asks for a two-digit
-type and five-character description. Confirm `WRITE?` with `Y`, send the
-payload-only S19, and confirm `COMMIT?` with `Y` after S9 validation.
-
-The final sector is not programmed before that last confirmation. A complete
-install prints one dot per programmed sector and `OK`. A failed or interrupted
-transaction requires a complete 32K recovery install for that bank; a smaller
-retry is deliberately refused.
-
-## Jn handoff
-
-`J0`, `J1`, or `J2` selects the bank and jumps through its RESET vector with
-IRQ disabled, decimal mode clear, X and the stack pointer set to `$FF`, and RAM
-and peripherals otherwise preserved. This is not an electrical reset. The
-guest must initialize any power-on state it requires and must not blindly
-rewrite the VIA PCR bank-selection bits.
-
-Physical RESET always selects Bank 3 and returns to STR8-N.
-
-## Flash map
-
-```text
-Bank 0 physical $00000-$07FFF   CPU $8000-$FFFF
-Bank 1 physical $08000-$0FFFF   CPU $8000-$FFFF
-Bank 2 physical $10000-$17FFF   CPU $8000-$FFFF
-Bank 3 physical $18000-$1FFFF   CPU $8000-$FFFF
-```
+See the [Operator's Guide](OPERATORS_GUIDE.md) for the `I` procedure and the
+[Technical Guide](TECHNICAL_GUIDE.md#s19-install-file-contract) for all Bank-3
+and interrupted-install rules.

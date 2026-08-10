@@ -1,134 +1,86 @@
-# STR8-N
+# STR8-N V2
 
-**Keep the board bootable while changing everything above it.**
+STR8-N is the 4096-byte protected top sector in Bank 3 of a W65C02SXB/EDU.
+It owns physical RESET, selects a bank, installs dense S19 images, protects
+itself from ordinary installs, and then gets out of the guest program's way.
 
-STR8-N is a compact Bank-3 reset supervisor, image installer, and recovery
-front door for the W65C02SXB/EDU four-bank flash system. It starts before the
-payload, protects its own top sector during ordinary installs, and hands the
-machine to the selected bank without requiring the payload to understand
-STR8-N.
-
-STR8-N began inside R-YORS, but its job is deliberately narrower: keep the
-board recoverable, install and verify target images, and then get out of the
-way. HIMON is the default bundled payload, not a requirement for STR8-N.
+The complete STR8-N image—resident code, RAM worker, directory, configuration,
+and hardware vectors—fits at CPU `$F000-$FFFF` (physical flash
+`$1F000-$1FFFF`). HIMON and ASM are separate Bank-3 payloads below `$F000`.
 
 > [!WARNING]
-> **Flashing is destructive and is performed at your own risk.** Historical
-> STR8-N releases have hardware evidence; this V2 refactor still requires the
-> qualification listed below. No flash operation can be made risk-free. A
-> wrong image, bank, address, device selection, interrupted write, power loss,
-> or operator mistake can erase
-> stored software, corrupt firmware, leave the board unbootable, or require an
-> external programmer for recovery. Incorrect programmer voltage, wiring, or
-> device settings can also physically damage the flash device, programmer, or
-> board. Keep verified backups and a known-good recovery image before writing.
+> Flashing can erase software or leave the board needing an external
+> programmer. Keep a verified recovery image. Check the bank and range before
+> answering `WRITE? Y`. Do not remove power or press NMI while flash is being
+> erased or programmed.
 
-In practical terms, STR8-N can turn one W65C02SXB/EDU into as many as four
-different computers. Banks 0-2 can hold independent 32K systems, while Bank 3
-pairs STR8-N with a default payload. Choose a personality at reset, and the
-selected system owns the machine.
+## Read first
 
-## What STR8-N can do
+- [Operator's Guide](docs/OPERATORS_GUIDE.md) — booting, installing, recovery,
+  and what the prompts mean.
+- [Technical Guide](docs/TECHNICAL_GUIDE.md) — exact S19 rules, memory use,
+  flash layout, directory, handoff, and public interfaces.
+- [Maps and Diagrams](docs/MAPS.md) — the system, flash, RAM, boot, and install
+  flows on one page.
+- [R-YORS Integration Boundary](docs/R_YORS_INTEGRATION.md) — how a separate
+  R-YORS checkout consumes the pinned STR8-N artifact.
 
-- Own physical reset in Bank 3 and offer a timed boot/recovery selector.
-- Boot opaque images in Banks 0-3 through the non-destructive `J0`-`J3`
-  handoff path.
-- Warm-enter a compatible local HIMON image with `H`, while rejecting an
-  erased, foreign, or corrupt identity marker.
-- Receive dense Motorola S-record images through the FTDI console.
-- Install any contiguous 4K-aligned range from 4K through 32K in Banks 0-2.
-- Install 4K through 28K in Bank 3 while refusing to overwrite its live
-  protected sector F.
-- Stage, erase, program, and verify flash through one RAM-resident worker so bank
-  switching never depends on code in the bank being rewritten.
-- Journal install progress in the fixed Bank-3 directory, allowing interrupted
-  operations to fail closed and be retried deliberately.
-- Provide stable reset, NMI, IRQ/BRK, record-service, and bank-selection entry
-  points for the surrounding system.
-
-The V2 refactor embeds its complete worker in the protected top sector. `I`
-accepts payload-only S19; legacy streams that prepend worker bytes at `$0200`
-are rejected.
-
-## Source layout
+## Operator commands
 
 ```text
-src/str8.asm               resident STR8-N supervisor and installer
-src/str8-worker.asm        unified RAM-resident bank and flash worker
-src/str8-*-eq.inc          shared directory, record, jump, and worker ABI
-src/himon-image-eq.inc     optional HIMON warm-entry identity contract
-src/util-delay.asm         calibrated 8 MHz startup/selector delay
-src/str8-version.inc       compact ROM banner
+I       install a payload-only S19 image
+H       warm-enter compatible HIMON in Bank 3
+J0-J3   hand control to the selected bank
 ```
 
-The R-YORS repository retains the historical V1.02 qualification record.
-R-YORS HIMON uses the supported `$F010` selector and `$0203` RAM entry; the
-retired `$F003` gate is no longer part of the live integration.
+`I` writes flash only. It does not load RAM. With R-YORS/HIMON, use `L` to
+load a temporary RAM program or `L G` to load and start it. Keeping RAM loading
+in HIMON avoids spending more of STR8-N's protected 4K sector on a second
+loader.
+
+Physical RESET always selects Bank 3 first. Banks 0–2 may accept any
+contiguous, 4K-aligned range from 4K through 32K. Bank 3 may accept 4K through
+28K; sector F is STR8-N and cannot be installed by `I`.
+
+For an image ending at `$FFFF` in Bank 0, 1, or 2, the valid size/range pairs
+are `4K F`, `8K E-F`, `12K D-F`, `16K C-F`, `20K B-F`, `24K A-F`, `28K 9-F`,
+and `32K 8-F`. Ending at F is useful because it includes the hardware vectors,
+but it is not required by the installer.
 
 ## Build
 
-The Makefile expects the WDC W65C02 tools `wdc02as` and `wdcln` on `PATH`.
-From this directory:
+The Makefile expects WDC `wdc02as` and `wdcln` on `PATH`.
 
 ```text
-make             build, enforce layout, and make the programmer BIN
-make resident    build the V2 resident at $F000
-make workers     build the one unified RAM worker
-make layout-check
-                 require exact ABI addresses and at least 32 unused bytes
-make programmer-bin
-                 build the 4096-byte Bank-3 $F000-$FFFF T48 image
-make clean       remove this folder's BUILD directory
+make                 build and verify everything
+make resident        build the resident supervisor
+make workers         build the unified RAM worker
+make layout-check    enforce fixed addresses and at least 32 spare bytes
+make range-matrix-check
+                     validate all documented install sizes and ranges
+make programmer-bin  create the 4096-byte top-sector image
+make clean           remove BUILD
 ```
 
-Build products are written below `BUILD/`; the source tree is left clean. The
-primary outputs are:
+Primary outputs:
 
 ```text
-BUILD/s19/str8n-f000.s19
-BUILD/s19/str8n-worker-0200.s19
-BUILD/bin/str8n-bank3-f000-ffff.bin
-BUILD/str8n-manifest.json
+BUILD/bin/str8n-bank3-f000-ffff.bin   external-programmer image
+BUILD/s19/str8n-f000.s19              resident component
+BUILD/s19/str8n-worker-0200.s19       worker evidence/component
+BUILD/str8n-manifest.json             sizes, addresses, ABI, and hashes
 ```
 
-The 4096-byte BIN is a complete new STR8-N top-sector image: resident code,
-relocated unified worker, erased V2 directory/configuration pocket, and hardware
-vectors. File offsets `$000-$FFF` map to CPU `$F000-$FFFF` and to physical
-SST39SF010A Bank-3 addresses `$1F000-$1FFFF`. Do not load it at device address
-zero in the T48 software.
+The BIN file's byte zero belongs at CPU `$F000`, physical flash `$1F000`.
+Do not program it at device address zero.
 
-The S19 outputs remain components rather than a complete flashable R-YORS ROM.
-See [Bank 0-2 Guest Images And S19 Requirements](docs/BANK_0_2_GUEST_S19.md)
-for creating a user-owned 4K-32K Bank 0-2 image and the payload-only stream
-accepted by STR8-N's `I` command.
+Use `tools/convert_guest_bin_to_s19.ps1` to turn an aligned binary into a
+payload-only install stream. Use `tools/compose_str8n_install_s19.ps1` to
+validate an existing payload stream. Full rules and examples are in the
+[Technical Guide](docs/TECHNICAL_GUIDE.md#s19-install-file-contract).
 
-[Embedded Worker And Payload-Only `I` Refactor](docs/EMBEDDED_WORKER_REFACTOR_PLAN.md)
-records the settled V2 design, exact layout, recovery rules, and remaining
-hardware qualification work.
+## Deliberate limits
 
-[R-YORS Integration Boundary](docs/R_YORS_INTEGRATION.md) defines how R-YORS
-consumes a pinned STR8-N artifact without keeping another live source copy.
-
-## Deliberately outside V2
-
-STR8-N V2 does not provide STR8 self-update, sparse S-record transport,
-ACIA transport, catalog-aware repair, managed backup allocation, external
-S-record export, or flash-wear accounting.
-
-## Flash safety
-
-Before exercising any write path:
-
-- Keep a programmer-recoverable image and a known-good Bank 3.
-- Verify the selected chip, programming voltage, image offset, bank, and
-  address range.
-- Do not remove power or press NMI during an erase, program, or restore
-  operation.
-- The directory journal provides 16 install pairs. When it is full, refresh
-  the protected sector with an external programmer; STR8-N does not erase its
-  own sector in place.
-
-Before releasing V2, exercise all 4K-32K Bank 0-2 ranges, all 4K-28K Bank-3
-ranges, interruption recovery, readback, `J0`-`J3`, and physical RESET on
-sacrificial hardware. The clean host build is necessary evidence, not a
-substitute for those tests.
+V2 does not update its own top sector, accept sparse S19, export S-records,
+manage backup allocation, or count flash wear. Refreshing STR8-N or its full
+directory requires an external programmer.
