@@ -45,7 +45,7 @@ TOP_BIN := $(BIN_DIR)/str8n-bank3-f000-ffff.bin
 MANIFEST := $(BUILD_DIR)/str8n-manifest.json
 
 .NOTPARALLEL:
-.PHONY: all resident workers programmer-bin manifest layout-check embedded-layout-check range-matrix-check clean help dirs
+.PHONY: all resident workers programmer-bin manifest layout-check embedded-layout-check range-matrix-check clean help dirs FORCE
 
 all: manifest range-matrix-check
 
@@ -97,8 +97,10 @@ $(WORKER_S19): $(WORKER_OBJ) | dirs
 $(TOP_BIN): layout-check $(TOP_BIN_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_BIN_TOOL) -Str8MapPath "$(S19_DIR)/str8n-f000.map" -Str8S19Path "$(STR8_S19)" -WorkerMapPath "$(S19_DIR)/str8n-worker-0200.map" -WorkerS19Path "$(WORKER_S19)" -BinPath "$@"
 
-$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(MANIFEST_TOOL)
+$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(MANIFEST_TOOL) FORCE
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(MANIFEST_TOOL) -Str8MapPath "$(S19_DIR)/str8n-f000.map" -WorkerMapPath "$(S19_DIR)/str8n-worker-0200.map" -TopBinPath "$(TOP_BIN)" -WorkerS19Path "$(WORKER_S19)" -ManifestPath "$@"
+
+FORCE:
 
 help:
 	@echo make          - build and validate resident, unified worker, and programmer BIN
