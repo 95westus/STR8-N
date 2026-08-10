@@ -1,0 +1,116 @@
+ASM ?= wdc02as
+LINKER ?= wdcln
+
+SRC_DIR := src
+BUILD_DIR := BUILD
+OBJ_DIR := $(BUILD_DIR)/obj
+LST_DIR := $(BUILD_DIR)/lst
+SYM_DIR := $(BUILD_DIR)/sym
+S19_DIR := $(BUILD_DIR)/s19
+BIN_DIR := $(BUILD_DIR)/bin
+
+ASFLAGS := -G -L -S -W -I $(SRC_DIR)
+STR8_LINKFLAGS := -g -s -t -cF000 -hm19 -j -o
+WORKER_LINKFLAGS := -g -s -t -c0200 -hm19 -j -o
+V1_DEFINES := -DSTR8_V1_LAYOUT -DSTR8_V1_INSTALLER_DRY -DSTR8_V1_INSTALLER_TXN
+
+STR8_SRC := $(SRC_DIR)/str8.asm
+WORKER_SRC := $(SRC_DIR)/str8-worker.asm
+DELAY_SRC := $(SRC_DIR)/util-delay.asm
+STR8_INCLUDES := \
+	$(SRC_DIR)/himon-image-eq.inc \
+	$(SRC_DIR)/str8-directory-eq.inc \
+	$(SRC_DIR)/str8-jump-eq.inc \
+	$(SRC_DIR)/str8-record-eq.inc \
+	$(SRC_DIR)/str8-version.inc \
+	$(SRC_DIR)/str8-worker-eq.inc
+WORKER_INCLUDES := \
+	$(SRC_DIR)/str8-jump-eq.inc \
+	$(SRC_DIR)/str8-record-eq.inc \
+	$(SRC_DIR)/str8-worker-eq.inc
+
+STR8_OBJ := $(OBJ_DIR)/str8n.obj
+DELAY_OBJ := $(OBJ_DIR)/util-delay.obj
+WORKER_OBJ := $(OBJ_DIR)/str8n-worker.obj
+JUMP_WORKER_OBJ := $(OBJ_DIR)/str8n-jump-worker.obj
+MUTATION_WORKER_OBJ := $(OBJ_DIR)/str8n-mutation-worker.obj
+
+STR8_S19 := $(S19_DIR)/str8n-f000.s19
+WORKER_S19 := $(S19_DIR)/str8n-worker-0200.s19
+JUMP_WORKER_S19 := $(S19_DIR)/str8n-jump-worker-0200.s19
+MUTATION_WORKER_S19 := $(S19_DIR)/str8n-mutation-worker-0200.s19
+TOP_BIN_TOOL := tools/build_str8n_top_bin.ps1
+TOP_BIN := $(BIN_DIR)/str8n-bank3-f000-ffff.bin
+
+.NOTPARALLEL:
+.PHONY: all resident workers programmer-bin clean help dirs
+
+all: resident workers programmer-bin
+
+resident: $(STR8_S19)
+
+workers: $(WORKER_S19) $(JUMP_WORKER_S19) $(MUTATION_WORKER_S19)
+
+programmer-bin: $(TOP_BIN)
+
+dirs:
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "@('$(OBJ_DIR)','$(LST_DIR)','$(SYM_DIR)','$(S19_DIR)','$(BIN_DIR)') | ForEach-Object { New-Item -ItemType Directory -Force -Path $$_ | Out-Null }"
+
+$(STR8_OBJ): $(STR8_SRC) $(STR8_INCLUDES) | dirs
+	$(ASM) $(ASFLAGS) $(V1_DEFINES) $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n.sym)
+
+$(DELAY_OBJ): $(DELAY_SRC) | dirs
+	$(ASM) $(ASFLAGS) $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/util-delay.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/util-delay.sym)
+
+$(WORKER_OBJ): $(WORKER_SRC) $(WORKER_INCLUDES) | dirs
+	$(ASM) $(ASFLAGS) $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-worker.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-worker.sym)
+
+$(JUMP_WORKER_OBJ): $(WORKER_SRC) $(WORKER_INCLUDES) | dirs
+	$(ASM) $(ASFLAGS) -DSTR8_WORKER_JUMP_ONLY $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-jump-worker.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-jump-worker.sym)
+
+$(MUTATION_WORKER_OBJ): $(WORKER_SRC) $(WORKER_INCLUDES) | dirs
+	$(ASM) $(ASFLAGS) -DSTR8_WORKER_MUTATION_ONLY $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-mutation-worker.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-mutation-worker.sym)
+
+$(STR8_S19): $(STR8_OBJ) $(DELAY_OBJ) | dirs
+	$(LINKER) $(STR8_LINKFLAGS) $@ $(STR8_OBJ) $(DELAY_OBJ)
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S903F0000C'; Set-Content -LiteralPath $$p -Value $$lines"
+
+$(WORKER_S19): $(WORKER_OBJ) | dirs
+	$(LINKER) $(WORKER_LINKFLAGS) $@ $<
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9030200FA'; Set-Content -LiteralPath $$p -Value $$lines"
+
+$(JUMP_WORKER_S19): $(JUMP_WORKER_OBJ) | dirs
+	$(LINKER) $(WORKER_LINKFLAGS) $@ $<
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9030200FA'; Set-Content -LiteralPath $$p -Value $$lines"
+
+$(MUTATION_WORKER_S19): $(MUTATION_WORKER_OBJ) | dirs
+	$(LINKER) $(WORKER_LINKFLAGS) $@ $<
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9030200FA'; Set-Content -LiteralPath $$p -Value $$lines"
+
+$(TOP_BIN): $(STR8_S19) $(JUMP_WORKER_S19) $(TOP_BIN_TOOL) | dirs
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_BIN_TOOL) -Str8MapPath "$(S19_DIR)/str8n-f000.map" -Str8S19Path "$(STR8_S19)" -WorkerMapPath "$(S19_DIR)/str8n-jump-worker-0200.map" -WorkerS19Path "$(JUMP_WORKER_S19)" -BinPath "$@"
+
+help:
+	@echo make          - build resident, workers, and the 4096-byte programmer BIN
+	@echo make resident - build the V1.02 resident at F000
+	@echo make workers  - build full, jump-only, and mutation-only workers
+	@echo make programmer-bin - build the Bank-3 F000-FFFF T48 BIN
+	@echo make clean    - remove STR8N/BUILD only
+
+clean:
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "if (Test-Path -LiteralPath '$(BUILD_DIR)') { Remove-Item -LiteralPath '$(BUILD_DIR)' -Recurse -Force }"
