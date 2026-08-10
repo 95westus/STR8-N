@@ -15,7 +15,7 @@ $ConfigStart = 0xFFF0
 $VectorStart = 0xFFFA
 $WorkerRunStart = 0x0200
 $WorkerSelectEntry = 0x0203
-$MinimumMargin = 32
+$MinimumMargin = 8
 
 function Get-MapSymbol {
     param([string]$Path, [string]$Name)

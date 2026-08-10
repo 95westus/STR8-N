@@ -14,7 +14,8 @@ flowchart TB
     S -->|J3| R3[Bank 3 RESET vector<br/>normally STR8-N again]
     S -->|I| W[RAM worker<br/>$0200-$0453]
     W --> FLASH[Selected flash range]
-    B3 -->|L or L G| RAM[Temporary RAM program]
+    S -->|L| RAM[Recovery RAM program<br/>$2000-$7AFF, then S9]
+    B3 -->|L or L G| RAM2[HIMON RAM program]
 ```
 
 ## Physical flash to CPU view
@@ -47,11 +48,12 @@ flowchart TD
     C -->|no| F[Refuse handoff]
     C -->|yes| J[Select bank and jump through RESET vector]
     Q -->|H or timeout| M{Compatible HIMON marker?}
-    M -->|yes| H[Warm HIMON at $C000]
+    M -->|H: warm; timeout: cold| H[HIMON at $C000]
     M -->|no| S[STR8-N prompt]
     Q -->|S| S
     S -->|J0-J3| J
     S -->|I| I[Installer]
+    S -->|L| L[Load RAM $2000-$7AFF<br/>and execute S9]
 ```
 
 ## Install transaction
@@ -84,9 +86,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        596 B   |
 $FD5B  +------------------------------+
-       | free margin           38 B   |
-$FD35  +------------------------------+
-       | resident code       3382 B   |
+       | free margin           10 B   |
+$FD51  +------------------------------+
+       | resident code/data  3410 B   |
 $F000  +------------------------------+
 ```
 
@@ -106,7 +108,7 @@ Banks 0-2, ending at $FFFF       Bank 3, ending below STR8-N
 
 These are useful top-aligned examples, not a restriction. Any contiguous
 sector span inside `8-F` (Banks 0-2) or `8-E` (Bank 3) is accepted. `I` always
-writes flash. HIMON `L`/`L G` owns RAM loading.
+writes flash. STR8-N `L` is a separate recovery RAM load-and-execute path.
 
 ## Flash install versus RAM load
 
@@ -115,9 +117,26 @@ flowchart LR
     S19[S19 file] --> CHOICE{What should survive reset?}
     CHOICE -->|lasting image| I[STR8-N I]
     I --> FW[Selected flash sectors]
-    CHOICE -->|temporary program| L[HIMON L or L G]
-    L --> RP[STR8-N F009 parser]
-    RP --> RM[HIMON copies valid data to RAM]
+    CHOICE -->|recovery program| SL[STR8-N L]
+    SL --> RP[STR8-N F009 parser]
+    RP --> BOUND[check complete S1 span<br/>$2000-$7AFF]
+    BOUND --> RM[copy to RAM and jump to S9]
+    CHOICE -->|monitor load/load-go| HL[HIMON L or L G]
+    HL --> RP
+```
+
+## Recovery RAM load
+
+```mermaid
+flowchart TD
+    C[STR8-N L] --> P[Receive and validate S0/S1/S9]
+    P -->|valid S1| R{Whole record inside<br/>$2000-$7AFF?}
+    R -->|yes| M[Copy record to RAM]
+    R -->|no| F[Return to prompt; do not execute]
+    M --> P
+    P -->|valid S9 after data| E{S9 inside<br/>$2000-$7AFF?}
+    E -->|no| F
+    E -->|yes| G[SEI, CLD, X/SP=$FF,<br/>jump to S9]
 ```
 
 ## Transient RAM during install

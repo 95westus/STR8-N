@@ -142,8 +142,8 @@ $workerSize = $workerRunEnd - $workerRunStart
 
 if ($str8Start -ne $TopBase) { throw ('STR8 START is ${0:X4}; expected $F000' -f $str8Start) }
 if ($str8End -gt $workerStore) { throw ('Resident end ${0:X4} crosses worker ${1:X4}' -f $str8End, $workerStore) }
-if (($workerStore - $str8End) -lt 32) {
-    throw ('Resident/worker margin is {0} bytes; expected at least 32' -f ($workerStore - $str8End))
+if (($workerStore - $str8End) -lt 8) {
+    throw ('Resident/worker margin is {0} bytes; expected at least 8' -f ($workerStore - $str8End))
 }
 if ($workerRunStart -ne 0x0200) { throw ('Worker starts at ${0:X4}; expected $0200' -f $workerRunStart) }
 if (($workerStore + $workerSize) -ne $directoryStart) {

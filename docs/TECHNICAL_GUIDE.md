@@ -6,19 +6,22 @@ Numeric address ranges are inclusive unless an end is explicitly called
 
 ## Scope and command ownership
 
-STR8-N is a reset supervisor, flash installer, and bank handoff guard. Its `I`
-command is flash-only; it does not provide a general RAM loader.
+STR8-N is a reset supervisor, flash installer, recovery RAM loader, and bank
+handoff guard. `I` remains flash-only. The separate `L` command is a compact
+load-and-execute path, not a general monitor loader.
 
 ```text
 Operation                 Owner              Result
 flash S19 installation    STR8-N I           erases/programs selected flash
+recovery RAM execution    STR8-N L           copies $2000-$7AFF, jumps to S9
 S19 syntax validation     STR8-N $F009       parses one record; does not apply it
-RAM S19 loading           HIMON L / caller   copies parsed bytes into RAM
+monitor RAM loading       HIMON L / L G      load-only or load-and-start
 bank selection            STR8-N $F010       changes the visible flash bank
 guest launch              STR8-N J0-J3       jumps through selected RESET vector
 ```
 
-This division avoids duplicating a RAM loader in the protected top sector.
+The STR8-N form stays small by omitting load-only, fallback-entry, reporting,
+and arbitrary destination policy.
 
 ## Board address contract
 
@@ -49,8 +52,8 @@ STR8-N code and data.
 The complete protected sector is exactly 4096 bytes:
 
 ```text
-$F000-$FD35  resident supervisor and installer       3382 bytes
-$FD36-$FD5B  enforced unused margin                    38 bytes
+$F000-$FD51  resident supervisor, installer, loader   3410 bytes
+$FD52-$FD5B  enforced unused margin                    10 bytes
 $FD5C-$FFAF  stored unified worker                    596 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
 $FFF0-$FFF9  configuration pocket                      10 bytes
@@ -59,12 +62,13 @@ $FFFA-$FFFF  NMI, RESET, IRQ/BRK vectors                 6 bytes
                                                        4096 bytes
 ```
 
-The 38-byte gap is the only build-certified growth room inside the protected
-sector. The layout checker requires at least 32 bytes. `$FF` bytes found
+The 10-byte gap is the only build-certified growth room inside the protected
+sector. The layout checker requires at least 8 bytes. `$FF` bytes found
 inside linked code are not automatically free space.
 
 The stored worker is copied to `$0200-$0453` before an install or bank handoff.
-No worker bytes are transported in an `I` S19.
+Each copied byte is immediately read back and compared before the next byte.
+No worker bytes are transported in an `I` or `L` S19.
 
 Hardware vectors are:
 
@@ -250,6 +254,41 @@ Once START is present without COMPLETE, retry is limited to the whole writable
 bank: `$8000-$FFFF` for Banks 0-2 or `$8000-$EFFF` for Bank 3. This prevents a
 small retry from hiding unknown sectors changed before the interruption.
 
+## STR8-N L RAM load-and-execute contract
+
+`L` calls the same resident `$F009` parser used by `I`, but it applies valid S1
+data directly to RAM and never copies or invokes the flash worker.
+
+```text
+accepted S1 destination bytes  $2000-$7AFF
+exclusive upper boundary       $7B00, parser data buffer
+accepted S9 execution address  $2000-$7AFF
+record data length              1-252 bytes
+flash mutation                  none
+completion                      immediate indirect JMP through S9
+```
+
+The complete S1 span is checked by adding `length-1` to the record address. A
+record beginning below `$7B00` is still rejected if its last byte would reach
+`$7B00`. This prevents the destination from overwriting the record currently
+being copied. `$7B00-$7BFB`, `$7E95-$7EA8`, IVI cells, I/O, zero page, stack,
+worker, sector tray, and recovery state remain outside the accepted range.
+
+The stream accepts individually valid S0, S1, and S9 records. It does not
+require dense or ascending S1 addresses. At least one nonempty S1 must pass;
+then S9 must be in range. On success STR8-N executes `SEI`, `CLD`, loads
+`X=$FF`, sets `SP=$FF`, and jumps indirectly through the S9 address. Bank 3
+remains selected. A/Y, RAM outside the received records, IVI targets, and
+peripherals are inherited. No return address is prepared; the loaded program
+must not use `RTS` as a return to STR8-N. The sender must stop after S9 because
+queued console bytes are also inherited by the loaded program.
+
+There is no confirmation or load-only state. On any parse, checksum, record
+type, data-span, or S9 failure, control returns to the STR8-N prompt without a
+jump. Already copied records are not rolled back. This is safe from flash
+damage but means a failed recovery load may leave partial program bytes in
+RAM; retrying or RESET is the normal cleanup.
+
 ## Directory and transaction journal
 
 `$FFB0-$FFEF` holds one 16-byte record for each bank:
@@ -286,7 +325,7 @@ payload; it uses the following transient and service areas:
 $0090-$009C  I state                              13 bytes
 $009D        free between I fields                 1 byte
 $009E-$009F  I state                               2 bytes
-$00A0        free between I fields                 1 byte
+$00A0        L nonempty-data flag                  1 byte
 $00A1-$00A3  I range state                         3 bytes
 $00CD-$00D6  record/directory/worker scratch      10 bytes
 $0200-$0453  relocated unified worker            596 bytes
@@ -311,9 +350,10 @@ The worker, tray, record buffers, and state are volatile. A program that needs
 their contents after STR8-N service must rebuild them. HIMON's Banked-AP RAM
 helper begins at `$0500`, above the worker's fixed `$0453` last byte.
 
-## HIMON RAM S19 path
+## HIMON RAM S19 alternative
 
-HIMON `L` and `L G`, not STR8-N `I`, implement RAM loading. HIMON calls the
+HIMON `L` and `L G` provide a richer alternative to STR8-N recovery `L`.
+HIMON calls the
 public `$F009` parser on each buffered S0/S1/S9 record and then applies its own
 destination policy:
 
@@ -388,12 +428,14 @@ and select Bank 3 again if it intends to return to Bank-3 ROM code.
 ## Build, artifacts, and qualification
 
 `make layout-check` verifies fixed entry points, vectors, worker span, metadata
-placement, exact image size, and at least 32 bytes of free resident margin.
+placement, exact image size, and at least 8 bytes of free resident margin.
 `BUILD/str8n-manifest.json` publishes the resulting addresses and hashes.
 `make range-matrix-check` generates and re-validates every top-aligned 4K-32K
 Bank 0-2 range, every 4K-28K Bank-3 range, and representative middle spans.
 These host fixtures are written below `BUILD/test/range-matrix`; they do not
 change the firmware image or consume protected-sector space.
+`make ram-load-contract-check` verifies the linked `L` entry and every lower,
+upper, crossing-record, empty-record, and S9 boundary case.
 
 ```text
 BUILD/bin/str8n-bank3-f000-ffff.bin  exact 4096-byte programmer image
@@ -408,7 +450,9 @@ The BIN file maps as follows:
 file offset $000-$FFF -> CPU $F000-$FFFF -> physical $1F000-$1FFFF
 ```
 
-Before qualifying a release on hardware, exercise every allowed Bank 0-2 and
+Before qualifying a release on hardware, exercise `L` at `$2000`, `$7AFF`,
+cross-page records, rejected `$1FFF`/`$7B00` spans, bad records, partial-load
+failure, and automatic S9 execution. Also exercise every allowed Bank 0-2 and
 Bank-3 size, malformed S19 rejection, interruption at each sector, full-range
 recovery, directory exhaustion, readback, `H`, `J0`-`J3`, NMI/IRQ outside
 flash mutation, and physical RESET. Retain the exact image, manifest, hashes,

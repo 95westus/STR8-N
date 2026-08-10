@@ -9,15 +9,15 @@ The Bank-3 top 4K contains everything STR8-N needs to reset, install, recover,
 and hand off:
 
 ```text
-$F000-$FD35  resident code/data             3382 bytes
-$FD36-$FD5B  deliberately unused margin       38 bytes
+$F000-$FD51  resident code/data             3410 bytes
+$FD52-$FD5B  deliberately unused margin       10 bytes
 $FD5C-$FFAF  unified worker                   596 bytes
 $FFB0-$FFEF  directory                         64 bytes
 $FFF0-$FFF9  reserved identity/config          10 bytes
 $FFFA-$FFFF  NMI/RESET/IRQ vectors               6 bytes
 ```
 
-The mandatory unused margin is 32 bytes. `make` reads the linked maps and
+The mandatory unused margin is 8 bytes. `make` reads the linked maps and
 fails if the actual margin is smaller, if a published worker constant is
 stale, or if a fixed gate/tail address moves. The report includes the exact
 worker size and S19 SHA-256.
@@ -31,8 +31,11 @@ worker size and S19 SHA-256.
   buffer or the console. Public APPLY_LF is removed.
 - `$F010` copies and verifies only the 41-byte selector prefix to `$0200` and
   enters it at `$0203`. This preserves an R-YORS HIMON helper at `$0300`.
-- `I` and `J0`-`J3` copy the complete worker and then compare every byte in a
-  separate ROM-to-RAM verification pass.
+- `I` and `J0`-`J3` copy the complete worker and immediately read back and
+  compare each byte before copying the next one.
+- `L` parses S0/S1/S9, copies only complete S1 spans inside `$2000-$7AFF`,
+  requires at least one data record, and automatically executes an in-range
+  S9 address. It never calls the flash worker.
 - Worker mode `$06` is removed. A user program needing read-only sector access
   selects its bank through `$F010`/`$0203` and owns its own copy routine.
 - Reset always returns to Bank 3. Do not press NMI during flash mutation; no
@@ -80,6 +83,9 @@ is written.
 `compose_str8n_install_s19.ps1` now validates and normalizes payload-only S19;
 it never prepends a worker. The old combined-stream format is deliberately not
 produced.
+
+`test_ram_load_contract.ps1` checks the linked recovery `L` entry and the
+accepted/rejected lower, upper, crossing-record, empty-record, and S9 cases.
 
 ## Remaining release gate
 

@@ -29,14 +29,15 @@ and hardware vectors—fits at CPU `$F000-$FFFF` (physical flash
 
 ```text
 I       install a payload-only S19 image
+L       load an S19 into $2000-$7AFF RAM and execute S9
 H       warm-enter compatible HIMON in Bank 3
 J0-J3   hand control to the selected bank
 ```
 
-`I` writes flash only. It does not load RAM. With R-YORS/HIMON, use `L` to
-load a temporary RAM program or `L G` to load and start it. Keeping RAM loading
-in HIMON avoids spending more of STR8-N's protected 4K sector on a second
-loader.
+`I` still writes flash only. STR8-N `L` is the compact recovery loader: it
+loads only `$2000-$7AFF` and immediately executes the S9 address. With
+R-YORS/HIMON, use HIMON `L` to load without starting or `L G` to load and
+start across its broader RAM policy.
 
 Physical RESET always selects Bank 3 first. Banks 0–2 may accept any
 contiguous, 4K-aligned range from 4K through 32K. Bank 3 may accept 4K through
@@ -55,9 +56,11 @@ The Makefile expects WDC `wdc02as` and `wdcln` on `PATH`.
 make                 build and verify everything
 make resident        build the resident supervisor
 make workers         build the unified RAM worker
-make layout-check    enforce fixed addresses and at least 32 spare bytes
+make layout-check    enforce fixed addresses and at least 8 spare bytes
 make range-matrix-check
                      validate all documented install sizes and ranges
+make ram-load-contract-check
+                     validate STR8-N L destination and S9 boundaries
 make programmer-bin  create the 4096-byte top-sector image
 make clean           remove BUILD
 ```
@@ -81,6 +84,7 @@ validate an existing payload stream. Full rules and examples are in the
 
 ## Deliberate limits
 
-V2 does not update its own top sector, accept sparse S19, export S-records,
-manage backup allocation, or count flash wear. Refreshing STR8-N or its full
-directory requires an external programmer.
+V2 does not update its own top sector, export S-records, manage backup
+allocation, or count flash wear. Its recovery `L` command has no load-only
+form and no address fallback: a valid S9 in `$2000-$7AFF` is required.
+Refreshing STR8-N or its full directory requires an external programmer.

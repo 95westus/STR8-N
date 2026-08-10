@@ -4,18 +4,19 @@
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
+;   L  load an S19 into $2000-$7AFF RAM and execute its S9 address
 ;   H  warm-entry local HIMON without changing banks
 ;   J0/J1/J2/J3  non-destructive reset-vector handoff to bank 0/1/2/3
 ;   invalid input is discarded without reprinting the command help
 ; V0 proof builds retain U instead of I for the fixed $C000-$EFFF HIMON gate.
 ;
-; Reset clears the terminal with 35 LFs, shows 16 unpolled attach dots, flushes
-; RX, prints the banner, then opens 16 live selector dots. Timeout cold-starts
-; the local $C000 target; H warm-starts it to preserve RAM. An erased $C000
-; entry face falls into the STR8 menu. S enters STR8; 0-2 announce the selected
-; bank, wait about 3 more seconds, then reuse the non-destructive J handoff.
+; Reset shows 16 unpolled attach dots, flushes RX, prints the banner, then
+; opens 16 live selector dots. Timeout cold-starts compatible HIMON at $C000;
+; H warm-starts it to preserve RAM. A missing or incompatible marker falls
+; into the STR8 menu. S enters STR8; 0-2 announce the selected bank, wait about
+; 3 more seconds, then reuse the non-destructive J handoff.
 ;
-; The RAM proof build performs destructive bank copies directly from RAM. The
+; The RAM proof build performs destructive bank copies directly from RAM.
 ; The resident ROM contains one worker. $F010 copies only its selector prefix;
 ; I and J copy and verify the full worker before any bank-dependent operation.
 ; ----------------------------------------------------------------------------
@@ -34,6 +35,7 @@
                         XDEF            STR8_DIR_WRITE_BYTES
                         XDEF            STR8_READ_LINE
                         XDEF            STR8_CMD_INSTALL_PREVIEW
+                        XDEF            STR8_CMD_LOAD_RAM
                         IF              STR8_V1_INSTALLER_DRY
                         XDEF            STR8_I_RECEIVE_DENSE
                         XDEF            STR8_I_STAGE_SECTOR_READY
@@ -102,7 +104,6 @@ STR8_WORKER_COPY_LEN_HI EQU             >STR8_WORKER_SIZE
 STR8_SELECTOR_COPY_LEN  EQU             STR8_WORKER_SELECT_SIZE
 STR8_DELAY_TICK_X       EQU             $B6
 STR8_DELAY_TICK_Y       EQU             $F8
-STR8_SCREEN_CLEAR_LINES EQU             $23
 STR8_STARTUP_DOT_COUNT  EQU             $20
 STR8_STARTUP_LIVE_TICKS EQU             $10
 STR8_STARTUP_DOT_A      EQU             $0D    ; 0.369s at 8 MHz
@@ -138,6 +139,11 @@ STR8_INSTALL_SECTOR_HI  EQU             $9F
 STR8_INSTALL_START_HI   EQU             $A1
 STR8_INSTALL_RANGE_LIMIT_HI EQU         $A2
 STR8_INSTALL_SECTOR_COUNT EQU           $A3
+; L reuses the resident parser and pointer helpers.  Its destination ceiling
+; stays below the parser's $7B00 data buffer and the higher RTC/IVI cells.
+STR8_RAM_LOAD_HAVE_DATA EQU              $A0
+STR8_RAM_LOAD_MIN_HI  EQU                $20
+STR8_RAM_LOAD_LIMIT_HI EQU               $7B
 STR8_INSTALL_DENSE      EQU             $10
 STR8_INSTALL_ENTRY      EQU             $11
 STR8_INSTALL_FLASH      EQU             $12
@@ -370,7 +376,11 @@ STR8_IVY_ENTRY_IRQ_MASTER:
                         RTI
 
 STR8_ENTER_HIMON_COLD:
+                        IF              STR8_V1_LAYOUT
+                        JSR             STR8_LOCAL_HIMON_AVAILABLE
+                        ELSE
                         JSR             STR8_BOOT_TARGET_AVAILABLE
+                        ENDIF
                         BCC             STR8_ENTER_MENU_NO_BOOT
                         LDX             #HIMON_IMAGE_ID_SIZE-1
 ?SIG:                  STZ             STR8_HIMON_RESET_SIG0,X
@@ -401,8 +411,10 @@ STR8_ENTER_HIMON_WARM:
                         ENDIF
                         JMP             STR8_HIMON_START
 
-; Minimal generic HIMON/user-app availability gate. A richer directory/CRC
-; policy can replace this later; V0 only refuses an erased $C000 entry face.
+                        IF              STR8_V1_LAYOUT
+                        ELSE
+; Minimal generic HIMON/user-app availability gate retained for V0 proof
+; layouts. V2 cold and warm entry both require the fixed HIMON marker below.
 STR8_BOOT_TARGET_AVAILABLE:
                         LDY             #$00
 ?BYTE:                 LDA             STR8_HIMON_START,Y
@@ -415,6 +427,7 @@ STR8_BOOT_TARGET_AVAILABLE:
                         RTS
 ?YES:                  SEC
                         RTS
+                        ENDIF
 
                         IF              STR8_V1_LAYOUT
 ; H is specifically HIMON warm entry, not a generic local-$C000 launch. Match
@@ -432,7 +445,7 @@ STR8_LOCAL_HIMON_AVAILABLE:
                         RTS
 
 STR8_ENTER_MENU_NO_HIMON:
-                        LDX             #<MSG_NO_HIMON
+                        LDX             #<MSG_NO_TARGET
                         IF              STR8_V1_INSTALLER_TXN
                         BRA             STR8_ENTER_MENU_NO_TARGET_PRINT
                         ELSE
@@ -443,12 +456,12 @@ STR8_ENTER_MENU_NO_HIMON:
 
 STR8_ENTER_MENU_NO_BOOT:
                         JSR             STR8_CON_FLUSH_RX
-                        LDX             #<MSG_NO_BOOT
+                        LDX             #<MSG_NO_TARGET
                         IF              STR8_V1_INSTALLER_TXN
 STR8_ENTER_MENU_NO_TARGET_PRINT:
                         JSR             STR8_PRINT_TXN_PAGE1_X
                         ELSE
-                        LDY             #>MSG_NO_BOOT
+                        LDY             #>MSG_NO_TARGET
 STR8_ENTER_MENU_NO_TARGET_PRINT:
                         JSR             STR8_PRINT_XY
                         ENDIF
@@ -458,16 +471,11 @@ STR8_ENTER_MENU_NO_TARGET_PRINT:
                         ELSE
 ; OUT: C=1 and A='0'/'1'/'2'/'H'/'S' when a choice was consumed.
 ;      C=0 if the timeout elapsed.
-; First emit 35 LFs to clear a connected terminal. The release prints its banner
-; and WAIT label. The first 16 dots quarantine USB enumeration and cannot
+; The release prints its banner and WAIT label. The first 16 dots quarantine
+; USB enumeration and cannot
 ; consume a key. At the midpoint RX is flushed, the selector is printed, and
 ; 16 live dots poll only 0/1/2/H/S. Each phase is about six seconds at 8 MHz.
 STR8_STARTUP_DELAY:
-                        LDX             #STR8_SCREEN_CLEAR_LINES
-?CLEAR:                LDA             #$0A
-                        JSR             STR8_CON_WRITE_BYTE_BLOCK
-                        DEX
-                        BNE             ?CLEAR
                         STZ             STR8_BOOT_KEY_ENABLE
                         IF              STR8_V1_LAYOUT
                         LDX             #<MSG_ID
@@ -710,9 +718,15 @@ STR8_DISPATCH_A:
                         ENDIF
 ?NOT_SELECT:
                         IF              STR8_V1_LAYOUT
+                        CMP             #'L'
+                        BNE             ?NOT_L
+                        LDX             STR8_REC_DATA_BUF+1
+                        BEQ             STR8_CMD_LOAD_RAM
+                        JMP             STR8_CMD_UNKNOWN
+?NOT_L:
                         CMP             #'I'
                         BNE             ?NOT_I
-                        BRA             STR8_CMD_INSTALL_PREVIEW
+                        JMP             STR8_CMD_INSTALL_PREVIEW
 ?NOT_I:
                         ENDIF
                         CMP             #'J'
@@ -729,6 +743,65 @@ STR8_DISPATCH_A:
                         JMP             STR8_CMD_UNKNOWN
 
                         IF              STR8_V1_LAYOUT
+; Recovery RAM loader.  Every complete S1 span must stay in $2000-$7AFF.
+; A valid non-empty stream executes its in-range S9 address immediately.
+STR8_CMD_LOAD_RAM:
+                        LDX             #<MSG_I_SEND_S19
+                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        STZ             STR8_RAM_LOAD_HAVE_DATA
+                        LDA             #STR8_REC_OP_PARSE
+                        STA             STR8_REC_OP
+                        STA             STR8_REC_FORMAT
+                        STA             STR8_REC_SOURCE
+?RECORD:               JSR             STR8_RECORD_SERVICE_BODY
+                        BCC             ?FAIL
+                        LDA             STR8_REC_KIND
+                        CMP             #STR8_REC_KIND_DATA
+                        BEQ             ?DATA
+                        BCC             ?RECORD
+
+; The parser publishes only METADATA, DATA, or END on success.
+?END:                  LDA             STR8_RAM_LOAD_HAVE_DATA
+                        BEQ             ?FAIL
+                        LDA             STR8_REC_ENTRY_HI
+                        SEC
+                        SBC             #STR8_RAM_LOAD_MIN_HI
+                        CMP             #(STR8_RAM_LOAD_LIMIT_HI-STR8_RAM_LOAD_MIN_HI)
+                        BCS             ?FAIL
+                        SEI
+                        CLD
+                        LDX             #$FF
+                        TXS
+                        JMP             (STR8_REC_ENTRY_LO)
+
+?DATA:                 LDA             STR8_REC_ADDR_HI
+                        CMP             #STR8_RAM_LOAD_MIN_HI
+                        BCC             ?FAIL
+; Check the final byte, not only the first, so no record can cross into $7B00.
+                        LDA             STR8_REC_DATA_LEN
+                        BEQ             ?FAIL
+                        DEC             A
+                        CLC
+                        ADC             STR8_REC_ADDR_LO
+                        LDA             STR8_REC_ADDR_HI
+                        ADC             #$00
+                        BCS             ?FAIL
+                        CMP             #STR8_RAM_LOAD_LIMIT_HI
+                        BCS             ?FAIL
+                        JSR             STR8_REC_LOAD_APPLY_POINTERS
+                        LDY             #$00
+?COPY:                 LDA             (STR8_COPY_PTR_LO),Y
+                        STA             (STR8_PTR_LO),Y
+                        INY
+                        CPY             STR8_REC_WORK_COUNT
+                        BNE             ?COPY
+; Y equals the nonzero record length here, so this flag cannot wrap after
+; 256 or more S1 records.
+                        STY             STR8_RAM_LOAD_HAVE_DATA
+                        BRA             ?RECORD
+?FAIL:                 JSR             STR8_I_DRAIN_QUEUED
+                        JMP             STR8_CMD_ABORT
+
 ; I preflight for Banks 0-3 and the guarded write transaction.
 STR8_CMD_INSTALL_PREVIEW:
                         LDA             STR8_REC_DATA_BUF+1
@@ -1574,7 +1647,11 @@ STR8_CMD_ABORT:
                         IF              STR8_RAM_PROOF
                         JSR             STR8_SELECT_BANK_3
                         ENDIF
+                        IF              STR8_V1_LAYOUT
+                        LDX             #<MSG_I_INVALID
+                        ELSE
                         LDX             #<MSG_ABORT
+                        ENDIF
                         IF              STR8_V1_INSTALLER_TXN
                         JMP             STR8_PRINT_TXN_PAGE0_X
                         ELSE
@@ -1592,13 +1669,7 @@ STR8_CMD_COPY_FAIL:
                         ENDIF
 
 STR8_CMD_UNKNOWN:
-                        LDX             #<MSG_CRLF
-                        IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE1_X
-                        ELSE
-                        LDY             #>MSG_CRLF
-                        JMP             STR8_PRINT_XY
-                        ENDIF
+                        RTS
 
                         IF              STR8_RAM_PROOF
                         ELSE
@@ -2362,6 +2433,8 @@ STR8_COPY_WORKER_TO_RAM:
 ?COPY_PAGE:            LDY             #$00
 ?COPY_BYTE:            LDA             (STR8_PTR_LO),Y
                         STA             (STR8_COPY_PTR_LO),Y
+                        CMP             (STR8_COPY_PTR_LO),Y
+                        BNE             ?FAIL
                         INY
                         BNE             ?COPY_BYTE
                         INC             STR8_PTR_HI
@@ -2369,33 +2442,13 @@ STR8_COPY_WORKER_TO_RAM:
                         DEX
                         BNE             ?COPY_PAGE
 ?COPY_TAIL:            CPY             #STR8_WORKER_COPY_LEN_LO
-                        BEQ             ?VERIFY
-                        LDA             (STR8_PTR_LO),Y
-                        STA             (STR8_COPY_PTR_LO),Y
-                        INY
-                        BRA             ?COPY_TAIL
-
-; A separate complete pass proves the final RAM image byte-for-byte before a
-; caller may journal, select, erase, program, or jump.
-?VERIFY:               JSR             STR8_WORKER_COPY_POINTERS
-                        LDX             #STR8_WORKER_COPY_LEN_HI
-?VERIFY_PAGE:          LDY             #$00
-?VERIFY_BYTE:          LDA             (STR8_PTR_LO),Y
-                        CMP             (STR8_COPY_PTR_LO),Y
-                        BNE             ?FAIL
-                        INY
-                        BNE             ?VERIFY_BYTE
-                        INC             STR8_PTR_HI
-                        INC             STR8_COPY_PTR_HI
-                        DEX
-                        BNE             ?VERIFY_PAGE
-?VERIFY_TAIL:          CPY             #STR8_WORKER_COPY_LEN_LO
                         BEQ             ?OK
                         LDA             (STR8_PTR_LO),Y
+                        STA             (STR8_COPY_PTR_LO),Y
                         CMP             (STR8_COPY_PTR_LO),Y
                         BNE             ?FAIL
                         INY
-                        BRA             ?VERIFY_TAIL
+                        BRA             ?COPY_TAIL
 ?OK:                   SEC
                         RTS
 ?FAIL:                 CLC
@@ -2412,22 +2465,17 @@ STR8_WORKER_COPY_POINTERS:
                         RTS
 
 ; $F010 copies only the selector prefix, preserving HIMON's executing $0300
-; staging helper.  Verify the prefix in a second pass before tail-calling it.
+; staging helper.  Each byte is read back before the next byte is copied.
 STR8_COPY_SELECTOR_TO_RAM:
                         LDY             #$00
 ?COPY:
                         LDA             STR8_WORKER_STORE,Y
                         STA             STR8_WORKER_RUN,Y
-                        INY
-                        CPY             #STR8_SELECTOR_COPY_LEN
-                        BNE             ?COPY
-                        LDY             #$00
-?VERIFY_SELECT:        LDA             STR8_WORKER_STORE,Y
                         CMP             STR8_WORKER_RUN,Y
                         BNE             ?SELECT_FAIL
                         INY
                         CPY             #STR8_SELECTOR_COPY_LEN
-                        BNE             ?VERIFY_SELECT
+                        BNE             ?COPY
                         SEC
                         RTS
 ?SELECT_FAIL:          CLC
@@ -2841,7 +2889,7 @@ MSG_SCREEN:
                         ENDIF
 MSG_HELP:
                         IF              STR8_V1_LAYOUT
-                        DB              "I H J0-3",$0D,$8A
+                        DB              "I L H J",$0D,$8A
                         ELSE
                         DB              "U 0-3 J0-3",$0D,$8A
                         ENDIF
@@ -2860,7 +2908,10 @@ MSG_BOOT_BANK_WAIT:     DB              "3S",$0D,$8A
                         ELSE
 MSG_OK:                 DB              $0D,$0A,"OK",$0D,$8A
                         ENDIF
+                        IF              STR8_V1_LAYOUT
+                        ELSE
 MSG_ABORT:              DB              $0D,$0A,"ABORT",$0D,$8A
+                        ENDIF
                         IF              STR8_V1_LAYOUT
 MSG_I_BANK:             DB              $0D,$0A,"B0-3:",$A0
 MSG_I_RANGE_PROMPT:     DB              $0D,$0A,"RANGE:",$A0
@@ -2899,7 +2950,7 @@ MSG_UPDATE_WRITE:       DB              $0D,$0A,"PROGRAM C000-EFFF? Y:",$A0
 MSG_S19_FAIL:           DB              $0D,$0A,"S19 FAIL",$0D,$8A
 MSG_S19_NO_DATA:        DB              $0D,$0A,"NO S19 DATA",$0D,$8A
                         ENDIF
-MSG_NO_BOOT:            DB              "NO BOOT",$0D,$8A
+MSG_NO_TARGET:          DB              "NO",$0D,$8A
 MSG_JUMP_B:             DB              $0D,$0A,"J ",('B'+$80)
 MSG_JUMP_FAIL:          DB              "J FAIL",$0D,$8A
                         IF              STR8_RAM_PROOF
@@ -2907,7 +2958,6 @@ MSG_COPY_FAIL_AT:       DB              $0D,$0A,"COPY FAIL @ ",('$'+$80)
                         ENDIF
 MSG_CRLF:               DB              $0D,$8A
                         IF              STR8_V1_LAYOUT
-MSG_NO_HIMON:           DB              "NO H",$0D,$8A
 MSG_BACKSPACE:          DB              $08,$20,$88
 STR8_HIMON_WARM_SIGNATURE:
                         DB              HIMON_IMAGE_SIG0_VALUE,HIMON_IMAGE_SIG1_VALUE

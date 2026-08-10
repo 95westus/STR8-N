@@ -45,3 +45,8 @@ R-YORS code that calls STR8-N binds only to the published interfaces in the
 [Technical Guide](TECHNICAL_GUIDE.md#public-interface). Its RAM helper at
 `$0500` remains above STR8-N's complete `$0200-$0453` worker; the build rejects
 an overlap if that contract changes.
+
+The resident STR8-N `L` command is an operator recovery path, not a new public
+ABI. It loads and immediately executes S19 programs in `$2000-$7AFF`. HIMON's
+own `L` and `L G` commands remain R-YORS features with their separate monitor
+policy.

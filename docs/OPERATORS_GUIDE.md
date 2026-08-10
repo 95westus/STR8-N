@@ -6,24 +6,26 @@ use it.
 ## Which loader should I use?
 
 No: STR8-N `I` cannot load programs into RAM. It installs a dense S19 image
-into flash.
+into flash. STR8-N now has a separate recovery command, `L`, for RAM.
 
 ```text
 Need                         Use             Destination
 install a lasting image      STR8-N I        selected flash bank
-load a temporary program     HIMON L         RAM $0000-$7EFF
-load and start a program     HIMON L G       RAM, then the S9 start address
+recovery load and execute    STR8-N L        RAM $2000-$7AFF, then S9
+load without starting        HIMON L         RAM under HIMON policy
+load and start under HIMON   HIMON L G       RAM, then the S9 start address
 start a flash-bank guest     STR8-N J0-J3    selected bank's RESET vector
 ```
 
-This is deliberate. Reusing HIMON's loader is the simplest, most
-code-efficient choice and leaves more room in STR8-N's protected 4K sector.
-If HIMON is not installed, a user program needs its own RAM loader.
+STR8-N `L` is deliberately smaller than HIMON's loader. It always starts the
+program, has one fixed safe range, and provides no load-only or fallback-entry
+mode. That makes it useful when the normal Bank-3 payload needs repair.
 
 For normal R-YORS programs loaded by HIMON, `$2000-$4FFF` is the simplest
 general-purpose area. More RAM may be available, but check the R-YORS memory
-map before using ASM work areas or monitor workspace. `L` can write lower RAM
-too, but loading over active workspace can damage the current monitor session.
+map before using ASM work areas or monitor workspace. HIMON `L` can write
+lower RAM too, but loading over active workspace can damage the current
+monitor session.
 
 ## Before writing flash
 
@@ -60,6 +62,7 @@ At `STR8-N>`, the visible commands are:
 
 ```text
 I       install an S19 into flash
+L       load an S19 into $2000-$7AFF and execute its S9 address
 H       warm-enter compatible HIMON in Bank 3
 J0-J3   select a bank and jump through its RESET vector
 ```
@@ -93,6 +96,35 @@ The same procedure applies to every bank.
 
 The S19 must contain the exact range selected at the prompts, including every
 `$FF` padding byte. Do not send an old stream with `$0200` worker records.
+
+## Load and execute a RAM recovery program with L
+
+STR8-N `L` changes RAM only. It does not erase or program flash and does not
+ask for confirmation.
+
+1. At `STR8-N>`, type `L`.
+2. When `S19` appears, send an S19 containing S0/S1/S9 records.
+3. Every nonempty S1 record must fit completely within `$2000-$7AFF`.
+4. At least one S1 record is required.
+5. S9 must name an execution address within `$2000-$7AFF`.
+6. As soon as the valid S9 is received, STR8-N disables IRQ, clears decimal
+   mode, sets X and the stack pointer to `$FF`, and jumps to S9. A/Y and other
+   RAM or peripheral state are not initialized for the program.
+
+There is no `L G`, separate `G`, confirmation, or load-only form in STR8-N.
+The recovery program must initialize the hardware and RAM state it needs.
+It should not execute `RTS` to return because STR8-N deliberately replaces the
+stack pointer before entry. Physical RESET returns to Bank 3 and STR8-N.
+
+The RAM stream does not need to be dense, ascending, or 4K-aligned. Each S1
+record is checked independently; overlapping records are applied in received
+order. S2-S8, bad checksums, empty S1 records, an out-of-range record span, an
+out-of-range S9, or a stream with no S1 fail. On failure STR8-N does not
+execute, but bytes copied by earlier valid records remain in RAM.
+
+`$7B00` is the first protected parser buffer byte. The highest accepted byte
+is therefore `$7AFF`, even when one S1 record crosses a page boundary. Stop
+sending after S9; queued serial bytes are inherited by the recovery program.
 
 ## Banks 0-2
 
@@ -188,9 +220,10 @@ From the HIMON `>` prompt:
 4. After S9, HIMON reports the byte count and start address. `L G` starts the
    S9 address when usable; otherwise it may use the first loaded address.
 
-Unlike STR8-N `I`, a HIMON `L` file need not describe a 4K-aligned or dense
-flash range. It should still use valid S0/S1/S9 records and must avoid RAM
-needed by the running monitor and loader.
+Like STR8-N recovery `L`, a HIMON `L` file need not describe a 4K-aligned or
+dense flash range. HIMON additionally offers load-only behavior and its own
+broader destination policy. It must still avoid RAM needed by the running
+monitor and loader.
 
 ## If an install is interrupted
 
