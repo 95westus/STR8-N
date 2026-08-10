@@ -1,2 +1,2 @@
-; Frozen banner for the initial standalone STR8-N source snapshot.
-MSG_ID:                 DB              $0D,$0A,"STR8-N 1.02/0809.2224"
+; Compact V2 identity; detailed build identity belongs in the host manifest.
+MSG_ID:                 DB              $0D,$0A,"STR8-N 2"

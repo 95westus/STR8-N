@@ -1,8 +1,8 @@
 param(
     [string]$Str8MapPath = "BUILD/s19/str8n-f000.map",
     [string]$Str8S19Path = "BUILD/s19/str8n-f000.s19",
-    [string]$WorkerMapPath = "BUILD/s19/str8n-jump-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/s19/str8n-jump-worker-0200.s19",
+    [string]$WorkerMapPath = "BUILD/s19/str8n-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/s19/str8n-worker-0200.s19",
     [string]$BinPath = "BUILD/bin/str8n-bank3-f000-ffff.bin"
 )
 
@@ -117,7 +117,7 @@ function Import-RelocatedWorker {
             if ($seen[$delta]) { throw ('Duplicate worker byte at ${0:X4}' -f $runAddress) }
             $seen[$delta] = $true
             Set-ImageByte -Image $Image -Address ($StoreStart + $delta) `
-                -Value $record.Data[$i] -Source "relocated jump worker"
+                -Value $record.Data[$i] -Source "relocated unified worker"
         }
     }
     for ($i = 0; $i -lt $seen.Length; $i++) {
@@ -133,15 +133,18 @@ $str8Start = Get-SymbolAddress -MapPath $Str8MapPath -Name 'START'
 $str8End = Get-SymbolAddress -MapPath $Str8MapPath -Name '_END_DATA'
 $str8Nmi = Get-SymbolAddress -MapPath $Str8MapPath -Name 'STR8_IVY_ENTRY_NMI'
 $str8Irq = Get-SymbolAddress -MapPath $Str8MapPath -Name 'STR8_IVY_ENTRY_IRQ_MASTER'
-$workerStore = Get-SymbolAddress -MapPath $Str8MapPath -Name 'STR8_JUMP_WORKER_STORE'
+$workerStore = Get-SymbolAddress -MapPath $Str8MapPath -Name 'STR8_WORKER_STORE'
 $directoryStart = Get-SymbolAddress -MapPath $Str8MapPath -Name 'STR8_DIR_BASE'
 $directoryEnd = Get-SymbolAddress -MapPath $Str8MapPath -Name 'STR8_DIR_END'
 $workerRunStart = Get-SymbolAddress -MapPath $WorkerMapPath -Name 'START'
-$workerRunEnd = Get-SymbolAddress -MapPath $WorkerMapPath -Name 'STR8_WORKER_END'
+$workerRunEnd = Get-SymbolAddress -MapPath $WorkerMapPath -Name 'STR8W_LINKED_END'
 $workerSize = $workerRunEnd - $workerRunStart
 
 if ($str8Start -ne $TopBase) { throw ('STR8 START is ${0:X4}; expected $F000' -f $str8Start) }
 if ($str8End -gt $workerStore) { throw ('Resident end ${0:X4} crosses worker ${1:X4}' -f $str8End, $workerStore) }
+if (($workerStore - $str8End) -lt 32) {
+    throw ('Resident/worker margin is {0} bytes; expected at least 32' -f ($workerStore - $str8End))
+}
 if ($workerRunStart -ne 0x0200) { throw ('Worker starts at ${0:X4}; expected $0200' -f $workerRunStart) }
 if (($workerStore + $workerSize) -ne $directoryStart) {
     throw ('Worker storage ${0:X4}+${1:X} does not end at directory ${2:X4}' -f `
@@ -188,9 +191,9 @@ if ($check.Length -ne $TopSize) { throw "BIN is $($check.Length) bytes; expected
 $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $BinPath).Hash
 $tail = $check[0x0FFA..0x0FFF] | ForEach-Object { '{0:X2}' -f $_ }
 Write-Host ('STR8 RESIDENT       = ${0:X4}-${1:X4}' -f $str8Start, ($str8End - 1))
-Write-Host ('JUMP WORKER         = run ${0:X4}-${1:X4}; stored ${2:X4}-${3:X4}' -f `
+Write-Host ('UNIFIED WORKER      = run ${0:X4}-${1:X4}; stored ${2:X4}-${3:X4}' -f `
     $workerRunStart, ($workerRunEnd - 1), $workerStore, ($workerStore + $workerSize - 1))
-Write-Host ('NEW V1 DIRECTORY    = ${0:X4}-${1:X4}; all FF' -f $directoryStart, $directoryEnd)
+Write-Host ('NEW V2 DIRECTORY    = ${0:X4}-${1:X4}; all FF' -f $directoryStart, $directoryEnd)
 Write-Host ('VECTORS FFFA-FFFF   = {0}' -f ($tail -join ' '))
 Write-Host ('CPU RANGE           = $F000-$FFFF; 4096 bytes')
 Write-Host ('SST39SF010A B3 PHYS = $1F000-$1FFFF; file offset $000-$FFF')

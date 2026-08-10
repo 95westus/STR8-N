@@ -2,21 +2,19 @@
 ; str8-worker.asm
 ; RAM-resident STR8 flash-service worker.
 ;
-; Every variant links for $0200 and must fit in the $0200-$09FF STR8 RAM worker
-; tray. The full and jump workers are copied from high flash; the mutation-only
-; worker is uploaded by I. Keep them independent: once running, they must not
-; call ROM code because they switch flash banks and may erase Bank 3's top
-; sector.
+; This single resident-owned image links for $0200 and must fit in the
+; $0200-$09FF STR8 RAM worker tray.  Its compact selector prefix ends below
+; $0300 so the public $F010 service cannot overwrite HIMON's RAM routine at
+; $0300.  Once the full worker is running it must not call ROM code because it
+; switches flash banks.
 ; ----------------------------------------------------------------------------
 
                         MODULE          STR8_WORKER_APP
 
                         XDEF            START
-                        IF              STR8_WORKER_MUTATION_ONLY
-                        ELSE
                         XDEF            STR8W_BANK_SELECT_SERVICE
-                        ENDIF
-                        XDEF            STR8_WORKER_END
+                        XDEF            STR8W_LINKED_SELECT_END
+                        XDEF            STR8W_LINKED_END
 
                         INCLUDE         "str8-record-eq.inc"
                         INCLUDE         "str8-jump-eq.inc"
@@ -29,8 +27,6 @@
 ; 2026-07-23T17:27-05:00        Codex       Enrollment mode is removed with the E command.
 ; 2026-08-01T22:15-05:00        Codex       V0 copy/restore modes retire; unknown modes fail closed.
 STR8_COPY_MODE_PROGRAM_STAGED EQU        $05
-STR8_COPY_MODE_STAGE_BANK_SECTOR EQU    $06
-
 STR8_RESET_VECTOR       EQU             $FFFC
 
 STR8W_PTR_LO            EQU             $CD
@@ -64,26 +60,11 @@ STR8_FLASH_WRITE_TMO_HI EQU             $02
 
                         CODE
 START:
-                        IF              STR8_WORKER_MUTATION_ONLY
                         JMP             STR8W_START_BODY
-STR8W_MUTATION_SIG:
-                        DB              STR8_MUTATION_WORKER_SIG0
-                        DB              STR8_MUTATION_WORKER_SIG1
-                        DB              STR8_MUTATION_WORKER_SIG2
-                        DB              STR8_MUTATION_WORKER_SIG3
-                        ELSE
-                        IF              STR8_WORKER_JUMP_ONLY
-                        JMP             STR8W_JUMP_START
-                        ELSE
-                        JMP             STR8W_START_BODY
-                        ENDIF
-                        ENDIF
 
 ; Fixed $0203 entry used by the resident $F010 bank-selection service.
 ; IN: A=bank 0-3. OUT: C=1 selected; C=0 invalid. A/X are clobbered.
 ; The caller and return address must be in RAM below $8000.
-                        IF              STR8_WORKER_MUTATION_ONLY
-                        ELSE
 STR8W_BANK_SELECT_SERVICE:
                         PHP
                         SEI
@@ -96,58 +77,49 @@ STR8W_BANK_SELECT_SERVICE:
 ?BAD_BANK:             PLP
                         CLC
                         RTS
-                        ENDIF
 
-; Each linked worker accepts only its published mode subset. Any other value
-; returns C=0 before selecting a bank or touching flash.
-                        IF              STR8_WORKER_JUMP_ONLY
-STR8W_JUMP_START:
-                        LDA             STR8_COPY_MODE
-                        CMP             #STR8_COPY_MODE_JUMP_BANK
-                        BEQ             ?RUN_JUMP
-                        CLC
+; Keep the complete public selector implementation in the prefix copied by
+; $F010.  The rest of the worker is copied only by I and J0-J3.
+STR8W_SELECT_BANK3:
+                        LDA             #$03
+STR8W_BANK_SELECT_A:
+                        AND             #$03
+                        TAX
+                        LDA             STR8W_BANK_BIT_TABLE,X
+                        PHA
+                        LDA             #STR8_BANK_PCR_MASK
+                        TRB             STR8_FTDI_VIA_PCR
+                        PLA
+                        TSB             STR8_FTDI_VIA_PCR
                         RTS
-?RUN_JUMP:
-                        PHP
-                        SEI
-                        JSR             STR8W_JUMP_BANK
-                        JSR             STR8W_SELECT_BANK3
-                        PLP
-                        CLC
-                        RTS
-                        ELSE
+
+STR8W_BANK_BIT_TABLE:
+                        DB              $CC,$CE,$EC,$EE
+
+STR8W_LINKED_SELECT_END:
+
+; Any unknown mode fails before selecting a bank or touching flash.
 STR8W_START_BODY:
                         PHP
                         SEI
                         LDA             STR8_COPY_MODE
                         CMP             #STR8_COPY_MODE_PROGRAM_STAGED
                         BEQ             ?PROGRAM_STAGED
-                        CMP             #STR8_COPY_MODE_STAGE_BANK_SECTOR
-                        BEQ             ?STAGE_BANK_SECTOR
                         CMP             #STR8_COPY_MODE_PROGRAM_RECORD
                         BEQ             ?PROGRAM_RECORD
-                        IF              STR8_WORKER_MUTATION_ONLY
-                        ELSE
                         CMP             #STR8_COPY_MODE_JUMP_BANK
                         BEQ             ?JUMP_BANK
-                        ENDIF
                         PLP
                         CLC
                         RTS
 ?PROGRAM_STAGED:
                         JSR             STR8W_PROGRAM_STAGED_SECTOR
                         BRA             ?DONE
-?STAGE_BANK_SECTOR:
-                        JSR             STR8W_STAGE_BANK_SECTOR
-                        BRA             ?DONE
 ?PROGRAM_RECORD:
                         JSR             STR8W_PROGRAM_RECORD
                         BRA             ?DONE
-                        IF              STR8_WORKER_MUTATION_ONLY
-                        ELSE
 ?JUMP_BANK:
                         JSR             STR8W_JUMP_BANK
-                        ENDIF
 ?DONE:
                         BCC             ?FAIL
                         JSR             STR8W_SELECT_BANK3
@@ -159,12 +131,9 @@ STR8W_START_BODY:
                         PLP
                         CLC
                         RTS
-                        ENDIF
 
 ; Non-destructive opaque-bank handoff. Success resets CPU software state and
 ; never returns. Failure returns through START, which restores Bank 3 first.
-                        IF              STR8_WORKER_MUTATION_ONLY
-                        ELSE
 STR8W_JUMP_BANK:
                         LDA             STR8_JUMP_BANK
                         CMP             #STR8_BANK_COUNT
@@ -208,33 +177,15 @@ STR8W_JUMP_BANK:
                         STA             STR8_JUMP_STATUS
                         CLC
                         RTS
-                        ENDIF
 
-                        IF              STR8_WORKER_JUMP_ONLY
-                        ELSE
 STR8W_PROGRAM_STAGED_SECTOR:
                         JSR             STR8W_ERASE_DST_SECTOR
                         BCC             ?FAIL
                         JSR             STR8W_PROGRAM_DST_SECTOR
                         BCC             ?FAIL
-                        JSR             STR8W_VERIFY_DST_SECTOR
-                        BCC             ?FAIL
-                        SEC
-                        RTS
-?FAIL:
-                        CLC
-                        RTS
-
-STR8W_STAGE_BANK_SECTOR:
-                        LDA             STR8_COPY_SRC_BANK
-                        JSR             STR8W_BANK_SELECT_A
-                        STZ             STR8W_PTR_LO
-                        LDA             STR8_MARK_SECTOR_HI
-                        STA             STR8W_PTR_HI
-                        STZ             STR8W_BUF_LO
-                        LDA             STR8_STAGE_BUF_HI
-                        STA             STR8W_BUF_HI
-                        JMP             STR8W_COPY_PTR_TO_ACTIVE_BUF
+                        JMP             STR8W_VERIFY_DST_SECTOR
+; Each failed operation already returns carry clear.
+?FAIL:                 RTS
 
 ; Program one preflighted record without erase. Repeat a complete one-to-zero
 ; preflight after selecting Bank 3, before the first byte write. This protects
@@ -303,22 +254,8 @@ STR8W_RECORD_ADVANCE:
                         INC             STR8W_ADDR_HI
 ?DATA:
                         INC             STR8W_BUF_LO
-                        ; V1 starts at $7B00 and accepts at most 252 bytes, so
+                        ; The buffer starts at $7B00 and accepts at most 252 bytes, so
                         ; the record-buffer low byte cannot wrap.
-                        RTS
-
-STR8W_COPY_PTR_TO_ACTIVE_BUF:
-?PAGE:
-                        LDY             #$00
-?BYTE:
-                        LDA             (STR8W_PTR_LO),Y
-                        STA             (STR8W_BUF_LO),Y
-                        INY
-                        BNE             ?BYTE
-                        INC             STR8W_PTR_HI
-                        INC             STR8W_BUF_HI
-                        JSR             STR8W_ACTIVE_BUF_END_REACHED
-                        BNE             ?PAGE
                         RTS
 
 ; 2026-05-07T19:14-05:00        WLP2        Skip erased sectors and verify erase completion.
@@ -326,21 +263,16 @@ STR8W_ERASE_DST_SECTOR:
                         LDA             STR8_COPY_DST_BANK
                         JSR             STR8W_BANK_SELECT_A
                         JSR             STR8W_DST_SECTOR_ERASED
-                        BCS             ?OK
+                        BCS             ?DONE
                         LDA             STR8_MARK_ADDR_LO
                         STA             STR8W_ADDR_LO
                         LDA             STR8_MARK_ADDR_HI
                         STA             STR8W_ADDR_HI
                         JSR             STR8W_FLASH_ERASE
-                        BCC             ?FAIL
+                        BCC             ?DONE
                         JSR             STR8W_DST_SECTOR_ERASED
-                        BCS             ?OK
-?FAIL:
-                        CLC
-                        RTS
-?OK:
-                        SEC
-                        RTS
+; Both the already-erased and post-erase checks publish their result in C.
+?DONE:                 RTS
 
 ; OUT: C=1 if the selected destination sector is all $FF.
 ;      C=0 and STR8_MARK_ADDR_* names the first non-erased byte otherwise.
@@ -502,25 +434,8 @@ STR8W_FLASH_RESET_FAIL:
                         STA             STR8_FLASH_UNLOCK1
                         CLC
                         RTS
-                        ENDIF
 
-STR8W_SELECT_BANK3:
-                        LDA             #$03
-STR8W_BANK_SELECT_A:
-                        AND             #$03
-                        TAX
-                        LDA             STR8W_BANK_BIT_TABLE,X
-                        PHA
-                        LDA             #STR8_BANK_PCR_MASK
-                        TRB             STR8_FTDI_VIA_PCR
-                        PLA
-                        TSB             STR8_FTDI_VIA_PCR
-                        RTS
-
-STR8W_BANK_BIT_TABLE:
-                        DB              $CC,$CE,$EC,$EE
-
-STR8_WORKER_END:
+STR8W_LINKED_END:
                         ENDMOD
 
                         END
