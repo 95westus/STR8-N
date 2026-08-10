@@ -1,4 +1,4 @@
-# STR8-N V2
+# STR8-N v1.1
 
 STR8-N is the 4096-byte protected top sector in Bank 3 of a W65C02SXB/EDU.
 It owns physical RESET, selects a bank, installs dense S19 images, protects
@@ -84,7 +84,7 @@ validate an existing payload stream. Full rules and examples are in the
 
 ## Deliberate limits
 
-V2 does not update its own top sector, export S-records, manage backup
+STR8-N v1.1 does not update its own top sector, export S-records, manage backup
 allocation, or count flash wear. Its recovery `L` command has no load-only
 form and no address fallback: a valid S9 in `$2000-$7AFF` is required.
 Refreshing STR8-N or its full directory requires an external programmer.

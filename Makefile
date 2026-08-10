@@ -108,7 +108,7 @@ FORCE:
 
 help:
 	@echo make          - build and validate resident, unified worker, and programmer BIN
-	@echo make resident - build the V2 resident at F000
+	@echo make resident - build the v1.1 resident at F000
 	@echo make workers  - build the one unified RAM worker
 	@echo make programmer-bin - build the Bank-3 F000-FFFF T48 BIN
 	@echo make manifest - build the verified artifact manifest used by R-YORS

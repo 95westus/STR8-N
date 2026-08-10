@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8-directory-eq.inc
-; Frozen STR8-N V2 Bank Directory layout and validator states.
+; Frozen STR8-N v1.1 Bank Directory layout and validator states.
 ; The directory exists only in Bank 3 at $FFB0-$FFEF.
 ; ----------------------------------------------------------------------------
 

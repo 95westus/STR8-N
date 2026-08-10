@@ -1,4 +1,4 @@
-# STR8-N V2 Operator's Guide
+# STR8-N v1.1 Operator's Guide
 
 This is the board-facing guide. You do not need to know assembly language to
 use it.

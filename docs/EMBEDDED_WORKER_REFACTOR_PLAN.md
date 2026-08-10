@@ -9,8 +9,8 @@ The Bank-3 top 4K contains everything STR8-N needs to reset, install, recover,
 and hand off:
 
 ```text
-$F000-$FD51  resident code/data             3410 bytes
-$FD52-$FD5B  deliberately unused margin       10 bytes
+$F000-$FD53  resident code/data             3412 bytes
+$FD54-$FD5B  deliberately unused margin        8 bytes
 $FD5C-$FFAF  unified worker                   596 bytes
 $FFB0-$FFEF  directory                         64 bytes
 $FFF0-$FFF9  reserved identity/config          10 bytes
@@ -89,7 +89,7 @@ accepted/rejected lower, upper, crossing-record, empty-record, and S9 cases.
 
 ## Remaining release gate
 
-The source builds and host layout checks pass. Before calling V2 hardware-safe,
+The source builds and host layout checks pass. Before calling v1.1 hardware-safe,
 qualify each accepted boundary and interruption point on sacrificial hardware,
 archive programmer recovery images and hashes, read back every written byte,
 exercise `J0`-`J3`, and prove physical RESET always restores Bank 3.

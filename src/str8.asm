@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable V2 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.1 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
@@ -134,7 +134,7 @@ STR8_INSTALL_PHASE      EQU             $9E
 STR8_INSTALL_SECTOR_HI  EQU             $9F
 ; $A0 is intentionally free; the record service retains its own detailed
 ; parse/program status while the compact installer reports a single failure.
-; V2 selected dense range. The receiver requires this exact start and
+; v1.1 selected dense range. The receiver requires this exact start and
 ; exclusive limit while retaining a count for summaries/tests.
 STR8_INSTALL_START_HI   EQU             $A1
 STR8_INSTALL_RANGE_LIMIT_HI EQU         $A2
@@ -195,14 +195,14 @@ START:
                         JMP             STR8_BOOT_START
 
 ; Stable resident entry for HIMON/RAM tools. Caller sets the $1FE9-$1FFF
-; V2 retires the general worker doorway.  Keep the fixed slot fail-closed so
+; v1.1 retires the general worker doorway. Keep the fixed slot fail-closed so
 ; old RAM programs cannot reach destructive modes in the embedded worker.
 STR8_RUN_WORKER_SERVICE:
                         CLC
                         RTS
                         NOP
 
-; Retired AP-link ABI slot. Older callers fail closed without moving the V2
+; Retired AP-link ABI slot. Older callers fail closed without moving the v1.1
 ; record/signature/bank-selector entries that follow it.
 STR8_RETIRED_F006:
                         CLC
@@ -414,7 +414,7 @@ STR8_ENTER_HIMON_WARM:
                         IF              STR8_V1_LAYOUT
                         ELSE
 ; Minimal generic HIMON/user-app availability gate retained for V0 proof
-; layouts. V2 cold and warm entry both require the fixed HIMON marker below.
+; layouts. v1.1 cold and warm entry both require the fixed HIMON marker below.
 STR8_BOOT_TARGET_AVAILABLE:
                         LDY             #$00
 ?BYTE:                 LDA             STR8_HIMON_START,Y
@@ -1631,7 +1631,7 @@ STR8_CMD_UPDATE_NO_DATA:
 
                         ENDIF
 
-; Legacy U is absent from V2, so its success path is dead in the transaction.
+; Legacy U is absent from v1.1, so its success path is dead in the transaction.
                         IF              STR8_V1_INSTALLER_TXN
                         ELSE
 STR8_CMD_OK:
@@ -1772,7 +1772,7 @@ STR8_BANK_SELECT_SERVICE_BODY:
 STR8_BANK_SELECT_SERVICE_BODY_END:
 
 ; ----------------------------------------------------------------------------
-; V2 Bank Directory validator for I and directory-gated J.
+; v1.1 Bank Directory validator for I and directory-gated J.
 ;
 ; STR8_DIR_VALIDATE_BANK_A
 ;   IN:  A=bank 0-3, Bank 3 visible

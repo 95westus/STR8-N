@@ -1,4 +1,4 @@
-# STR8-N V2 Technical Guide
+# STR8-N v1.1 Technical Guide
 
 This document is the current STR8-N integration and image-format contract.
 Numeric address ranges are inclusive unless an end is explicitly called
@@ -52,8 +52,8 @@ STR8-N code and data.
 The complete protected sector is exactly 4096 bytes:
 
 ```text
-$F000-$FD51  resident supervisor, installer, loader   3410 bytes
-$FD52-$FD5B  enforced unused margin                    10 bytes
+$F000-$FD53  resident supervisor, installer, loader   3412 bytes
+$FD54-$FD5B  enforced unused margin                     8 bytes
 $FD5C-$FFAF  stored unified worker                    596 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
 $FFF0-$FFF9  configuration pocket                      10 bytes
@@ -62,7 +62,7 @@ $FFFA-$FFFF  NMI, RESET, IRQ/BRK vectors                 6 bytes
                                                        4096 bytes
 ```
 
-The 10-byte gap is the only build-certified growth room inside the protected
+The 8-byte gap is the only build-certified growth room inside the protected
 sector. The layout checker requires at least 8 bytes. `$FF` bytes found
 inside linked code are not automatically free space.
 

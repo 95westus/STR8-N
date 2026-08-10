@@ -1,6 +1,6 @@
-# STR8-N V2 Maps and Diagrams
+# STR8-N v1.1 Maps and Diagrams
 
-These diagrams describe the current V2 implementation.
+These diagrams describe the current v1.1 implementation.
 
 ## Ownership
 
@@ -86,9 +86,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        596 B   |
 $FD5B  +------------------------------+
-       | free margin           10 B   |
-$FD51  +------------------------------+
-       | resident code/data  3410 B   |
+       | free margin            8 B   |
+$FD53  +------------------------------+
+       | resident code/data  3412 B   |
 $F000  +------------------------------+
 ```
 

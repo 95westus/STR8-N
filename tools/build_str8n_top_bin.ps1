@@ -193,7 +193,7 @@ $tail = $check[0x0FFA..0x0FFF] | ForEach-Object { '{0:X2}' -f $_ }
 Write-Host ('STR8 RESIDENT       = ${0:X4}-${1:X4}' -f $str8Start, ($str8End - 1))
 Write-Host ('UNIFIED WORKER      = run ${0:X4}-${1:X4}; stored ${2:X4}-${3:X4}' -f `
     $workerRunStart, ($workerRunEnd - 1), $workerStore, ($workerStore + $workerSize - 1))
-Write-Host ('NEW V2 DIRECTORY    = ${0:X4}-${1:X4}; all FF' -f $directoryStart, $directoryEnd)
+Write-Host ('NEW DIRECTORY       = ${0:X4}-${1:X4}; all FF' -f $directoryStart, $directoryEnd)
 Write-Host ('VECTORS FFFA-FFFF   = {0}' -f ($tail -join ' '))
 Write-Host ('CPU RANGE           = $F000-$FFFF; 4096 bytes')
 Write-Host ('SST39SF010A B3 PHYS = $1F000-$1FFFF; file offset $000-$FFF')

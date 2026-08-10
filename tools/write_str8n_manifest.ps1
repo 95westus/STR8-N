@@ -41,6 +41,7 @@ $selectorEnd = Get-MapSymbol $WorkerMapPath 'STR8W_LINKED_SELECT_END'
 $manifest = [ordered]@{
     schema = 1
     project = 'STR8-N'
+    version = '1.1'
     repository = 'https://github.com/95westus/STR8-N.git'
     commit = $commit.ToLowerInvariant()
     dirty = $dirty
