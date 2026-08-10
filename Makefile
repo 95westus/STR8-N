@@ -39,18 +39,22 @@ STR8_S19 := $(S19_DIR)/str8n-f000.s19
 WORKER_S19 := $(S19_DIR)/str8n-worker-0200.s19
 TOP_BIN_TOOL := tools/build_str8n_top_bin.ps1
 LAYOUT_CHECK_TOOL := tools/check_str8n_layout.ps1
+MANIFEST_TOOL := tools/write_str8n_manifest.ps1
 TOP_BIN := $(BIN_DIR)/str8n-bank3-f000-ffff.bin
+MANIFEST := $(BUILD_DIR)/str8n-manifest.json
 
 .NOTPARALLEL:
-.PHONY: all resident workers programmer-bin layout-check embedded-layout-check clean help dirs
+.PHONY: all resident workers programmer-bin manifest layout-check embedded-layout-check clean help dirs
 
-all: layout-check programmer-bin
+all: manifest
 
 resident: $(STR8_S19)
 
 workers: $(WORKER_S19)
 
 programmer-bin: $(TOP_BIN)
+
+manifest: $(MANIFEST)
 
 layout-check: $(STR8_S19) $(WORKER_S19) $(LAYOUT_CHECK_TOOL)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(LAYOUT_CHECK_TOOL)
@@ -89,11 +93,15 @@ $(WORKER_S19): $(WORKER_OBJ) | dirs
 $(TOP_BIN): layout-check $(TOP_BIN_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_BIN_TOOL) -Str8MapPath "$(S19_DIR)/str8n-f000.map" -Str8S19Path "$(STR8_S19)" -WorkerMapPath "$(S19_DIR)/str8n-worker-0200.map" -WorkerS19Path "$(WORKER_S19)" -BinPath "$@"
 
+$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(MANIFEST_TOOL)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(MANIFEST_TOOL) -Str8MapPath "$(S19_DIR)/str8n-f000.map" -WorkerMapPath "$(S19_DIR)/str8n-worker-0200.map" -TopBinPath "$(TOP_BIN)" -WorkerS19Path "$(WORKER_S19)" -ManifestPath "$@"
+
 help:
 	@echo make          - build and validate resident, unified worker, and programmer BIN
 	@echo make resident - build the V2 resident at F000
 	@echo make workers  - build the one unified RAM worker
 	@echo make programmer-bin - build the Bank-3 F000-FFFF T48 BIN
+	@echo make manifest - build the verified artifact manifest used by R-YORS
 	@echo make layout-check - require the protected-sector layout and 32-byte margin
 	@echo make embedded-layout-check - alias for layout-check
 	@echo make clean    - remove STR8N/BUILD only

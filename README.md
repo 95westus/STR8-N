@@ -88,6 +88,7 @@ primary outputs are:
 BUILD/s19/str8n-f000.s19
 BUILD/s19/str8n-worker-0200.s19
 BUILD/bin/str8n-bank3-f000-ffff.bin
+BUILD/str8n-manifest.json
 ```
 
 The 4096-byte BIN is a complete new STR8-N top-sector image: resident code,
@@ -104,6 +105,9 @@ accepted by STR8-N's `I` command.
 [Embedded Worker And Payload-Only `I` Refactor](docs/EMBEDDED_WORKER_REFACTOR_PLAN.md)
 records the settled V2 design, exact layout, recovery rules, and remaining
 hardware qualification work.
+
+[R-YORS Integration Boundary](docs/R_YORS_INTEGRATION.md) defines how R-YORS
+consumes a pinned STR8-N artifact without keeping another live source copy.
 
 ## Deliberately outside V2
 
