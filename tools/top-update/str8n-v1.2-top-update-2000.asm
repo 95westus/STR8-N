@@ -4,6 +4,7 @@
 ; This program uses direct FT245R and flash access after active erase begins.
 ; STR8_DIRECTORY_REFRESH=0 preserves the live directory/configuration pocket.
 ; STR8_DIRECTORY_REFRESH=1 leaves the candidate's erased pocket intact.
+; ENTER AT EITHER PRE-ERASE CONFIRMATION CANCELS AND RETURNS TO STR8-N.
 
                         MODULE          STR8N_V12_TOP_UPDATE
                         ORG             $2000
@@ -202,7 +203,10 @@ TU_FAIL_SAFE:           STA             TU_STATUS
                         LDX             #<TU_MSG_ABORT
                         LDY             #>TU_MSG_ABORT
                         JSR             TU_PUTS
-                        RTS
+; STR8-N L jumps to S9 with a fresh stack and no return address. Empty or
+; rejected pre-erase confirmations therefore leave through resident STR8,
+; never RTS. The active-write failure path remains in TU_RECOVERY above.
+                        JMP             $F000
 
 ; Save live directory/config $FFB0-$FFF9 before using the staging tray.
 TU_SAVE_META:           LDX             #$00

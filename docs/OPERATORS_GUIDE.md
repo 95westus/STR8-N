@@ -151,6 +151,11 @@ order. S2-S8, bad checksums, empty S1 records, an out-of-range record span, an
 out-of-range S9, or a stream with no S1 fail. On failure STR8-N does not
 execute, but bytes copied by earlier valid records remain in RAM.
 
+Ctrl-C (`$03`) while `L` is receiving S19 cancels the load. The on-board
+STR8-N 1.2 image reports `BAD`, returns to `STR8-N>`, and does not execute the
+S9 entry. Complete S1 records accepted before Ctrl-C remain in RAM; cancellation
+is not rollback.
+
 `$7B00` is the first protected parser buffer byte. The highest accepted byte
 is therefore `$7AFF`, even when one S1 record crosses a page boundary. Stop
 sending after S9; queued serial bytes are inherited by the recovery program.
@@ -177,6 +182,11 @@ P  install the narrow, validated AP carrier at Bank 0 $BF00
 Q  return to STR8-N through $F000
 ```
 
+At the Bank Maintenance main menu, an empty line (Enter by itself) is the same
+as `Q`: it leaves Bank Maintenance and returns to STR8-N. Ctrl-C and empty
+lines at operation subprompts cancel that operation and return to the Bank
+Maintenance menu.
+
 The shortest safe rule is: use `M` freely; treat `C`, `D`, `E`, and `P` as flash
 operations.
 
@@ -186,6 +196,9 @@ The v1.2 release includes the RAM-resident updater
 `BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19`. It is loaded by the existing
 STR8-N `L` command and runs entirely from RAM while Bank-3 sector F is erased.
 An external programmer remains the preferred first-board and recovery method.
+This maintained Top Update artifact replaces the older ASM-generated
+TopWriter workflow; those TopWriters are historical, not the current update
+path.
 
 The complete onboard sequence through backup verification, Bank-3 sector-F
 program/verify, RESET, and live `S` selection was accepted on hardware on
@@ -213,6 +226,10 @@ Then update the protected top sector:
 5. Type the exact final confirmation `STR8-N 1.2`.
 6. Do not press NMI or RESET, remove power, or disturb the flash/FTDI hardware
    until the tool reports verification and enters the new RESET vector.
+
+At either typed confirmation, Enter by itself cancels before active erase,
+prints `ABORT - NO ACTIVE TOP UPDATE`, and returns to STR8-N. Any other
+nonmatching confirmation has the same safe result.
 
 If active programming fails, do not reset. At the RAM recovery prompt use `R`
 to retry the embedded v1.2 image or `O` to restore the verified Bank-1 backup.
@@ -426,6 +443,10 @@ replaced by a fresh exact backup of the live Bank-3 sector F.
 5. Type the exact final confirmation `ERASE DIRECTORY`.
 6. Do not press NMI or RESET, remove power, or disturb the flash/FTDI hardware
    until `DIRECTORY EMPTY; STR8-N VERIFIED; RESET` appears.
+
+At either Directory Refresh confirmation, Enter by itself cancels before
+active erase, prints `ABORT - NO ACTIVE DIRECTORY REFRESH`, and returns to
+STR8-N. Any other nonmatching confirmation has the same safe result.
 
 If active programming fails, do not reset. Type `R` to retry the erased-pocket
 candidate or `O` to restore the verified old sector from Bank 1. After success,

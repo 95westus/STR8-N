@@ -23,7 +23,8 @@
 ;   ONE AP DETAIL LINE IS PRINTED FOR EACH SECTOR MARKED A.
 ; M ALSO PRINTS BANK-3 DIRECTORY TYPE, DESCRIPTION, ENTRY, AND JOURNAL.
 ; M RESTORES ITS ENTRY BANK AFTER EACH CARRIED-WORKER STAGE CALL.
-; C/D/E/M/P, ABORT, AND SAFE FAILURES RETURN TO THIS MENU. Q RETURNS TO STR8-N.
+; C/D/E/M/P, CTRL-C, ABORT, AND SAFE FAILURES RETURN TO THIS MENU.
+; Q OR AN EMPTY MAIN-MENU LINE RETURNS TO STR8-N.
 ; BANK-3 ERASE REMAINS THE EXCEPTION AND RETURNS DIRECTLY TO STR8.
 ;
 ; THIS SOURCE CARRIES THE EXACT V1 MUTATION WORKER AT $3400-$362A AND COPIES
@@ -117,7 +118,7 @@ BM_MAIN LDX #$00
         LDA $7C21
         BNE BM_MAIN
         LDA $7C20
-        BEQ BM_ABORT
+        BEQ ?QUIT
         CMP #'C'
         BEQ ?COPY
         CMP #'D'
@@ -130,6 +131,7 @@ BM_MAIN LDX #$00
         BEQ ?PUT
         CMP #'Q'
         BNE BM_MAIN
+?QUIT
         STA $7C01
         LDA #$AC
         STA $7C00
@@ -1816,7 +1818,7 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2',' '
         DB 'P','T',' ','E','=','E','R','A'
         DB 'S','E',' ','M','=','M','A','P','+','D','I','R'
         DB ' ','P','=','A','P',' ','B','0','B','F','0','0'
-        DB ' ','Q','=','Q','U','I','T'
+        DB ' ','Q','/','E','N','T','E','R','=','Q','U','I','T'
         DB '>',' ',0
 ; Fixed one-sector AP carrier put for the split-V1 promotion proof.
 ; First run AP $4000 $3000 in HIMON. The outer envelope and fit are checked

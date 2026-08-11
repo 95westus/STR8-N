@@ -336,6 +336,11 @@ jump. Already copied records are not rolled back. This is safe from flash
 damage but means a failed recovery load may leave partial program bytes in
 RAM; retrying or RESET is the normal cleanup.
 
+Ctrl-C (`$03`) is the record-parser abort status. During `L`, the on-board
+STR8-N 1.2 presentation reports `BAD`, drains queued receive input, returns to
+the STR8-N prompt, and does not jump to S9. S1 records already copied into RAM
+remain present.
+
 ### STR8-N 1.2 bank-maintenance RAM image
 
 `make bank-maint` builds and validates
@@ -348,6 +353,10 @@ The utility is self-contained. It has direct FT245R input/output, local hex
 formatting, and local 32-bit FNV-1a support. It does not use HIMON's IVI or
 RAM service table. `Q` jumps to Bank-3 `$F000`; it does not use `RTS`, because
 STR8-N `L` deliberately supplies no return address.
+
+Enter by itself at the Bank Maintenance main menu follows the same `$F000`
+quit path as `Q`. At an operation subprompt, an empty line cancels only that
+operation and returns to the maintenance menu.
 
 ```text
 $0200-$042A  runtime copy of the private mutation worker
@@ -419,6 +428,15 @@ directory/configuration pocket. Refreshing it erases every bank's journal and
 Bank-3 install identity. The onboard tool first verifies an exact live-sector
 backup in Bank 1 sector F and retains retry/restore control in RAM while the
 Bank-3 reset sector is unavailable.
+
+The Top Update and Directory Refresh artifacts share the same guarded RAM
+driver. Enter by itself at either pre-erase confirmation is a cancellation:
+the tool selects Bank 3, prints its `ABORT - NO ACTIVE ...` message, and jumps
+to resident STR8-N at `$F000`. It cannot use `RTS` because STR8-N `L` enters
+the S9 address with a fresh stack and no return address. After active erase,
+failure remains in the RAM `R` retry / `O` restore recovery prompt instead.
+Top Update is the maintained replacement for the older ASM-generated
+TopWriter workflow.
 
 ## RAM ownership
 

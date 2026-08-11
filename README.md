@@ -45,6 +45,9 @@ J0-J2    start an enrolled Bank 0, 1, or 2 guest
 J3       hand off through the Bank-3 RESET vector
 ```
 
+Ctrl-C during `L` aborts the receive, reports `BAD`, returns to `STR8-N>`, and
+does not execute S9. RAM records already accepted are not rolled back.
+
 At RESET, `0`, `1`, and `2` provide direct guest selection, `H` selects HIMON,
 and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 
