@@ -3,6 +3,7 @@ param(
     [string]$WorkerMapPath = "BUILD/s19/str8n-worker-0200.map",
     [string]$TopBinPath = "BUILD/bin/str8n-bank3-f000-ffff.bin",
     [string]$WorkerS19Path = "BUILD/s19/str8n-worker-0200.s19",
+    [string]$BankMaintS19Path = "BUILD/s19/str8n-v1.1-bank-maint-2000.s19",
     [string]$ManifestPath = "BUILD/str8n-manifest.json"
 )
 
@@ -17,7 +18,7 @@ function Get-MapSymbol {
     return [Convert]::ToInt32($match.Matches[0].Groups[1].Value, 16)
 }
 
-foreach ($path in @($Str8MapPath, $WorkerMapPath, $TopBinPath, $WorkerS19Path)) {
+foreach ($path in @($Str8MapPath, $WorkerMapPath, $TopBinPath, $WorkerS19Path, $BankMaintS19Path)) {
     if (-not (Test-Path -LiteralPath $path)) { throw "Required artifact not found: $path" }
 }
 
@@ -61,6 +62,14 @@ $manifest = [ordered]@{
             storeStart = ('{0:X4}' -f $workerStore)
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $WorkerS19Path).Hash
         }
+        bankMaintenanceS19 = [ordered]@{
+            file = 'BUILD/s19/str8n-v1.1-bank-maint-2000.s19'
+            ramStart = '2000'
+            ramEnd = '322A'
+            entry = '2000'
+            privateWorkerStore = '3000'
+            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $BankMaintS19Path).Hash
+        }
     }
     layout = [ordered]@{
         residentStart = ('{0:X4}' -f $residentStart)
@@ -94,3 +103,4 @@ Write-Host ('STR8-N MANIFEST     = {0}' -f $ManifestPath)
 Write-Host ('GIT COMMIT          = {0}{1}' -f $manifest.commit, $(if ($dirty) { ' (dirty)' } else { '' }))
 Write-Host ('TOP BIN SHA-256     = {0}' -f $manifest.artifacts.topSector.sha256)
 Write-Host ('WORKER SHA-256      = {0}' -f $manifest.artifacts.workerS19.sha256)
+Write-Host ('BANK MAINT SHA-256  = {0}' -f $manifest.artifacts.bankMaintenanceS19.sha256)

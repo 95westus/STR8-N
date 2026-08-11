@@ -15,6 +15,9 @@ flowchart TB
     S -->|I| W[RAM worker<br/>$0200-$0453]
     W --> FLASH[Selected flash range]
     S -->|L| RAM[Recovery RAM program<br/>$2000-$7AFF, then S9]
+    RAM -->|bank-maint S19| BM[Self-contained Bank Maintenance<br/>map/copy/erase/AP put]
+    BM -->|private RAM worker| FLASH2[Banked flash<br/>Bank 3 F protected]
+    BM -->|Q| S
     B3 -->|L or L G| RAM2[HIMON RAM program]
 ```
 
@@ -42,8 +45,9 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    R[Physical RESET<br/>forces Bank 3] --> P[STR8-N at $F000]
-    P --> Q{0-2 H S}
+    R[Physical RESET<br/>forces Bank 3] --> A[Six one-second WAIT pulses<br/>keys ignored]
+    A --> P[Flush input<br/>STR8-N 1.1]
+    P --> Q{Six live selector dots<br/>0-2 H S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
     C -->|yes| J[Select bank and jump through RESET vector]
@@ -157,6 +161,25 @@ $01FF  +------------------------------+
 $00FF  +------------------------------+
        | state and ZP scratch         |
 $0000  +------------------------------+
+```
+
+## Bank-maintenance RAM tool
+
+```mermaid
+flowchart TD
+    L[STR8-N L] --> S[S19 loads $2000-$322A<br/>S9=$2000]
+    S --> B[Copy private worker<br/>$3000-$322A to $0200-$042A]
+    B --> M{Command}
+    M -->|M| MAP[Stage and inspect sectors<br/>no flash mutation]
+    M -->|C| COPY[Require empty directory row<br/>copy and verify full bank]
+    COPY --> ID[TYPE + five-character DESC<br/>START, identity, COMPLETE]
+    M -->|E| ERASE[Erase selected sectors<br/>Bank 3 F protected]
+    M -->|P| AP[Validated AP put<br/>Bank 0 $BF00]
+    M -->|Q| Q[Jump Bank 3 $F000]
+    MAP --> M
+    ID --> M
+    ERASE --> M
+    AP --> M
 ```
 
 ## Supported interfaces

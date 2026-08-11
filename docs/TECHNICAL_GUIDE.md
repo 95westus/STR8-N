@@ -47,6 +47,23 @@ Physical RESET forces Bank 3. Its physical top sector
 `$1F000-$1FFFF` appears at CPU `$F000-$FFFF` and contains all persistent
 STR8-N code and data.
 
+### Power-up visibility and selector timing
+
+After console initialization, STR8-N emits six `WAIT...` pulses approximately
+one second apart. This unpolled phase gives the FT245R and host terminal time
+to attach while showing continuing board activity. STR8-N then flushes queued
+input and prints its identity and selector:
+
+```text
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.1
+0-2 H S: ......
+```
+
+The six selector dots are also approximately one second apart. Only this
+second phase polls `0`, `1`, `2`, `H`, or `S`; timeout cold-starts compatible
+HIMON. Total automatic startup time remains approximately twelve seconds.
+
 ## Protected 4K top-sector budget
 
 The complete protected sector is exactly 4096 bytes:
@@ -100,6 +117,28 @@ An accepted install stream contains, in order:
 S2-S8 are not accepted. Every record needs a valid byte count and checksum.
 S1 data records may contain 1 through 252 bytes; the supplied converter uses
 32 bytes per record by default.
+
+### Transport contract
+
+The S19 transport is terminal-independent and requires no artificial character
+or line delay. After the operator confirms `WRITE? Y`, STR8-N copies and
+verifies the RAM worker, journals START, and writes any first-enrollment
+metadata and seal. Only after that preparation succeeds does it print `S19`.
+The sender may then stream the complete text file continuously.
+
+This ordering deliberately makes `Y` the persistent transaction boundary. If
+the sender is cancelled, malformed, or never started after `S19` appears, the
+directory remains incomplete and the documented full-range recovery rule
+applies. It avoids placing a first-enrollment flash pause immediately after the
+first S1 line, while retaining S9 validation, final-sector holdback, explicit
+COMMIT, read-back verification, and COMPLETE-last ordering.
+
+On 2026-08-10, the 28K Bank-3 `$8000-$EFFF` R-YORS image completed with six
+receive-time dots, a seventh dot after `COMMIT? Y`, `OK`, and a successful
+HIMON warm start. A following install succeeded after the terminal character
+delay was removed, proving full-speed transfer once enrollment preparation was
+already complete. First-enrollment full-speed behavior must be repeated as a
+release board-proof test after this ordering change.
 
 ```text
 S1 cc aaaa dd... ss
@@ -289,6 +328,48 @@ jump. Already copied records are not rolled back. This is safe from flash
 damage but means a failed recovery load may leave partial program bytes in
 RAM; retrying or RESET is the normal cleanup.
 
+### STR8-N 1.1 bank-maintenance RAM image
+
+`make bank-maint` builds and validates
+`BUILD/s19/str8n-v1.1-bank-maint-2000.s19`. Its S9 entry is `$2000`; the S1
+address span is `$2000-$322A`, wholly inside the `L` contract. The WDC linker
+fills the unused space before the embedded worker, so the stream contains
+4,651 RAM data bytes even though the executable regions are smaller.
+
+The utility is self-contained. It has direct FT245R input/output, local hex
+formatting, and local 32-bit FNV-1a support. It does not use HIMON's IVI or
+RAM service table. `Q` jumps to Bank-3 `$F000`; it does not use `RTS`, because
+STR8-N `L` deliberately supplies no return address.
+
+```text
+$0200-$042A  runtime copy of the private mutation worker
+$0A00-$19FF  one staged 4K flash sector
+$1B00-$1DDA  operation state, input, directory, and map detail
+$2000-...    bank-maintenance program and text
+$3000-$322A  stored private mutation worker
+```
+
+The carried worker privately implements the staging/programming operations
+needed by the maintenance tool. It calls the worker at `$0200` directly and
+does not depend on the retired public `$F003` or `$F006` gates. Every programmed
+sector is verified, Bank 3 sector `$F000-$FFFF` is protected, and the copy
+guard recognizes the v1.1 resident signature at `$F00C` (`53 52 02 03`).
+
+The `C` path requires an all-`$FF` destination directory row before changing
+the destination. After the eight copied sectors verify, it collects TYPE and
+the five-byte description, then uses the carried worker's private mode `$07`
+to enroll the Bank-3 row without erasing the protected sector. The persistent
+order is journal START, bytes `+0..+11` including seal `$FE` and Bank-0/1/2
+entry `$FFFF`, then journal COMPLETE. Each request is preflighted for legal
+one-to-zero transitions and independently read back. COMPLETE is therefore
+never visible before the full-bank copy and immutable identity are verified.
+Nonempty rows are refused; updating or recovering an existing identity remains
+the responsibility of STR8-N `I`.
+
+`tools/check_bank_maint_s19.ps1` rejects malformed checksums, unsupported
+record types, duplicate destination bytes, RAM addresses outside
+`$2000-$7AFF`, a missing private worker, or any S9 other than `$2000`.
+
 ## Directory and transaction journal
 
 `$FFB0-$FFEF` holds one 16-byte record for each bank:
@@ -436,11 +517,17 @@ These host fixtures are written below `BUILD/test/range-matrix`; they do not
 change the firmware image or consume protected-sector space.
 `make ram-load-contract-check` verifies the linked `L` entry and every lower,
 upper, crossing-record, empty-record, and S9 boundary case.
+`make ryors-full-bank` validates the dense R-YORS `$8000-$EFFF` input, appends
+the current verified STR8-N top-sector BIN, derives S9 from RESET, and emits a
+dense 32K Bank-0/1/2 payload. It deliberately does not use the older STR8-N
+copy embedded in R-YORS's previously combined BIN.
 
 ```text
 BUILD/bin/str8n-bank3-f000-ffff.bin  exact 4096-byte programmer image
 BUILD/s19/str8n-f000.s19             resident build component
 BUILD/s19/str8n-worker-0200.s19      worker evidence/build component
+BUILD/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+                                      32K ASM+HIMON+STR8-N Bank-0/1/2 payload
 BUILD/str8n-manifest.json            sizes, addresses, ABI, and hashes
 ```
 

@@ -104,9 +104,9 @@ STR8_WORKER_COPY_LEN_HI EQU             >STR8_WORKER_SIZE
 STR8_SELECTOR_COPY_LEN  EQU             STR8_WORKER_SELECT_SIZE
 STR8_DELAY_TICK_X       EQU             $B6
 STR8_DELAY_TICK_Y       EQU             $F8
-STR8_STARTUP_DOT_COUNT  EQU             $20
-STR8_STARTUP_LIVE_TICKS EQU             $10
-STR8_STARTUP_DOT_A      EQU             $0D    ; 0.369s at 8 MHz
+STR8_STARTUP_DOT_COUNT  EQU             $0C
+STR8_STARTUP_LIVE_TICKS EQU             $06
+STR8_STARTUP_DOT_A      EQU             $23    ; 0.993s at 8 MHz
 STR8_BANK_BOOT_DELAY_A  EQU             $6A    ; 3.010s at 8 MHz
 STR8_COPY_MODE_PROGRAM_STAGED EQU        $05
 STR8_PTR_LO             EQU             $CD
@@ -471,18 +471,17 @@ STR8_ENTER_MENU_NO_TARGET_PRINT:
                         ELSE
 ; OUT: C=1 and A='0'/'1'/'2'/'H'/'S' when a choice was consumed.
 ;      C=0 if the timeout elapsed.
-; The release prints its banner and WAIT label. The first 16 dots quarantine
-; USB enumeration and cannot
-; consume a key. At the midpoint RX is flushed, the selector is printed, and
-; 16 live dots poll only 0/1/2/H/S. Each phase is about six seconds at 8 MHz.
+; Six one-second WAIT pulses quarantine USB enumeration and cannot consume a
+; key. At the midpoint RX is flushed, identity and selector are printed, and
+; six one-second live dots poll only 0/1/2/H/S.
 STR8_STARTUP_DELAY:
                         STZ             STR8_BOOT_KEY_ENABLE
                         IF              STR8_V1_LAYOUT
-                        LDX             #<MSG_ID
+                        LDX             #<MSG_CRLF
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_TXN_PAGE1_X
                         ELSE
-                        LDY             #>MSG_ID
+                        LDY             #>MSG_CRLF
                         JSR             STR8_PRINT_XY
                         ENDIF
                         ENDIF
@@ -493,30 +492,40 @@ STR8_STARTUP_DELAY:
                         BNE             ?WAIT
                         JSR             STR8_CON_FLUSH_RX
                         INC             STR8_BOOT_KEY_ENABLE
-                        LDX             #<MSG_CRLF
+                        LDX             #<MSG_ID
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_TXN_PAGE0_X
                         ELSE
-                        LDY             #>MSG_CRLF
+                        LDY             #>MSG_ID
                         JSR             STR8_PRINT_XY
                         ENDIF
                         IF              STR8_V1_LAYOUT
                         ELSE
-                        LDX             #<MSG_ID
-                        LDY             #>MSG_ID
-                        JSR             STR8_PRINT_XY
-                        ENDIF
                         LDX             #<MSG_BOOT_PROMPT
-                        IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
-                        ELSE
                         LDY             #>MSG_BOOT_PROMPT
                         JSR             STR8_PRINT_XY
                         ENDIF
-?WAIT:                 LDA             #STR8_STARTUP_DOT_A
+?WAIT:
+                        IF              STR8_V1_LAYOUT
+                        LDX             #<MSG_WAIT
+                        LDA             STR8_BOOT_KEY_ENABLE
+                        BEQ             ?PULSE
+                        LDX             #<MSG_LIVE_DOT
+?PULSE:
+                        IF              STR8_V1_INSTALLER_TXN
+                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        ELSE
+                        LDY             #>MSG_WAIT
+                        JSR             STR8_PRINT_XY
+                        ENDIF
+                        ENDIF
+                        LDA             #STR8_STARTUP_DOT_A
                         JSR             STR8_DELAY_FIXED_A
+                        IF              STR8_V1_LAYOUT
+                        ELSE
                         LDA             #'.'
                         JSR             STR8_CON_WRITE_BYTE_BLOCK
+                        ENDIF
                         JSR             STR8_BOOT_KEY_POLL_IF_ENABLED
                         BCS             ?KEY_PRESSED
                         PLA
@@ -1050,7 +1059,7 @@ STR8_I_COPY_RECORD_METADATA:
 STR8_I_PRINT_SUMMARY:
                         LDX             #<MSG_I_SUMMARY
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDY             #>MSG_I_SUMMARY
                         JSR             STR8_PRINT_XY
@@ -1073,7 +1082,7 @@ STR8_I_PRINT_SUMMARY:
                         BEQ             STR8_I_NO_WRITE
                         IF              STR8_V1_INSTALLER_TXN
                         LDX             #<MSG_I_WRITE_CONFIRM
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDX             #<MSG_I_STAGE_CONFIRM
                         LDY             #>MSG_I_STAGE_CONFIRM
@@ -1083,6 +1092,13 @@ STR8_I_PRINT_SUMMARY:
                         BCS             ?CONFIRMED
                         JMP             STR8_CMD_ABORT
 ?CONFIRMED:
+; Prepare the worker and persistent transaction before inviting the sender.
+; First enrollment writes START, immutable metadata, and seal here, so an
+; ordinary terminal may stream the S19 at full speed once S19 is visible.
+                        JSR             STR8_COPY_WORKER_TO_RAM
+                        BCC             ?INSTALL_FAIL
+                        JSR             STR8_I_BEGIN_TRANSACTION
+                        BCC             ?INSTALL_FAIL
                         LDX             #<MSG_I_SEND_S19
                         IF              STR8_V1_INSTALLER_TXN
                         JSR             STR8_PRINT_TXN_PAGE1_X
@@ -1096,7 +1112,7 @@ STR8_I_PRINT_SUMMARY:
                         JSR             STR8_I_FINISH_TRANSACTION
                         BCC             ?INSTALL_FAIL
                         LDX             #<MSG_I_INSTALL_OK
-                        JMP             STR8_PRINT_TXN_PAGE0_X
+                        JMP             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDX             #<MSG_I_STAGE_OK
                         LDY             #>MSG_I_STAGE_OK
@@ -1187,6 +1203,8 @@ STR8_I_WRITE_METADATA:
                         BNE             ?DESC
 ; On recovery, already-programmed metadata bytes must be exact.  A different
 ; answer or a partially corrupted byte fails closed before any payload write.
+                        LDA             #$00
+                        JSR             STR8_I_SET_DIR_ADDRESS_A
                         LDY             #$00
 ?EXACT:                LDA             (STR8_PTR_LO),Y
                         CMP             #$FF
@@ -1196,8 +1214,6 @@ STR8_I_WRITE_METADATA:
 ?EXACT_NEXT:           INY
                         CPY             #(STR8_DIR_ENTRY_HI+1)
                         BNE             ?EXACT
-                        LDA             #$00
-                        JSR             STR8_I_SET_DIR_ADDRESS_A
                         LDA             #(STR8_DIR_DESCRIPTION+STR8_DIR_DESCRIPTION_LEN)
                         STA             STR8_REC_DATA_LEN
                         JMP             STR8_DIR_WRITE_BYTES
@@ -1260,14 +1276,10 @@ STR8_I_JOURNAL_MASK:
                         DB              $FE,$FD,$FB,$F7,$EF,$DF,$BF,$7F
                         ENDIF
 
-; Receive exactly the operator-selected 4K-aligned payload range.  The
-; resident-owned worker is copied and verified before any persistent journal
-; write.  The selected final sector stays in RAM until S9 and COMMIT are valid.
+; Receive exactly the operator-selected 4K-aligned payload range. The caller
+; has already copied the worker and opened the persistent transaction before
+; printing S19. The selected final sector stays in RAM through S9 and COMMIT.
 STR8_I_RECEIVE_DENSE:
-                        JSR             STR8_COPY_WORKER_TO_RAM
-                        BCS             ?WORKER_OK
-                        JMP             STR8_I_RECEIVE_WORKER_FAIL
-?WORKER_OK:
                         STZ             STR8_INSTALL_EXPECT_LO
                         STZ             STR8_INSTALL_PHASE
                         LDA             STR8_INSTALL_START_HI
@@ -1315,18 +1327,6 @@ STR8_I_RECEIVE_DENSE:
                         BNE             ?HAVE_DATA
 ?DENSE_FAIL:           JMP             STR8_I_RECEIVE_DENSE_FAIL
 ?HAVE_DATA:
-; The first valid, contiguous, non-empty S1 starts the persistent transaction.
-; This covers a one-sector install and prevents a later S0 from being accepted.
-                        LDA             STR8_INSTALL_PHASE
-                        CMP             #$02
-                        BEQ             ?TRANSACTION_STARTED
-                        JSR             STR8_I_BEGIN_TRANSACTION
-                        BCS             ?BEGIN_OK
-                        JMP             STR8_I_RECEIVE_DIRECTORY_FAIL
-?BEGIN_OK:
-                        LDA             #$02
-                        STA             STR8_INSTALL_PHASE
-?TRANSACTION_STARTED:
                         LDA             STR8_INSTALL_EXPECT_LO
                         STA             STR8_PTR_LO
                         LDA             STR8_INSTALL_EXPECT_HI
@@ -1367,6 +1367,13 @@ STR8_I_RECEIVE_DENSE:
                         STA             STR8_PTR_HI
 ?MORE:                 LDA             STR8_REC_DATA_LEN
                         BNE             ?COPY
+; Phase 2 records that the first valid S1 has entered the sector tray. Worker
+; and directory preparation were completed before S19 was printed.
+                        LDA             STR8_INSTALL_PHASE
+                        CMP             #$02
+                        BEQ             ?NEXT_RECORD
+                        LDA             #$02
+                        STA             STR8_INSTALL_PHASE
 ?NEXT_RECORD:
                         JMP             ?RECORD
 ?FINAL:                LDA             STR8_REC_DATA_LEN
@@ -2874,7 +2881,10 @@ STR8_ID_MARKER_BYTES:   DB              STR8_ID_MARKER0,STR8_ID_MARKER1
                         DB              $0D,$8A
                         ELSE
                         IF              STR8_V1_LAYOUT
-                        DB              $0D,$0A,"WAIT",$A0
+                        DB              $0D,$0A
+MSG_BOOT_PROMPT:        DB              "0-2 H S:",$A0
+MSG_WAIT:               DB              "WAIT...",$A0
+MSG_LIVE_DOT:           DB              ('.'+$80)
                         ELSE
                         DB              " $F",$0D,$8A
                         ENDIF
@@ -2897,7 +2907,6 @@ MSG_PROMPT:             DB              "STR8-N",('>'+$80)
                         IF              STR8_RAM_PROOF
                         ELSE
                         IF              STR8_V1_LAYOUT
-MSG_BOOT_PROMPT:        DB              "0-2 H S:",$A0
                         ELSE
 MSG_BOOT_PROMPT:        DB              "0/1/2=BOOT 3=HIMON S=STR8 ",$A0
                         ENDIF
@@ -2919,7 +2928,7 @@ MSG_I_TYPE_PROMPT:      DB              $0D,$0A,"TYPE:",$A0
 MSG_I_DESC_PROMPT:      DB              $0D,$0A,"DESC:",$A0
 MSG_I_INVALID:          DB              $0D,$0A,"BAD",$0D,$8A
 MSG_I_SUMMARY:          DB              $0D,$0A,"I ",('B'+$80)
-; Compact prompts fill page $FD; summaries and transaction results use $FE.
+; Compact prompts finish page $FC; summaries and transaction results use $FD.
                         IF              STR8_V1_INSTALLER_TXN
 MSG_I_INSTALL_OK:       DB              $0D,$0A,"OK",$0D,$8A
                         ENDIF

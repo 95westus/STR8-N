@@ -38,25 +38,37 @@ monitor session.
    S19 validation pass.
 
 > [!WARNING]
-> After the first valid S1 data record, STR8-N journals START. As each complete
-> 4K sector arrives, it may be erased, programmed, and verified immediately.
+> After `WRITE? Y`, STR8-N journals START before printing `S19`. As each
+> complete 4K sector arrives, it may be erased, programmed, and verified.
 > Only the final selected sector waits for `COMMIT? Y`. A later bad record,
 > disconnect, RESET, NMI, power loss, or declined commit leaves the bank
 > incomplete and requires the full recovery range.
 
 ## What happens at RESET
 
-Physical RESET always returns the hardware to Bank 3 and starts STR8-N. The
-short selector displays:
+Physical RESET always returns the hardware to Bank 3 and starts STR8-N. Six
+one-second pulses give the FTDI connection and terminal time to attach. Keys
+are ignored during these pulses:
 
 ```text
-0-2 H S:
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+```
+
+STR8-N then discards any queued input, identifies itself, and opens six
+one-second live selector dots:
+
+```text
+STR8-N 1.1
+0-2 H S: ......
 ```
 
 - `0`, `1`, or `2` starts a completed guest in that bank.
 - `H` warm-starts compatible HIMON at `$C000` in Bank 3 and preserves RAM.
 - `S` stays in STR8-N and displays `STR8-N>`.
 - If no key is pressed, STR8-N cold-starts compatible HIMON when present.
+
+A key may take up to one second to be noticed. `J3` and physical RESET use the
+same sequence, although `J3` normally starts with an already attached terminal.
 
 At `STR8-N>`, the visible commands are:
 
@@ -94,6 +106,21 @@ The same procedure applies to every bank.
 9. `OK` means COMPLETE was journaled and the transaction is usable. `FAIL`
    means do not try to boot that bank; use the recovery procedure below.
 
+### Full-speed terminal transfer
+
+Use ordinary text-file sending with zero character delay and zero line delay.
+No STR8-N-specific macro, terminal brand, or software flow-control setting is
+required.
+
+After `WRITE? Y`, STR8-N copies its RAM worker and opens the persistent
+transaction before it prints `S19`. On a new bank row, START, metadata, and the
+identity seal are therefore complete before the terminal is invited to send.
+Once `S19` appears, send the complete file continuously at full speed.
+
+Because `Y` now opens the transaction before S19 validation, cancelling or
+losing power after `Y` leaves an incomplete directory row. Use the documented
+full-range recovery procedure on the next boot.
+
 The S19 must contain the exact range selected at the prompts, including every
 `$FF` padding byte. Do not send an old stream with `$0200` worker records.
 
@@ -125,6 +152,48 @@ execute, but bytes copied by earlier valid records remain in RAM.
 `$7B00` is the first protected parser buffer byte. The highest accepted byte
 is therefore `$7AFF`, even when one S1 record crosses a page boundary. Stop
 sending after S9; queued serial bytes are inherited by the recovery program.
+
+### Load the STR8-N 1.1 bank-maintenance program
+
+Use `BUILD/s19/str8n-v1.1-bank-maint-2000.s19`. It is a temporary RAM tool;
+loading it does not change flash. It does not require HIMON and uses the
+board's FT245R console directly.
+
+1. At `STR8-N>`, type `L`.
+2. When `S19` appears, send
+   `BUILD/s19/str8n-v1.1-bank-maint-2000.s19` at normal full speed.
+3. STR8-N validates the file and starts it automatically at `$2000`.
+
+The menu commands are:
+
+```text
+M  map every bank and show the Bank-3 directory; does not write flash
+C  copy a complete 32K bank and enroll its empty destination directory row
+E  erase selected 4K sectors; Bank 3 sector F is always protected
+P  install the narrow, validated AP carrier at Bank 0 $BF00
+Q  return to STR8-N through $F000
+```
+
+`C`, `E`, and `P` are destructive and require an exact typed confirmation.
+Do not press NMI, reset, remove power, or remove the flash during a write or
+erase. `C` prints `!STR8` before confirmation when the source contains the
+STR8-N 1.1 `SR 02 03` service signature. `Q` starts the normal STR8-N startup
+display again, including its six `WAIT...` pulses.
+
+`C` accepts source Bank 0-3 and destination Bank 0-2. The destination's
+Bank-3 directory row must be completely erased; otherwise it prints
+`DIR NOT EMPTY` and does not copy. After all eight sectors are copied and
+verified, enter a two-digit hexadecimal TYPE and exactly five DESCRIPTION
+characters, then answer `ENROLL? Y`. Allowed description characters are
+`A-Z`, `0-9`, hyphen, underscore, and period.
+
+Enrollment writes the journal START marker first, the immutable identity
+second, and COMPLETE last. `OK` therefore means both the 32K copy and its
+directory enrollment were verified, and `J0`-`J2` may use the destination.
+If enrollment is cancelled, interrupted, or fails, the copied bytes can
+remain in the destination but STR8-N keeps that bank non-bootable. An existing
+or incomplete directory row must be handled through `I`, not overwritten by
+`C`.
 
 ## Banks 0-2
 
@@ -176,6 +245,24 @@ into an erased bank can complete successfully yet still be unable to boot.
 
 Even when sector F is included, check the RESET vector at `$FFFC-$FFFD`. It
 must point to real code in that bank. `J0`-`J2` ignore S9 and follow RESET.
+
+### Full R-YORS 8-F image for Banks 0-2
+
+`make ryors-full-bank` composes the current R-YORS ASM+HIMON 28K payload with
+the current STR8-N 1.1 top sector:
+
+```text
+BUILD/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+$8000-$BFFF  ASM-F2
+$C000-$EFFF  HIMON
+$F000-$FFFF  STR8-N 1.1 clone
+S9/RESET     $F000
+```
+
+Install it with `I`, target Bank 0, 1, or 2, and range `8-F`. It is not a
+Bank-3 payload because `I` never writes Bank 3 sector F. `J0`-`J2` enter the
+copied STR8-N first; its normal timeout can then enter the same bank's HIMON.
+Physical RESET always returns to the real Bank-3 STR8-N.
 
 ## Bank 3 and the R-YORS v1.1 files
 
