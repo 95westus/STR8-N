@@ -17,6 +17,8 @@ recovery RAM execution    STR8-N L           copies $2000-$7AFF, jumps to S9
 S19 syntax validation     STR8-N $F009       parses one record; does not apply it
 monitor RAM loading       HIMON L / L G      load-only or load-and-start
 bank selection            STR8-N $F010       changes the visible flash bank
+raw console input         STR8-N $F013       waits for and returns one byte
+raw console output        STR8-N $F019       waits until one byte is accepted
 guest launch              STR8-N J0-J3       jumps through selected RESET vector
 ```
 
@@ -72,8 +74,8 @@ HIMON. Total automatic startup time remains approximately twelve seconds.
 The complete protected sector is exactly 4096 bytes:
 
 ```text
-$F000-$FD53  resident supervisor, installer, loader   3412 bytes
-$FD54-$FD5B  enforced unused margin                     8 bytes
+$F000-$FD44  resident supervisor, installer, loader   3397 bytes
+$FD45-$FD5B  enforced unused margin                    23 bytes
 $FD5C-$FFAF  stored unified worker                    596 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
 $FFF0-$FFF9  configuration pocket                      10 bytes
@@ -82,7 +84,7 @@ $FFFA-$FFFF  NMI, RESET, IRQ/BRK vectors                 6 bytes
                                                        4096 bytes
 ```
 
-The 8-byte gap is the only build-certified growth room inside the protected
+The 23-byte gap is the only build-certified growth room inside the protected
 sector. The layout checker requires at least 8 bytes. `$FF` bytes found
 inside linked code are not automatically free space.
 
@@ -93,9 +95,9 @@ No worker bytes are transported in an `I` or `L` S19.
 Hardware vectors are:
 
 ```text
-$FFFA-$FFFB  NMI      -> $F09C
+$FFFA-$FFFB  NMI      -> $F0C7
 $FFFC-$FFFD  RESET    -> $F000
-$FFFE-$FFFF  IRQ/BRK  -> $F0B0
+$FFFE-$FFFF  IRQ/BRK  -> $F0DB
 ```
 
 NMI and IRQ/BRK enter STR8-N IVI stubs and dispatch through RAM vectors after
@@ -541,7 +543,13 @@ other required state. It must preserve the PCR bits that select its flash bank.
 On any validation failure the RAM worker restores Bank 3 and STR8-N prints a
 jump failure. Physical RESET always forces Bank 3.
 
-## Public interface
+## Resident callable ABI
+
+All resident calls require Bank 3 to be visible because another selected bank
+replaces the complete `$8000-$FFFF` CPU window. Call with `JSR` unless the
+individual contract says otherwise. Only the documented entry addresses are
+stable; other labels and addresses in the linker map are implementation
+details.
 
 ```text
 $F003  retired gate: CLC / RTS / NOP
@@ -549,27 +557,87 @@ $F006  retired gate: CLC / RTS / NOP
 $F009  SR/02 validated-record parse service
 $F00C  signature/capability bytes: $53 $52 $02 $03
 $F010  bank-selection service
+$F013  blocking raw character input (CHARIN)
+$F019  blocking raw character output (CHAROUT)
 $0203  RAM return-capable selector entry after relocation
 ```
 
 ### `$F009` record parser
 
-The parser accepts one record from a RAM buffer or the console. Request and
-result fields are `$7E95-$7EA8`; decoded payload is `$7B00-$7BFB`, at most
-252 bytes. Capability `$03` means both buffer and console input. The service
-reports record kind, addresses, data, entry, and parse status. It does not
-write RAM or flash for the caller.
+The parser accepts one complete S0, S1, or S9 record from a RAM buffer or the
+console. It validates and decodes the record but does not apply its data to RAM
+or flash. Signature `SR`, ABI version `$02`, and capabilities `$03` advertise
+both buffer (`$01`) and console (`$02`) input.
+
+Set these request fields before `JSR $F009`:
+
+```text
+$7E95  operation       $01 = parse
+$7E96  format          $01 = Motorola S19
+$7E97  source          $00 = buffer, $01 = console
+$7E99-$7E9A            buffer address, little endian; ignored for console
+$7E9B                  8-bit exact buffer byte count; ignored for console
+```
+
+A buffer contains exactly one record from `S` through its checksum, without a
+line ending. Its one-byte length limits a buffered S1 to 122 data bytes; the
+console form can decode the S-record maximum of 252. The buffer must not
+overlap the result card or `$7B00-$7BFB` decode tray. Console input skips
+leading CR/LF, requires CR or LF after the checksum, and treats Ctrl-C (`$03`)
+as abort. Console reads are raw and are not echoed.
+
+The result card is:
+
+```text
+$7E98  status
+$7E9C  kind            $00 none, $01 S0 metadata, $02 S1 data, $03 S9 end
+$7E9D  flags           bit 0 = entry valid
+$7E9E-$7E9F            record address, little endian
+$7EA0                  decoded data length
+$7EA1-$7EA2            S9 entry address, little endian
+$7EA3-$7EA4            decoded-data pointer; always $7B00 on success
+$7EA5-$7EA8            legacy failure-detail fields; cleared for parse
+$7B00-$7BFB            decoded data; up to 122 buffer or 252 console bytes
+```
+
+Status values are `$00` success, `$01` bad operation, `$02` bad format, `$03`
+bad source, `$04` bad start, `$05` bad record type, `$06` bad hexadecimal,
+`$07` bad count, `$08` bad checksum, `$09` bad end, and `$0E` console abort.
+On return, A equals status; carry is set only for success. X and Y are
+clobbered, and decimal mode is cleared. Interpret the other result fields only
+when carry is set.
 
 ### `$F010` bank selector
 
-A RAM caller passes A = bank 0-3. The caller and its JSR return address must be
-below `$8000`. STR8-N copies and verifies the 41-byte selector prefix at
-`$0200-$0228`, then tail-calls its `$0203` entry so RTS occurs from RAM after
-the flash window changes.
+A RAM caller passes A = bank 0-3. Bank 3 must be visible on entry, and the
+caller and its JSR return address must be below `$8000`. STR8-N copies and
+verifies the 41-byte selector prefix at `$0200-$0228`, then tail-calls its
+`$0203` entry so RTS occurs from RAM after the flash window changes.
+
+Carry set means the requested bank is selected and remains visible. Carry
+clear means the request failed and the bank is unchanged. A, X, and Y are
+clobbered. The copied selector overwrites `$0200-$0228`.
 
 The selector controls bank-state byte `$7FEC` under mask `$EE` with explicit
 PCR patterns Bank 0 `$CC`, Bank 1 `$CE`, Bank 2 `$EC`, and Bank 3 `$EE`.
 Other raw PCR values, including reset/input state, are not bank identities.
+
+### `$F013` CHARIN
+
+`JSR $F013` waits until one raw FT245R console byte is available. It returns
+the byte in A with carry set and preserves X and Y. It does not echo, translate
+case, combine CR/LF, or recognize control characters. It has no timeout.
+
+### `$F019` CHAROUT
+
+Pass one raw console byte in A and `JSR $F019`. The call waits until the FT245R
+accepts the byte, then returns with A, X, and Y preserved and carry set. It does
+not add CR/LF and has no timeout.
+
+Physical RESET initializes the console before the startup selector and all
+normal STR8-N handoffs. A caller that has subsequently reconfigured the
+FT245R-facing VIA must restore the STR8-N console state before using CHARIN or
+CHAROUT. Neither call selects Bank 3 or reinitializes the interface.
 
 `$F003` and `$F006` are fail-closed tombstones. Mode 6 and the former general
 worker doorway are not public interfaces. A user program that needs to read a
@@ -618,6 +686,8 @@ BUILD/v1.2/s19/str8n-v1.2-f000.s19         resident build component
 BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19  worker evidence/build component
 BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
                                       self-contained RAM maintenance program
+BUILD/v1.2/s19/str8n-v1.2-console-abi-test-2000.s19
+                                      CHARIN/CHAROUT hardware probe
 BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
                                       32K ASM+HIMON+STR8-N Bank-0/1/2 payload
 BUILD/str8n-manifest.json             sizes, addresses, ABI, and hashes
@@ -636,6 +706,12 @@ file offset $000-$FFF -> CPU $F000-$FFFF -> physical $1F000-$1FFFF
 ```
 
 ### Qualification evidence and remaining board tests
+
+The [2026-08-11 console ABI hardware proof](CONSOLE_ABI_HARDWARE_PROOF_2026-08-11.md)
+accepts the current top-sector image for guarded onboard update, RESET/live
+selector, `$F019` CHAROUT, `$F013` raw CHARIN, `$F0DB` BRK dispatch, warm and
+cold HIMON entry, and `J3`. The silent NMI action needs an operator annotation
+because it cannot be distinguished in the terminal stream itself.
 
 Observed v1.2 board sessions have established:
 

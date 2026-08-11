@@ -401,6 +401,14 @@ packaging, AP linking, and ASM output through `$7CFF`. The same canaries then
 survived corrected v1.2 Bank Maintenance `M`, `Q`, and live-selector warm `H`.
 The non-destructive RAM-relocation hardware test set is complete.
 
+Renewed console ABI checkpoint 2026-08-11: the retained
+[console ABI hardware proof](CONSOLE_ABI_HARDWARE_PROOF_2026-08-11.md) accepts
+the current resident for guarded onboard update, RESET/live selector, `$F019`
+CHAROUT, `$F013` raw CHARIN, `$F0DB` BRK dispatch, warm `H`, cold timeout, and
+`J3`. The silent NMI action still needs an operator annotation if it was
+performed before the successful `H` command. External recovery, `J0`-`J2`,
+and the remaining destructive matrix stay open.
+
 Retain exact hashes, binaries, maps, source commit IDs, terminal transcripts,
 and flash readbacks for:
 

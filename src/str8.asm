@@ -28,6 +28,8 @@
                         XDEF            STR8_RECORD_SERVICE_ENTRY
                         XDEF            STR8_RECORD_SERVICE_SIGNATURE
                         XDEF            STR8_BANK_SELECT_SERVICE_ENTRY
+                        XDEF            STR8_CHARIN_SERVICE_ENTRY
+                        XDEF            STR8_CHAROUT_SERVICE_ENTRY
                         XDEF            STR8_BANK_SELECT_SERVICE_BODY
                         XDEF            STR8_DIR_VALIDATE_BANK_A
                         XDEF            STR8_DIR_SCAN_JOURNAL
@@ -62,6 +64,7 @@
                         INCLUDE         "str8-ram-abi.inc"
                         INCLUDE         "str8-record-eq.inc"
                         INCLUDE         "str8-jump-eq.inc"
+                        INCLUDE         "str8-console-eq.inc"
                         INCLUDE         "str8-directory-eq.inc"
                         INCLUDE         "str8-worker-eq.inc"
 
@@ -170,7 +173,6 @@ STR8_CON_PN_RXF         EQU             $02
 STR8_CON_PN_WR          EQU             $04
 STR8_CON_PN_RD          EQU             $08
 STR8_CON_PN_CTRL_INIT   EQU             $0C
-STR8_CON_TX_SPIN_LIMIT  EQU             $30
 STR8_CON_FLUSH_RX_MAX   EQU             $FF
 
                         CODE
@@ -211,6 +213,39 @@ STR8_RECORD_SERVICE_SIGNATURE:
 ; entry, which returns directly to the original RAM caller in the new bank.
 STR8_BANK_SELECT_SERVICE_ENTRY:
                         JMP             STR8_BANK_SELECT_SERVICE_BODY
+
+; Stable blocking console services. Physical RESET initializes the FT245R
+; interface before any STR8-N command or guest handoff. External callers must
+; have Bank 3 visible and must preserve that initialized interface state.
+; CHARIN:  OUT A=received byte, C=1; X/Y preserved; waits for input.
+STR8_CHARIN_SERVICE_ENTRY:
+STR8_CON_READ_BYTE_BLOCK:
+                        JSR             STR8_CON_READ_BYTE_NONBLOCK
+                        BCC             STR8_CON_READ_BYTE_BLOCK
+                        RTS
+
+; CHAROUT: IN A=byte; OUT A preserved, C=1; X/Y preserved; waits for output.
+STR8_CHAROUT_SERVICE_ENTRY:
+STR8_CON_WRITE_BYTE_BLOCK:
+                        PHA
+                        STZ             STR8_CON_VIA_DDRA
+                        STA             STR8_CON_VIA_DATA
+                        NOP
+                        NOP
+                        LDA             #STR8_CON_PN_TXE
+?WAIT:                  BIT             STR8_CON_VIA_CTRL
+                        BNE             ?WAIT
+                        LDA             #STR8_CON_PN_WR
+                        TSB             STR8_CON_VIA_CTRL
+                        DEC             STR8_CON_VIA_DDRA
+                        NOP
+                        NOP
+                        LDA             #STR8_CON_PN_WR
+                        TRB             STR8_CON_VIA_CTRL
+                        STZ             STR8_CON_VIA_DDRA
+                        PLA
+                        SEC
+                        RTS
 
 STR8_BOOT_START:
                         SEI
@@ -2658,7 +2693,7 @@ STR8_WRITE_DEC_DIGIT_A:
                         IF              STR8_RAM_PROOF
                         JMP             STR8_CON_WRITE_BYTE_BLOCK
                         ELSE
-                        BRA             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_CON_WRITE_BYTE_BLOCK
                         ENDIF
 
 STR8_WRITE_HEX_BYTE_A:
@@ -2681,7 +2716,7 @@ STR8_WRITE_HEX_NIBBLE_A:
                         IF              STR8_RAM_PROOF
                         JMP             STR8_CON_WRITE_BYTE_BLOCK
                         ELSE
-                        BRA             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_CON_WRITE_BYTE_BLOCK
                         ENDIF
 
                         IF              STR8_V1_LAYOUT
@@ -2778,7 +2813,7 @@ STR8_PRINT_XY:
                         INC             STR8_PTR_HI
                         BRA             ?LOOP
 ?LAST:                  AND             #$7F
-                        BRA             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_CON_WRITE_BYTE_BLOCK
 
 STR8_CON_INIT:
                         LDA             #STR8_CON_PN_CTRL_INIT
@@ -2796,11 +2831,6 @@ STR8_CON_FLUSH_RX:
                         CLC
                         RTS
 ?EMPTY:                 SEC
-                        RTS
-
-STR8_CON_READ_BYTE_BLOCK:
-                        JSR             STR8_CON_READ_BYTE_NONBLOCK
-                        BCC             STR8_CON_READ_BYTE_BLOCK
                         RTS
 
 STR8_CON_READ_BYTE_NONBLOCK:
@@ -2821,40 +2851,6 @@ STR8_CON_READ_BYTE_NONBLOCK:
                         RTS
 ?NO_BYTE_READY:         LDA             #$00
                         CLC
-                        RTS
-
-STR8_CON_WRITE_BYTE_BLOCK:
-                        PHX
-?LOOP:                  JSR             STR8_CON_WRITE_BYTE_NONBLOCK
-                        BCC             ?LOOP
-                        PLX
-                        RTS
-
-STR8_CON_WRITE_BYTE_NONBLOCK:
-                        PHA
-                        STZ             STR8_CON_VIA_DDRA
-                        STA             STR8_CON_VIA_DATA
-                        NOP
-                        NOP
-                        LDX             #$00
-                        LDA             #STR8_CON_PN_TXE
-?TX_SPIN:               BIT             STR8_CON_VIA_CTRL
-                        BEQ             ?WR_STROBE
-                        INX
-                        CPX             #STR8_CON_TX_SPIN_LIMIT
-                        BNE             ?TX_SPIN
-                        CLC
-                        BRA             ?WR_DEASSERT
-?WR_STROBE:             LDA             #STR8_CON_PN_WR
-                        TSB             STR8_CON_VIA_CTRL
-                        DEC             STR8_CON_VIA_DDRA
-                        NOP
-                        NOP
-                        SEC
-?WR_DEASSERT:           LDA             #STR8_CON_PN_WR
-                        TRB             STR8_CON_VIA_CTRL
-                        STZ             STR8_CON_VIA_DDRA
-                        PLA
                         RTS
 
                         DATA

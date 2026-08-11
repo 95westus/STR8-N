@@ -3,7 +3,8 @@ param(
     [string]$WorkerMapPath = "BUILD/v1.2/s19/str8n-v1.2-worker-0200.map",
     [string]$WorkerS19Path = "BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19",
     [string]$WorkerEqPath = "src/str8-worker-eq.inc",
-    [string]$RamAbiPath = "src/str8-ram-abi.inc"
+    [string]$RamAbiPath = "src/str8-ram-abi.inc",
+    [string]$ConsoleEqPath = "src/str8-console-eq.inc"
 )
 
 Set-StrictMode -Version Latest
@@ -62,6 +63,8 @@ Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_RUN_WORKER_SERVICE') 0xF003 '$F00
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_RETIRED_F006') 0xF006 '$F006 retired gate'
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_RECORD_SERVICE_ENTRY') 0xF009 '$F009 record gate'
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_BANK_SELECT_SERVICE_ENTRY') 0xF010 '$F010 selector gate'
+Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CHARIN_SERVICE_ENTRY') 0xF013 '$F013 CHARIN gate'
+Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CHAROUT_SERVICE_ENTRY') 0xF019 '$F019 CHAROUT gate'
 Assert-Equal $directoryMapStart $DirectoryStart 'Directory start'
 Assert-Equal $directoryMapEnd $DirectoryEnd 'Directory end'
 Assert-Equal $workerStart $WorkerRunStart 'Worker run start'
@@ -82,6 +85,8 @@ Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_BASE') 0x7DE9 'STR8 state sta
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_END') 0x7DFF 'STR8 state end'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_JUMP_SIG0') 0x7DFD 'Bank Jump Record start'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_LAST_JUMP') 0x7DFF 'Bank Jump Record end'
+Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_CHARIN_SERVICE') 0xF013 'Published CHARIN service'
+Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_CHAROUT_SERVICE') 0xF019 'Published CHAROUT service'
 
 if ($workerSelectEnd -gt 0x0300) {
     throw ('Selector prefix ends at ${0:X4}; it must not overwrite HIMON at $0300' -f $workerSelectEnd)
@@ -101,5 +106,6 @@ Write-Host ('UNIFIED WORKER       = run ${0:X4}-${1:X4}; store ${2:X4}-${3:X4}; 
 Write-Host ('SELECTOR PREFIX      = ${0:X4}-${1:X4}; {2} bytes' -f $workerStart, ($workerSelectEnd - 1), ($workerSelectEnd - $workerStart))
 Write-Host ('WORKER S19 SHA-256   = {0}' -f $workerHash)
 Write-Host ('DIRECTORY/CONFIG/VEC = $FFB0-$FFEF / $FFF0-$FFF9 / $FFFA-$FFFF')
+Write-Host 'PUBLIC CONSOLE ABI   = CHARIN $F013; CHAROUT $F019'
 Write-Host 'RAM ABI              = $12; LOW USER $1A00-$1FFF; STR8 STATE $7DE9-$7DFF'
 Write-Host 'LAYOUT CHECK         = PASS'

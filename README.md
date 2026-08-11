@@ -25,7 +25,7 @@ The letters also loosely evoke **S**oftware or **S**ystem **T**o **R**eset,
 | Flash installation | Install dense S19 payloads with `I` into any legal contiguous 4K sector range | Bank 3 `$F000-$FFFF` is never writable through `I`; final sector and COMPLETE state commit last |
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, enroll empty directory rows, erase guarded ranges, and install the narrow AP carrier | Uses a private RAM worker; Bank-3 sector F remains protected |
-| Protected top upgrade | Load the supplied v1.2 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.2 sector, and verify all 4 KiB | Onboard update and reset accepted 2026-08-11; external recovery and remaining system smoke checks are still separate gates |
+| Protected top upgrade | Load the supplied v1.2 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.2 sector, and verify all 4 KiB | Current console-ABI image update and probe accepted onboard 2026-08-11; external recovery remains separate |
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and the resident reserve |
 
@@ -52,6 +52,7 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 - The exact 4096-byte Bank-3 top-sector BIN for an external programmer.
 - A payload S19 for the resident and an evidence S19 for its relocated worker.
 - A self-contained Bank Maintenance S19 loaded and started with `L`.
+- A deterministic CHARIN/CHAROUT ABI hardware probe loaded and started with `L`.
 - A guarded v1.2 top-sector updater S19 loaded and started with `L`.
 - A composed 32K ASM + HIMON + STR8-N image for Bank 0, 1, or 2.
 - A manifest containing artifact paths, addresses, ABI versions, sizes, and

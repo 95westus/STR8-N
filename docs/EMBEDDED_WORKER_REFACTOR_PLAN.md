@@ -10,8 +10,8 @@ Everything persistent and every flash/selection worker fits in Bank 3's top
 4K:
 
 ```text
-$F000-$FD53  resident code/data             3412 bytes
-$FD54-$FD5B  enforced unused reserve            8 bytes
+$F000-$FD44  resident code/data             3397 bytes
+$FD45-$FD5B  enforced unused reserve           23 bytes
 $FD5C-$FFAF  unified worker                   596 bytes
 $FFB0-$FFEF  directory                         64 bytes
 $FFF0-$FFF9  identity/configuration reserve     10 bytes
@@ -34,6 +34,8 @@ address moves.
 - `$F010` copies/verifies the 41-byte selector prefix at `$0200-$0228`, then
   enters its return-capable `$0203` entry. This does not overwrite the R-YORS
   helper at `$0300`.
+- `$F013` and `$F019` are the blocking raw CHARIN and CHAROUT services. They
+  require Bank 3 and the reset-initialized FT245R interface to remain visible.
 - `I` and `J0`-`J3` copy the worker bytes they need and read back each byte.
 - `L` accepts complete S1 spans only inside `$2000-$7AFF` and automatically
   executes an in-range S9. It never invokes the flash worker.
