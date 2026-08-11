@@ -9,6 +9,12 @@ STR8-N is part of R-YORS, but is deliberately R-YORS-agnostic: it does not
 depend on HIMON, ASM-F2, OIL, or AP, and can supervise compatible non-R-YORS
 guest systems.
 
+**The name:** STR8-N is pronounced *straighten*, reflecting its role in
+restoring a machine to a known, bootable state. `8` identifies its 8-bit
+setting, while `STR` reverses `RTS`, the 6502 return-from-subroutine mnemonic.
+The letters also loosely evoke **S**oftware or **S**ystem **T**o **R**eset,
+**R**estore, **R**ecover, or **R**eturn to **N**ormal.
+
 ## Feature card
 
 | Capability | What STR8-N v1.2 can do | Safety boundary |
