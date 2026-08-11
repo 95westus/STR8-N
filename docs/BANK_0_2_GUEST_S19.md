@@ -1,54 +1,56 @@
 # Bank 0-2 Guest S19 Quick Reference
 
-Banks 0–2 may hold independent W65C02 systems. A guest does not need STR8-N,
-HIMON, or any STR8-N service address.
+Banks 0-2 may hold independent W65C02 systems. A guest does not need HIMON,
+STR8-N ROM services, or a copy of the STR8-N worker. Launch is through the
+guest bank's hardware RESET vector.
 
-## Full 32K guest
+## Full 32K guest layout
 
 ```text
 $8000-$FFF9  guest code, data, and explicit padding
-$FFFA-$FFFB  NMI vector
+$FFFA-$FFFB  NMI vector, low byte first
 $FFFC-$FFFD  RESET vector, low byte first
-$FFFE-$FFFF  IRQ/BRK vector
+$FFFE-$FFFF  IRQ/BRK vector, low byte first
 ```
 
-The install file contains the payload only. Do not put RAM-worker records at
-`$0200` in front of it.
+The install file contains payload only. Never prepend records at `$0200`;
+STR8-N supplies and verifies its own embedded worker.
 
-## File rules
+## Accepted file contract
 
-- Select a 4K-aligned range of 4K, 8K, 12K, 16K, 20K, 24K, 28K, or 32K.
+- Select one contiguous 4K-aligned span inside `$8000-$FFFF`.
+- The span may be 4K, 8K, 12K, 16K, 20K, 24K, 28K, or 32K.
 - Use at most one leading S0 record.
 - Use ascending, nonempty S1 records covering every byte in the selected
-  range. `$FF` bytes must be present too.
-- Do not use gaps, overlaps, duplicate addresses, backward records, or other
-  S-record types.
-- End with exactly one S9 record and nothing after it.
+  extent. Explicit `$FF` bytes are required.
+- Do not use gaps, overlaps, duplicate addresses, backward records, or S2-S8.
+- End with exactly one S9 and nothing after it.
 - For a full `$8000-$FFFF` image, S9 must match the non-erased RESET vector at
-  `$FFFC-$FFFD` (stored low byte, then high byte).
-- For a partial image, S9 is `$FFFF` or an address inside the selected range.
+  `$FFFC-$FFFD` and cannot be `$FFFF`.
+- For a partial image, S9 is `$FFFF` or an address inside the selected extent.
+
+S9 validates the install; `J0`-`J2` do not jump to it. They read
+`$FFFC-$FFFD` after selecting the bank. A partial install can therefore be
+valid but not bootable when it does not supply a usable RESET vector.
 
 ## Top-aligned size table
 
-Every one of these Bank 0-2 ranges is accepted:
-
 ```text
- 4K  F      $F000-$FFFF
- 8K  E-F    $E000-$FFFF
-12K  D-F    $D000-$FFFF
-16K  C-F    $C000-$FFFF
-20K  B-F    $B000-$FFFF
-24K  A-F    $A000-$FFFF
-28K  9-F    $9000-$FFFF
-32K  8-F    $8000-$FFFF
+Size  Range  Address range
+ 4K   F      $F000-$FFFF
+ 8K   E-F    $E000-$FFFF
+12K   D-F    $D000-$FFFF
+16K   C-F    $C000-$FFFF
+20K   B-F    $B000-$FFFF
+24K   A-F    $A000-$FFFF
+28K   9-F    $9000-$FFFF
+32K   8-F    $8000-$FFFF
 ```
 
-They include sector F and therefore carry the hardware vectors. STR8-N still
-launches through the RESET vector at `$FFFC-$FFFD`, not through S9, so that
-vector must point to code that is present in the bank. Upper alignment is
-optional; any contiguous 4K-aligned span inside `$8000-$FFFF` is legal.
+Upper alignment is optional. `8-B`, `A-D`, and `C-E` are also legal examples.
+The selected prompt range and S19 extent must match exactly.
 
-## Convert a binary
+## Convert an aligned binary
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
@@ -56,27 +58,50 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BinPath C:\IMAGES\guest.bin `
   -BaseAddress 32768 `
   -Bank 0 `
-  -S19Path BUILD/s19/guest-bank0-8000-ffff.s19
+  -S19Path BUILD/v1.1/s19/guest-bank0-8000-ffff.s19
 ```
 
-For a full image the converter reads S9 from RESET. For a partial image it
-uses `$FFFF` unless `-EntryAddress` supplies an in-range entry.
+For a full image, the converter derives S9 from RESET. For a partial image it
+uses `$FFFF` unless `-EntryAddress` supplies an in-range address.
 
-## Validate a payload S19
+## Validate and normalize a payload S19
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools/compose_str8n_install_s19.ps1 `
-  -PayloadS19Path BUILD/s19/guest-bank0-8000-ffff.s19 `
+  -PayloadS19Path BUILD/v1.1/s19/guest-bank0-8000-ffff.s19 `
   -PayloadStart 32768 `
   -PayloadEndExclusive 65536 `
   -Bank 0 `
-  -S19Path BUILD/s19/str8n-i-guest.s19
+  -S19Path BUILD/v1.1/s19/str8n-i-guest.s19
 ```
 
 The validator reports the exact range, record count, S9, per-sector CRC-16,
 and whole-file SHA-256.
 
-See the [Operator's Guide](OPERATORS_GUIDE.md) for the `I` procedure and the
-[Technical Guide](TECHNICAL_GUIDE.md#s19-install-file-contract) for all Bank-3
-and interrupted-install rules.
+## Build the R-YORS plus STR8-N `8-F` image
+
+With sibling `R-YORS` and `STR8-N Refactor` folders:
+
+```powershell
+make ryors-full-bank
+```
+
+Output:
+
+```text
+BUILD/v1.1/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+$8000-$BFFF  ASM-F2
+$C000-$EFFF  HIMON
+$F000-$FFFF  current STR8-N 1.1 top sector
+S9 / RESET   $F000
+```
+
+Install with `I`, target Bank 0, 1, or 2, and range `8-F`. On a new directory
+row, enter TYPE and a five-character DESC. After `OK`, `J0`-`J2` may launch
+the corresponding bank. This file cannot update protected Bank 3 sector F.
+
+See the [Worked Examples](EXAMPLES.md) for a terminal session, the
+[Operator's Guide](OPERATORS_GUIDE.md) for recovery rules, and the
+[Technical Guide](TECHNICAL_GUIDE.md#s19-install-file-contract) for the full
+contract.

@@ -1,7 +1,7 @@
 param(
-    [string]$Str8MapPath = "BUILD/s19/str8n-f000.map",
-    [string]$WorkerMapPath = "BUILD/s19/str8n-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/s19/str8n-worker-0200.s19",
+    [string]$Str8MapPath = "BUILD/v1.1/s19/str8n-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.1/s19/str8n-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/v1.1/s19/str8n-worker-0200.s19",
     [string]$WorkerEqPath = "src/str8-worker-eq.inc"
 )
 

@@ -3,6 +3,8 @@
 This is the board-facing guide. You do not need to know assembly language to
 use it.
 
+For complete sample terminal sessions, see [Worked Examples](EXAMPLES.md).
+
 ## Which loader should I use?
 
 No: STR8-N `I` cannot load programs into RAM. It installs a dense S19 image
@@ -155,13 +157,13 @@ sending after S9; queued serial bytes are inherited by the recovery program.
 
 ### Load the STR8-N 1.1 bank-maintenance program
 
-Use `BUILD/s19/str8n-v1.1-bank-maint-2000.s19`. It is a temporary RAM tool;
+Use `BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19`. It is a temporary RAM tool;
 loading it does not change flash. It does not require HIMON and uses the
 board's FT245R console directly.
 
 1. At `STR8-N>`, type `L`.
 2. When `S19` appears, send
-   `BUILD/s19/str8n-v1.1-bank-maint-2000.s19` at normal full speed.
+   `BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19` at normal full speed.
 3. STR8-N validates the file and starts it automatically at `$2000`.
 
 The menu commands are:
@@ -173,6 +175,9 @@ E  erase selected 4K sectors; Bank 3 sector F is always protected
 P  install the narrow, validated AP carrier at Bank 0 $BF00
 Q  return to STR8-N through $F000
 ```
+
+The shortest safe rule is: use `M` freely; treat `C`, `E`, and `P` as flash
+operations.
 
 `C`, `E`, and `P` are destructive and require an exact typed confirmation.
 Do not press NMI, reset, remove power, or remove the flash during a write or
@@ -252,7 +257,7 @@ must point to real code in that bank. `J0`-`J2` ignore S9 and follow RESET.
 the current STR8-N 1.1 top sector:
 
 ```text
-BUILD/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+BUILD/v1.1/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
 $8000-$BFFF  ASM-F2
 $C000-$EFFF  HIMON
 $F000-$FFFF  STR8-N 1.1 clone
@@ -354,3 +359,4 @@ bank-selection bits by accident.
 Physical RESET is the universal return to Bank 3.
 
 For the picture version of these rules, see [Maps and Diagrams](MAPS.md).
+For copyable sessions, see [Worked Examples](EXAMPLES.md).

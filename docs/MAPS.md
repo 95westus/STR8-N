@@ -21,6 +21,35 @@ flowchart TB
     B3 -->|L or L G| RAM2[HIMON RAM program]
 ```
 
+## Build and artifact flow
+
+```text
+BUILD/
+|-- v1.1/
+|   |-- bin/                 all STR8-N binary images
+|   |-- s19/                 all release and user-built S19 images
+|   `-- test/range-matrix/   generated S19 qualification fixtures
+|-- str8n-manifest.json      stable R-YORS discovery path
+|-- obj/                     assembler intermediates
+|-- lst/                     listings
+`-- sym/                     symbols
+```
+
+```mermaid
+flowchart LR
+    SRC[src/str8.asm] --> TOP[4096-byte Bank-3 top BIN]
+    SRC --> WORKER[596-byte worker evidence S19]
+    BM_SRC[bank-maint ASM] --> BM[RAM bank-maint S19]
+    TOP --> MANIFEST[verified manifest]
+    WORKER --> MANIFEST
+    BM --> MANIFEST
+    RY[R-YORS 28K ASM+HIMON S19] --> FULL[32K Bank-0/1/2 8-F S19]
+    TOP --> FULL
+    TOP --> PROGRAMMER[external programmer<br/>physical $1F000-$1FFFF]
+    BM -->|STR8-N L| RAM_TOOL[temporary maintenance session]
+    FULL -->|STR8-N I| GUEST[enrolled Bank 0, 1, or 2]
+```
+
 ## Physical flash to CPU view
 
 ```text
@@ -64,11 +93,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Choose bank and exact sector range] --> B[Create or match directory identity]
-    B --> D[Copy and verify embedded worker in RAM]
-    D --> E[Receive first valid dense S1]
-    E --> C[Write START journal bit]
-    C --> G[Stream, program and verify<br/>each completed non-final sector]
+    A[Choose bank, exact range,<br/>and new identity if needed] --> B{WRITE? Y}
+    B -->|no| Z[Return to prompt<br/>no transaction]
+    B -->|yes| D[Copy and verify embedded worker in RAM]
+    D --> C[Write START and any<br/>first-enrollment identity]
+    C --> E[Print S19<br/>sender may run full speed]
+    E --> G[Stream, program and verify<br/>each completed non-final sector]
     G --> F{Exact extent, checksum,<br/>S9 and policy valid?}
     F -->|no| X[FAIL / bank remains incomplete]
     F -->|yes| H{COMMIT? Y}
@@ -77,6 +107,26 @@ flowchart TD
     K --> L[Write COMPLETE journal bit]
     L --> O[OK / bank may boot]
 ```
+
+`WRITE? Y` is the persistent boundary. START is already written when `S19`
+appears; a missing or bad transfer therefore requires full-range recovery.
+
+## Directory state and launch gate
+
+```mermaid
+stateDiagram-v2
+    [*] --> Erased: external programmer / empty row
+    Erased --> Started: WRITE? Y or maintenance enrollment
+    Started --> Started: interrupted or failed transaction
+    Started --> Complete: full image verified / COMPLETE written last
+    Complete --> Started: later install begins
+    Complete --> Complete: later install verifies
+    Complete --> Exhausted: all 16 journal pairs used
+    Exhausted --> Erased: external programmer refresh
+```
+
+`J0`-`J2` accept only `Complete`. Bank Maintenance `C` accepts only `Erased`
+destination rows; it does not overwrite or repair an existing identity.
 
 ## Protected 4K top sector
 
@@ -113,6 +163,24 @@ Banks 0-2, ending at $FFFF       Bank 3, ending below STR8-N
 These are useful top-aligned examples, not a restriction. Any contiguous
 sector span inside `8-F` (Banks 0-2) or `8-E` (Bank 3) is accepted. `I` always
 writes flash. STR8-N `L` is a separate recovery RAM load-and-execute path.
+
+## Full R-YORS Bank-0/1/2 image
+
+```text
+$FFFF  +------------------------------+
+       | STR8-N clone + vectors       |
+$F000  +------------------------------+
+       | HIMON                        |
+$C000  +------------------------------+
+       | ASM-F2                       |
+$8000  +------------------------------+
+
+range: $8000-$FFFF (8-F), 32768 bytes
+S9:    $F000, matching RESET at $FFFC-$FFFD
+```
+
+This image is built from the current R-YORS `8-E` payload and the current
+STR8-N top BIN. It is not used to update Bank 3 sector F.
 
 ## Flash install versus RAM load
 
@@ -163,6 +231,31 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
+## RAM capacity by operating path
+
+```text
+Board RAM below I/O                         32,512 bytes  $0000-$7EFF
+STR8-N L accepted window                    23,296 bytes  $2000-$7AFF
+I named transient/service areas              5,015 bytes  excluding L flag
+Fixed delay and IVI cells                        13 bytes
+Maximum hardware stack                         256 bytes  dynamic
+Outside named I/fixed areas                  27,484 bytes  before stack use
+R-YORS normal application convention         18,694 bytes  monitor-dependent
+Bank-maint loaded image                       4,651 bytes  $2000-$322A
+```
+
+```mermaid
+flowchart LR
+    TOTAL[32,512 B board RAM] --> LOW[8,192 B below $2000]
+    TOTAL --> LWIN[23,296 B accepted by STR8-N L]
+    TOTAL --> HIGH[1,024 B $7B00-$7EFF<br/>parser, IVI, I/O-adjacent]
+    LWIN --> BMIMG[4,651 B bank-maint image]
+    LWIN --> LOTHER[18,645 B remaining in L window]
+```
+
+The numbers describe STR8-N boundaries, not a promise that HIMON, ASM, or an
+arbitrary guest leaves every other byte unused.
+
 ## Bank-maintenance RAM tool
 
 ```mermaid
@@ -180,6 +273,13 @@ flowchart TD
     ID --> M
     ERASE --> M
     AP --> M
+```
+
+```text
+$0200-$042A  runtime private mutation worker       555 bytes
+$0A00-$19FF  staged flash sector                  4096 bytes
+$1B00-$1DDA  maintenance state                     731 bytes
+$2000-$322A  loaded program, padding, stored worker 4651 bytes
 ```
 
 ## Supported interfaces

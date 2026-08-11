@@ -4,7 +4,7 @@
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/s19/str8n-v1.1-bank-maint-2000.s19
+;   send BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,

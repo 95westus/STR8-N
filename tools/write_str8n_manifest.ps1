@@ -1,9 +1,9 @@
 param(
-    [string]$Str8MapPath = "BUILD/s19/str8n-f000.map",
-    [string]$WorkerMapPath = "BUILD/s19/str8n-worker-0200.map",
-    [string]$TopBinPath = "BUILD/bin/str8n-bank3-f000-ffff.bin",
-    [string]$WorkerS19Path = "BUILD/s19/str8n-worker-0200.s19",
-    [string]$BankMaintS19Path = "BUILD/s19/str8n-v1.1-bank-maint-2000.s19",
+    [string]$Str8MapPath = "BUILD/v1.1/s19/str8n-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.1/s19/str8n-worker-0200.map",
+    [string]$TopBinPath = "BUILD/v1.1/bin/str8n-bank3-f000-ffff.bin",
+    [string]$WorkerS19Path = "BUILD/v1.1/s19/str8n-worker-0200.s19",
+    [string]$BankMaintS19Path = "BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19",
     [string]$ManifestPath = "BUILD/str8n-manifest.json"
 )
 
@@ -48,14 +48,14 @@ $manifest = [ordered]@{
     dirty = $dirty
     artifacts = [ordered]@{
         topSector = [ordered]@{
-            file = 'BUILD/bin/str8n-bank3-f000-ffff.bin'
+            file = 'BUILD/v1.1/bin/str8n-bank3-f000-ffff.bin'
             size = $top.Length
             cpuStart = 'F000'
             cpuEnd = 'FFFF'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopBinPath).Hash
         }
         workerS19 = [ordered]@{
-            file = 'BUILD/s19/str8n-worker-0200.s19'
+            file = 'BUILD/v1.1/s19/str8n-worker-0200.s19'
             size = $workerEnd - $workerRun
             runStart = ('{0:X4}' -f $workerRun)
             runEnd = ('{0:X4}' -f ($workerEnd - 1))
@@ -63,7 +63,7 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $WorkerS19Path).Hash
         }
         bankMaintenanceS19 = [ordered]@{
-            file = 'BUILD/s19/str8n-v1.1-bank-maint-2000.s19'
+            file = 'BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19'
             ramStart = '2000'
             ramEnd = '322A'
             entry = '2000'

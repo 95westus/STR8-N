@@ -1,5 +1,5 @@
 param(
-    [string]$S19Path = "BUILD/s19/str8n-v1.1-bank-maint-2000.s19"
+    [string]$S19Path = "BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19"
 )
 
 Set-StrictMode -Version Latest

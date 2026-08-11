@@ -3,11 +3,14 @@ LINKER ?= wdcln
 
 SRC_DIR := src
 BUILD_DIR := BUILD
+VERSION := v1.1
+RELEASE_DIR := $(BUILD_DIR)/$(VERSION)
 OBJ_DIR := $(BUILD_DIR)/obj
 LST_DIR := $(BUILD_DIR)/lst
 SYM_DIR := $(BUILD_DIR)/sym
-S19_DIR := $(BUILD_DIR)/s19
-BIN_DIR := $(BUILD_DIR)/bin
+S19_DIR := $(RELEASE_DIR)/s19
+BIN_DIR := $(RELEASE_DIR)/bin
+TEST_DIR := $(RELEASE_DIR)/test
 
 ASFLAGS := -G -L -S -W -I $(SRC_DIR)
 STR8_LINKFLAGS := -g -s -t -cF000 -hm19 -j -o
@@ -75,7 +78,7 @@ layout-check: $(STR8_S19) $(WORKER_S19) $(LAYOUT_CHECK_TOOL)
 embedded-layout-check: layout-check
 
 range-matrix-check: $(RANGE_MATRIX_TOOL)
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RANGE_MATRIX_TOOL)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RANGE_MATRIX_TOOL) -WorkDir "$(TEST_DIR)/range-matrix"
 
 ram-load-contract-check: $(STR8_S19) $(RAM_LOAD_TOOL)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RAM_LOAD_TOOL) -MapPath "$(S19_DIR)/str8n-f000.map"
@@ -133,6 +136,8 @@ FORCE:
 
 help:
 	@echo make          - build and validate resident, unified worker, and programmer BIN
+	@echo release files - write BIN, S19, and S19 tests below BUILD/v1.1
+	@echo manifest path - keep BUILD/str8n-manifest.json for R-YORS compatibility
 	@echo make resident - build the v1.1 resident at F000
 	@echo make workers  - build the one unified RAM worker
 	@echo make programmer-bin - build the Bank-3 F000-FFFF T48 BIN

@@ -23,6 +23,9 @@ guest launch              STR8-N J0-J3       jumps through selected RESET vector
 The STR8-N form stays small by omitting load-only, fallback-entry, reporting,
 and arbitrary destination policy.
 
+For terminal-level examples, see [Worked Examples](EXAMPLES.md). For the same
+contracts as pictures, see [Maps and Diagrams](MAPS.md).
+
 ## Board address contract
 
 The CPU sees 31.75 KiB of RAM, a 256-byte I/O page, and one selected 32K flash
@@ -133,12 +136,11 @@ applies. It avoids placing a first-enrollment flash pause immediately after the
 first S1 line, while retaining S9 validation, final-sector holdback, explicit
 COMMIT, read-back verification, and COMPLETE-last ordering.
 
-On 2026-08-10, the 28K Bank-3 `$8000-$EFFF` R-YORS image completed with six
-receive-time dots, a seventh dot after `COMMIT? Y`, `OK`, and a successful
-HIMON warm start. A following install succeeded after the terminal character
-delay was removed, proving full-speed transfer once enrollment preparation was
-already complete. First-enrollment full-speed behavior must be repeated as a
-release board-proof test after this ordering change.
+On 2026-08-10, board sessions at zero terminal pacing completed a first
+Bank-3 enrollment and later ASM update, reached `OK`, and successfully entered
+HIMON and ASM. The full 28K `$8000-$EFFF` stream showed six receive-time dots
+and a seventh after `COMMIT? Y`, as expected. This is retained point evidence;
+it does not replace the full qualification matrix listed below.
 
 ```text
 S1 cc aaaa dd... ss
@@ -225,7 +227,7 @@ fixed HIMON identity and enters `$C000`, while `J3` uses Bank 3's RESET vector.
 Historical combined streams that start with S1 records at `$0200` are invalid.
 The first S1 for `I` must be the selected flash start, normally `$8000`,
 `$9000`, and so on. The worker component in
-`BUILD/s19/str8n-worker-0200.s19` is build and integration evidence, not a file
+`BUILD/v1.1/s19/str8n-worker-0200.s19` is build and integration evidence, not a file
 to send to `I`.
 
 ## Creating and checking install files
@@ -242,7 +244,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BinPath C:\IMAGES\guest.bin `
   -BaseAddress 32768 `
   -Bank 0 `
-  -S19Path BUILD/s19/guest-bank0-8000-ffff.s19
+  -S19Path BUILD/v1.1/s19/guest-bank0-8000-ffff.s19
 ```
 
 For a first Bank-3 HIMON image:
@@ -254,7 +256,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BaseAddress 49152 `
   -EntryAddress 49152 `
   -Bank 3 `
-  -S19Path BUILD/s19/himon-bank3-c000-efff.s19
+  -S19Path BUILD/v1.1/s19/himon-bank3-c000-efff.s19
 ```
 
 `tools/compose_str8n_install_s19.ps1` validates an existing payload and writes
@@ -265,11 +267,11 @@ per-sector CRC-16, and whole-file SHA-256. For an existing Bank-3 row, pass
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools/compose_str8n_install_s19.ps1 `
-  -PayloadS19Path BUILD/s19/guest-bank0-8000-ffff.s19 `
+  -PayloadS19Path BUILD/v1.1/s19/guest-bank0-8000-ffff.s19 `
   -PayloadStart 32768 `
   -PayloadEndExclusive 65536 `
   -Bank 0 `
-  -S19Path BUILD/s19/str8n-i-guest.s19
+  -S19Path BUILD/v1.1/s19/str8n-i-guest.s19
 ```
 
 ## Transaction timing and recovery
@@ -278,15 +280,16 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 receive-everything-first loader:
 
 1. It validates the bank, range, directory, and embedded worker.
-2. `WRITE? Y` arms the operation.
-3. The first valid S1 causes the START bit and any new identity bytes to be
-   written.
-4. Each complete non-final 4K sector is erased, programmed, and read back as
+2. `WRITE? Y` accepts the persistent transaction boundary.
+3. STR8-N copies and verifies the worker, writes START, and writes any
+   first-enrollment type, description, and seal that can be known before S9.
+4. Only after that preparation succeeds does STR8-N print `S19`.
+5. Each complete non-final 4K sector is erased, programmed, and read back as
    the dense stream arrives.
-5. The final selected sector remains in the `$0A00-$19FF` tray.
-6. A valid S9 and `COMMIT? Y` allow that final sector to be programmed and
+6. The final selected sector remains in the `$0A00-$19FF` tray.
+7. A valid S9 and `COMMIT? Y` allow that final sector to be programmed and
    verified.
-7. The Bank-3 entry, when first needed, is written; COMPLETE is always the
+8. The Bank-3 entry, when first needed, is written; COMPLETE is always the
    last persistent action.
 
 Once START is present without COMPLETE, retry is limited to the whole writable
@@ -331,7 +334,7 @@ RAM; retrying or RESET is the normal cleanup.
 ### STR8-N 1.1 bank-maintenance RAM image
 
 `make bank-maint` builds and validates
-`BUILD/s19/str8n-v1.1-bank-maint-2000.s19`. Its S9 entry is `$2000`; the S1
+`BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19`. Its S9 entry is `$2000`; the S1
 address span is `$2000-$322A`, wholly inside the `L` contract. The WDC linker
 fills the unused space before the embedded worker, so the stream contains
 4,651 RAM data bytes even though the executable regions are smaller.
@@ -420,12 +423,25 @@ $7EF8-$7EFF  IVI RAM vectors                       8 bytes
 $0100-$01FF  hardware stack, dynamic              256 bytes maximum
 ```
 
-The main `I` transaction regions through the record card total 5015 named
-bytes, plus dynamic stack use and the fixed IVI/delay cells. This is an
-ownership count, not a claim that every other byte is safe application RAM;
-the installed monitor, assembler, and user program define the rest of the RAM
-map. An R-YORS v1.1 build reports 18,694 bytes as application-usable by its
-normal convention.
+The main `I` transaction regions through the record card total 5,015 named
+bytes when the `L`-only flag at `$00A0` is excluded. The fixed delay and IVI
+cells add 13 bytes. The hardware stack can consume up to 256 more bytes.
+
+```text
+Quantity                                      Bytes
+board RAM below I/O                          32,512
+named I transaction areas                     5,015
+fixed delay and IVI cells                         13
+outside those named/fixed STR8-N areas        27,484
+outside them with full stack reserved         27,228
+STR8-N L accepted window                      23,296
+R-YORS normal application convention          18,694
+```
+
+These are ownership counts, not a claim that all remaining bytes are safe for
+an application. HIMON, ASM, a loaded program, and active stack frames define
+additional ownership. The R-YORS figure is its own monitor-aware convention,
+not simple subtraction from the STR8-N figure.
 
 The worker, tray, record buffers, and state are volatile. A program that needs
 their contents after STR8-N service must rebuild them. HIMON's Banked-AP RAM
@@ -513,23 +529,35 @@ placement, exact image size, and at least 8 bytes of free resident margin.
 `BUILD/str8n-manifest.json` publishes the resulting addresses and hashes.
 `make range-matrix-check` generates and re-validates every top-aligned 4K-32K
 Bank 0-2 range, every 4K-28K Bank-3 range, and representative middle spans.
-These host fixtures are written below `BUILD/test/range-matrix`; they do not
+These host fixtures are written below `BUILD/v1.1/test/range-matrix`; they do not
 change the firmware image or consume protected-sector space.
 `make ram-load-contract-check` verifies the linked `L` entry and every lower,
 upper, crossing-record, empty-record, and S9 boundary case.
+`make bank-maint` builds the self-contained RAM maintenance image and rejects
+bad record counts/checksums, duplicate bytes, data outside `$2000-$7AFF`, an
+incorrect S9, or a changed private-worker hash.
 `make ryors-full-bank` validates the dense R-YORS `$8000-$EFFF` input, appends
 the current verified STR8-N top-sector BIN, derives S9 from RESET, and emits a
 dense 32K Bank-0/1/2 payload. It deliberately does not use the older STR8-N
 copy embedded in R-YORS's previously combined BIN.
 
 ```text
-BUILD/bin/str8n-bank3-f000-ffff.bin  exact 4096-byte programmer image
-BUILD/s19/str8n-f000.s19             resident build component
-BUILD/s19/str8n-worker-0200.s19      worker evidence/build component
-BUILD/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+BUILD/v1.1/bin/str8n-bank3-f000-ffff.bin
+                                      exact 4096-byte programmer image
+BUILD/v1.1/s19/str8n-f000.s19         resident build component
+BUILD/v1.1/s19/str8n-worker-0200.s19  worker evidence/build component
+BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19
+                                      self-contained RAM maintenance program
+BUILD/v1.1/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
                                       32K ASM+HIMON+STR8-N Bank-0/1/2 payload
-BUILD/str8n-manifest.json            sizes, addresses, ABI, and hashes
+BUILD/str8n-manifest.json             sizes, addresses, ABI, and hashes
 ```
+
+All BIN, S19, and generated S19 qualification fixtures live below the version
+root `BUILD/v1.1/`. The compatibility manifest remains at
+`BUILD/str8n-manifest.json` and records the versioned artifact paths.
+Compiler/linker intermediates remain directly below `BUILD/obj`, `BUILD/lst`,
+and `BUILD/sym`.
 
 The BIN file maps as follows:
 
@@ -537,13 +565,29 @@ The BIN file maps as follows:
 file offset $000-$FFF -> CPU $F000-$FFFF -> physical $1F000-$1FFFF
 ```
 
-Before qualifying a release on hardware, exercise `L` at `$2000`, `$7AFF`,
-cross-page records, rejected `$1FFF`/`$7B00` spans, bad records, partial-load
-failure, and automatic S9 execution. Also exercise every allowed Bank 0-2 and
-Bank-3 size, malformed S19 rejection, interruption at each sector, full-range
-recovery, directory exhaustion, readback, `H`, `J0`-`J3`, NMI/IRQ outside
-flash mutation, and physical RESET. Retain the exact image, manifest, hashes,
-and board transcript. A clean host build is necessary evidence, not a
-substitute for board proof.
+### Qualification evidence and remaining board tests
+
+Observed v1.1 board sessions have established:
+
+- physical RESET selects Bank 3 and reaches STR8-N;
+- the six `WAIT...` pulses and later identity/selector are visible;
+- a full-speed, zero-pacing Bank-3 `8-E` install completes and starts HIMON;
+- separate HIMON `C-E` and ASM `8-B` installs complete and ASM starts through
+  HIMON;
+- RAM Bank Maintenance starts through `L`, maps banks, and copies/verifies all
+  eight sectors;
+- a raw copy without directory enrollment is correctly rejected by `J0`-`J2`,
+  proving the launch gate is directory-based rather than a used-flash test.
+
+The enhanced maintenance `C` enrollment step, the generated Bank-0/1/2 `8-F`
+image, every size/range boundary, interruption at each sector, journal
+exhaustion, and all `L` boundary failures still require a retained hardware
+transcript before claiming a complete release matrix. NMI/IRQ may be tested
+only outside flash mutation; do not deliberately press NMI while flash is
+busy.
+
+Retain the exact BIN/S19 files, manifest, hashes, flash readback, and terminal
+transcript for each board-proof run. A clean host build is necessary evidence,
+not a substitute for board proof.
 
 See [Maps and Diagrams](MAPS.md) for the same relationships visually.
