@@ -5,6 +5,10 @@ for a W65C02SXB/EDU with four 32K flash banks. It lives in the protected Bank-3
 top sector at CPU `$F000-$FFFF`; HIMON, ASM, and guest systems remain separate
 payloads.
 
+STR8-N is part of R-YORS, but is deliberately R-YORS-agnostic: it does not
+depend on HIMON, ASM-F2, OIL, or AP, and can supervise compatible non-R-YORS
+guest systems.
+
 ## Feature card
 
 | Capability | What STR8-N v1.2 can do | Safety boundary |
