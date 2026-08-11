@@ -1,8 +1,9 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.1/s19/str8n-f000.map",
-    [string]$WorkerMapPath = "BUILD/v1.1/s19/str8n-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/v1.1/s19/str8n-worker-0200.s19",
-    [string]$WorkerEqPath = "src/str8-worker-eq.inc"
+    [string]$Str8MapPath = "BUILD/v1.2/s19/str8n-v1.2-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.2/s19/str8n-v1.2-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19",
+    [string]$WorkerEqPath = "src/str8-worker-eq.inc",
+    [string]$RamAbiPath = "src/str8-ram-abi.inc"
 )
 
 Set-StrictMode -Version Latest
@@ -73,6 +74,14 @@ Assert-Equal (Get-EquValue $WorkerEqPath 'STR8_WORKER_SELECT_SIZE') ($workerSele
 Assert-Equal (Get-EquValue $WorkerEqPath 'STR8_WORKER_END') $workerEnd 'Published worker end'
 Assert-Equal (Get-EquValue $WorkerEqPath 'STR8_WORKER_SIZE') $workerSize 'Published worker size'
 Assert-Equal (Get-EquValue $WorkerEqPath 'STR8_WORKER_STORE') $workerStore 'Published worker store'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_RAM_ABI_VERSION') 0x12 'RAM ABI version'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_HIGH_TOOL_BASE') 0x7C00 'High Tool Overlay start'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_HIGH_TOOL_END') 0x7DBF 'High Tool Overlay end'
+Assert-Equal (Get-EquValue $RamAbiPath 'HIM_AP_LINK_WORK_BASE') 0x7DC0 'HIMON AP-link scratch start'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_BASE') 0x7DE9 'STR8 state start'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_END') 0x7DFF 'STR8 state end'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_JUMP_SIG0') 0x7DFD 'Bank Jump Record start'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_LAST_JUMP') 0x7DFF 'Bank Jump Record end'
 
 if ($workerSelectEnd -gt 0x0300) {
     throw ('Selector prefix ends at ${0:X4}; it must not overwrite HIMON at $0300' -f $workerSelectEnd)
@@ -92,4 +101,5 @@ Write-Host ('UNIFIED WORKER       = run ${0:X4}-${1:X4}; store ${2:X4}-${3:X4}; 
 Write-Host ('SELECTOR PREFIX      = ${0:X4}-${1:X4}; {2} bytes' -f $workerStart, ($workerSelectEnd - 1), ($workerSelectEnd - $workerStart))
 Write-Host ('WORKER S19 SHA-256   = {0}' -f $workerHash)
 Write-Host ('DIRECTORY/CONFIG/VEC = $FFB0-$FFEF / $FFF0-$FFF9 / $FFFA-$FFFF')
+Write-Host 'RAM ABI              = $12; LOW USER $1A00-$1FFF; STR8 STATE $7DE9-$7DFF'
 Write-Host 'LAYOUT CHECK         = PASS'

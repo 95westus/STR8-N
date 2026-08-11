@@ -1,5 +1,5 @@
 param(
-    [string]$MapPath = "BUILD/v1.1/s19/str8n-f000.map"
+    [string]$MapPath = "BUILD/v1.2/s19/str8n-v1.2-f000.map"
 )
 
 Set-StrictMode -Version Latest

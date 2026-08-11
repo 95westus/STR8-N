@@ -58,7 +58,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BinPath C:\IMAGES\guest.bin `
   -BaseAddress 32768 `
   -Bank 0 `
-  -S19Path BUILD/v1.1/s19/guest-bank0-8000-ffff.s19
+  -S19Path BUILD/v1.2/s19/guest-bank0-8000-ffff.s19
 ```
 
 For a full image, the converter derives S9 from RESET. For a partial image it
@@ -69,11 +69,11 @@ uses `$FFFF` unless `-EntryAddress` supplies an in-range address.
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools/compose_str8n_install_s19.ps1 `
-  -PayloadS19Path BUILD/v1.1/s19/guest-bank0-8000-ffff.s19 `
+  -PayloadS19Path BUILD/v1.2/s19/guest-bank0-8000-ffff.s19 `
   -PayloadStart 32768 `
   -PayloadEndExclusive 65536 `
   -Bank 0 `
-  -S19Path BUILD/v1.1/s19/str8n-i-guest.s19
+  -S19Path BUILD/v1.2/s19/str8n-i-guest.s19
 ```
 
 The validator reports the exact range, record count, S9, per-sector CRC-16,
@@ -90,10 +90,10 @@ make ryors-full-bank
 Output:
 
 ```text
-BUILD/v1.1/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
 $8000-$BFFF  ASM-F2
 $C000-$EFFF  HIMON
-$F000-$FFFF  current STR8-N 1.1 top sector
+$F000-$FFFF  current STR8-N 1.2 top sector
 S9 / RESET   $F000
 ```
 

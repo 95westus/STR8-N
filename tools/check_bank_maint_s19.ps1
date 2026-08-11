@@ -1,5 +1,5 @@
 param(
-    [string]$S19Path = "BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19"
+    [string]$S19Path = "BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19"
 )
 
 Set-StrictMode -Version Latest
@@ -63,7 +63,26 @@ foreach ($required in @(0x2000, 0x3000, 0x322A)) {
     }
 }
 
-$expectedWorkerHash = '45C13756735DDF19A3C6F822FBDE7316D389DE02A94432F51221D4F0F8DA573A'
+$orderedAddresses = @($data.Keys | Sort-Object)
+[byte[]]$programBytes = $orderedAddresses | ForEach-Object { $data[$_] }
+$banner = [System.Text.Encoding]::ASCII.GetBytes('STR8-N 1.2 BANK MAINT')
+$bannerFound = $false
+for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) {
+    $match = $true
+    for ($index = 0; $index -lt $banner.Length; $index++) {
+        if ($programBytes[$offset + $index] -ne $banner[$index]) {
+            $match = $false
+            break
+        }
+    }
+    if ($match) {
+        $bannerFound = $true
+        break
+    }
+}
+if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.2 banner' }
+
+$expectedWorkerHash = 'FFCDB4201C913FC9B3E3F3D438A98940F76967C5E62F843A2DC32CFF1D1AD1B2'
 [byte[]]$workerBytes = 0x3000..0x322A | ForEach-Object { $data[$_] }
 $workerSha = [System.Security.Cryptography.SHA256]::Create()
 $workerHash = [BitConverter]::ToString($workerSha.ComputeHash($workerBytes)).Replace('-', '')
@@ -71,7 +90,7 @@ if ($workerHash -ne $expectedWorkerHash) {
     throw "Private mutation worker hash $workerHash; expected $expectedWorkerHash"
 }
 
-$addresses = @($data.Keys | Sort-Object)
+$addresses = $orderedAddresses
 $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $S19Path).Hash
 Write-Host 'BANK MAINT S19      = PASS'
 Write-Host ('S1 RECORDS          = {0}' -f $dataRecords)

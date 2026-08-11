@@ -16,6 +16,7 @@
                         XDEF            STR8W_LINKED_SELECT_END
                         XDEF            STR8W_LINKED_END
 
+                        INCLUDE         "str8-ram-abi.inc"
                         INCLUDE         "str8-record-eq.inc"
                         INCLUDE         "str8-jump-eq.inc"
                         INCLUDE         "str8-worker-eq.inc"
@@ -39,16 +40,6 @@ STR8W_DATA              EQU             $D3
 STR8W_TMO0              EQU             $D4
 STR8W_TMO1              EQU             $D5
 STR8W_TMO2              EQU             $D6
-
-STR8_STATE_BASE         EQU             $1FE9
-STR8_STATE_END          EQU             $1FFF
-STR8_MARK_SECTOR_HI     EQU             $1FE9
-STR8_MARK_ADDR_LO       EQU             $1FEA
-STR8_MARK_ADDR_HI       EQU             $1FEB
-STR8_COPY_SRC_BANK      EQU             $1FEE
-STR8_COPY_DST_BANK      EQU             $1FEF
-STR8_COPY_MODE          EQU             $1FF0
-STR8_STAGE_BUF_HI       EQU             $1FF6
 
 STR8_FTDI_VIA_PCR       EQU             STR8_BANK_STATE_BYTE
 STR8_BANK_PCR_MASK      EQU             STR8_BANK_STATE_MASK

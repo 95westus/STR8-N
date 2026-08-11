@@ -1,6 +1,6 @@
-# STR8-N v1.1 Maps and Diagrams
+# STR8-N v1.2 Maps and Diagrams
 
-These diagrams describe the current v1.1 implementation.
+These diagrams describe the current v1.2 implementation.
 
 ## Ownership
 
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.1/
+|-- v1.2/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -45,7 +45,10 @@ flowchart LR
     BM --> MANIFEST
     RY[R-YORS 28K ASM+HIMON S19] --> FULL[32K Bank-0/1/2 8-F S19]
     TOP --> FULL
-    TOP --> PROGRAMMER[external programmer<br/>physical $1F000-$1FFFF]
+    TOP --> PROGRAMMER[external programmer]
+    PROGRAMMER --> B3F[physical $1F000-$1FFFF]
+    TOP --> UPDATE[guarded v1.2 top updater S19]
+    UPDATE -->|STR8-N L, verified backup first| B3F
     BM -->|STR8-N L| RAM_TOOL[temporary maintenance session]
     FULL -->|STR8-N I| GUEST[enrolled Bank 0, 1, or 2]
 ```
@@ -75,7 +78,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[Six one-second WAIT pulses<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.1]
+    A --> P[Flush input<br/>STR8-N 1.2]
     P --> Q{Six live selector dots<br/>0-2 H S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -211,13 +214,23 @@ flowchart TD
     E -->|yes| G[SEI, CLD, X/SP=$FF,<br/>jump to S9]
 ```
 
-## Transient RAM during install
+## STR8-N v1.2 RAM ownership
 
 ```text
+$7DFF  +------------------------------+
+       | STR8 state $7DE9-$7DFF       |
+$7DE8  +------------------------------+
+       | reserved $7DC8-$7DE8         |
+$7DC7  +------------------------------+
+       | HIMON AP link $7DC0-$7DC7    |
+$7DBF  +------------------------------+
+       | High Tool Overlay            |
+       | $7C00-$7DBF                  |
+$7BFF  +------------------------------+
+       | monitor / record service RAM |
+       +------------------------------+
 $1FFF  +------------------------------+
-       | update state $1FE9-$1FFF     |
-$1FE8  +------------------------------+
-       | other RAM                    |
+       | USER FREE $1A00-$1FFF        |
 $19FF  +------------------------------+
        | 4K sector tray $0A00-$19FF  |
 $09FF  +------------------------------+
@@ -230,6 +243,12 @@ $00FF  +------------------------------+
        | state and ZP scratch         |
 $0000  +------------------------------+
 ```
+
+`$1A00-$1FFF` is free for user programs in v1.2: STR8-N, HIMON, ASM-F2, and
+the maintained RAM tools do not allocate it. Bank Maintenance and the other
+foreground tools use the single-owner `$7C00-$7DBF` overlay. The exact
+`$7DE9-$7DFF` Recovery State Capsule fields are listed in the
+[Technical Guide](TECHNICAL_GUIDE.md#str8-n-v12-high-ram-abi).
 
 ## RAM capacity by operating path
 
@@ -278,7 +297,7 @@ flowchart TD
 ```text
 $0200-$042A  runtime private mutation worker       555 bytes
 $0A00-$19FF  staged flash sector                  4096 bytes
-$1B00-$1DDA  maintenance state                     731 bytes
+$7C00-$7D1A  maintenance state/tables              283 bytes allocated
 $2000-$322A  loaded program, padding, stored worker 4651 bytes
 ```
 

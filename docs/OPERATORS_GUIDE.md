@@ -1,4 +1,4 @@
-# STR8-N v1.1 Operator's Guide
+# STR8-N v1.2 Operator's Guide
 
 This is the board-facing guide. You do not need to know assembly language to
 use it.
@@ -60,7 +60,7 @@ STR8-N then discards any queued input, identifies itself, and opens six
 one-second live selector dots:
 
 ```text
-STR8-N 1.1
+STR8-N 1.2
 0-2 H S: ......
 ```
 
@@ -155,15 +155,15 @@ execute, but bytes copied by earlier valid records remain in RAM.
 is therefore `$7AFF`, even when one S1 record crosses a page boundary. Stop
 sending after S9; queued serial bytes are inherited by the recovery program.
 
-### Load the STR8-N 1.1 bank-maintenance program
+### Load the STR8-N 1.2 bank-maintenance program
 
-Use `BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19`. It is a temporary RAM tool;
+Use `BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19`. It is a temporary RAM tool;
 loading it does not change flash. It does not require HIMON and uses the
 board's FT245R console directly.
 
 1. At `STR8-N>`, type `L`.
 2. When `S19` appears, send
-   `BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19` at normal full speed.
+   `BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19` at normal full speed.
 3. STR8-N validates the file and starts it automatically at `$2000`.
 
 The menu commands are:
@@ -179,10 +179,53 @@ Q  return to STR8-N through $F000
 The shortest safe rule is: use `M` freely; treat `C`, `E`, and `P` as flash
 operations.
 
+### Upgrade Bank 3 sector F to STR8-N v1.2
+
+The v1.2 release includes the RAM-resident updater
+`BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19`. It is loaded by the existing
+STR8-N `L` command and runs entirely from RAM while Bank-3 sector F is erased.
+An external programmer remains the preferred first-board and recovery method.
+
+The complete onboard sequence through backup verification, Bank-3 sector-F
+program/verify, RESET, and live `S` selection was accepted on hardware on
+2026-08-11. The recovery commands remain mandatory safeguards; external
+restore is still a separate acceptance gate.
+
+Before starting:
+
+1. Keep both the v1.1 rollback BIN and
+   `BUILD/v1.2/bin/str8n-v1.2-bank3-f000-ffff.bin` off-board.
+2. Confirm Bank 1 CPU `$F000-$FFFF` may be erased. The updater uses it as the
+   raw backup sector (`STR8_TOP_SAFE`, physical `$0F000-$0FFFF`).
+3. Install `ryors-v1.2-asm-himon-bank3-8-e.s19` into Bank 3 sectors `8-E`
+   using the existing STR8-N `I` command.
+4. Return to STR8-N; do not use old ASM to write `$7Dxx` during the migration
+   window.
+
+Then update the protected top sector:
+
+1. Type `L` and send `str8n-v1.2-top-update-2000.s19` at normal full speed.
+2. Check that the tool prints `BACKUP B1:F; TARGET B3:F`.
+3. Type the exact first confirmation `BACKUP B1F` only if Bank 1 sector F is
+   sacrificial.
+4. Require `BACKUP VERIFIED` before continuing.
+5. Type the exact final confirmation `STR8-N 1.2`.
+6. Do not press NMI or RESET, remove power, or disturb the flash/FTDI hardware
+   until the tool reports verification and enters the new RESET vector.
+
+If active programming fails, do not reset. At the RAM recovery prompt use `R`
+to retry the embedded v1.2 image or `O` to restore the verified Bank-1 backup.
+If the RAM tool cannot recover, externally copy physical `$0F000-$0FFFF` back
+to `$1F000-$1FFFF`, or program one of the retained 4096-byte BINs at physical
+`$1F000`.
+
+After v1.2 starts, verify `S`, `H`, selector timeout, the `$7DFD-$7DFF` Bank
+Jump Record, and the ASM `$7CFF/$7D00` boundary before updating Banks 0-2.
+
 `C`, `E`, and `P` are destructive and require an exact typed confirmation.
 Do not press NMI, reset, remove power, or remove the flash during a write or
 erase. `C` prints `!STR8` before confirmation when the source contains the
-STR8-N 1.1 `SR 02 03` service signature. `Q` starts the normal STR8-N startup
+STR8-N 1.2 `SR 02 03` service signature. `Q` starts the normal STR8-N startup
 display again, including its six `WAIT...` pulses.
 
 `C` accepts source Bank 0-3 and destination Bank 0-2. The destination's
@@ -254,13 +297,13 @@ must point to real code in that bank. `J0`-`J2` ignore S9 and follow RESET.
 ### Full R-YORS 8-F image for Banks 0-2
 
 `make ryors-full-bank` composes the current R-YORS ASM+HIMON 28K payload with
-the current STR8-N 1.1 top sector:
+the current STR8-N 1.2 top sector:
 
 ```text
-BUILD/v1.1/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
 $8000-$BFFF  ASM-F2
 $C000-$EFFF  HIMON
-$F000-$FFFF  STR8-N 1.1 clone
+$F000-$FFFF  STR8-N 1.2 clone
 S9/RESET     $F000
 ```
 
@@ -269,7 +312,7 @@ Bank-3 payload because `I` never writes Bank 3 sector F. `J0`-`J2` enter the
 copied STR8-N first; its normal timeout can then enter the same bank's HIMON.
 Physical RESET always returns to the real Bank-3 STR8-N.
 
-## Bank 3 and the R-YORS v1.1 files
+## Bank 3 and the R-YORS v1.2 files
 
 Bank 3 permits 4K through 28K in sectors 8 through E. Sector F contains
 STR8-N and is never writable through `I`.
@@ -287,9 +330,9 @@ SIZE   TOP-ALIGNED RANGE  ADDRESS RANGE
 
 ```text
 FILE                                      RANGE  CONTENT           S9
-ryors-v1.1-asm-himon-bank3-8-e.s19        8-E    ASM + HIMON       $C000
-ryors-v1.1-himon-bank3-c-e.s19            C-E    HIMON             $C000
-ryors-v1.1-asm-bank3-8-b.s19              8-B    ASM               $FFFF
+ryors-v1.2-asm-himon-bank3-8-e.s19        8-E    ASM + HIMON       $C000
+ryors-v1.2-himon-bank3-c-e.s19            C-E    HIMON             $C000
+ryors-v1.2-asm-bank3-8-b.s19              8-B    ASM               $FFFF
 ```
 
 The combined `8-E` file is the simplest first install. To install the pieces

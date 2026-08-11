@@ -1,10 +1,10 @@
-; STR8-N V1.1 BANK MAINTENANCE, LOAD ADDRESS $2000.
+; STR8-N V1.2 BANK MAINTENANCE, LOAD ADDRESS $2000.
 ; INTERACTIVE BANK COPY/ERASE/MAP MAINTENANCE FOR STR8-N L.
 ;
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19
+;   send BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -41,30 +41,30 @@
 ; RAM MAP:
 ;   $0200-$09FF  STR8 RAM WORKER TRAY
 ;   $0A00-$19FF  ONE 4K STAGED SECTOR
-;   $1B00-$1B0B  RESULT/STATE
-;   $1B0C        ENTRY-BANK PCR BITS FOR MAP RETURN
-;   $1B0D-$1B0E  DIRECTORY PRINT INDEXES
-;   $1B0F-$1B17  AP MAP COUNT/PARSER STATE
-;   $1B18-$1B1D  COPY ENROLLMENT TYPE AND FIVE-CHARACTER DESCRIPTION
-;   $1C00-$1CFE  INPUT BUFFER
-;   $1D00-$1D3F  STAGED BANK-3 DIRECTORY
-;   $1D40-$1DDA  FIRST VALID AP PER MAPPED SECTOR, 31 X 5 BYTES
+;   $7C00-$7C0B  RESULT/STATE
+;   $7C0C        ENTRY-BANK PCR BITS FOR MAP RETURN
+;   $7C0D-$7C0E  DIRECTORY PRINT INDEXES
+;   $7C0F-$7C17  AP MAP COUNT/PARSER STATE
+;   $7C18-$7C1D  COPY ENROLLMENT TYPE AND FIVE-CHARACTER DESCRIPTION
+;   $7C20-$7C2F  INPUT BUFFER
+;   $7C40-$7C7F  STAGED BANK-3 DIRECTORY
+;   $7C80-$7D1A  FIRST VALID AP PER MAPPED SECTOR, 31 X 5 BYTES
 ;   $2000-...    THIS PROGRAM
 ;   $3000-$322A  EMBEDDED V1 MUTATION WORKER
 ; The program owns direct FT245R console input/output and does not require
 ; HIMON vectors or an initialized HIMON session.
 ;
 ; RESULT:
-;   $1B00 STATUS: $AC OK, $E0 ABORT, $E1 STAGE FAIL,
+;   $7C00 STATUS: $AC OK, $E0 ABORT, $E1 STAGE FAIL,
 ;                 $E2 PROGRAM/VERIFY FAIL, $E6 BAD RESET VECTOR,
 ;                 $E7 DIRECTORY ENROLLMENT FAIL
-;   $1B01 OPERATION: C, E, M, P, OR Q
-;   $1B02 SOURCE/ERASE BANK
-;   $1B03 DESTINATION BANK
-;   $1B04 CURRENT/FAILING SECTOR HIGH BYTE
-;   $1B05 COMPLETED/REMAINING SECTOR COUNT OR AP LENGTH
-;   $1B06/$1B07 STR8 FAIL ADDRESS, LO/HI
-;   $1B08-$1B0A ERASE SELECTION; $1B0B LENGTH, ONE OR THREE
+;   $7C01 OPERATION: C, E, M, P, OR Q
+;   $7C02 SOURCE/ERASE BANK
+;   $7C03 DESTINATION BANK
+;   $7C04 CURRENT/FAILING SECTOR HIGH BYTE
+;   $7C05 COMPLETED/REMAINING SECTOR COUNT OR AP LENGTH
+;   $7C06/$7C07 STR8 FAIL ADDRESS, LO/HI
+;   $7C08-$7C0A ERASE SELECTION; $7C0B LENGTH, ONE OR THREE
 
         ORG $2000
 
@@ -88,30 +88,30 @@ BM_MAIN LDX #$00
         STA $0400,X
         DEX
         BPL ?WTAIL
-        STZ $1B00
-        STZ $1B01
-        STZ $1B02
-        STZ $1B03
-        STZ $1B04
-        STZ $1B05
-        STZ $1B06
-        STZ $1B07
-        STZ $1B08
-        STZ $1B09
-        STZ $1B0A
-        STZ $1B0B
-        STZ $1B0F
+        STZ $7C00
+        STZ $7C01
+        STZ $7C02
+        STZ $7C03
+        STZ $7C04
+        STZ $7C05
+        STZ $7C06
+        STZ $7C07
+        STZ $7C08
+        STZ $7C09
+        STZ $7C0A
+        STZ $7C0B
+        STZ $7C0F
         LDA $7FEC
         AND #$EE
-        STA $1B0C
+        STA $7C0C
         LDX #<BM_MTITLE
         LDY #>BM_MTITLE
         JSR BM_PUTS
         JSR BM_READ
         BCC BM_ABORT
-        LDA $1C01
+        LDA $7C21
         BNE BM_MAIN
-        LDA $1C00
+        LDA $7C20
         BEQ BM_ABORT
         CMP #'C'
         BEQ ?COPY
@@ -123,9 +123,9 @@ BM_MAIN LDX #$00
         BEQ ?PUT
         CMP #'Q'
         BNE BM_MAIN
-        STA $1B01
+        STA $7C01
         LDA #$AC
-        STA $1B00
+        STA $7C00
         JMP $F000
 ?MAP   JMP BM_MAP
 ?PUT   JMP BM_PUT
@@ -133,7 +133,7 @@ BM_MAIN LDX #$00
 ?COPY  JMP BM_COPY
 
 BM_ABORT LDA #$E0
-        STA $1B00
+        STA $7C00
         LDA #'A'
         JSR BM_OUT
         LDA #'B'
@@ -150,7 +150,7 @@ BM_ABORT LDA #$E0
         JSR BM_OUT
         JMP BM_MAIN
 
-; Read one uppercase, zero-terminated line into $1C00-$1CFE. CR completes,
+; Read one uppercase, zero-terminated line into $7C20-$7C2F. CR completes,
 ; LF is ignored, Ctrl-C aborts, and Backspace/Delete edit the current line.
 BM_READ LDY #$00
 ?READ   JSR BM_IN
@@ -169,9 +169,9 @@ BM_READ LDY #$00
         CMP #'z'+1
         BCS ?STORE
         AND #$DF
-?STORE  CPY #$FE
+?STORE  CPY #$0F
         BCS ?READ
-        STA $1C00,Y
+        STA $7C20,Y
         JSR BM_OUT
         INY
         BRA ?READ
@@ -186,14 +186,14 @@ BM_READ LDY #$00
         JSR BM_OUT
         BRA ?READ
 ?DONE   LDA #$00
-        STA $1C00,Y
+        STA $7C20,Y
         LDA #$0D
         JSR BM_OUT
         LDA #$0A
         JSR BM_OUT
         SEC
         RTS
-?ABORT  STZ $1C00
+?ABORT  STZ $7C20
         CLC
         RTS
 
@@ -333,9 +333,9 @@ BM_MSEC02 DB 'S','E','C','T','O','R',' ','8','-','F',','
 BM_MCTYPE DB 'T','Y','P','E',' ','C','O','P','Y',' ',0
 BM_METYPE DB 'T','Y','P','E',' ','E','R','A','S','E',' ',0
 
-BM_PARSE_BANK LDA $1C01
+BM_PARSE_BANK LDA $7C21
         BNE ?BAD
-        LDA $1C00
+        LDA $7C20
         CMP #'0'
         BCC ?BAD
         CMP #'4'
@@ -347,24 +347,24 @@ BM_PARSE_BANK LDA $1C01
 ?BAD   CLC
         RTS
 
-BM_STAGE LDA $1B02
-        STA $1FEE
-        LDA $1B04
-        STA $1FE9
+BM_STAGE LDA $7C02
+        STA $7DEE
+        LDA $7C04
+        STA $7DE9
         LDA #$0A
-        STA $1FF6
+        STA $7DF6
         LDA #$06
-        STA $1FF0
+        STA $7DF0
         JMP $0200
 
-BM_PROGRAM LDA $1B03
-        STA $1FEF
-        LDA $1B04
-        STA $1FE9
+BM_PROGRAM LDA $7C03
+        STA $7DEF
+        LDA $7C04
+        STA $7DE9
         LDA #$0A
-        STA $1FF6
+        STA $7DF6
         LDA #$05
-        STA $1FF0
+        STA $7DF0
         JMP $0200
 
 BM_FILL LDA #$0A
@@ -416,21 +416,21 @@ BM_DIR  BRA ?BODY
         TSB $7FEC
         LDX #$3F
 ?COPY   LDA $FFB0,X
-        STA $1D00,X
+        STA $7C40,X
         DEX
         BPL ?COPY
         LDA #$EE
         TRB $7FEC
-        LDA $1B0C
+        LDA $7C0C
         TSB $7FEC
         PLP
         LDX #<BM_MDIR
         LDY #>BM_MDIR
         JSR BM_PUTS
-        STZ $1B0D
+        STZ $7C0D
 ?ROW    LDA #'D'
         JSR BM_OUT
-        LDA $1B0D
+        LDA $7C0D
         LSR A
         LSR A
         LSR A
@@ -440,56 +440,56 @@ BM_DIR  BRA ?BODY
         JSR BM_OUT
         LDA #' '
         JSR BM_OUT
-        LDX $1B0D
-        LDA $1D00,X
+        LDX $7C0D
+        LDA $7C40,X
         JSR ?HEX
         LDA #' '
         JSR BM_OUT
-        LDA $1B0D
+        LDA $7C0D
         CLC
         ADC #$04
-        STA $1B0E
-?DESC   LDX $1B0E
-        LDA $1D00,X
+        STA $7C0E
+?DESC   LDX $7C0E
+        LDA $7C40,X
         JSR ?SAFECHAR
         JSR BM_OUT
-        INC $1B0E
-        LDA $1B0E
+        INC $7C0E
+        LDA $7C0E
         SEC
-        SBC $1B0D
+        SBC $7C0D
         CMP #$09
         BNE ?DESC
         LDA #' '
         JSR BM_OUT
-        LDX $1B0D
-        LDA $1D0B,X
+        LDX $7C0D
+        LDA $7C4B,X
         JSR ?HEX
-        LDX $1B0D
-        LDA $1D0A,X
+        LDX $7C0D
+        LDA $7C4A,X
         JSR ?HEX
         LDA #' '
         JSR BM_OUT
-        LDA $1B0D
+        LDA $7C0D
         CLC
         ADC #$0C
-        STA $1B0E
-?JOURNAL LDX $1B0E
-        LDA $1D00,X
+        STA $7C0E
+?JOURNAL LDX $7C0E
+        LDA $7C40,X
         JSR ?HEX
-        INC $1B0E
-        LDA $1B0E
+        INC $7C0E
+        LDA $7C0E
         SEC
-        SBC $1B0D
+        SBC $7C0D
         CMP #$10
         BNE ?JOURNAL
         LDA #$0D
         JSR BM_OUT
         LDA #$0A
         JSR BM_OUT
-        LDA $1B0D
+        LDA $7C0D
         CLC
         ADC #$10
-        STA $1B0D
+        STA $7C0D
         CMP #$40
         BEQ ?PRINTDONE
         JMP ?ROW
@@ -498,8 +498,8 @@ BM_DIR  BRA ?BODY
 ; AP map parser scratch:
 ;   $CC/$CD candidate base, $CE/$CF parse/body pointer
 ;   $D0/$D1 remaining, $D2 section length, $D3-$D8 temporaries
-;   $1B10/$1B11 package length, $1B12/$1B13 body length
-;   $1B14-$1B17 expected body FNV, $B0-$B3 computed body FNV
+;   $7C10/$7C11 package length, $7C12/$7C13 body length
+;   $7C14-$7C17 expected body FNV, $B0-$B3 computed body FNV
 ; Require A bytes in the current 16-bit remainder.
 BM_APNEED STA $D8
         LDA $D1
@@ -585,15 +585,15 @@ BM_APHEAD BRA ?BODY
         BNE ?BAD
         INY
         LDA ($CC),Y
-        STA $1B10
+        STA $7C10
         INY
         LDA ($CC),Y
-        STA $1B11
-        LDA $1B11
+        STA $7C11
+        LDA $7C11
         CMP $D1
         BCC ?FIT
         BNE ?BAD
-        LDA $1B10
+        LDA $7C10
         CMP $D0
         BCC ?FIT
         BNE ?BAD
@@ -601,9 +601,9 @@ BM_APHEAD BRA ?BODY
         STA $CE
         LDA $CD
         STA $CF
-        LDA $1B10
+        LDA $7C10
         STA $D0
-        LDA $1B11
+        LDA $7C11
         STA $D1
         LDA #$05
         JSR BM_APADV
@@ -629,11 +629,11 @@ BM_APSEAL BRA ?BODY
         BNE ?BAD
         LDY #$05
         LDA ($CE),Y
-        STA $1B12
+        STA $7C12
         INY
         LDA ($CE),Y
-        STA $1B13
-        ORA $1B12
+        STA $7C13
+        ORA $7C12
         BEQ ?BAD
         LDY #$01
         LDA ($CE),Y
@@ -657,16 +657,16 @@ BM_APSEAL BRA ?BODY
         BNE ?BAD
         LDY #$07
         LDA ($CE),Y
-        STA $1B14
+        STA $7C14
         INY
         LDA ($CE),Y
-        STA $1B15
+        STA $7C15
         INY
         LDA ($CE),Y
-        STA $1B16
+        STA $7C16
         INY
         LDA ($CE),Y
-        STA $1B17
+        STA $7C17
         LDA #$0B
         JSR BM_APADV
         BCC ?BAD
@@ -736,20 +736,20 @@ BM_APBODY BRA ?BODY
         BNE ?BAD
         INY
         LDA ($CE),Y
-        CMP $1B12
+        CMP $7C12
         BNE ?BAD
         INY
         LDA ($CE),Y
-        CMP $1B13
+        CMP $7C13
         BNE ?BAD
         LDA #$03
         JSR BM_APADV
         BCC ?BAD
         LDA $D0
-        CMP $1B12
+        CMP $7C12
         BNE ?BAD
         LDA $D1
-        CMP $1B13
+        CMP $7C13
         BNE ?BAD
         LDA $CE
         STA $D3
@@ -763,9 +763,9 @@ BM_APHASH BRA ?BODY
 ?BAD    CLC
         RTS
 ?BODY   JSR BM_FNV_INIT
-        LDA $1B12
+        LDA $7C12
         STA $D5
-        LDA $1B13
+        LDA $7C13
         STA $D6
 ?MORE   LDA $D5
         ORA $D6
@@ -784,7 +784,7 @@ BM_APHASH BRA ?BODY
         BRA ?MORE
 ?CHECK  LDX #$03
 ?HASH   LDA $B0,X
-        CMP $1B14,X
+        CMP $7C14,X
         BNE ?BAD
         DEX
         BPL ?HASH
@@ -824,27 +824,27 @@ BM_APSCAN STZ $CC
         BCC ?ADV
         JSR BM_APHASH
         BCC ?ADV
-        LDA $1B0F
+        LDA $7C0F
         ASL A
         ASL A
         CLC
-        ADC $1B0F
+        ADC $7C0F
         TAX
-        LDA $1B02
-        STA $1D40,X
+        LDA $7C02
+        STA $7C80,X
         LDA $CC
-        STA $1D41,X
+        STA $7C81,X
         LDA $CD
         SEC
         SBC #$0A
         CLC
-        ADC $1B04
-        STA $1D42,X
-        LDA $1B10
-        STA $1D43,X
-        LDA $1B11
-        STA $1D44,X
-        INC $1B0F
+        ADC $7C04
+        STA $7C82,X
+        LDA $7C10
+        STA $7C83,X
+        LDA $7C11
+        STA $7C84,X
+        INC $7C0F
         SEC
         RTS
 
@@ -853,15 +853,15 @@ BM_APLIST BRA ?BODY
 ?TITLE  DB $0D,$0A,'A','P',' ','E','N','V','E','L'
         DB 'O','P','E','S'
         DB $0D,$0A,0
-?BODY   LDA $1B0F
+?BODY   LDA $7C0F
         BNE ?HAVE
         RTS
 ?HAVE
         LDX #<?TITLE
         LDY #>?TITLE
         JSR BM_PUTS
-        STZ $1B0D
-        STZ $1B0E
+        STZ $7C0D
+        STZ $7C0E
 ?ROW    LDA #'A'
         JSR BM_OUT
         LDA #'P'
@@ -870,65 +870,65 @@ BM_APLIST BRA ?BODY
         JSR BM_OUT
         LDA #'B'
         JSR BM_OUT
-        LDX $1B0E
-        LDA $1D40,X
+        LDX $7C0E
+        LDA $7C80,X
         CLC
         ADC #'0'
         JSR BM_OUT
         LDA #' '
         JSR BM_OUT
-        LDX $1B0E
-        LDA $1D42,X
+        LDX $7C0E
+        LDA $7C82,X
         JSR BM_HEX
-        LDX $1B0E
-        LDA $1D41,X
+        LDX $7C0E
+        LDA $7C81,X
         JSR BM_HEX
         LDA #' '
         JSR BM_OUT
         LDA #'L'
         JSR BM_OUT
-        LDX $1B0E
-        LDA $1D44,X
+        LDX $7C0E
+        LDA $7C84,X
         JSR BM_HEX
-        LDX $1B0E
-        LDA $1D43,X
+        LDX $7C0E
+        LDA $7C83,X
         JSR BM_HEX
         LDA #$0D
         JSR BM_OUT
         LDA #$0A
         JSR BM_OUT
-        LDA $1B0E
+        LDA $7C0E
         CLC
         ADC #$05
-        STA $1B0E
-        INC $1B0D
-        LDA $1B0D
-        CMP $1B0F
+        STA $7C0E
+        INC $7C0D
+        LDA $7C0D
+        CMP $7C0F
         BNE ?ROW
         RTS
 
 ; Read-only live map: E=erased, U=used, A=valid AP, P=protected B3F.
 BM_MAP  LDA #'M'
-        STA $1B01
-        STZ $1B0F
+        STA $7C01
+        STZ $7C0F
         LDX #<BM_MMAP
         LDY #>BM_MMAP
         JSR BM_PUTS
-        STZ $1B02
+        STZ $7C02
 ?BANK   LDA #'B'
         JSR BM_OUT
-        LDA $1B02
+        LDA $7C02
         CLC
         ADC #'0'
         JSR BM_OUT
         LDA #$80
-        STA $1B04
+        STA $7C04
 ?SECTOR LDA #' '
         JSR BM_OUT
-        LDA $1B02
+        LDA $7C02
         CMP #$03
         BNE ?STAGE
-        LDA $1B04
+        LDA $7C04
         CMP #$F0
         BNE ?STAGE
         LDA #'P'
@@ -945,7 +945,7 @@ BM_MAP  LDA #'M'
 ?STAGERES PHA
         LDA #$EE
         TRB $7FEC
-        LDA $1B0C
+        LDA $7C0C
         TSB $7FEC
         PLA
         BNE ?STAGEPASS
@@ -973,17 +973,17 @@ BM_MAP  LDA #'M'
         BRA ?MARK
 ?PLAIN  LDA #'U'
 ?MARK   JSR BM_OUT
-        LDA $1B04
+        LDA $7C04
         CLC
         ADC #$10
-        STA $1B04
+        STA $7C04
         BNE ?SECTOR
         LDA #$0D
         JSR BM_OUT
         LDA #$0A
         JSR BM_OUT
-        INC $1B02
-        LDA $1B02
+        INC $7C02
+        LDA $7C02
         CMP #$04
         BCS ?DONE
         JMP ?BANK
@@ -997,31 +997,31 @@ BM_MAP  LDA #'M'
 BM_COPY BRA ?BODY
 ?ABORT JMP BM_ABORT
 ?BODY  LDA #'C'
-        STA $1B01
+        STA $7C01
 ?SRC   LDX #<BM_MSRC
         LDY #>BM_MSRC
         JSR BM_PUTS
         JSR BM_READ
         BCC ?ABORT
-        LDA $1C00
+        LDA $7C20
         BEQ ?ABORT
         JSR BM_PARSE_BANK
         BCC ?SRC
-        STA $1B02
+        STA $7C02
 ?DST   LDX #<BM_MDST
         LDY #>BM_MDST
         JSR BM_PUTS
         JSR BM_READ
         BCC ?ABORT
-        LDA $1C00
+        LDA $7C20
         BEQ ?ABORT
         JSR BM_PARSE_BANK
         BCC ?DST
         CMP #$03
         BCS ?DST
-        CMP $1B02
+        CMP $7C02
         BEQ ?DST
-        STA $1B03
+        STA $7C03
         JSR BM_COPY_DIR_EMPTY
         BCS ?DIR_EMPTY
         LDX #<BM_MCDIRUSED
@@ -1032,7 +1032,7 @@ BM_COPY BRA ?BODY
 
 ; Require a source reset vector in $8000-$FFFE before destructive copy.
         LDA #$F0
-        STA $1B04
+        STA $7C04
         JSR BM_STAGE
         BCS ?VECTOR
         JMP BM_FSTAGE
@@ -1046,7 +1046,7 @@ BM_COPY BRA ?BODY
         CMP #$FF
         BNE ?CONF
 ?VEC   LDA #$E6
-        STA $1B00
+        STA $7C00
         JMP BM_FAIL
 
 ?CONF  LDA $0A0C
@@ -1080,11 +1080,11 @@ BM_COPY BRA ?BODY
 ?PROMPT LDX #<BM_MCTYPE
         LDY #>BM_MCTYPE
         JSR BM_PUTS
-        LDA $1B02
+        LDA $7C02
         CLC
         ADC #'0'
         JSR BM_OUT
-        LDA $1B03
+        LDA $7C03
         CLC
         ADC #'0'
         JSR BM_OUT
@@ -1094,40 +1094,40 @@ BM_COPY BRA ?BODY
         JSR BM_OUT
         JSR BM_READ
         BCC ?NO
-        LDA $1C07
+        LDA $7C27
         BNE ?NO
-        LDA $1C00
+        LDA $7C20
         CMP #'C'
         BNE ?NO
-        LDA $1C01
+        LDA $7C21
         CMP #'O'
         BNE ?NO
-        LDA $1C02
+        LDA $7C22
         CMP #'P'
         BNE ?NO
-        LDA $1C03
+        LDA $7C23
         CMP #'Y'
         BNE ?NO
-        LDA $1C04
+        LDA $7C24
         CMP #' '
         BNE ?NO
-        LDA $1B02
+        LDA $7C02
         CLC
         ADC #'0'
-        CMP $1C05
+        CMP $7C25
         BNE ?NO
-        LDA $1B03
+        LDA $7C03
         CLC
         ADC #'0'
-        CMP $1C06
+        CMP $7C26
         BNE ?NO
 ?YES   LDA #$0D
         JSR BM_OUT
         LDA #$0A
         JSR BM_OUT
         LDA #$80
-        STA $1B04
-        STZ $1B05
+        STA $7C04
+        STZ $7C05
 ?LOOP  JSR BM_STAGE
         BCS ?STAGED
         JMP BM_FSTAGE
@@ -1136,13 +1136,13 @@ BM_COPY BRA ?BODY
         BCS ?WRITTEN
         JMP BM_FPROGRAM
 ?WRITTEN
-        INC $1B05
+        INC $7C05
         LDA #'.'
         JSR BM_OUT
-        LDA $1B04
+        LDA $7C04
         CLC
         ADC #$10
-        STA $1B04
+        STA $7C04
         BNE ?LOOP
         JMP BM_COPY_ENROLL
 
@@ -1161,7 +1161,7 @@ BM_COPY_DIR_EMPTY JSR BM_COPY_DIR_BASE
 ?USED   CLC
         RTS
 
-BM_COPY_DIR_BASE LDA $1B03
+BM_COPY_DIR_BASE LDA $7C03
         ASL A
         ASL A
         ASL A
@@ -1180,21 +1180,21 @@ BM_COPY_ENROLL LDX #<BM_MCTYPE2
         BCS ?READ_OK
         JMP BM_COPY_ENROLL_ABORT
 ?READ_OK
-        LDA $1C02
+        LDA $7C22
         BNE BM_COPY_ENROLL
-        LDA $1C00
+        LDA $7C20
         JSR BM_HEX_NIBBLE
         BCC BM_COPY_ENROLL
         ASL A
         ASL A
         ASL A
         ASL A
-        STA $1B18
-        LDA $1C01
+        STA $7C18
+        LDA $7C21
         JSR BM_HEX_NIBBLE
         BCC BM_COPY_ENROLL
-        ORA $1B18
-        STA $1B18
+        ORA $7C18
+        STA $7C18
 BM_COPY_DESC LDX #<BM_MCDESC
         LDY #>BM_MCDESC
         JSR BM_PUTS
@@ -1202,13 +1202,13 @@ BM_COPY_DESC LDX #<BM_MCDESC
         BCS ?READ_OK
         JMP BM_COPY_ENROLL_ABORT
 ?READ_OK
-        LDA $1C05
+        LDA $7C25
         BNE BM_COPY_DESC
         LDX #$00
-?BYTE   LDA $1C00,X
+?BYTE   LDA $7C20,X
         JSR BM_DESC_BYTE
         BCC BM_COPY_DESC
-        STA $1B19,X
+        STA $7C19,X
         INX
         CPX #$05
         BNE ?BYTE
@@ -1217,10 +1217,10 @@ BM_COPY_DESC LDX #<BM_MCDESC
         JSR BM_PUTS
         JSR BM_READ
         BCC BM_COPY_ENROLL_ABORT
-        LDA $1C00
+        LDA $7C20
         CMP #'Y'
         BNE BM_COPY_ENROLL_ABORT
-        LDA $1C01
+        LDA $7C21
         BNE BM_COPY_ENROLL_ABORT
 
 ; START first: clear journal bit zero. The row remains unbootable until the
@@ -1234,7 +1234,7 @@ BM_COPY_DESC LDX #<BM_MCDESC
 
 ; Immutable descriptor for Banks 0-2: TYPE, erased reserved bytes, DESC,
 ; seal FE, and erased FFFF entry. Program and verify as one request.
-        LDA $1B18
+        LDA $7C18
         STA $7B00
         LDA #$FF
         LDX #$01
@@ -1243,7 +1243,7 @@ BM_COPY_DESC LDX #<BM_MCDESC
         CPX #$04
         BNE ?ERASED
         LDX #$00
-?DESC   LDA $1B19,X
+?DESC   LDA $7C19,X
         STA $7B04,X
         INX
         CPX #$05
@@ -1269,11 +1269,11 @@ BM_COPY_DESC LDX #<BM_MCDESC
 
 BM_COPY_ENROLL_ABORT JMP BM_ABORT
 BM_COPY_ENROLL_FAIL LDA #$E7
-        STA $1B00
+        STA $7C00
         LDA $7EA5
-        STA $1B06
+        STA $7C06
         LDA $7EA6
-        STA $1B07
+        STA $7C07
         JMP BM_FAIL
 
 ; Program one exact Bank-3 directory request through the carried private
@@ -1289,7 +1289,7 @@ BM_COPY_DIR_WRITE PHA
         LDA #$FF
         STA $7E9F
         LDA #$07
-        STA $1FF0
+        STA $7DF0
         JSR $0200
         BCC ?FAIL
         LDA $7E9E
@@ -1354,18 +1354,18 @@ BM_MCDESC DB 'D','E','S','C',' ','5',' ','C','H','A','R','S','>',' ',0
 BM_MCENROLL DB 'E','N','R','O','L','L','?',' ','Y',':',' ',0
 
 BM_ERASE LDA #'E'
-        STA $1B01
+        STA $7C01
 BM_EBANK LDX #<BM_MBANK
         LDY #>BM_MBANK
         JSR BM_PUTS
         JSR BM_READ
         BCC BM_EABORT
-        LDA $1C00
+        LDA $7C20
         BEQ BM_EABORT
         JSR BM_PARSE_BANK
         BCC BM_EBANK
-        STA $1B02
-        STA $1B03
+        STA $7C02
+        STA $7C03
         BRA BM_ESECTOR
 BM_EABORT JMP BM_ABORT
 BM_ESECTOR LDX #<BM_MSEC02
@@ -1373,82 +1373,82 @@ BM_ESECTOR LDX #<BM_MSEC02
         JSR BM_PUTS
         JSR BM_READ
         BCC BM_EABORT
-        LDA $1C00
+        LDA $7C20
         BEQ BM_EABORT
         CMP #'A'
         BNE BM_ENOTALL
-        LDA $1C01
+        LDA $7C21
         CMP #'L'
         BNE BM_ENOTALL
-        LDA $1C02
+        LDA $7C22
         CMP #'L'
         BNE BM_ESECTOR
-        LDA $1C03
+        LDA $7C23
         BNE BM_ESECTOR
 BM_EALL LDA #$80
-        STA $1B04
+        STA $7C04
         LDA #$08
-        STA $1B05
-        LDA $1B02
+        STA $7C05
+        LDA $7C02
         CMP #$03
         BNE BM_EASEL
-        DEC $1B05
+        DEC $7C05
 BM_EASEL LDA #'A'
-        STA $1B08
+        STA $7C08
         LDA #'L'
-        STA $1B09
-        STA $1B0A
+        STA $7C09
+        STA $7C0A
         LDA #$03
-        STA $1B0B
+        STA $7C0B
         JMP BM_ECONF
 
-BM_ENOTALL LDA $1C01
+BM_ENOTALL LDA $7C21
         BEQ BM_ESINGLE
         CMP #'-'
         BNE BM_ESECTOR
-        LDA $1C03
+        LDA $7C23
         BNE BM_ESECTOR
-        LDA $1C00
+        LDA $7C20
         JSR BM_EHEX
         BCC BM_ESECTOR
-        STA $1B04
-        LDA $1C02
+        STA $7C04
+        LDA $7C22
         JSR BM_EHEX
         BCC BM_ESECTOR
-        CMP $1B04
+        CMP $7C04
         BCC BM_ESECTOR
         SEC
-        SBC $1B04
+        SBC $7C04
         LSR A
         LSR A
         LSR A
         LSR A
         INC A
-        STA $1B05
-        LDA $1C00
-        STA $1B08
+        STA $7C05
+        LDA $7C20
+        STA $7C08
         LDA #'-'
-        STA $1B09
-        LDA $1C02
-        STA $1B0A
+        STA $7C09
+        LDA $7C22
+        STA $7C0A
         LDA #$03
-        STA $1B0B
+        STA $7C0B
         JMP BM_ECONF
 
-BM_ESINGLE LDA $1C00
+BM_ESINGLE LDA $7C20
         JSR BM_EHEX
         BCS BM_ESOK
         JMP BM_ESECTOR
 BM_ESOK
-        STA $1B04
+        STA $7C04
         LDA #$01
-        STA $1B05
-        LDA $1C00
-        STA $1B08
-        STZ $1B09
-        STZ $1B0A
+        STA $7C05
+        LDA $7C20
+        STA $7C08
+        STZ $7C09
+        STZ $7C0A
         LDA #$01
-        STA $1B0B
+        STA $7C0B
         JMP BM_ECONF
 
 ; Convert 8, 9, A-F to a sector high byte and enforce Bank-3 max E.
@@ -1464,7 +1464,7 @@ BM_EHEX SEC
         BEQ BM_ECHECKF
         SEC
         RTS
-BM_ECHECKF LDX $1B02
+BM_ECHECKF LDX $7C02
         CPX #$03
         BEQ BM_EBAD
         LDA #$F0
@@ -1478,18 +1478,18 @@ BM_ETABLE DB $80,$90,$00,$00,$00,$00,$00,$00,$00
 BM_ECONF LDX #<BM_METYPE
         LDY #>BM_METYPE
         JSR BM_PUTS
-        LDA $1B02
+        LDA $7C02
         CLC
         ADC #'0'
         JSR BM_OUT
-        LDA $1B08
+        LDA $7C08
         JSR BM_OUT
-        LDA $1B0B
+        LDA $7C0B
         CMP #$01
         BEQ BM_ESELEND
-        LDA $1B09
+        LDA $7C09
         JSR BM_OUT
-        LDA $1B0A
+        LDA $7C0A
         JSR BM_OUT
 BM_ESELEND
         LDA #'>'
@@ -1498,45 +1498,45 @@ BM_ESELEND
         JSR BM_OUT
         JSR BM_READ
         BCC BM_ENO
-        LDA $1C00
+        LDA $7C20
         CMP #'E'
         BNE BM_ENO
-        LDA $1C01
+        LDA $7C21
         CMP #'R'
         BNE BM_ENO
-        LDA $1C02
+        LDA $7C22
         CMP #'A'
         BNE BM_ENO
-        LDA $1C03
+        LDA $7C23
         CMP #'S'
         BNE BM_ENO
-        LDA $1C04
+        LDA $7C24
         CMP #'E'
         BNE BM_ENO
-        LDA $1C05
+        LDA $7C25
         CMP #' '
         BNE BM_ENO
-        LDA $1B02
+        LDA $7C02
         CLC
         ADC #'0'
-        CMP $1C06
+        CMP $7C26
         BNE BM_ENO
-        LDA $1B08
-        CMP $1C07
+        LDA $7C08
+        CMP $7C27
         BNE BM_ENO
-        LDA $1B0B
+        LDA $7C0B
         CMP #$01
         BEQ BM_EONELEN
-        LDA $1B09
-        CMP $1C08
+        LDA $7C09
+        CMP $7C28
         BNE BM_ENO
-        LDA $1B0A
-        CMP $1C09
+        LDA $7C0A
+        CMP $7C29
         BNE BM_ENO
-        LDA $1C0A
+        LDA $7C2A
         BEQ BM_EYES
         BNE BM_ENO
-BM_EONELEN LDA $1C08
+BM_EONELEN LDA $7C28
         BEQ BM_EYES
 BM_ENO JMP BM_ABORT
 BM_EYES
@@ -1545,7 +1545,7 @@ BM_EYES
         JSR BM_OUT
         LDA #$0A
         JSR BM_OUT
-        LDA $1B02
+        LDA $7C02
         CMP #$03
         BNE BM_ELOOP
         SEI
@@ -1555,36 +1555,36 @@ BM_ELOOP JSR BM_PROGRAM
         BCS BM_EWRITTEN
         JMP BM_FPROGRAM
 BM_EWRITTEN
-        LDA $1B02
+        LDA $7C02
         CMP #$03
         BEQ BM_ENODOT
         LDA #'.'
         JSR BM_OUT
-BM_ENODOT LDA $1B04
+BM_ENODOT LDA $7C04
         CLC
         ADC #$10
-        STA $1B04
-        DEC $1B05
+        STA $7C04
+        DEC $7C05
         BNE BM_ELOOP
-        LDA $1B02
+        LDA $7C02
         CMP #$03
         BNE BM_SUCCESS
         LDA #$AC
-        STA $1B00
+        STA $7C00
         JMP $F000
 
 BM_FSTAGE LDA #$E1
         BRA BM_FAILCODE
 BM_FPROGRAM LDA #$E2
-        LDX $1FEA
-        STX $1B06
-        LDX $1FEB
-        STX $1B07
-BM_FAILCODE STA $1B00
-        LDA $1B01
+        LDX $7DEA
+        STX $7C06
+        LDX $7DEB
+        STX $7C07
+BM_FAILCODE STA $7C00
+        LDA $7C01
         CMP #'E'
         BNE BM_FAIL
-        LDA $1B02
+        LDA $7C02
         CMP #$03
         BNE BM_FAIL
         JMP $F000
@@ -1597,7 +1597,7 @@ BM_FAIL LDA #'!'
         JMP BM_MAIN
 
 BM_SUCCESS LDA #$AC
-        STA $1B00
+        STA $7C00
         LDA #' '
         JSR BM_OUT
         LDA #'O'
@@ -1610,7 +1610,7 @@ BM_SUCCESS LDA #$AC
         JSR BM_OUT
         JMP BM_MAIN
 
-BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','1',' '
+BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2',' '
         DB 'B','A','N','K',' ','M','A','I','N','T',$0D,$0A
         DB 'B','3',' ','E','R','A','S','E',' ','R','E','T','U'
         DB 'R','N','S',' ','T','O',' ','S','T','R','8',';',' '
@@ -1634,7 +1634,7 @@ BM_PUT  BRA ?BODY
 ?EXACT  DB 'P','U','T',' ','B','0','B','F','0','0',0
 ?BAD    JMP BM_ABORT
 ?BODY   LDA #'P'
-        STA $1B01
+        STA $7C01
         LDA $4000
         CMP #'A'
         BNE ?BAD
@@ -1649,11 +1649,11 @@ BM_PUT  BRA ?BODY
         LDA $4003
         CMP #$05
         BCC ?BAD
-        STA $1B05
-        STZ $1B02
-        STZ $1B03
+        STA $7C05
+        STZ $7C02
+        STZ $7C03
         LDA #$B0
-        STA $1B04
+        STA $7C04
         JSR BM_STAGE
         BCS ?STAGED
         JMP BM_FSTAGE
@@ -1665,7 +1665,7 @@ BM_PUT  BRA ?BODY
         JMP BM_ABORT
 ?ERASEOK
         INX
-        CPX $1B05
+        CPX $7C05
         BNE ?ERASED
         LDX #<?MTARGET
         LDY #>?MTARGET
@@ -1675,7 +1675,7 @@ BM_PUT  BRA ?BODY
         JMP BM_ABORT
 ?READOK
         LDX #$00
-?CONFIRM LDA $1C00,X
+?CONFIRM LDA $7C20,X
         CMP ?EXACT,X
         BEQ ?MATCH
         JMP BM_ABORT
@@ -1687,7 +1687,7 @@ BM_PUT  BRA ?BODY
 ?OVERLAY LDA $4000,X
         STA $1900,X
         INX
-        CPX $1B05
+        CPX $7C05
         BNE ?OVERLAY
         JSR BM_PROGRAM
         BCS ?PROGRAMMED
@@ -1698,7 +1698,7 @@ BM_PUT  BRA ?BODY
 ; BEGIN GENERATED STR8 MUTATION WORKER
         ORG $3000
         DB $4C,$07,$02,$49,$57,$01,$FE,$08
-        DB $78,$AD,$F0,$1F,$C9,$05,$F0,$0B
+        DB $78,$AD,$F0,$7D,$C9,$05,$F0,$0B
         DB $C9,$06,$F0,$0C,$C9,$07,$F0,$0D
         DB $28,$18,$60,$20,$38,$02,$80,$0A
         DB $20,$4B,$02,$80,$05,$20,$62,$02
@@ -1706,9 +1706,9 @@ BM_PUT  BRA ?BODY
         DB $38,$60,$20,$14,$04,$28,$18,$60
         DB $20,$E5,$02,$90,$0C,$20,$2F,$03
         DB $90,$07,$20,$6E,$03,$90,$02,$38
-        DB $60,$18,$60,$AD,$EE,$1F,$20,$16
-        DB $04,$64,$CD,$AD,$E9,$1F,$85,$CE
-        DB $64,$CF,$AD,$F6,$1F,$85,$D0,$4C
+        DB $60,$18,$60,$AD,$EE,$7D,$20,$16
+        DB $04,$64,$CD,$AD,$E9,$7D,$85,$CE
+        DB $64,$CF,$AD,$F6,$7D,$85,$D0,$4C
         DB $D2,$02,$20,$14,$04,$20,$B8,$02
         DB $AE,$A0,$7E,$F0,$31,$A0,$00,$B1
         DB $CF,$85,$D3,$B1,$D1,$25,$D3,$C5
@@ -1725,31 +1725,31 @@ BM_PUT  BRA ?BODY
         DB $60,$E6,$D1,$D0,$02,$E6,$D2,$E6
         DB $CF,$60,$A0,$00,$B1,$CD,$91,$CF
         DB $C8,$D0,$F9,$E6,$CE,$E6,$D0,$20
-        DB $A2,$03,$D0,$EE,$60,$AD,$EF,$1F
+        DB $A2,$03,$D0,$EE,$60,$AD,$EF,$7D
         DB $20,$16,$04,$20,$08,$03,$B0,$16
-        DB $AD,$EA,$1F,$85,$D1,$AD,$EB,$1F
+        DB $AD,$EA,$7D,$85,$D1,$AD,$EB,$7D
         DB $85,$D2,$20,$AB,$03,$90,$05,$20
         DB $08,$03,$B0,$02,$18,$60,$38,$60
-        DB $64,$CD,$AD,$E9,$1F,$85,$CE,$A0
+        DB $64,$CD,$AD,$E9,$7D,$85,$CE,$A0
         DB $00,$B1,$CD,$C9,$FF,$D0,$0D,$C8
         DB $D0,$F7,$E6,$CE,$A5,$CE,$29,$0F
-        DB $D0,$ED,$38,$60,$98,$8D,$EA,$1F
-        DB $A5,$CE,$8D,$EB,$1F,$18,$60,$AD
-        DB $EF,$1F,$20,$16,$04,$64,$D1,$AD
-        DB $E9,$1F,$85,$D2,$64,$CF,$AD,$F6
-        DB $1F,$85,$D0,$A0,$00,$B1,$CF,$C9
+        DB $D0,$ED,$38,$60,$98,$8D,$EA,$7D
+        DB $A5,$CE,$8D,$EB,$7D,$18,$60,$AD
+        DB $EF,$7D,$20,$16,$04,$64,$D1,$AD
+        DB $E9,$7D,$85,$D2,$64,$CF,$AD,$F6
+        DB $7D,$85,$D0,$A0,$00,$B1,$CF,$C9
         DB $FF,$F0,$13,$85,$D3,$20,$C5,$03
-        DB $B0,$0C,$A5,$D1,$8D,$EA,$1F,$A5
-        DB $D2,$8D,$EB,$1F,$18,$60,$E6,$D1
+        DB $B0,$0C,$A5,$D1,$8D,$EA,$7D,$A5
+        DB $D2,$8D,$EB,$7D,$18,$60,$E6,$D1
         DB $E6,$CF,$D0,$DF,$E6,$D2,$E6,$D0
         DB $20,$A2,$03,$D0,$D6,$60,$AD,$EF
-        DB $1F,$20,$16,$04,$64,$CD,$AD,$E9
-        DB $1F,$85,$CE,$64,$CF,$AD,$F6,$1F
+        DB $7D,$20,$16,$04,$64,$CD,$AD,$E9
+        DB $7D,$85,$CE,$64,$CF,$AD,$F6,$7D
         DB $85,$D0,$A0,$00,$B1,$CD,$D1,$CF
         DB $D0,$0D,$C8,$D0,$F7,$E6,$CE,$E6
         DB $D0,$20,$A2,$03,$D0,$EC,$60,$98
-        DB $8D,$EA,$1F,$A5,$CE,$8D,$EB,$1F
-        DB $18,$60,$AD,$F6,$1F,$18,$69,$10
+        DB $8D,$EA,$7D,$A5,$CE,$8D,$EB,$7D
+        DB $18,$60,$AD,$F6,$7D,$18,$69,$10
         DB $C5,$D0,$60,$20,$02,$04,$A9,$80
         DB $8D,$55,$D5,$20,$02,$04,$A9,$30
         DB $A0,$00,$91,$D1,$A9,$FF,$85,$D3

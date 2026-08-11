@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)][string]$BinPath,
-    [string]$S19Path = "BUILD/v1.1/s19/guest-payload.s19",
+    [string]$S19Path = "BUILD/v1.2/s19/guest-payload.s19",
     [int]$BaseAddress = 0x8000,
     [int]$EntryAddress = -1,
     [ValidateRange(0, 3)][int]$Bank = 0,

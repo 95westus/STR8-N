@@ -1,4 +1,4 @@
-# STR8-N v1.1 Worked Examples
+# STR8-N v1.2 Worked Examples
 
 These examples show what to type and which S19 file to send. Text after `<-`
 is explanation, not terminal input. Use normal full-speed text-file transfer
@@ -10,7 +10,7 @@ Wait until the identity and live dots appear, then press `S`:
 
 ```text
 WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
-STR8-N 1.1
+STR8-N 1.2
 0-2 H S: ..S
 I L H J
 STR8-N>
@@ -24,7 +24,7 @@ A key typed during `WAIT...` is ignored and flushed. The selector accepts only
 Use the R-YORS 12K HIMON file:
 
 ```text
-C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.1-himon-bank3-c-e.s19
+C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-bank3-c-e.s19
 ```
 
 Example session:
@@ -55,7 +55,7 @@ After HIMON has established Bank 3's identity and entry, install the 16K
 ASM-only file:
 
 ```text
-C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.1-asm-bank3-8-b.s19
+C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.2-asm-bank3-8-b.s19
 ```
 
 ```text
@@ -83,7 +83,7 @@ entry. It is not a valid first Bank-3 enrollment.
 The simplest complete writable Bank-3 payload is:
 
 ```text
-C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.1-asm-himon-bank3-8-e.s19
+C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.2-asm-himon-bank3-8-e.s19
 ```
 
 Select Bank 3 and range `8-E`. On a new directory row, supply TYPE and DESC.
@@ -115,7 +115,7 @@ make ryors-full-bank
 This creates:
 
 ```text
-BUILD/v1.1/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
 ```
 
 Install it in Bank 0, 1, or 2:
@@ -169,13 +169,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19
+BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
 ```
 
 It starts automatically:
 
 ```text
-STR8-N 1.1 BANK MAINT
+STR8-N 1.2 BANK MAINT
 B3 ERASE RETURNS TO STR8; SELECT S
 !STR8=SOURCE HAS STR8
 C=COPY E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT>

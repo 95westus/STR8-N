@@ -25,9 +25,9 @@ worktree.
 ## Published STR8-N artifacts
 
 ```text
-BUILD/v1.1/bin/str8n-bank3-f000-ffff.bin
-BUILD/v1.1/s19/str8n-worker-0200.s19
-BUILD/v1.1/s19/str8n-v1.1-bank-maint-2000.s19
+BUILD/v1.2/bin/str8n-bank3-f000-ffff.bin
+BUILD/v1.2/s19/str8n-worker-0200.s19
+BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
 BUILD/str8n-manifest.json
 ```
 
@@ -70,13 +70,13 @@ an interface.
 The reverse dependency is limited to the optional full-bank image builder:
 
 ```text
-R-YORS/SRC/BUILD/s19/ryors-v1.1-asm-himon-bank3-8-e.s19
+R-YORS/SRC/BUILD/s19/ryors-v1.2-asm-himon-bank3-8-e.s19
                          28K dense payload, $8000-$EFFF, S9 $C000
-STR8-N BUILD/v1.1/bin/str8n-bank3-f000-ffff.bin
+STR8-N BUILD/v1.2/bin/str8n-bank3-f000-ffff.bin
                           4K current top, $F000-$FFFF
                                       |
                                       v
-STR8-N BUILD/v1.1/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
+STR8-N BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
                          32K dense payload, $8000-$FFFF, S9/RESET $F000
 ```
 

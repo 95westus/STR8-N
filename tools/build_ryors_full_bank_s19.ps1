@@ -1,7 +1,7 @@
 param(
-    [string]$PayloadS19Path = "../R-YORS/SRC/BUILD/s19/ryors-v1.1-asm-himon-bank3-8-e.s19",
-    [string]$TopBinPath = "BUILD/v1.1/bin/str8n-bank3-f000-ffff.bin",
-    [string]$S19Path = "BUILD/v1.1/s19/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19",
+    [string]$PayloadS19Path = "../R-YORS/SRC/BUILD/s19/ryors-v1.2-asm-himon-bank3-8-e.s19",
+    [string]$TopBinPath = "BUILD/v1.2/bin/str8n-v1.2-bank3-f000-ffff.bin",
+    [string]$S19Path = "BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19",
     [ValidateRange(1, 64)][int]$BytesPerRecord = 32
 )
 

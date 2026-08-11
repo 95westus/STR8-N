@@ -3,7 +3,7 @@ LINKER ?= wdcln
 
 SRC_DIR := src
 BUILD_DIR := BUILD
-VERSION := v1.1
+VERSION := v1.2
 RELEASE_DIR := $(BUILD_DIR)/$(VERSION)
 OBJ_DIR := $(BUILD_DIR)/obj
 LST_DIR := $(BUILD_DIR)/lst
@@ -27,10 +27,12 @@ STR8_INCLUDES := \
 	$(SRC_DIR)/str8-directory-eq.inc \
 	$(SRC_DIR)/str8-jump-eq.inc \
 	$(SRC_DIR)/str8-record-eq.inc \
+	$(SRC_DIR)/str8-ram-abi.inc \
 	$(SRC_DIR)/str8-version.inc \
 	$(SRC_DIR)/str8-worker-eq.inc
 WORKER_INCLUDES := \
 	$(SRC_DIR)/str8-jump-eq.inc \
+	$(SRC_DIR)/str8-ram-abi.inc \
 	$(SRC_DIR)/str8-record-eq.inc \
 	$(SRC_DIR)/str8-worker-eq.inc
 
@@ -38,27 +40,34 @@ STR8_OBJ := $(OBJ_DIR)/str8n.obj
 DELAY_OBJ := $(OBJ_DIR)/util-delay.obj
 WORKER_OBJ := $(OBJ_DIR)/str8n-worker.obj
 
-STR8_S19 := $(S19_DIR)/str8n-f000.s19
-WORKER_S19 := $(S19_DIR)/str8n-worker-0200.s19
+STR8_S19 := $(S19_DIR)/str8n-v1.2-f000.s19
+WORKER_S19 := $(S19_DIR)/str8n-v1.2-worker-0200.s19
 TOP_BIN_TOOL := tools/build_str8n_top_bin.ps1
 LAYOUT_CHECK_TOOL := tools/check_str8n_layout.ps1
 MANIFEST_TOOL := tools/write_str8n_manifest.ps1
 RANGE_MATRIX_TOOL := tools/test_s19_range_matrix.ps1
 RAM_LOAD_TOOL := tools/test_ram_load_contract.ps1
-BANK_MAINT_SRC := tools/bank-maint/str8n-v1.1-bank-maint-2000.asm
-BANK_MAINT_OBJ := $(OBJ_DIR)/str8n-v1.1-bank-maint-2000.obj
-BANK_MAINT_S19 := $(S19_DIR)/str8n-v1.1-bank-maint-2000.s19
+RAM_ABI_CHECK_TOOL := tools/check_ram_abi_sources.ps1
+BANK_MAINT_SRC := tools/bank-maint/str8n-v1.2-bank-maint-2000.asm
+BANK_MAINT_OBJ := $(OBJ_DIR)/str8n-v1.2-bank-maint-2000.obj
+BANK_MAINT_S19 := $(S19_DIR)/str8n-v1.2-bank-maint-2000.s19
 BANK_MAINT_CHECK_TOOL := tools/check_bank_maint_s19.ps1
-RYORS_28K_S19 ?= ../R-YORS/SRC/BUILD/s19/ryors-v1.1-asm-himon-bank3-8-e.s19
+TOP_UPDATE_SRC := tools/top-update/str8n-v1.2-top-update-2000.asm
+TOP_UPDATE_INC_TOOL := tools/make_top_update_image_inc.ps1
+TOP_UPDATE_INC := $(RELEASE_DIR)/generated/str8n-v1.2-top-image.inc
+TOP_UPDATE_CHECK_TOOL := tools/check_top_update_s19.ps1
+TOP_UPDATE_OBJ := $(OBJ_DIR)/str8n-v1.2-top-update-2000.obj
+TOP_UPDATE_S19 := $(S19_DIR)/str8n-v1.2-top-update-2000.s19
+RYORS_28K_S19 ?= ../R-YORS/SRC/BUILD/s19/ryors-v1.2-asm-himon-bank3-8-e.s19
 RYORS_FULL_BANK_TOOL := tools/build_ryors_full_bank_s19.ps1
-RYORS_FULL_BANK_S19 := $(S19_DIR)/ryors-v1.1-asm-himon-str8n-bank0-2-8-f.s19
-TOP_BIN := $(BIN_DIR)/str8n-bank3-f000-ffff.bin
+RYORS_FULL_BANK_S19 := $(S19_DIR)/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
+TOP_BIN := $(BIN_DIR)/str8n-v1.2-bank3-f000-ffff.bin
 MANIFEST := $(BUILD_DIR)/str8n-manifest.json
 
 .NOTPARALLEL:
-.PHONY: all resident workers programmer-bin manifest bank-maint ryors-full-bank layout-check embedded-layout-check range-matrix-check ram-load-contract-check clean help dirs FORCE
+.PHONY: all resident workers programmer-bin manifest bank-maint top-update ryors-full-bank layout-check embedded-layout-check range-matrix-check ram-load-contract-check ram-abi-check clean help dirs FORCE
 
-all: manifest range-matrix-check ram-load-contract-check
+all: manifest range-matrix-check ram-load-contract-check ram-abi-check top-update
 
 resident: $(STR8_S19)
 
@@ -69,6 +78,8 @@ programmer-bin: $(TOP_BIN)
 manifest: $(MANIFEST)
 
 bank-maint: $(BANK_MAINT_S19)
+
+top-update: ram-abi-check layout-check range-matrix-check ram-load-contract-check bank-maint programmer-bin $(TOP_UPDATE_S19)
 
 ryors-full-bank: $(RYORS_FULL_BANK_S19)
 
@@ -81,7 +92,10 @@ range-matrix-check: $(RANGE_MATRIX_TOOL)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RANGE_MATRIX_TOOL) -WorkDir "$(TEST_DIR)/range-matrix"
 
 ram-load-contract-check: $(STR8_S19) $(RAM_LOAD_TOOL)
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RAM_LOAD_TOOL) -MapPath "$(S19_DIR)/str8n-f000.map"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RAM_LOAD_TOOL) -MapPath "$(S19_DIR)/str8n-v1.2-f000.map"
+
+ram-abi-check: $(RAM_ABI_CHECK_TOOL)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RAM_ABI_CHECK_TOOL)
 
 dirs:
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "@('$(OBJ_DIR)','$(LST_DIR)','$(SYM_DIR)','$(S19_DIR)','$(BIN_DIR)') | ForEach-Object { New-Item -ItemType Directory -Force -Path $$_ | Out-Null }"
@@ -107,8 +121,17 @@ $(WORKER_OBJ): $(WORKER_SRC) $(WORKER_INCLUDES) | dirs
 $(BANK_MAINT_OBJ): $(BANK_MAINT_SRC) | dirs
 	$(ASM) -G -L -S -W $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
-	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-v1.1-bank-maint-2000.lst)
-	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-v1.1-bank-maint-2000.sym)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-v1.2-bank-maint-2000.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-v1.2-bank-maint-2000.sym)
+
+$(TOP_UPDATE_INC): $(TOP_BIN) $(TOP_UPDATE_INC_TOOL) | dirs
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_INC_TOOL) -BinPath "$(TOP_BIN)" -OutPath "$@"
+
+$(TOP_UPDATE_OBJ): $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
+	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-v1.2-top-update-2000.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-v1.2-top-update-2000.sym)
 
 $(STR8_S19): $(STR8_OBJ) $(DELAY_OBJ) | dirs
 	$(LINKER) $(STR8_LINKFLAGS) $@ $(STR8_OBJ) $(DELAY_OBJ)
@@ -123,31 +146,38 @@ $(BANK_MAINT_S19): $(BANK_MAINT_OBJ) $(BANK_MAINT_CHECK_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(BANK_MAINT_CHECK_TOOL) -S19Path "$@"
 
+$(TOP_UPDATE_S19): $(TOP_UPDATE_OBJ) $(TOP_UPDATE_CHECK_TOOL) | dirs
+	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_CHECK_TOOL) -S19Path "$@"
+
 $(RYORS_FULL_BANK_S19): $(RYORS_28K_S19) $(TOP_BIN) $(RYORS_FULL_BANK_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RYORS_FULL_BANK_TOOL) -PayloadS19Path "$(RYORS_28K_S19)" -TopBinPath "$(TOP_BIN)" -S19Path "$@"
 
 $(TOP_BIN): layout-check $(TOP_BIN_TOOL) | dirs
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_BIN_TOOL) -Str8MapPath "$(S19_DIR)/str8n-f000.map" -Str8S19Path "$(STR8_S19)" -WorkerMapPath "$(S19_DIR)/str8n-worker-0200.map" -WorkerS19Path "$(WORKER_S19)" -BinPath "$@"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_BIN_TOOL) -Str8MapPath "$(S19_DIR)/str8n-v1.2-f000.map" -Str8S19Path "$(STR8_S19)" -WorkerMapPath "$(S19_DIR)/str8n-v1.2-worker-0200.map" -WorkerS19Path "$(WORKER_S19)" -BinPath "$@"
 
-$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(BANK_MAINT_S19) $(MANIFEST_TOOL) FORCE
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(MANIFEST_TOOL) -Str8MapPath "$(S19_DIR)/str8n-f000.map" -WorkerMapPath "$(S19_DIR)/str8n-worker-0200.map" -TopBinPath "$(TOP_BIN)" -WorkerS19Path "$(WORKER_S19)" -BankMaintS19Path "$(BANK_MAINT_S19)" -ManifestPath "$@"
+$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(BANK_MAINT_S19) $(TOP_UPDATE_S19) $(MANIFEST_TOOL) FORCE
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(MANIFEST_TOOL) -Str8MapPath "$(S19_DIR)/str8n-v1.2-f000.map" -WorkerMapPath "$(S19_DIR)/str8n-v1.2-worker-0200.map" -TopBinPath "$(TOP_BIN)" -WorkerS19Path "$(WORKER_S19)" -BankMaintS19Path "$(BANK_MAINT_S19)" -TopUpdateS19Path "$(TOP_UPDATE_S19)" -ManifestPath "$@"
 
 FORCE:
 
 help:
 	@echo make          - build and validate resident, unified worker, and programmer BIN
-	@echo release files - write BIN, S19, and S19 tests below BUILD/v1.1
+	@echo release files - write BIN, S19, and S19 tests below BUILD/v1.2
 	@echo manifest path - keep BUILD/str8n-manifest.json for R-YORS compatibility
-	@echo make resident - build the v1.1 resident at F000
+	@echo make resident - build the v1.2 resident at F000
 	@echo make workers  - build the one unified RAM worker
 	@echo make programmer-bin - build the Bank-3 F000-FFFF T48 BIN
 	@echo make manifest - build the verified artifact manifest used by R-YORS
-	@echo make bank-maint - build and validate the STR8-N 1.1 RAM bank-maintenance S19
+	@echo make bank-maint - build and validate the STR8-N 1.2 RAM bank-maintenance S19
+	@echo make top-update - build the guarded L-loadable Bank-3 sector-F updater
 	@echo make ryors-full-bank - compose ASM plus HIMON plus current STR8-N as Bank 0-2 8-F S19
 	@echo make layout-check - require the protected-sector layout and 8-byte margin
 	@echo make embedded-layout-check - alias for layout-check
 	@echo make range-matrix-check - validate every documented 4K-aligned install size
 	@echo make ram-load-contract-check - validate linked L-command RAM and S9 boundaries
+	@echo make ram-abi-check - reject active allocations in user RAM $1A00-$1FFF
 	@echo make clean    - remove STR8N/BUILD only
 
 clean:
