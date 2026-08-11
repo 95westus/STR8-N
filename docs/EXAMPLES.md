@@ -178,7 +178,7 @@ It starts automatically:
 STR8-N 1.2 BANK MAINT
 B3 ERASE RETURNS TO STR8; SELECT S
 !STR8=SOURCE HAS STR8
-C=COPY E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT>
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT>
 ```
 
 ## Copy a full bank and enroll it
@@ -187,7 +187,7 @@ C=COPY E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT>
 destination's Bank-3 directory record. The destination must be Bank 0-2.
 
 ```text
-C=COPY E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT> C
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT> C
 SOURCE BANK 0-3> 3
 DEST BANK 0-2> 2
 !STR8
@@ -206,12 +206,77 @@ If the destination directory row is not all `$FF`, the tool prints
 `DIR NOT EMPTY` and refuses the copy. After `OK`, quit to STR8-N and use the
 matching `J0`, `J1`, or `J2`.
 
+## Refresh all directory rows onboard
+
+Use the dedicated refresh image when the protected directory pocket is full,
+invalid, or must be rebuilt. This operation erases every directory identity
+and journal while preserving the current STR8-N code and vectors. Bank 1
+sector F is overwritten with a verified recovery copy first.
+
+```text
+STR8-N>L
+S19
+```
+
+Send:
+
+```text
+BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19
+```
+
+The guarded confirmations and successful result are:
+
+```text
+STR8-N 1.2 DIRECTORY REFRESH
+BACKUP B1:F; TARGET B3:F
+TYPE BACKUP B1F> BACKUP B1F
+BACKUP VERIFIED
+SAFE PHY $0F000-$0FFFF; TARGET PHY $1F000-$1FFFF; SUM=$hhhh
+TYPE ERASE DIRECTORY> ERASE DIRECTORY
+ERASING B3:F - NO RESET/NMI/POWER
+DIRECTORY EMPTY; STR8-N VERIFIED; RESET
+```
+
+`$hhhh` is the checksum of the live top sector and can vary with the installed
+image. Do not continue unless Bank 1 sector F is sacrificial and `BACKUP
+VERIFIED` appears. Do not press RESET/NMI or remove power during the erase and
+rewrite.
+
+## Adopt an existing bank after a directory refresh
+
+`D` creates only the missing directory record; it does not erase, program, or
+fully validate the payload. The row must be completely erased and the selected
+bank must have a usable RESET vector. This example restores the current R-YORS
+Bank-3 identity after a directory refresh:
+
+```text
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT> D
+BANK 0-3> 3
+TYPE 00-FF> FF
+DESC 5 CHARS> RYORS
+ENTRY 8000-FFFE> C000
+TYPE ADOPT B3> ADOPT B3
+ OK
+```
+
+Bank 3 additionally requires the current `SR 02 03` STR8-N signature and
+non-erased bytes at the explicit entry. A following `M` must show:
+
+```text
+D3 FF RYORS C000 FCFFFFFF
+```
+
+For Banks 0-2, `D` derives launch from RESET and stores directory entry
+`$FFFF`; there is no ENTRY prompt. Adoption proves only the guards checked by
+the tool, not that the entire guest payload is complete. Prefer a full `I`
+install or `C` copy whenever complete-payload verification is required.
+
 ## Map banks and directory rows
 
 `M` is read-only:
 
 ```text
-C=COPY E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT> M
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT> M
 
 BANK 8 9 A B C D E F
 
@@ -237,5 +302,6 @@ Bank 3 recovery:   repeat I with the full 8-E range and a complete 28K S19
 
 Use exactly the original TYPE and DESC if prompted. Do not try to repair an
 incomplete bank with a smaller range. If the directory row is exhausted,
-corrupt, or must change identity, refresh the protected top sector with an
-external programmer.
+corrupt, or must change identity, use the guarded onboard directory refresh.
+Keep the checked full-device external-programmer merge as the recovery
+fallback.

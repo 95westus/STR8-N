@@ -232,7 +232,7 @@ fixed HIMON identity and enters `$C000`, while `J3` uses Bank 3's RESET vector.
 Historical combined streams that start with S1 records at `$0200` are invalid.
 The first S1 for `I` must be the selected flash start, normally `$8000`,
 `$9000`, and so on. The worker component in
-`BUILD/v1.2/s19/str8n-worker-0200.s19` is build and integration evidence, not a file
+`BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19` is build and integration evidence, not a file
 to send to `I`.
 
 ## Creating and checking install files
@@ -712,6 +712,10 @@ make                         build and verify the release artifacts
 make resident                build the resident supervisor
 make workers                 build the unified RAM worker evidence image
 make bank-maint              build and validate the RAM maintenance S19
+make console-abi-test        build the resident ABI hardware probe
+make top-update              build the guarded Bank-3 top updater
+make onboard-directory-refresh
+                             build the guarded directory-pocket refresh
 make ryors-full-bank         compose the R-YORS plus STR8-N 32K image
 make layout-check            enforce fixed addresses and the 8-byte reserve
 make range-matrix-check      test documented flash install ranges
@@ -746,6 +750,10 @@ BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
                                       self-contained RAM maintenance program
 BUILD/v1.2/s19/str8n-v1.2-console-abi-test-2000.s19
                                       raw console ABI hardware probe
+BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19
+                                      guarded Bank-3 sector-F updater
+BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19
+                                      guarded directory-pocket refresh
 BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
                                       32K ASM+HIMON+STR8-N Bank-0/1/2 payload
 BUILD/str8n-manifest.json             sizes, addresses, ABI, and hashes

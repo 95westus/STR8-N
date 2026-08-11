@@ -25,14 +25,22 @@ worktree.
 ## Published STR8-N artifacts
 
 ```text
-BUILD/v1.2/bin/str8n-bank3-f000-ffff.bin
-BUILD/v1.2/s19/str8n-worker-0200.s19
+BUILD/v1.2/bin/str8n-v1.2-bank3-f000-ffff.bin
+BUILD/v1.2/s19/str8n-v1.2-f000.s19
+BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19
 BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
+BUILD/v1.2/s19/str8n-v1.2-console-abi-test-2000.s19
+BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19
+BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19
 BUILD/str8n-manifest.json
 ```
 
 The manifest publishes the top-sector and worker layout, hashes, fixed ABI,
-record service version/capabilities, and the bank-maintenance image hash. The
+record service version/capabilities, and hashes for every maintained RAM tool.
+Bank Maintenance loads at `$2000-$362A`, keeps its private worker at
+`$3400-$362A`, and offers map, copy+directory, adopt, erase, and AP operations.
+The directory-refresh image preserves a verified copy in Bank 1 sector F
+before clearing Bank 3 `$FFB0-$FFF9`. The
 R-YORS lock binds the core top-sector/worker contract needed by its build.
 R-YORS verifies the locked values, resident ABI gates, fixed service
 addresses, vectors, and protected layout before constructing Bank 3.
@@ -41,8 +49,10 @@ addresses, vectors, and protected layout before constructing Bank 3.
 flowchart LR
     S[STR8-N source] --> B[verified 4K top BIN]
     S --> W[worker evidence]
+    S --> T[versioned RAM tools]
     B --> M[STR8-N manifest]
     W --> M
+    T --> M
     M --> LOCK[R-YORS lock check]
     B --> BANK3[R-YORS Bank-3 image]
     RY[R-YORS ASM + HIMON] --> BANK3
@@ -73,7 +83,7 @@ The reverse dependency is limited to the optional full-bank image builder:
 ```text
 R-YORS/SRC/BUILD/s19/ryors-v1.2-asm-himon-bank3-8-e.s19
                          28K dense payload, $8000-$EFFF, S9 $C000
-STR8-N BUILD/v1.2/bin/str8n-bank3-f000-ffff.bin
+STR8-N BUILD/v1.2/bin/str8n-v1.2-bank3-f000-ffff.bin
                           4K current top, $F000-$FFFF
                                       |
                                       v

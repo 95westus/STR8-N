@@ -49,9 +49,17 @@ flowchart LR
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
     TOP --> UPDATE[guarded v1.2 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
+    TOP --> REFRESH[guarded directory-refresh S19]
+    REFRESH -->|STR8-N L, backup then clear $FFB0-$FFF9| B3F
+    TOP --> ABI_TEST[resident ABI hardware-probe S19]
     BM -->|STR8-N L| RAM_TOOL[temporary maintenance session]
     FULL -->|STR8-N I| GUEST[enrolled Bank 0, 1, or 2]
 ```
+
+The top updater preserves the live directory pocket. The directory-refresh
+artifact deliberately replaces that pocket with `$FF`, after first verifying
+a full live-sector backup in Bank 1 sector F. Bank Maintenance `D` can then
+adopt a payload into an erased row without rewriting payload bytes.
 
 ## Physical flash to CPU view
 

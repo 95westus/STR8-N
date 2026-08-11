@@ -52,7 +52,8 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 
 - The exact 4096-byte Bank-3 top-sector BIN for an external programmer.
 - A payload S19 for the resident and an evidence S19 for its relocated worker.
-- A self-contained Bank Maintenance S19 loaded and started with `L`.
+- A self-contained Bank Maintenance S19 loaded and started with `L`, including
+  map, copy+directory, adopt, erase, and AP operations.
 - A deterministic raw console ABI hardware probe covering blocking input,
   blocking output, non-consuming input readiness, initialization, and ABI
   discovery, loaded and started with `L`.
@@ -68,7 +69,8 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 - [Operator's Guide](docs/OPERATORS_GUIDE.md) — board operation, prompts,
   installs, recovery, and maintenance.
 - [Worked Examples](docs/EXAMPLES.md) — complete terminal sessions for HIMON,
-  ASM, full-bank, RAM, copy, and interrupted-install recovery.
+  ASM, full-bank, RAM, directory refresh/adoption, copy, and interrupted-install
+  recovery.
 - [Bank 0-2 S19 Quick Reference](docs/BANK_0_2_GUEST_S19.md) — guest layouts,
   accepted ranges, conversion, and validation.
 - [Technical Guide](docs/TECHNICAL_GUIDE.md) — exact S19, memory, transaction,

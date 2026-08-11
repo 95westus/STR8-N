@@ -101,6 +101,12 @@ Install with `I`, target Bank 0, 1, or 2, and range `8-F`. On a new directory
 row, enter TYPE and a five-character DESC. After `OK`, `J0`-`J2` may launch
 the corresponding bank. This file cannot update protected Bank 3 sector F.
 
+After a directory refresh, Bank Maintenance `D` can recreate an erased
+Bank-0/1/2 row for an already present payload with a valid RESET vector. It
+does not verify that all expected payload bytes are present. A fresh full `I`
+install, or a verified eight-sector `C` copy, provides the stronger complete
+payload guarantee.
+
 See the [Worked Examples](EXAMPLES.md) for a terminal session, the
 [Operator's Guide](OPERATORS_GUIDE.md) for recovery rules, and the
 [Technical Guide](TECHNICAL_GUIDE.md#s19-install-file-contract) for the full

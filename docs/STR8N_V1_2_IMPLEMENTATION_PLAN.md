@@ -182,8 +182,10 @@ defines the old capsule, jump-record, linker-scratch, or ASM-limit addresses.
 
 1. Update resident, unified-worker, jump, directory, and proof paths to use the
    shared v1.2 contract.
-2. Keep `$F003/$F006` fail-closed and retain `$F009/$F010` unless a separately
-   justified ROM ABI change is required.
+2. The original plan kept `$F003/$F006` fail-closed. The accepted resident ABI
+   supersedes that constraint: `$F003` is CONSOLE_INIT and `$F006` is
+   ABI_QUERY v1/capabilities `$3F`; `$F009/$F010` remain the record and bank
+   services.
 3. Keep the record tray at `$7B00-$7BFB`, record card at `$7E95-$7EA8`, delay
    cells, and IVI addresses unchanged.
 4. Extend layout checks to require `$7DE9/$7DFF/$7DFD-$7DFF` exactly.
@@ -440,10 +442,12 @@ and flash readbacks for:
 Do not call v1.2 complete until the external recovery path is demonstrated or
 the exact programmer procedure is independently verified against a readback.
 
-## Planned Operator Update Instructions
+## Operator Update Instructions
 
-These instructions become executable only after Phases 0-7 publish accepted
-artifact hashes. Until then, continue using the v1.1 external-programmer path.
+The onboard top update and directory-refresh sequences below were accepted on
+hardware on 2026-08-11 with the hashes retained in the linked proof records.
+The independent external-programmer recovery demonstration remains an open
+release gate, so keep the rollback images and raw backup available.
 
 ### Host preparation
 

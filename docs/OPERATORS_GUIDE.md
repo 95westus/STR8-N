@@ -171,12 +171,13 @@ The menu commands are:
 ```text
 M  map every bank and show the Bank-3 directory; does not write flash
 C  copy a complete 32K bank and enroll its empty destination directory row
+D  adopt an existing payload into an empty directory row; payload is read-only
 E  erase selected 4K sectors; Bank 3 sector F is always protected
 P  install the narrow, validated AP carrier at Bank 0 $BF00
 Q  return to STR8-N through $F000
 ```
 
-The shortest safe rule is: use `M` freely; treat `C`, `E`, and `P` as flash
+The shortest safe rule is: use `M` freely; treat `C`, `D`, `E`, and `P` as flash
 operations.
 
 ### Upgrade Bank 3 sector F to STR8-N v1.2

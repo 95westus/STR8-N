@@ -102,6 +102,16 @@ matches exactly.
 `make bank-maint` creates the self-contained RAM maintenance S19. Its `C`
 command copies and verifies eight sectors, then enrolls only an erased
 destination row with START, identity/seal, and COMPLETE-last ordering.
+Its `D` command uses the same record writer to adopt an existing valid-reset
+payload into an erased row without rewriting payload sectors. The current
+image loads at `$2000-$362A`; its private worker is stored at `$3400-$362A`
+and copied to `$0200-$042A` for execution.
+
+`make onboard-directory-refresh` creates the guarded RAM tool that backs up
+the complete live Bank-3 top sector into Bank 1 sector F, verifies it, then
+rewrites the current top image with `$FF` in `$FFB0-$FFF9`. This is the onboard
+directory/journal reset path; the checked full-device programmer merge remains
+the independent recovery fallback.
 
 `make ryors-full-bank` combines the R-YORS ASM+HIMON `8-E` payload with the
 current STR8-N top BIN to produce a Bank-0/1/2 `8-F` image. Neither artifact
