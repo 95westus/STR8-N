@@ -24,12 +24,14 @@
                         MODULE          STR8_APP
 
                         XDEF            START
-                        XDEF            STR8_RUN_WORKER_SERVICE
+                        XDEF            STR8_CONSOLE_INIT_SERVICE_ENTRY
+                        XDEF            STR8_ABI_QUERY_SERVICE_ENTRY
                         XDEF            STR8_RECORD_SERVICE_ENTRY
                         XDEF            STR8_RECORD_SERVICE_SIGNATURE
                         XDEF            STR8_BANK_SELECT_SERVICE_ENTRY
                         XDEF            STR8_CHARIN_SERVICE_ENTRY
                         XDEF            STR8_CHAROUT_SERVICE_ENTRY
+                        XDEF            STR8_CHAR_READY_SERVICE_ENTRY
                         XDEF            STR8_BANK_SELECT_SERVICE_BODY
                         XDEF            STR8_DIR_VALIDATE_BANK_A
                         XDEF            STR8_DIR_SCAN_JOURNAL
@@ -182,20 +184,14 @@ STR8_CON_FLUSH_RX_MAX   EQU             $FF
 START:
                         JMP             STR8_BOOT_START
 
-; Stable resident entry for HIMON/RAM tools. Caller sets the $7DE9-$7DFF
-; v1.2 retires the general worker doorway. Keep the fixed slot fail-closed so
-; old RAM programs cannot reach destructive modes in the embedded worker.
-STR8_RUN_WORKER_SERVICE:
-                        CLC
-                        RTS
-                        NOP
+; These two slots were fail-closed tombstones in the preceding v1.2 image.
+; Therefore an old image returns C=0 from $F006 instead of entering arbitrary
+; code, allowing callers to detect the expanded resident ABI safely.
+STR8_CONSOLE_INIT_SERVICE_ENTRY:
+                        JMP             STR8_CON_INIT
 
-; Retired AP-link ABI slot. Older callers fail closed without moving the v1.2
-; record/signature/bank-selector entries that follow it.
-STR8_RETIRED_F006:
-                        CLC
-                        RTS
-                        NOP
+STR8_ABI_QUERY_SERVICE_ENTRY:
+                        JMP             STR8_ABI_QUERY_BODY
 
 STR8_RECORD_SERVICE_ENTRY:
                         JMP             STR8_RECORD_SERVICE_BODY
@@ -214,7 +210,7 @@ STR8_RECORD_SERVICE_SIGNATURE:
 STR8_BANK_SELECT_SERVICE_ENTRY:
                         JMP             STR8_BANK_SELECT_SERVICE_BODY
 
-; Stable blocking console services. Physical RESET initializes the FT245R
+; Stable raw console services. Physical RESET initializes the FT245R
 ; interface before any STR8-N command or guest handoff. External callers must
 ; have Bank 3 visible and must preserve that initialized interface state.
 ; CHARIN:  OUT A=received byte, C=1; X/Y preserved; waits for input.
@@ -245,6 +241,17 @@ STR8_CON_WRITE_BYTE_BLOCK:
                         STZ             STR8_CON_VIA_DDRA
                         PLA
                         SEC
+                        RTS
+
+; CHAR_READY is a non-consuming receiver poll. C=1 means a byte is ready;
+; C=0 means empty. A/flags are clobbered except for carry; X/Y are preserved.
+STR8_CHAR_READY_SERVICE_ENTRY:
+                        LDA             #STR8_CON_PN_RXF
+                        BIT             STR8_CON_VIA_CTRL
+                        BEQ             ?READY
+                        CLC
+                        RTS
+?READY:                 SEC
                         RTS
 
 STR8_BOOT_START:
@@ -2822,6 +2829,12 @@ STR8_CON_INIT:
                         STZ             STR8_CON_VIA_DDRA
                         RTS
 
+STR8_ABI_QUERY_BODY:
+                        LDA             #STR8_RESIDENT_ABI_VERSION
+                        LDX             #STR8_RESIDENT_ABI_CAPS
+                        SEC
+                        RTS
+
 STR8_CON_FLUSH_RX:
                         LDX             #STR8_CON_FLUSH_RX_MAX
 ?LOOP:                  JSR             STR8_CON_READ_BYTE_NONBLOCK
@@ -2849,8 +2862,7 @@ STR8_CON_READ_BYTE_NONBLOCK:
                         PLA
                         SEC
                         RTS
-?NO_BYTE_READY:         LDA             #$00
-                        CLC
+?NO_BYTE_READY:         CLC
                         RTS
 
                         DATA

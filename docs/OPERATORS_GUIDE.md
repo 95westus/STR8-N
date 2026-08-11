@@ -96,7 +96,7 @@ The same procedure applies to every bank.
 4. For a new bank-directory row, enter the requested two-digit hexadecimal
    `TYPE:` and exactly five characters at `DESC:`. A description may use
    `A-Z`, `0-9`, hyphen, underscore, or period. These identity fields cannot
-   be changed without externally refreshing the protected sector.
+   be changed without refreshing the protected sector.
 5. Read the `I Bn x-y` summary. At `WRITE? Y:`, type `Y` only if the bank and
    range are correct.
 6. When `S19` appears, send the payload-only S19 through the FTDI console.
@@ -222,7 +222,7 @@ to `$1F000-$1FFFF`, or program one of the retained 4096-byte BINs at physical
 After v1.2 starts, verify `S`, `H`, selector timeout, the `$7DFD-$7DFF` Bank
 Jump Record, and the ASM `$7CFF/$7D00` boundary before updating Banks 0-2.
 
-`C`, `E`, and `P` are destructive and require an exact typed confirmation.
+`C`, `D`, `E`, and `P` write flash and require an exact typed confirmation.
 Do not press NMI, reset, remove power, or remove the flash during a write or
 erase. `C` prints `!STR8` before confirmation when the source contains the
 STR8-N 1.2 `SR 02 03` service signature. `Q` starts the normal STR8-N startup
@@ -242,6 +242,28 @@ If enrollment is cancelled, interrupted, or fails, the copied bytes can
 remain in the destination but STR8-N keeps that bank non-bootable. An existing
 or incomplete directory row must be handled through `I`, not overwritten by
 `C`.
+
+`D` adopts an existing payload into a completely erased directory row without
+erasing or rewriting any payload sector. It is the metadata-only recovery path
+after a directory refresh. Select Bank 0-3, enter TYPE and exactly five DESC
+characters, and type the exact confirmation `ADOPT Bn`. The tool rejects a
+nonempty row and a missing, low, or erased RESET vector. Banks 0-2 receive the
+normal `$FFFF` directory entry because `J0`-`J2` follow their RESET vectors.
+
+Bank 3 additionally requires the current `SR 02 03` STR8-N signature and an
+explicit entry from `$8000-$FFFE`; the first two bytes at that entry may not
+both be erased. For the current R-YORS Bank-3 payload, use entry `$C000`, TYPE
+`FF`, and DESC `RYORS`. Adoption writes journal START first, immutable identity
+second, and COMPLETE last. A successful fresh D3 therefore prints as:
+
+```text
+D3 FF RYORS C000 FCFFFFFF
+```
+
+`D` never edits or replaces an existing identity. Refresh the protected
+directory sector again if the desired row is not completely erased.
+The erased-row, RESET/ENTRY, DESC-length, cancellation, D1/D3 commit, and
+post-adoption `C` regression paths were accepted on hardware on 2026-08-11.
 
 ## Banks 0-2
 
@@ -374,7 +396,42 @@ closed.
 
 Each bank has 16 START/COMPLETE transaction pairs. A failed transaction and
 its full-range recovery finish the same open pair. After 16 completed pairs,
-or if the directory is invalid, refresh STR8-N with an external programmer.
+or if the directory is invalid, use the guarded onboard directory refresh
+below or the external-programmer fallback.
+
+## Refresh the directory onboard
+
+`BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19` is a dedicated
+RAM-resident sector-F rewrite. It embeds the exact current 4096-byte top BIN,
+whose directory and configuration pocket is erased. Unlike the normal top
+updater, it intentionally does not restore the live `$FFB0-$FFF9` bytes into
+the candidate before programming.
+
+The refresh otherwise uses the hardware-proven top-updater safety path. It
+copies the complete live Bank-3 sector F into Bank 1 sector F, verifies that
+backup, runs from RAM while Bank-3 sector F is unavailable, verifies the new
+sector, and offers retry or restoration after a write failure.
+
+Before starting, Bank 1 sector F must be sacrificial. Its current contents are
+replaced by a fresh exact backup of the live Bank-3 sector F.
+
+1. At STR8-N, type `L`, then `S19`, and send
+   `BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19`.
+2. Require the title `STR8-N 1.2 DIRECTORY REFRESH` and
+   `BACKUP B1:F; TARGET B3:F`.
+3. Type `BACKUP B1F` only if Bank 1 sector F is sacrificial.
+4. Require `BACKUP VERIFIED` and record the safe/target physical ranges and
+   old-sector checksum.
+5. Type the exact final confirmation `ERASE DIRECTORY`.
+6. Do not press NMI or RESET, remove power, or disturb the flash/FTDI hardware
+   until `DIRECTORY EMPTY; STR8-N VERIFIED; RESET` appears.
+
+If active programming fails, do not reset. Type `R` to retry the erased-pocket
+candidate or `O` to restore the verified old sector from Bank 1. After success,
+physical RESET returns to STR8-N with D0-D3 and all install journals erased.
+Bank payload sectors are unchanged, but `J0`-`J3` remain directory-gated until
+the desired rows are enrolled again. Keep Bank 1 sector F intact until the
+refresh and subsequent enrollment proof are accepted.
 
 ## External-programmer recovery
 
@@ -390,6 +447,39 @@ top-sector BIN contains an erased directory and configuration pocket. Writing
 it therefore clears all STR8-N install journals and Bank-3 identity; existing
 Bank 0-2 contents are not erased, but `J0`-`J2` remain directory-gated until
 those banks are installed again through `I`.
+
+For a directory refresh with a T48 or equivalent programmer, preserve the
+rest of the device with a checked full-image merge:
+
+1. Power the board off, remove the SST39SF010A, and read the complete 128 KiB
+   device twice. Save both reads independently and require identical SHA-256
+   hashes before continuing.
+2. Keep both raw readbacks. Do not edit either archive.
+3. Build a merged programmer image from the matched readbacks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/build_directory_refresh_image.ps1 `
+  -ReadbackPath "PATH/board-before-directory-refresh-read-1.bin" `
+  -ConfirmReadbackPath "PATH/board-before-directory-refresh-read-2.bin" `
+  -OutPath "BUILD/v1.2/bin/board-directory-refreshed-20000.bin"
+```
+
+4. Require the tool to report a 131072-byte output, the current top-BIN hash,
+   `CHANGED PHYSICAL = $1F000-$1FFFF only`, and `DIRECTORY REFRESH IMAGE = PASS`.
+5. Load the merged 128 KiB image at programmer address zero, program the whole
+   SST39SF010A, and verify all 131072 bytes against that same merged file.
+6. Save the programmer's post-write readback and require its SHA-256 to equal
+   the merged programmer image SHA-256.
+7. Reinstall the flash with board power off, then use physical RESET. STR8-N
+   remains at Bank 3 `$F000`, but D0-D3 and the Bank-3 install identity are
+   erased until the desired banks are enrolled again.
+
+The merge tool requires two distinct readback paths and refuses them unless
+both files are exactly 128 KiB with identical SHA-256 hashes. It also refuses
+a top BIN that is not exactly 4096 bytes, a mismatched STR8-N signature/RESET
+vector, or a top BIN whose directory/configuration pocket is not all `$FF`.
+It never modifies either archived readback and changes only output offsets
+`$1F000-$1FFFF`.
 
 ## A bank handoff is not a power-on reset
 

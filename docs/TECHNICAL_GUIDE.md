@@ -17,8 +17,11 @@ recovery RAM execution    STR8-N L           copies $2000-$7AFF, jumps to S9
 S19 syntax validation     STR8-N $F009       parses one record; does not apply it
 monitor RAM loading       HIMON L / L G      load-only or load-and-start
 bank selection            STR8-N $F010       changes the visible flash bank
+resident ABI discovery    STR8-N $F006       reports version and capabilities
+console initialization    STR8-N $F003       restores the FT245R-facing VIA
 raw console input         STR8-N $F013       waits for and returns one byte
 raw console output        STR8-N $F019       waits until one byte is accepted
+raw input readiness       STR8-N $F03E       reports without consuming a byte
 guest launch              STR8-N J0-J3       jumps through selected RESET vector
 ```
 
@@ -74,8 +77,8 @@ HIMON. Total automatic startup time remains approximately twelve seconds.
 The complete protected sector is exactly 4096 bytes:
 
 ```text
-$F000-$FD44  resident supervisor, installer, loader   3397 bytes
-$FD45-$FD5B  enforced unused margin                    23 bytes
+$F000-$FD53  resident supervisor, installer, loader   3412 bytes
+$FD54-$FD5B  enforced unused margin                     8 bytes
 $FD5C-$FFAF  stored unified worker                    596 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
 $FFF0-$FFF9  configuration pocket                      10 bytes
@@ -95,9 +98,9 @@ No worker bytes are transported in an `I` or `L` S19.
 Hardware vectors are:
 
 ```text
-$FFFA-$FFFB  NMI      -> $F0C7
+$FFFA-$FFFB  NMI      -> $F0D2
 $FFFC-$FFFD  RESET    -> $F000
-$FFFE-$FFFF  IRQ/BRK  -> $F0DB
+$FFFE-$FFFF  IRQ/BRK  -> $F0E6
 ```
 
 NMI and IRQ/BRK enter STR8-N IVI stubs and dispatch through RAM vectors after
@@ -337,9 +340,9 @@ RAM; retrying or RESET is the normal cleanup.
 
 `make bank-maint` builds and validates
 `BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19`. Its S9 entry is `$2000`; the S1
-address span is `$2000-$322A`, wholly inside the `L` contract. The WDC linker
+address span is `$2000-$362A`, wholly inside the `L` contract. The WDC linker
 fills the unused space before the embedded worker, so the stream contains
-4,651 RAM data bytes even though the executable regions are smaller.
+5,675 RAM data bytes even though the executable regions are smaller.
 
 The utility is self-contained. It has direct FT245R input/output, local hex
 formatting, and local 32-bit FNV-1a support. It does not use HIMON's IVI or
@@ -349,17 +352,17 @@ STR8-N `L` deliberately supplies no return address.
 ```text
 $0200-$042A  runtime copy of the private mutation worker
 $0A00-$19FF  one staged 4K flash sector
-$7C00-$7C1D  operation result/state
+$7C00-$7C1F  operation result/state and directory entry
 $7C20-$7C2F  bounded command input
 $7C40-$7C7F  staged Bank-3 directory
 $7C80-$7D1A  first-valid-AP inventory
 $2000-...    bank-maintenance program and text
-$3000-$322A  stored private mutation worker
+$3400-$362A  stored private mutation worker
 ```
 
 The carried worker privately implements the staging/programming operations
 needed by the maintenance tool. It calls the worker at `$0200` directly and
-does not depend on the retired public `$F003` or `$F006` gates. Every programmed
+does not depend on resident console or ABI-query gates. Every programmed
 sector is verified, Bank 3 sector `$F000-$FFFF` is protected, and the copy
 guard recognizes the v1.2 resident signature at `$F00C` (`53 52 02 03`).
 
@@ -373,6 +376,14 @@ one-to-zero transitions and independently read back. COMPLETE is therefore
 never visible before the full-bank copy and immutable identity are verified.
 Nonempty rows are refused; updating or recovering an existing identity remains
 the responsibility of STR8-N `I`.
+
+The `D` path adopts an existing payload without rewriting it. It requires an
+all-`$FF` destination row, stages sector F, and validates a RESET vector in
+`$8000-$FFFE`. Banks 0-2 receive entry `$FFFF`. Bank 3 additionally requires
+the `SR 02 03` resident signature, an explicit entry in `$8000-$FFFE`, and at
+least one non-`$FF` byte at that entry. After exact `ADOPT Bn` confirmation,
+`D` uses the same START/identity/COMPLETE record writer as `C`. It cannot edit,
+repair, or replace a nonempty row.
 
 `tools/check_bank_maint_s19.ps1` rejects malformed checksums, unsupported
 record types, duplicate destination bytes, RAM addresses outside
@@ -399,11 +410,15 @@ Each bank has its own 32-bit journal, arranged as 16 START/COMPLETE pairs.
 Bits change only from 1 to 0. A failed install and full recovery finish the
 same open pair; a successful later install consumes the next pair. A START
 without COMPLETE prevents `J0`-`J2` launch. When a bank's 16 pairs are full,
-an external programmer must refresh the protected sector before another
-install to that bank.
+the guarded RAM directory-refresh tool or an external programmer must refresh
+the protected sector before another install to that bank.
 
-The external-programmer BIN contains an all-`$FF` directory/configuration
-pocket. Refreshing it erases every bank's journal and Bank-3 install identity.
+The programmer BIN and the candidate embedded by
+`str8n-v1.2-directory-refresh-2000.s19` contain an all-`$FF`
+directory/configuration pocket. Refreshing it erases every bank's journal and
+Bank-3 install identity. The onboard tool first verifies an exact live-sector
+backup in Bank 1 sector F and retains retry/restore control in RAM while the
+Bank-3 reset sector is unavailable.
 
 ## RAM ownership
 
@@ -552,15 +567,45 @@ stable; other labels and addresses in the linker map are implementation
 details.
 
 ```text
-$F003  retired gate: CLC / RTS / NOP
-$F006  retired gate: CLC / RTS / NOP
+$F003  FT245R-facing VIA initialization (CONSOLE_INIT)
+$F006  resident ABI version/capability query (ABI_QUERY)
 $F009  SR/02 validated-record parse service
 $F00C  signature/capability bytes: $53 $52 $02 $03
 $F010  bank-selection service
 $F013  blocking raw character input (CHARIN)
 $F019  blocking raw character output (CHAROUT)
+$F03E  non-consuming raw input-ready poll (CHAR_READY)
 $0203  RAM return-capable selector entry after relocation
 ```
+
+### `$F003` CONSOLE_INIT
+
+`JSR $F003` restores the FT245R-facing VIA output/control state used by the
+raw console services: control and control-direction bytes become `$0C`, and
+the data-direction byte becomes `$00`. It returns A=`$0C`, preserves X, Y,
+and carry, and does not select Bank 3. A caller must establish Bank 3 before
+calling it.
+
+In the preceding v1.2 image, `$F003` was a fail-closed `CLC / RTS / NOP`
+tombstone. Call `$F006` first when compatibility with that image matters.
+
+### `$F006` ABI_QUERY
+
+`JSR $F006` returns carry set, A=`$01` resident ABI version, X=`$3F`
+capabilities, and Y preserved. The capability bits are:
+
+```text
+$01  $F009 record parser
+$02  $F010 bank selector
+$04  $F013 CHARIN
+$08  $F019 CHAROUT
+$10  $F03E CHAR_READY
+$20  $F003 CONSOLE_INIT
+```
+
+The preceding v1.2 image safely returns carry clear from its `$F006`
+tombstone, so software must test carry before interpreting A or X. This query
+is the required feature test before calling an entry absent from that image.
 
 ### `$F009` record parser
 
@@ -634,15 +679,28 @@ Pass one raw console byte in A and `JSR $F019`. The call waits until the FT245R
 accepts the byte, then returns with A, X, and Y preserved and carry set. It does
 not add CR/LF and has no timeout.
 
+### `$F03E` CHAR_READY
+
+`JSR $F03E` tests the raw FT245R receiver and returns immediately without
+consuming a byte. Carry set means at least one byte is ready; carry clear means
+the receiver is empty. X and Y are preserved; A and flags other than carry are
+clobbered. It does not echo, translate, wait, or time out.
+
+The normal polling sequence is `JSR $F03E`, `BCC` for the empty path, then
+`JSR $F013` to consume the byte. Console input has one owner; if an interrupt
+handler or another context consumes the byte between those calls, CHARIN can
+block.
+
 Physical RESET initializes the console before the startup selector and all
 normal STR8-N handoffs. A caller that has subsequently reconfigured the
-FT245R-facing VIA must restore the STR8-N console state before using CHARIN or
-CHAROUT. Neither call selects Bank 3 or reinitializes the interface.
+FT245R-facing VIA must restore the STR8-N console state before using CHARIN,
+CHAROUT, or CHAR_READY. It can do so with CONSOLE_INIT. None of the character
+calls selects Bank 3 or reinitializes the interface.
 
-`$F003` and `$F006` are fail-closed tombstones. Mode 6 and the former general
-worker doorway are not public interfaces. A user program that needs to read a
-selected sector should run below `$8000`, call `$F010`, copy the bytes itself,
-and select Bank 3 again if it intends to return to Bank-3 ROM code.
+Mode 6 and the former general worker doorway are not public interfaces. A user
+program that needs to read a selected sector should run below `$8000`, call
+`$F010`, copy the bytes itself, and select Bank 3 again if it intends to return
+to Bank-3 ROM code.
 
 ## Build, artifacts, and qualification
 
@@ -687,7 +745,7 @@ BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19  worker evidence/build component
 BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
                                       self-contained RAM maintenance program
 BUILD/v1.2/s19/str8n-v1.2-console-abi-test-2000.s19
-                                      CHARIN/CHAROUT hardware probe
+                                      raw console ABI hardware probe
 BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
                                       32K ASM+HIMON+STR8-N Bank-0/1/2 payload
 BUILD/str8n-manifest.json             sizes, addresses, ABI, and hashes
@@ -707,11 +765,26 @@ file offset $000-$FFF -> CPU $F000-$FFFF -> physical $1F000-$1FFFF
 
 ### Qualification evidence and remaining board tests
 
-The [2026-08-11 console ABI hardware proof](CONSOLE_ABI_HARDWARE_PROOF_2026-08-11.md)
-accepts the current top-sector image for guarded onboard update, RESET/live
-selector, `$F019` CHAROUT, `$F013` raw CHARIN, `$F0DB` BRK dispatch, warm and
-cold HIMON entry, and `J3`. The silent NMI action needs an operator annotation
-because it cannot be distinguished in the terminal stream itself.
+The [2026-08-11 expanded resident ABI hardware proof](RESIDENT_ABI_HARDWARE_PROOF_2026-08-11.md)
+accepts the current top-sector image for guarded onboard update, verified
+backup, RESET/live selector, ABI_QUERY, CONSOLE_INIT, CHAROUT, both
+non-consuming CHAR_READY paths, raw CHARIN, `$F0E6` BRK dispatch, warm and
+cold HIMON entry, and `J3`. NMI remains unclaimed without an explicit operator
+annotation.
+
+The retained continuation accepts the guarded onboard directory refresh with
+live-sector sum `$0BE5`, a newly verified Bank-1 sector-F backup, Bank-3
+rewrite/verify/RESET, and a post-reset `M` showing D0-D3 completely erased.
+It then accepts Bank Maintenance `C` from Bank 3 to Bank 2, all eight verified
+sector writes, enrollment as `D2 FF TEST0 FFFF FCFFFFFF`, selector `2` launch
+of the copied STR8-N, and its `J3` return through physical Bank 3.
+
+The separate
+[directory-maintenance proof](DIRECTORY_MAINT_HARDWARE_PROOF_2026-08-11.md)
+accepts the current Bank Maintenance artifact's metadata-only `D` path:
+nonempty-row refusal, low/erased ENTRY rejection, DESC-length rejection,
+precommit cancellation, bad-RESET refusal, successful D1/D3 commits, and the
+shared `C` commit-path regression.
 
 Observed v1.2 board sessions have established:
 
@@ -720,15 +793,15 @@ Observed v1.2 board sessions have established:
 - a full-speed, zero-pacing Bank-3 `8-E` install completes and starts HIMON;
 - separate HIMON `C-E` and ASM `8-B` installs complete and ASM starts through
   HIMON;
-- RAM Bank Maintenance starts through `L`, maps banks, and copies/verifies all
-  eight sectors;
+- RAM Bank Maintenance starts through `L`, maps banks, copies/verifies all
+  eight sectors, and enrolls the empty destination row COMPLETE;
 - a raw copy without directory enrollment is correctly rejected by `J0`-`J2`,
   proving the launch gate is directory-based rather than a used-flash test.
 
-The enhanced maintenance `C` enrollment step, the generated Bank-0/1/2 `8-F`
-image, every size/range boundary, interruption at each sector, journal
-exhaustion, and all `L` boundary failures still require a retained hardware
-transcript before claiming a complete release matrix. NMI/IRQ may be tested
+The generated Bank-0/1/2 `8-F` image, every size/range boundary, interruption
+at each sector, journal exhaustion, AP put, explicit command-path
+`J0`/`J1`/`J2`, and all `L` boundary failures still require retained hardware
+transcripts before claiming a complete release matrix. NMI/IRQ may be tested
 only outside flash mutation; do not deliberately press NMI while flash is
 busy.
 

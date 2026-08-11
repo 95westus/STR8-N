@@ -1,5 +1,11 @@
 # STR8-N v1.2 Console ABI Hardware Proof — 2026-08-11
 
+Scope note: this retained proof applies to the image before CONSOLE_INIT,
+ABI_QUERY, and CHAR_READY were added to the resident ABI. The expanded image
+moves BRK dispatch from `$F0DB` to `$F0E6`; its renewed proof is retained in
+[Expanded Resident ABI Hardware Proof](RESIDENT_ABI_HARDWARE_PROOF_2026-08-11.md).
+The exact historical transcript below is intentionally unchanged.
+
 Status: accepted for the guarded onboard update, RESET/live selector,
 `$F019` CHAROUT, `$F013` CHARIN, `$F0DB` BRK dispatch, warm HIMON, cold HIMON
 timeout, and `J3`. The silent NMI action is not independently visible in the

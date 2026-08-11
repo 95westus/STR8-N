@@ -15,7 +15,7 @@ flowchart TB
     S -->|I| W[RAM worker<br/>$0200-$0453]
     W --> FLASH[Selected flash range]
     S -->|L| RAM[Recovery RAM program<br/>$2000-$7AFF, then S9]
-    RAM -->|bank-maint S19| BM[Self-contained Bank Maintenance<br/>map/copy/erase/AP put]
+    RAM -->|bank-maint S19| BM[Self-contained Bank Maintenance<br/>map/copy/adopt/erase/AP put]
     BM -->|private RAM worker| FLASH2[Banked flash<br/>Bank 3 F protected]
     BM -->|Q| S
     B3 -->|L or L G| RAM2[HIMON RAM program]
@@ -125,11 +125,12 @@ stateDiagram-v2
     Complete --> Started: later install begins
     Complete --> Complete: later install verifies
     Complete --> Exhausted: all 16 journal pairs used
-    Exhausted --> Erased: external programmer refresh
+    Exhausted --> Erased: guarded onboard or external refresh
 ```
 
 `J0`-`J2` accept only `Complete`. Bank Maintenance `C` accepts only `Erased`
-destination rows; it does not overwrite or repair an existing identity.
+destination rows. Bank Maintenance `D` can adopt an existing payload only into
+an `Erased` row; neither command overwrites or repairs an existing identity.
 
 ## Protected 4K top sector
 
@@ -143,9 +144,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        596 B   |
 $FD5B  +------------------------------+
-       | free margin           23 B   |
-$FD44  +------------------------------+
-       | resident code/data  3397 B   |
+       | free margin            8 B   |
+$FD53  +------------------------------+
+       | resident code/data  3412 B   |
 $F000  +------------------------------+
 ```
 
@@ -260,7 +261,7 @@ Fixed delay and IVI cells                        13 bytes
 Maximum hardware stack                         256 bytes  dynamic
 Outside named I/fixed areas                  27,484 bytes  before stack use
 R-YORS normal application convention         18,694 bytes  monitor-dependent
-Bank-maint loaded image                       4,651 bytes  $2000-$322A
+Bank-maint loaded image                       5,675 bytes  $2000-$362A
 ```
 
 ```mermaid
@@ -268,7 +269,7 @@ flowchart LR
     TOTAL[32,512 B board RAM] --> LOW[8,192 B below $2000]
     TOTAL --> LWIN[23,296 B accepted by STR8-N L]
     TOTAL --> HIGH[1,024 B $7B00-$7EFF<br/>parser, IVI, I/O-adjacent]
-    LWIN --> BMIMG[4,651 B bank-maint image]
+    LWIN --> BMIMG[5,675 B bank-maint image]
     LWIN --> LOTHER[18,645 B remaining in L window]
 ```
 
@@ -279,17 +280,20 @@ arbitrary guest leaves every other byte unused.
 
 ```mermaid
 flowchart TD
-    L[STR8-N L] --> S[S19 loads $2000-$322A<br/>S9=$2000]
-    S --> B[Copy private worker<br/>$3000-$322A to $0200-$042A]
+    L[STR8-N L] --> S[S19 loads $2000-$362A<br/>S9=$2000]
+    S --> B[Copy private worker<br/>$3400-$362A to $0200-$042A]
     B --> M{Command}
     M -->|M| MAP[Stage and inspect sectors<br/>no flash mutation]
     M -->|C| COPY[Require empty directory row<br/>copy and verify full bank]
     COPY --> ID[TYPE + five-character DESC<br/>START, identity, COMPLETE]
+    M -->|D| ADOPT[Validate existing RESET<br/>require empty directory row]
+    ADOPT --> ID2[TYPE + DESC + B3 ENTRY<br/>START, identity, COMPLETE]
     M -->|E| ERASE[Erase selected sectors<br/>Bank 3 F protected]
     M -->|P| AP[Validated AP put<br/>Bank 0 $BF00]
     M -->|Q| Q[Jump Bank 3 $F000]
     MAP --> M
     ID --> M
+    ID2 --> M
     ERASE --> M
     AP --> M
 ```
@@ -298,7 +302,7 @@ flowchart TD
 $0200-$042A  runtime private mutation worker       555 bytes
 $0A00-$19FF  staged flash sector                  4096 bytes
 $7C00-$7D1A  maintenance state/tables              283 bytes allocated
-$2000-$322A  loaded program, padding, stored worker 4651 bytes
+$2000-$362A  loaded program, padding, stored worker 5675 bytes
 ```
 
 ## Supported interfaces
@@ -307,9 +311,12 @@ $2000-$322A  loaded program, padding, stored worker 4651 bytes
 flowchart LR
     CALLER[RAM or compatible payload] --> R[$F009 SR/02<br/>parse one S19 record]
     CALLER --> B[$F010<br/>select bank]
+    CALLER --> Q[$F006 ABI_QUERY<br/>version and capabilities]
+    CALLER --> I[$F003 CONSOLE_INIT<br/>restore raw console]
+    CALLER --> CI[$F013 CHARIN<br/>blocking raw input]
+    CALLER --> CO[$F019 CHAROUT<br/>blocking raw output]
+    CALLER --> CR[$F03E CHAR_READY<br/>non-consuming poll]
     R --> DESC[$7E95-$7EA8<br/>request/result]
     R --> DATA[$7B00-$7BFB<br/>decoded data]
     B --> RAM[$0203 RAM entry<br/>can return after switch]
-    OLD1[$F003 retired] -.-> STOP[Do not call]
-    OLD2[$F006 retired] -.-> STOP
 ```

@@ -7,6 +7,7 @@ param(
     [string]$BankMaintS19Path = "BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19",
     [string]$ConsoleAbiTestS19Path = "BUILD/v1.2/s19/str8n-v1.2-console-abi-test-2000.s19",
     [string]$TopUpdateS19Path = "BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19",
+    [string]$DirectoryRefreshS19Path = "BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19",
     [string]$ManifestPath = "BUILD/str8n-manifest.json"
 )
 
@@ -21,7 +22,7 @@ function Get-MapSymbol {
     return [Convert]::ToInt32($match.Matches[0].Groups[1].Value, 16)
 }
 
-foreach ($path in @($Str8MapPath, $WorkerMapPath, $ConsoleAbiTestMapPath, $TopBinPath, $WorkerS19Path, $BankMaintS19Path, $ConsoleAbiTestS19Path, $TopUpdateS19Path)) {
+foreach ($path in @($Str8MapPath, $WorkerMapPath, $ConsoleAbiTestMapPath, $TopBinPath, $WorkerS19Path, $BankMaintS19Path, $ConsoleAbiTestS19Path, $TopUpdateS19Path, $DirectoryRefreshS19Path)) {
     if (-not (Test-Path -LiteralPath $path)) { throw "Required artifact not found: $path" }
 }
 
@@ -70,9 +71,9 @@ $manifest = [ordered]@{
         bankMaintenanceS19 = [ordered]@{
             file = 'BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19'
             ramStart = '2000'
-            ramEnd = '322A'
+            ramEnd = '362A'
             entry = '2000'
-            privateWorkerStore = '3000'
+            privateWorkerStore = '3400'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $BankMaintS19Path).Hash
         }
         consoleAbiTestS19 = [ordered]@{
@@ -91,6 +92,17 @@ $manifest = [ordered]@{
             entry = '2000'
             backup = 'Bank 1 CPU F000-FFFF / physical 0F000-0FFFF'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopUpdateS19Path).Hash
+        }
+        directoryRefreshS19 = [ordered]@{
+            file = 'BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19'
+            ramStart = '2000'
+            ramEnd = '4FFF'
+            candidateStart = '4000'
+            candidateEnd = '4FFF'
+            entry = '2000'
+            backup = 'Bank 1 CPU F000-FFFF / physical 0F000-0FFFF'
+            clears = 'Bank 3 CPU FFB0-FFF9 / physical 1FFB0-1FFF9'
+            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $DirectoryRefreshS19Path).Hash
         }
     }
     layout = [ordered]@{
@@ -117,14 +129,17 @@ $manifest = [ordered]@{
         bankJumpRecordStart = '7DFD'
         bankJumpRecordEnd = '7DFF'
         asmTargetEndExclusive = '7D00'
-        retiredF003 = 'F003'
-        retiredF006 = 'F006'
+        residentVersion = 1
+        residentCapabilities = 63
+        consoleInitService = 'F003'
+        abiQueryService = 'F006'
         recordService = 'F009'
         recordVersion = 2
         recordCapabilities = 3
         bankSelectService = 'F010'
         charInService = 'F013'
         charOutService = 'F019'
+        charReadyService = 'F03E'
         selectorEntry = ('{0:X4}' -f $selectorEntry)
         selectorEnd = ('{0:X4}' -f ($selectorEnd - 1))
     }
@@ -142,3 +157,4 @@ Write-Host ('WORKER SHA-256      = {0}' -f $manifest.artifacts.workerS19.sha256)
 Write-Host ('BANK MAINT SHA-256  = {0}' -f $manifest.artifacts.bankMaintenanceS19.sha256)
 Write-Host ('CONSOLE ABI SHA-256 = {0}' -f $manifest.artifacts.consoleAbiTestS19.sha256)
 Write-Host ('TOP UPDATE SHA-256   = {0}' -f $manifest.artifacts.topUpdateS19.sha256)
+Write-Host ('DIR REFRESH SHA-256  = {0}' -f $manifest.artifacts.directoryRefreshS19.sha256)

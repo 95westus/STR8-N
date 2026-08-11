@@ -57,7 +57,7 @@ foreach ($rawLine in Get-Content -LiteralPath $S19Path) {
 
 if ($dataRecords -eq 0) { throw 'No S1 data records found' }
 if ($startRecords -ne 1) { throw "Expected one S9 record; found $startRecords" }
-foreach ($required in @(0x2000, 0x3000, 0x322A)) {
+foreach ($required in @(0x2000, 0x3400, 0x362A)) {
     if (-not $data.ContainsKey($required)) {
         throw ('Required program/worker byte ${0:X4} is absent' -f $required)
     }
@@ -82,8 +82,24 @@ for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) 
 }
 if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.2 banner' }
 
+foreach ($requiredText in @('D=ADOPT', 'ENTRY 8000-FFFE>', 'TYPE ADOPT B')) {
+    $needle = [System.Text.Encoding]::ASCII.GetBytes($requiredText)
+    $found = $false
+    for ($offset = 0; $offset -le $programBytes.Length - $needle.Length; $offset++) {
+        $match = $true
+        for ($index = 0; $index -lt $needle.Length; $index++) {
+            if ($programBytes[$offset + $index] -ne $needle[$index]) {
+                $match = $false
+                break
+            }
+        }
+        if ($match) { $found = $true; break }
+    }
+    if (-not $found) { throw "Bank Maintenance is missing directory-adoption text '$requiredText'" }
+}
+
 $expectedWorkerHash = 'FFCDB4201C913FC9B3E3F3D438A98940F76967C5E62F843A2DC32CFF1D1AD1B2'
-[byte[]]$workerBytes = 0x3000..0x322A | ForEach-Object { $data[$_] }
+[byte[]]$workerBytes = 0x3400..0x362A | ForEach-Object { $data[$_] }
 $workerSha = [System.Security.Cryptography.SHA256]::Create()
 $workerHash = [BitConverter]::ToString($workerSha.ComputeHash($workerBytes)).Replace('-', '')
 if ($workerHash -ne $expectedWorkerHash) {

@@ -59,12 +59,13 @@ $workerStoreEnd = $workerStore + $workerSize
 $margin = $workerStore - $residentEnd
 
 Assert-Equal $residentStart $TopStart 'Resident start'
-Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_RUN_WORKER_SERVICE') 0xF003 '$F003 retired gate'
-Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_RETIRED_F006') 0xF006 '$F006 retired gate'
+Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CONSOLE_INIT_SERVICE_ENTRY') 0xF003 '$F003 CONSOLE_INIT gate'
+Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_ABI_QUERY_SERVICE_ENTRY') 0xF006 '$F006 ABI_QUERY gate'
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_RECORD_SERVICE_ENTRY') 0xF009 '$F009 record gate'
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_BANK_SELECT_SERVICE_ENTRY') 0xF010 '$F010 selector gate'
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CHARIN_SERVICE_ENTRY') 0xF013 '$F013 CHARIN gate'
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CHAROUT_SERVICE_ENTRY') 0xF019 '$F019 CHAROUT gate'
+Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CHAR_READY_SERVICE_ENTRY') 0xF03E '$F03E CHAR_READY gate'
 Assert-Equal $directoryMapStart $DirectoryStart 'Directory start'
 Assert-Equal $directoryMapEnd $DirectoryEnd 'Directory end'
 Assert-Equal $workerStart $WorkerRunStart 'Worker run start'
@@ -85,8 +86,13 @@ Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_BASE') 0x7DE9 'STR8 state sta
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_END') 0x7DFF 'STR8 state end'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_JUMP_SIG0') 0x7DFD 'Bank Jump Record start'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_LAST_JUMP') 0x7DFF 'Bank Jump Record end'
+Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_CONSOLE_INIT_SERVICE') 0xF003 'Published CONSOLE_INIT service'
+Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_ABI_QUERY_SERVICE') 0xF006 'Published ABI_QUERY service'
 Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_CHARIN_SERVICE') 0xF013 'Published CHARIN service'
 Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_CHAROUT_SERVICE') 0xF019 'Published CHAROUT service'
+Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_CHAR_READY_SERVICE') 0xF03E 'Published CHAR_READY service'
+Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_RESIDENT_ABI_VERSION') 0x01 'Resident ABI version'
+Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_RESIDENT_ABI_CAPS') 0x3F 'Resident ABI capabilities'
 
 if ($workerSelectEnd -gt 0x0300) {
     throw ('Selector prefix ends at ${0:X4}; it must not overwrite HIMON at $0300' -f $workerSelectEnd)
@@ -106,6 +112,6 @@ Write-Host ('UNIFIED WORKER       = run ${0:X4}-${1:X4}; store ${2:X4}-${3:X4}; 
 Write-Host ('SELECTOR PREFIX      = ${0:X4}-${1:X4}; {2} bytes' -f $workerStart, ($workerSelectEnd - 1), ($workerSelectEnd - $workerStart))
 Write-Host ('WORKER S19 SHA-256   = {0}' -f $workerHash)
 Write-Host ('DIRECTORY/CONFIG/VEC = $FFB0-$FFEF / $FFF0-$FFF9 / $FFFA-$FFFF')
-Write-Host 'PUBLIC CONSOLE ABI   = CHARIN $F013; CHAROUT $F019'
+Write-Host 'PUBLIC RESIDENT ABI  = INIT $F003; QUERY $F006; CHARIN $F013; CHAROUT $F019; READY $F03E'
 Write-Host 'RAM ABI              = $12; LOW USER $1A00-$1FFF; STR8 STATE $7DE9-$7DFF'
 Write-Host 'LAYOUT CHECK         = PASS'

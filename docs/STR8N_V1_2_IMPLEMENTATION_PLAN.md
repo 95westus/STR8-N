@@ -2,8 +2,10 @@
 
 Status: implemented, host-qualified, and onboard-update hardware-accepted on
 2026-08-11. The retained transcript proves backup, Bank-3 sector-F program and
-internal verify, RESET into STR8-N 1.2, and live `S` selection. The remaining
-Phase 7 smoke checks and external recovery proof are still open.
+internal verify, RESET into STR8-N 1.2, live `S` selection, guarded onboard
+directory refresh, Bank-3-to-Bank-2 copy+enrollment, and selector launch of the
+copy. The remaining Phase 7 smoke checks and external recovery proof are still
+open.
 
 This plan coordinates the STR8-N, HIMON, ASM-F2, Bank Maintenance, and related
 RAM-tool rebuilds needed to release STR8-N v1.2. It also defines the final
@@ -110,6 +112,7 @@ BUILD/v1.2/s19/str8n-v1.2-f000.s19
 BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19
 BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
 BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19
+BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19
 BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
 BUILD/str8n-manifest.json
 ```
@@ -128,6 +131,7 @@ contain `v1.2` in its source and output filename. The initial inventory is:
 ```text
 str8n-v1.2-bank-maint-2000.asm/.s19
 str8n-v1.2-top-update-2000.asm/.s19
+str8n-v1.2-directory-refresh-2000.s19
 str8n-v1.2-ram-proof-3000.s19
 str8n-v1.2-bank-crc-all-3000.a/.s19
 str8n-v1.2-flash-bank-read-ap-2000.a
@@ -393,21 +397,30 @@ hardware proof before it is authorized for Bank-3 sector F.
 Hardware checkpoint 2026-08-11: items 1-5 are accepted by the top-update
 transcript, with item 4 covered by internal full-sector verify rather than an
 independent readback. Item 6 is accepted for timeout, `S`, `H`, and `J3`;
-`J0`-`J2` remain open. Items 7 and 8 are accepted. Item 9 is accepted for
-read-only `M`; its destructive cases remain open. Item 10 remains open. The
+selector `2` and its Bank-2 launch are also accepted, while explicit command
+paths `J0`-`J2` remain open. Items 7 and 8 are accepted. Item 9 is accepted for
+read-only `M`, destructive Bank-0 `E ALL`, and the nonempty-directory refusal
+paths for B0 and B2. The guarded directory refresh and Bank-3-to-Bank-2
+copy+enrollment are accepted. The current Bank Maintenance artifact's
+metadata-only `D` adoption and its shared `C` regression are also accepted; AP
+put remains open. Item 10 remains open. The
 real ASM `IMPORT`/`PACKAGE`/HIMON `AP`/`RJOIN` path has accepted relocated
 scratch `$7DC0-$7DC7`, and canaries spanning `$1A00-$1FFF` survived ASM
 packaging, AP linking, and ASM output through `$7CFF`. The same canaries then
 survived corrected v1.2 Bank Maintenance `M`, `Q`, and live-selector warm `H`.
 The non-destructive RAM-relocation hardware test set is complete.
 
-Renewed console ABI checkpoint 2026-08-11: the retained
-[console ABI hardware proof](CONSOLE_ABI_HARDWARE_PROOF_2026-08-11.md) accepts
-the current resident for guarded onboard update, RESET/live selector, `$F019`
-CHAROUT, `$F013` raw CHARIN, `$F0DB` BRK dispatch, warm `H`, cold timeout, and
-`J3`. The silent NMI action still needs an operator annotation if it was
-performed before the successful `H` command. External recovery, `J0`-`J2`,
-and the remaining destructive matrix stay open.
+Renewed resident ABI checkpoint 2026-08-11: the retained
+[expanded ABI hardware proof](RESIDENT_ABI_HARDWARE_PROOF_2026-08-11.md)
+accepts the current resident for guarded onboard update, verified backup,
+RESET/live selector, `$F003` CONSOLE_INIT, `$F006` ABI_QUERY, `$F019` CHAROUT,
+both `$F03E` CHAR_READY paths and non-consumption, `$F013` raw CHARIN, `$F0E6`
+BRK dispatch, warm `H`, cold timeout, and `J3`. The silent NMI action still
+needs an explicit operator annotation. The same proof now accepts the onboard
+directory refresh, empty-directory map, Bank-3-to-Bank-2 copy+enrollment,
+selector `2` launch, return through `J3`, and the current artifact's `D`
+adoption guards and commits. External recovery, explicit command-path
+`J0`-`J2`, and the remaining destructive matrix stay open.
 
 Retain exact hashes, binaries, maps, source commit IDs, terminal transcripts,
 and flash readbacks for:
@@ -420,7 +433,7 @@ and flash readbacks for:
 6. selector timeout, `S`, `H`, and `J0`-`J3`;
 7. HIMON cold preservation of `$7DFD-$7DFF`;
 8. ASM `$7CFF/$7D00` boundary behavior;
-9. v1.2 Bank Maintenance map/copy/erase/AP operations;
+9. v1.2 Bank Maintenance map/copy/adopt/erase/AP operations;
 10. external-programmer recovery from the retained BIN and, separately, from
     the raw `STR8_TOP_SAFE` sector.
 
@@ -445,6 +458,7 @@ str8n-v1.1-bank3-f000-ffff.bin             rollback image
 str8n-v1.2-bank3-f000-ffff.bin             new programmer image
 ryors-v1.2-asm-himon-bank3-8-e.s19         Bank-3 payload
 str8n-v1.2-top-update-2000.s19             onboard top updater
+str8n-v1.2-directory-refresh-2000.s19      onboard directory refresh
 str8n-v1.2-bank-maint-2000.s19             post-update maintenance
 ```
 

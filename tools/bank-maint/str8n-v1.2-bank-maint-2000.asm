@@ -9,6 +9,9 @@
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
 ; THEN ENROLLS THAT DESTINATION IN THE BANK-3 DIRECTORY. COMPLETE IS LAST.
+; D ADOPTS AN EXISTING BANK INTO A COMPLETELY ERASED DIRECTORY ROW WITHOUT
+; REWRITING ITS PAYLOAD. RESET IS VALIDATED; BANK 3 ALSO REQUIRES STR8 AND
+; AN EXPLICIT NONERASED ENTRY ADDRESS. COMPLETE IS LAST.
 ; P PUTS ONE VALIDATED AP ENVELOPE FROM $4000 INTO BANK 0 $BF00.
 ;   THE AP MUST BE 5-$FF BYTES AND THE COMPLETE DESTINATION MUST BE ERASED.
 ; E ERASES ONE 4K SECTOR OR THE ALLOWED BANK RANGE:
@@ -20,10 +23,10 @@
 ;   ONE AP DETAIL LINE IS PRINTED FOR EACH SECTOR MARKED A.
 ; M ALSO PRINTS BANK-3 DIRECTORY TYPE, DESCRIPTION, ENTRY, AND JOURNAL.
 ; M RESTORES ITS ENTRY BANK AFTER EACH CARRIED-WORKER STAGE CALL.
-; C/E/M/P, ABORT, AND SAFE FAILURES RETURN TO THIS MENU. Q RETURNS TO STR8-N.
+; C/D/E/M/P, ABORT, AND SAFE FAILURES RETURN TO THIS MENU. Q RETURNS TO STR8-N.
 ; BANK-3 ERASE REMAINS THE EXCEPTION AND RETURNS DIRECTLY TO STR8.
 ;
-; THIS SOURCE CARRIES THE EXACT V1 MUTATION WORKER AT $3000-$322A AND COPIES
+; THIS SOURCE CARRIES THE EXACT V1 MUTATION WORKER AT $3400-$362A AND COPIES
 ; IT TO $0200-$042A. IT DOES NOT REQUEST MODES $05/$06 THROUGH V1 $F003.
 ; THE WORKER SKIPS A PHYSICAL ERASE WHEN A STAGED $FF SECTOR IS ALREADY
 ; ERASED. EVERY PROGRAMMED SECTOR IS VERIFIED.
@@ -36,6 +39,7 @@
 ; A SOURCE WITH THE STR8 SERVICE SIGNATURE PRINTS !STR8 BEFORE CONFIRMATION.
 ; ERASE REQUIRES EXACT `ERASE BS`, `ERASE BX-Y`, OR `ERASE BALL`.
 ; B IS THE BANK. COPY REQUIRES EXACT `COPY XY`.
+; DIRECTORY ADOPTION REQUIRES EXACT `ADOPT BN`.
 ; AP PUT REQUIRES EXACT `PUT B0BF00`.
 ;
 ; RAM MAP:
@@ -45,12 +49,13 @@
 ;   $7C0C        ENTRY-BANK PCR BITS FOR MAP RETURN
 ;   $7C0D-$7C0E  DIRECTORY PRINT INDEXES
 ;   $7C0F-$7C17  AP MAP COUNT/PARSER STATE
-;   $7C18-$7C1D  COPY ENROLLMENT TYPE AND FIVE-CHARACTER DESCRIPTION
+;   $7C18-$7C1D  DIRECTORY TYPE AND FIVE-CHARACTER DESCRIPTION
+;   $7C1E-$7C1F  DIRECTORY ENTRY, LOW/HIGH
 ;   $7C20-$7C2F  INPUT BUFFER
 ;   $7C40-$7C7F  STAGED BANK-3 DIRECTORY
 ;   $7C80-$7D1A  FIRST VALID AP PER MAPPED SECTOR, 31 X 5 BYTES
 ;   $2000-...    THIS PROGRAM
-;   $3000-$322A  EMBEDDED V1 MUTATION WORKER
+;   $3400-$362A  EMBEDDED V1 MUTATION WORKER
 ; The program owns direct FT245R console input/output and does not require
 ; HIMON vectors or an initialized HIMON session.
 ;
@@ -58,7 +63,7 @@
 ;   $7C00 STATUS: $AC OK, $E0 ABORT, $E1 STAGE FAIL,
 ;                 $E2 PROGRAM/VERIFY FAIL, $E6 BAD RESET VECTOR,
 ;                 $E7 DIRECTORY ENROLLMENT FAIL
-;   $7C01 OPERATION: C, E, M, P, OR Q
+;   $7C01 OPERATION: C, D, E, M, P, OR Q
 ;   $7C02 SOURCE/ERASE BANK
 ;   $7C03 DESTINATION BANK
 ;   $7C04 CURRENT/FAILING SECTOR HIGH BYTE
@@ -77,14 +82,14 @@ BM_FTDI_WR EQU $04
 BM_FTDI_RD EQU $08
 
 BM_MAIN LDX #$00
-?WCOPY LDA $3000,X
+?WCOPY LDA $3400,X
         STA $0200,X
-        LDA $3100,X
+        LDA $3500,X
         STA $0300,X
         INX
         BNE ?WCOPY
         LDX #$2A
-?WTAIL LDA $3200,X
+?WTAIL LDA $3600,X
         STA $0400,X
         DEX
         BPL ?WTAIL
@@ -115,6 +120,8 @@ BM_MAIN LDX #$00
         BEQ BM_ABORT
         CMP #'C'
         BEQ ?COPY
+        CMP #'D'
+        BEQ ?ADOPT
         CMP #'E'
         BEQ ?ERASE
         CMP #'M'
@@ -130,6 +137,7 @@ BM_MAIN LDX #$00
 ?MAP   JMP BM_MAP
 ?PUT   JMP BM_PUT
 ?ERASE JMP BM_ERASE
+?ADOPT JMP BM_ADOPT
 ?COPY  JMP BM_COPY
 
 BM_ABORT LDA #$E0
@@ -1146,9 +1154,11 @@ BM_COPY BRA ?BODY
         BNE ?LOOP
         JMP BM_COPY_ENROLL
 
-; C only adopts an erased directory row. Existing/incomplete identities must
-; be recovered through STR8-N I so their immutable metadata cannot be changed.
-BM_COPY_DIR_EMPTY JSR BM_COPY_DIR_BASE
+; Directory-changing operations only adopt an erased row. Existing or
+; incomplete immutable identities are never edited in place.
+BM_COPY_DIR_EMPTY LDA #$03
+        JSR $0203
+        JSR BM_COPY_DIR_BASE
         LDY #$00
 ?BYTE   LDA ($CA),Y
         CMP #$FF
@@ -1173,45 +1183,11 @@ BM_COPY_DIR_BASE LDA $7C03
         STA $CB
         RTS
 
-BM_COPY_ENROLL LDX #<BM_MCTYPE2
-        LDY #>BM_MCTYPE2
-        JSR BM_PUTS
-        JSR BM_READ
-        BCS ?READ_OK
-        JMP BM_COPY_ENROLL_ABORT
-?READ_OK
-        LDA $7C22
-        BNE BM_COPY_ENROLL
-        LDA $7C20
-        JSR BM_HEX_NIBBLE
-        BCC BM_COPY_ENROLL
-        ASL A
-        ASL A
-        ASL A
-        ASL A
-        STA $7C18
-        LDA $7C21
-        JSR BM_HEX_NIBBLE
-        BCC BM_COPY_ENROLL
-        ORA $7C18
-        STA $7C18
-BM_COPY_DESC LDX #<BM_MCDESC
-        LDY #>BM_MCDESC
-        JSR BM_PUTS
-        JSR BM_READ
-        BCS ?READ_OK
-        JMP BM_COPY_ENROLL_ABORT
-?READ_OK
-        LDA $7C25
-        BNE BM_COPY_DESC
-        LDX #$00
-?BYTE   LDA $7C20,X
-        JSR BM_DESC_BYTE
-        BCC BM_COPY_DESC
-        STA $7C19,X
-        INX
-        CPX #$05
-        BNE ?BYTE
+BM_COPY_ENROLL LDA #$FF
+        STA $7C1E
+        STA $7C1F
+        JSR BM_DIR_READ_IDENTITY
+        BCC BM_COPY_ENROLL_ABORT
         LDX #<BM_MCENROLL
         LDY #>BM_MCENROLL
         JSR BM_PUTS
@@ -1222,9 +1198,11 @@ BM_COPY_DESC LDX #<BM_MCDESC
         BNE BM_COPY_ENROLL_ABORT
         LDA $7C21
         BNE BM_COPY_ENROLL_ABORT
+        JMP BM_DIR_ENROLL_COMMIT
 
 ; START first: clear journal bit zero. The row remains unbootable until the
 ; final COMPLETE write clears bit one.
+BM_DIR_ENROLL_COMMIT
         LDA #$FE
         STA $7B00
         LDA #$0C
@@ -1232,8 +1210,8 @@ BM_COPY_DESC LDX #<BM_MCDESC
         JSR BM_COPY_DIR_WRITE
         BCC BM_COPY_ENROLL_FAIL
 
-; Immutable descriptor for Banks 0-2: TYPE, erased reserved bytes, DESC,
-; seal FE, and erased FFFF entry. Program and verify as one request.
+; Immutable descriptor: TYPE, erased reserved bytes, DESC, seal FE, and the
+; operation-selected entry. Program and verify as one request.
         LDA $7C18
         STA $7B00
         LDA #$FF
@@ -1250,8 +1228,9 @@ BM_COPY_DESC LDX #<BM_MCDESC
         BNE ?DESC
         LDA #$FE
         STA $7B09
-        LDA #$FF
+        LDA $7C1E
         STA $7B0A
+        LDA $7C1F
         STA $7B0B
         LDA #$00
         LDX #$0C
@@ -1327,6 +1306,49 @@ BM_HEX_NIBBLE CMP #'0'
 ?BAD   CLC
         RTS
 
+; Prompt for and validate one immutable TYPE/DESCRIPTION identity.
+; OUT: C=1 and identity at $7C18-$7C1D; C=0 on Ctrl-C.
+BM_DIR_READ_IDENTITY
+?TYPE   LDX #<BM_MCTYPE2
+        LDY #>BM_MCTYPE2
+        JSR BM_PUTS
+        JSR BM_READ
+        BCC ?FAIL
+        LDA $7C22
+        BNE ?TYPE
+        LDA $7C20
+        JSR BM_HEX_NIBBLE
+        BCC ?TYPE
+        ASL A
+        ASL A
+        ASL A
+        ASL A
+        STA $7C18
+        LDA $7C21
+        JSR BM_HEX_NIBBLE
+        BCC ?TYPE
+        ORA $7C18
+        STA $7C18
+?DESC   LDX #<BM_MCDESC
+        LDY #>BM_MCDESC
+        JSR BM_PUTS
+        JSR BM_READ
+        BCC ?FAIL
+        LDA $7C25
+        BNE ?DESC
+        LDX #$00
+?BYTE   LDA $7C20,X
+        JSR BM_DESC_BYTE
+        BCC ?DESC
+        STA $7C19,X
+        INX
+        CPX #$05
+        BNE ?BYTE
+        SEC
+        RTS
+?FAIL   CLC
+        RTS
+
 BM_DESC_BYTE CMP #'A'
         BCC ?DIGIT
         CMP #'Z'+1
@@ -1352,6 +1374,178 @@ BM_MCDIRUSED DB $0D,$0A,'D','I','R',' ','N','O','T',' ','E','M','P','T','Y'
 BM_MCTYPE2 DB $0D,$0A,'T','Y','P','E',' ','0','0','-','F','F','>',' ',0
 BM_MCDESC DB 'D','E','S','C',' ','5',' ','C','H','A','R','S','>',' ',0
 BM_MCENROLL DB 'E','N','R','O','L','L','?',' ','Y',':',' ',0
+
+; Adopt already-present payload into an erased directory row. This is the
+; metadata-only recovery path after a directory refresh; no payload sector is
+; erased or programmed. Bank 3 additionally publishes an explicit S9 identity.
+BM_ADOPT LDA #'D'
+        STA $7C01
+?BANK   LDX #<BM_MBANK
+        LDY #>BM_MBANK
+        JSR BM_PUTS
+        JSR BM_READ
+        BCC ?ABORT
+        LDA $7C20
+        BEQ ?ABORT
+        JSR BM_PARSE_BANK
+        BCC ?BANK
+        STA $7C02
+        STA $7C03
+        JSR BM_COPY_DIR_EMPTY
+        BCS ?EMPTY
+        LDX #<BM_MCDIRUSED
+        LDY #>BM_MCDIRUSED
+        JSR BM_PUTS
+?ABORT  JMP BM_ABORT
+?EMPTY  LDA #$F0
+        STA $7C04
+        JSR BM_STAGE
+        BCS ?VECTOR
+        JMP BM_FSTAGE
+; Every adopted bank must already publish a usable RESET vector.
+?VECTOR LDA $19FD
+        CMP #$80
+        BCC ?BAD_VECTOR
+        CMP #$FF
+        BNE ?BANK_KIND
+        LDA $19FC
+        CMP #$FF
+        BNE ?BANK_KIND
+?BAD_VECTOR
+        LDA #$E6
+        STA $7C00
+        JMP BM_FAIL
+?BANK_KIND
+        LDA $7C03
+        CMP #$03
+        BEQ ?BANK3
+        LDA #$FF
+        STA $7C1E
+        STA $7C1F
+        JMP ?IDENTITY
+; A Bank-3 adoption must refer to the current STR8-N resident and a nonerased
+; explicit entry. The entry is identity metadata; J3 still follows RESET.
+?BANK3  LDA $0A0C
+        CMP #'S'
+        BNE ?BAD_VECTOR
+        LDA $0A0D
+        CMP #'R'
+        BNE ?BAD_VECTOR
+        LDA $0A0E
+        CMP #$02
+        BNE ?BAD_VECTOR
+        LDA $0A0F
+        CMP #$03
+        BNE ?BAD_VECTOR
+?ENTRY  LDX #<BM_MDENTRY
+        LDY #>BM_MDENTRY
+        JSR BM_PUTS
+        JSR BM_READ
+        BCC ?ABORT
+        LDA $7C24
+        BNE ?ENTRY
+        LDA $7C20
+        JSR BM_HEX_NIBBLE
+        BCC ?ENTRY
+        ASL A
+        ASL A
+        ASL A
+        ASL A
+        STA $7C1F
+        LDA $7C21
+        JSR BM_HEX_NIBBLE
+        BCC ?ENTRY
+        ORA $7C1F
+        STA $7C1F
+        LDA $7C22
+        JSR BM_HEX_NIBBLE
+        BCC ?ENTRY
+        ASL A
+        ASL A
+        ASL A
+        ASL A
+        STA $7C1E
+        LDA $7C23
+        JSR BM_HEX_NIBBLE
+        BCC ?ENTRY
+        ORA $7C1E
+        STA $7C1E
+        LDA $7C1F
+        CMP #$80
+        BCC ?ENTRY
+        CMP #$FF
+        BNE ?ENTRY_USED
+        LDA $7C1E
+        CMP #$FF
+        BEQ ?ENTRY
+?ENTRY_USED
+        LDA #$03
+        JSR $0203
+        LDA $7C1E
+        STA $CA
+        LDA $7C1F
+        STA $CB
+        LDY #$00
+        LDA ($CA),Y
+        CMP #$FF
+        BNE ?IDENTITY
+        INY
+        LDA ($CA),Y
+        CMP #$FF
+        BEQ ?ENTRY
+?IDENTITY
+        JSR BM_DIR_READ_IDENTITY
+        BCS ?IDENTITY_OK
+        JMP BM_ABORT
+?IDENTITY_OK
+        LDX #<BM_MDADOPT
+        LDY #>BM_MDADOPT
+        JSR BM_PUTS
+        LDA $7C03
+        CLC
+        ADC #'0'
+        JSR BM_OUT
+        LDA #'>'
+        JSR BM_OUT
+        LDA #' '
+        JSR BM_OUT
+        JSR BM_READ
+        BCS ?CONFIRM
+        JMP BM_ABORT
+?CONFIRM
+        LDA $7C28
+        BNE ?CONFIRM_BAD
+        LDA $7C20
+        CMP #'A'
+        BNE ?CONFIRM_BAD
+        LDA $7C21
+        CMP #'D'
+        BNE ?CONFIRM_BAD
+        LDA $7C22
+        CMP #'O'
+        BNE ?CONFIRM_BAD
+        LDA $7C23
+        CMP #'P'
+        BNE ?CONFIRM_BAD
+        LDA $7C24
+        CMP #'T'
+        BNE ?CONFIRM_BAD
+        LDA $7C25
+        CMP #' '
+        BNE ?CONFIRM_BAD
+        LDA $7C26
+        CMP #'B'
+        BNE ?CONFIRM_BAD
+        LDA $7C03
+        CLC
+        ADC #'0'
+        CMP $7C27
+        BNE ?CONFIRM_BAD
+        JMP BM_DIR_ENROLL_COMMIT
+?CONFIRM_BAD JMP BM_ABORT
+
+BM_MDENTRY DB $0D,$0A,'E','N','T','R','Y',' ','8','0','0','0','-','F','F','F','E','>',' ',0
+BM_MDADOPT DB 'T','Y','P','E',' ','A','D','O','P','T',' ','B',0
 
 BM_ERASE LDA #'E'
         STA $7C01
@@ -1618,7 +1812,8 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2',' '
         DB ' ','S',$0D,$0A
         DB '!','S','T','R','8','=','S','O','U','R','C','E',' '
         DB 'H','A','S',' ','S','T','R','8',$0D,$0A
-        DB 'C','=','C','O','P','Y','+','D','I','R',' ','E','=','E','R','A'
+        DB 'C','=','C','O','P','Y','+','D','I','R',' ','D','=','A','D','O'
+        DB 'P','T',' ','E','=','E','R','A'
         DB 'S','E',' ','M','=','M','A','P','+','D','I','R'
         DB ' ','P','=','A','P',' ','B','0','B','F','0','0'
         DB ' ','Q','=','Q','U','I','T'
@@ -1696,7 +1891,7 @@ BM_PUT  BRA ?BODY
         JMP BM_SUCCESS
 
 ; BEGIN GENERATED STR8 MUTATION WORKER
-        ORG $3000
+        ORG $3400
         DB $4C,$07,$02,$49,$57,$01,$FE,$08
         DB $78,$AD,$F0,$7D,$C9,$05,$F0,$0B
         DB $C9,$06,$F0,$0C,$C9,$07,$F0,$0D

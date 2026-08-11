@@ -34,8 +34,8 @@ BUILD/str8n-manifest.json
 The manifest publishes the top-sector and worker layout, hashes, fixed ABI,
 record service version/capabilities, and the bank-maintenance image hash. The
 R-YORS lock binds the core top-sector/worker contract needed by its build.
-R-YORS verifies the locked values, retired gates, fixed service addresses,
-vectors, and protected layout before constructing Bank 3.
+R-YORS verifies the locked values, resident ABI gates, fixed service
+addresses, vectors, and protected layout before constructing Bank 3.
 
 ```mermaid
 flowchart LR
@@ -61,9 +61,10 @@ R-YORS code binds only to interfaces listed in the
 starts at `$0500`, above STR8-N's complete relocated worker at
 `$0200-$0453`; the R-YORS build must reject an overlap if that contract moves.
 
-`$F003` and `$F006` are retired. Record parsing is `$F009` ABI V2. Bank select
-is `$F010`, with its return-capable RAM entry at `$0203`. Worker mode 6 is not
-an interface.
+`$F003` initializes the raw console and `$F006` reports resident ABI version
+and capabilities. Record parsing is `$F009` ABI V2. Bank select is `$F010`,
+with its return-capable RAM entry at `$0203`. Worker mode 6 is not an
+interface.
 
 ## R-YORS files consumed by STR8-N tools
 

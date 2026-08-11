@@ -10,8 +10,8 @@ Everything persistent and every flash/selection worker fits in Bank 3's top
 4K:
 
 ```text
-$F000-$FD44  resident code/data             3397 bytes
-$FD45-$FD5B  enforced unused reserve           23 bytes
+$F000-$FD53  resident code/data             3412 bytes
+$FD54-$FD5B  enforced unused reserve            8 bytes
 $FD5C-$FFAF  unified worker                   596 bytes
 $FFB0-$FFEF  directory                         64 bytes
 $FFF0-$FFF9  identity/configuration reserve     10 bytes
@@ -26,16 +26,20 @@ address moves.
 
 ## Settled interfaces
 
-- `$F003` is retired and returns failure (`CLC`, `RTS`, `NOP`). Legacy
-  TopWriter support is retired.
-- `$F006` is also a retired fail-closed tombstone.
+- Legacy TopWriter support and the general destructive worker doorway remain
+  retired; neither is part of the resident ABI.
+- `$F003` initializes the console hardware, and `$F006` reports resident ABI
+  version `$01` and capability byte `$3F`. The preceding image returns carry
+  clear at `$F006`, providing a safe compatibility test.
 - `$F009` is record service ABI V2. It parses validated S0/S1/S9 input from a
   RAM buffer or console and does not apply records for the caller.
 - `$F010` copies/verifies the 41-byte selector prefix at `$0200-$0228`, then
   enters its return-capable `$0203` entry. This does not overwrite the R-YORS
   helper at `$0300`.
-- `$F013` and `$F019` are the blocking raw CHARIN and CHAROUT services. They
-  require Bank 3 and the reset-initialized FT245R interface to remain visible.
+- `$F013`, `$F019`, and `$F03E` are raw CHARIN, CHAROUT, and CHAR_READY
+  services. The first two block; CHAR_READY returns immediately and reports
+  readiness without consuming a byte. All require Bank 3 and an initialized
+  FT245R interface to remain visible.
 - `I` and `J0`-`J3` copy the worker bytes they need and read back each byte.
 - `L` accepts complete S1 spans only inside `$2000-$7AFF` and automatically
   executes an in-range S9. It never invokes the flash worker.
@@ -116,12 +120,16 @@ adds bytes to the protected 4K resident image.
 
 Retained terminal sessions have shown the startup display, a full-speed
 Bank-3 `8-E` install, HIMON start, separate ASM `8-B` installation and start,
-RAM maintenance loading, mapping, and an eight-sector verified raw copy. The
-raw-copy test also proved that used flash without directory enrollment is
-correctly refused by `J0`-`J2`.
+RAM maintenance loading, mapping, guarded onboard directory refresh, and an
+eight-sector verified copy with COMPLETE directory enrollment. Selector `2`
+launched that Bank-2 copy and its `J3` returned through physical Bank 3. The
+earlier raw-copy test also proved that used flash without directory enrollment
+is correctly refused by `J0`-`J2`. The current Bank Maintenance artifact also
+has retained hardware acceptance for metadata-only D1/D3 directory adoption,
+its precommit guards, and a subsequent `C` regression.
 
-Still retain board-proof runs for the enhanced `C` enrollment, generated
-Bank-0/1/2 `8-F` image, every boundary size, interruption/recovery points,
-journal exhaustion, and rejected `L` limits. Archive exact binaries, hashes,
-flash readbacks, and terminal transcripts. Host checks complement but do not
-replace hardware qualification.
+Still retain board-proof runs for the generated Bank-0/1/2 `8-F` image, every
+boundary size, interruption/recovery points, explicit `J0`/`J1`/`J2` commands,
+journal exhaustion, AP put, and rejected `L` limits. Archive exact binaries,
+hashes, flash readbacks, and terminal transcripts. Host checks complement but
+do not replace hardware qualification.
