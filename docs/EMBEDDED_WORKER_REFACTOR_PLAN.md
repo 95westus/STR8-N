@@ -103,9 +103,13 @@ matches exactly.
 command copies and verifies eight sectors, then enrolls only an erased
 destination row with START, identity/seal, and COMPLETE-last ordering.
 Its `D` command uses the same record writer to adopt an existing valid-reset
-payload into an erased row without rewriting payload sectors. The current
-image loads at `$2000-$362A`; its private worker is stored at `$3400-$362A`
-and copied to `$0200-$042A` for execution.
+payload into an erased row without rewriting payload sectors. Its `R` command
+requires all eight sectors of a Bank 0-2 payload to verify erased before it
+stages Bank-3 sector F, keeps a verified original backup in the selected
+bank's sector F, clears only the matching D0-D2 row, and rewrites/verifies the
+complete protected sector after exact confirmation. The temporary backup is
+erased only after B3F verifies. The current image loads at `$2000-$362A`; its
+private worker is stored at `$3400-$362A` and copied to `$0200-$042A`.
 
 `make onboard-directory-refresh` creates the guarded RAM tool that backs up
 the complete live Bank-3 top sector into Bank 1 sector F, verifies it, then
@@ -136,7 +140,11 @@ launched that Bank-2 copy and its `J3` returned through physical Bank 3. The
 earlier raw-copy test also proved that used flash without directory enrollment
 is correctly refused by `J0`-`J2`. The current Bank Maintenance artifact also
 has retained hardware acceptance for metadata-only D1/D3 directory adoption,
-its precommit guards, and a subsequent `C` regression.
+its precommit guards, and a subsequent `C` regression. The 2026-08-13
+stale-directory recovery run additionally accepted `R` for D0: an incorrect
+confirmation caused no mutation, exact `CLEAR D0` completed the verified B3F
+backup/rewrite path, and the immediately following eight-sector B3-to-B0 copy
+completed and enrolled D0.
 
 Still retain board-proof runs for the generated Bank-0/1/2 `8-F` image, every
 boundary size, interruption/recovery points, explicit `J0`/`J1`/`J2` commands,

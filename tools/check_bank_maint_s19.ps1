@@ -1,5 +1,6 @@
 param(
-    [string]$S19Path = "BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19"
+    [string]$S19Path = "BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19",
+    [string]$SourcePath = "tools/bank-maint/str8n-v1.2-bank-maint-2000.asm"
 )
 
 Set-StrictMode -Version Latest
@@ -11,6 +12,29 @@ $highestAllowed = 0x7AFF
 $data = @{}
 $dataRecords = 0
 $startRecords = 0
+
+if (-not (Test-Path -LiteralPath $SourcePath)) {
+    throw "Missing Bank Maintenance source: $SourcePath"
+}
+$sourceLines = [System.IO.File]::ReadAllLines((Resolve-Path $SourcePath))
+$codeText = ($sourceLines | ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
+$reclaimStart = $codeText.IndexOf('BM_RECLAIM LDA')
+$reclaimEnd = $codeText.IndexOf('BM_ERASE LDA')
+if ($reclaimStart -lt 0 -or $reclaimEnd -le $reclaimStart) {
+    throw 'Bank Maintenance reclaim routine is missing or out of order'
+}
+$reclaimCode = $codeText.Substring($reclaimStart, $reclaimEnd - $reclaimStart)
+foreach ($requiredCode in @('JSR BM_COPY_DIR_EMPTY', 'JSR BM_BUFFER_ERASED',
+        'LDA #$03', 'LDA #$F0', 'STA $7C02', 'STA $7C03',
+        'STA $7C04', 'JSR BM_STAGE', 'JSR BM_FILL')) {
+    if (-not $reclaimCode.Contains($requiredCode)) {
+        throw "Bank Maintenance reclaim is missing '$requiredCode'"
+    }
+}
+$programCalls = ([regex]::Matches($reclaimCode, 'JSR\s+BM_PROGRAM')).Count
+if ($programCalls -ne 3) {
+    throw "Bank Maintenance reclaim has $programCalls program calls; expected backup, B3F rewrite, and backup erase"
+}
 
 foreach ($rawLine in Get-Content -LiteralPath $S19Path) {
     $line = $rawLine.Trim()
@@ -82,7 +106,9 @@ for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) 
 }
 if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.2 banner' }
 
-foreach ($requiredText in @('D=ADOPT', 'ENTRY 8000-FFFE>', 'TYPE ADOPT B')) {
+foreach ($requiredText in @('D=ADOPT', 'ENTRY 8000-FFFE>', 'TYPE ADOPT B',
+        'R=RECLAIM DIR', 'RECLAIM BANK 0-2>', 'B3F REWRITE',
+        'TYPE CLEAR D', 'BACKUP VERIFIED', 'BANK NOT ERASED', 'DIR EMPTY')) {
     $needle = [System.Text.Encoding]::ASCII.GetBytes($requiredText)
     $found = $false
     for ($offset = 0; $offset -le $programBytes.Length - $needle.Length; $offset++) {

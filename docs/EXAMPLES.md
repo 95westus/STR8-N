@@ -178,7 +178,7 @@ It starts automatically:
 STR8-N 1.2 BANK MAINT
 B3 ERASE RETURNS TO STR8; SELECT S
 !STR8=SOURCE HAS STR8
-C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT>
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT>
 ```
 
 ## Copy a full bank and enroll it
@@ -187,7 +187,7 @@ C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT>
 destination's Bank-3 directory record. The destination must be Bank 0-2.
 
 ```text
-C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT> C
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> C
 SOURCE BANK 0-3> 3
 DEST BANK 0-2> 2
 !STR8
@@ -205,6 +205,26 @@ TYPE, five-character DESC, and `ENROLL? Y`.
 If the destination directory row is not all `$FF`, the tool prints
 `DIR NOT EMPTY` and refuses the copy. After `OK`, quit to STR8-N and use the
 matching `J0`, `J1`, or `J2`.
+
+If the payload bank was deliberately erased but its old directory row remains,
+reclaim that one row before retrying the copy:
+
+```text
+STR8-N 1.2 BANK MAINT
+... R=RECLAIM DIR ...> R
+RECLAIM BANK 0-2> 0
+
+B3F REWRITE
+TYPE CLEAR D0> CLEAR D0
+BACKUP VERIFIED
+ OK
+```
+
+The operation refuses with `BANK NOT ERASED` unless every byte in all eight
+Bank-0 payload sectors is `$FF`. It temporarily uses Bank 0 sector F for the
+verified B3F backup, then erases that backup only after the protected rewrite
+verifies. Do not interrupt it. After `OK`, `M` must show D0 completely erased
+and all Bank-0 sectors erased; `C` can then copy and enroll Bank 3 normally.
 
 ## Refresh all directory rows onboard
 
@@ -250,7 +270,7 @@ bank must have a usable RESET vector. This example restores the current R-YORS
 Bank-3 identity after a directory refresh:
 
 ```text
-C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT> D
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> D
 BANK 0-3> 3
 TYPE 00-FF> FF
 DESC 5 CHARS> RYORS
@@ -276,7 +296,7 @@ install or `C` copy whenever complete-payload verification is required.
 `M` is read-only:
 
 ```text
-C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 Q=QUIT> M
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> M
 
 BANK 8 9 A B C D E F
 

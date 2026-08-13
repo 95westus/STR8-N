@@ -373,3 +373,159 @@ HIMON V 00.0811(1004)
 Still separate: an explicitly annotated NMI action, independent
 external-programmer recovery, explicit command-path `J0`/`J1`/`J2`, Bank
 Maintenance AP put, and the remaining complete release-matrix cases.
+## 2026-08-13 Erased-Payload/Stale-Directory Continuation
+
+The operator erased `ALL` in Banks 0, 1, and 2. `M` then correctly showed all
+24 payload sectors erased while D0-D2 retained their earlier identities:
+
+```text
+B0 E E E E E E E E
+B1 E E E E E E E E
+B2 E E E E E E E E
+B3 U U U U U U U P
+
+D0 FF COPY1 FFFF FCFFFFFF
+D1 FF XXXXX FFFF FCFFFFFF
+D2 FF B2D2X FFFF FCFFFFFF
+D3 FF RYORS C000 00FCFFFF
+```
+
+Both `C` from Bank 3 to Bank 0 and `D` for Bank 0 then printed `DIR NOT EMPTY`
+and aborted. This is expected from the pre-existing safety rule but exposed a
+missing narrow recovery operation: payload erase cannot set the separately
+stored Bank-3 directory bits back to `$FF`.
+
+Bank Maintenance now has `R=RECLAIM DIR`. It accepts only D0-D2, returns
+without mutation for an already-erased row, and otherwise requires all eight
+corresponding payload sectors to verify erased before exact `CLEAR Dn`
+confirmation. It stages B3F, writes and verifies an original-image backup in
+the selected bank's sector F, clears only the selected 16-byte row in RAM,
+rewrites and verifies B3F, then erases and verifies the temporary backup.
+
+Host status: accepted. `make all`, the Bank Maintenance S19 checker, the R-YORS
+external STR8-N contract check, and `git diff --check` pass. The image remains
+`$2000-$362A` with S9 `$2000`; private-worker SHA-256 remains
+`FFCDB4201C913FC9B3E3F3D438A98940F76967C5E62F843A2DC32CFF1D1AD1B2`.
+The new Bank Maintenance S19 SHA-256 is
+`B296088666483187E9F7CEA694FB0BE9BCAEE0F3C56592738DC6014B0BFA4940`.
+
+Board status: accepted on 2026-08-13 for the Bank-0 stale-row case. A mistyped
+`CREATE D0` confirmation aborted without mutation. Exact `CLEAR D0` reported
+`BACKUP VERIFIED` and `OK`; the immediately following Bank-3-to-Bank-0 copy
+programmed and verified all eight sectors and enrolled D0 as `BKUP0`. The
+final map showed Bank 0 used in all eight sectors and D0 complete. No
+standalone `M` was captured between reclaim and copy, so the evidence relies
+on `R`'s internal verified cleanup plus the successful copy rather than an
+independent post-reclaim map snapshot.
+
+### Retained terminal transcript
+
+```text
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> M
+
+BANK 8 9 A B C D E F
+
+B0 E E E E E E E E
+B1 E E E E E E E E
+B2 E E E E E E E E
+B3 U U U U U U U P
+E=ERASED U=USED A=AP VALID P=B3F PROTECTED
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF COPY1 FFFF FCFFFFFF
+D1 FF XXXXX FFFF FCFFFFFF
+D2 FF B2D2X FFFF FCFFFFFF
+D3 FF RYORS C000 00FCFFFF
+ OK
+
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> R
+
+RECLAIM BANK 0-2> 0
+
+B3F REWRITE
+TYPE CLEAR D0> CREATE D0
+ABORT
+
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> M
+
+BANK 8 9 A B C D E F
+
+B0 E E E E E E E E
+B1 E E E E E E E E
+B2 E E E E E E E E
+B3 U U U U U U U P
+E=ERASED U=USED A=AP VALID P=B3F PROTECTED
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF COPY1 FFFF FCFFFFFF
+D1 FF XXXXX FFFF FCFFFFFF
+D2 FF B2D2X FFFF FCFFFFFF
+D3 FF RYORS C000 00FCFFFF
+ OK
+
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> C
+SOURCE BANK 0-3> 3
+DEST BANK 0-2> 0
+
+DIR NOT EMPTY
+ABORT
+
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> R
+
+RECLAIM BANK 0-2> 0
+
+B3F REWRITE
+TYPE CLEAR D0> CLEAR D0
+BACKUP VERIFIED
+ OK
+
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> C
+SOURCE BANK 0-3> 3
+DEST BANK 0-2> 0
+!STR8
+TYPE COPY 30> COPY 30
+
+........
+TYPE 00-FF> FF
+DESC 5 CHARS> BKUP0
+ENROLL? Y: Y
+ OK
+
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> M
+
+BANK 8 9 A B C D E F
+
+B0 U U U U U U U U
+B1 E E E E E E E E
+B2 E E E E E E E E
+B3 U U U U U U U P
+E=ERASED U=USED A=AP VALID P=B3F PROTECTED
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF BKUP0 FFFF FCFFFFFF
+D1 FF XXXXX FFFF FCFFFFFF
+D2 FF B2D2X FFFF FCFFFFFF
+D3 FF RYORS C000 00FCFFFF
+ OK
+```

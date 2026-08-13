@@ -15,8 +15,8 @@ flowchart TB
     S -->|I| W[RAM worker<br/>$0200-$0453]
     W --> FLASH[Selected flash range]
     S -->|L| RAM[Recovery RAM program<br/>$2000-$7AFF, then S9]
-    RAM -->|bank-maint S19| BM[Self-contained Bank Maintenance<br/>map/copy/adopt/erase/AP put]
-    BM -->|private RAM worker| FLASH2[Banked flash<br/>Bank 3 F protected]
+    RAM -->|bank-maint S19| BM[Self-contained Bank Maintenance<br/>map/copy/adopt/reclaim/erase/AP put]
+    BM -->|private RAM worker| FLASH2[Banked flash<br/>Bank 3 F guarded]
     BM -->|Q| S
     B3 -->|L or L G| RAM2[HIMON RAM program]
 ```
@@ -139,6 +139,11 @@ stateDiagram-v2
 `J0`-`J2` accept only `Complete`. Bank Maintenance `C` accepts only `Erased`
 destination rows. Bank Maintenance `D` can adopt an existing payload only into
 an `Erased` row; neither command overwrites or repairs an existing identity.
+After proving all eight sectors of a Bank 0-2 payload are erased, `R` can
+return only that bank's stale row to `Erased` by rewriting and verifying the
+complete guarded Bank-3 sector F. It first keeps a verified original B3F copy
+in the selected bank's sector F and erases that temporary backup only after
+the protected rewrite verifies.
 
 ## Protected 4K top sector
 
@@ -296,6 +301,9 @@ flowchart TD
     COPY --> ID[TYPE + five-character DESC<br/>START, identity, COMPLETE]
     M -->|D| ADOPT[Validate existing RESET<br/>require empty directory row]
     ADOPT --> ID2[TYPE + DESC + B3 ENTRY<br/>START, identity, COMPLETE]
+    M -->|R| RECLAIM[Prove all 8 payload sectors erased<br/>confirm CLEAR Dn]
+    RECLAIM --> BACKUP[Verify original B3F backup<br/>in selected bank sector F]
+    BACKUP --> TOP[Rewrite and verify Bank 3 F<br/>then erase backup]
     M -->|E| ERASE[Erase selected sectors<br/>Bank 3 F protected]
     M -->|P| AP[Validated AP put<br/>Bank 0 $BF00]
     M -->|Q| Q[Jump Bank 3 $F000]

@@ -240,7 +240,7 @@ to `$1F000-$1FFFF`, or program one of the retained 4096-byte BINs at physical
 After v1.2 starts, verify `S`, `H`, selector timeout, the `$7DFD-$7DFF` Bank
 Jump Record, and the ASM `$7CFF/$7D00` boundary before updating Banks 0-2.
 
-`C`, `D`, `E`, and `P` write flash and require an exact typed confirmation.
+`C`, `D`, `E`, `P`, and `R` write flash and require an exact typed confirmation.
 Do not press NMI, reset, remove power, or remove the flash during a write or
 erase. `C` prints `!STR8` before confirmation when the source contains the
 STR8-N 1.2 `SR 02 03` service signature. `Q` starts the normal STR8-N startup
@@ -260,6 +260,17 @@ If enrollment is cancelled, interrupted, or fails, the copied bytes can
 remain in the destination but STR8-N keeps that bank non-bootable. An existing
 or incomplete directory row must be handled through `I`, not overwritten by
 `C`.
+
+`E` erases payload sectors but cannot restore the corresponding Bank-3
+directory row: flash programming only clears bits, while D0-D2 require all
+`$FF` before reuse. After `E ALL`, use `R`, select the erased Bank 0-2, and
+type the exact `CLEAR Dn` confirmation. `R` first verifies all eight payload
+sectors are erased. It stages Bank-3 sector F and first writes a verified raw
+backup into the selected bank's sector F. It then changes only the directory
+row to `$FF`, rewrites and verifies the complete protected sector, and erases
+and verifies the temporary backup. Require `BACKUP VERIFIED` before the B3F
+rewrite completes. Do not reset, use NMI, remove power, or disconnect the flash
+device during `B3F REWRITE`.
 
 `D` adopts an existing payload into a completely erased directory row without
 erasing or rewriting any payload sector. It is the metadata-only recovery path

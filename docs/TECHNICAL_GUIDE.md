@@ -372,8 +372,10 @@ $3400-$362A  stored private mutation worker
 The carried worker privately implements the staging/programming operations
 needed by the maintenance tool. It calls the worker at `$0200` directly and
 does not depend on resident console or ABI-query gates. Every programmed
-sector is verified, Bank 3 sector `$F000-$FFFF` is protected, and the copy
-guard recognizes the v1.2 resident signature at `$F00C` (`53 52 02 03`).
+sector is verified. Ordinary erase protects Bank 3 sector `$F000-$FFFF`; the
+separate `R` path can rewrite it only after an erased-bank proof and exact
+directory-clear confirmation. The copy guard recognizes the v1.2 resident
+signature at `$F00C` (`53 52 02 03`).
 
 The `C` path requires an all-`$FF` destination directory row before changing
 the destination. After the eight copied sectors verify, it collects TYPE and
@@ -383,8 +385,13 @@ order is journal START, bytes `+0..+11` including seal `$FE` and Bank-0/1/2
 entry `$FFFF`, then journal COMPLETE. Each request is preflighted for legal
 one-to-zero transitions and independently read back. COMPLETE is therefore
 never visible before the full-bank copy and immutable identity are verified.
-Nonempty rows are refused; updating or recovering an existing identity remains
-the responsibility of STR8-N `I`.
+Nonempty rows are refused. If the corresponding Bank 0-2 payload has been
+fully erased, `R` can reclaim that stale row by staging Bank-3 sector F,
+writing and verifying an original-image backup in the selected bank's sector
+F, changing only the selected 16-byte row to `$FF`, and rewriting/verifying
+the complete protected sector. It erases/verifies the temporary backup only
+after B3F succeeds. Other recovery and identity updates remain the
+responsibility of STR8-N `I` or the dedicated directory-refresh path.
 
 The `D` path adopts an existing payload without rewriting it. It requires an
 all-`$FF` destination row, stages sector F, and validates a RESET vector in

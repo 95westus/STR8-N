@@ -12,6 +12,9 @@
 ; D ADOPTS AN EXISTING BANK INTO A COMPLETELY ERASED DIRECTORY ROW WITHOUT
 ; REWRITING ITS PAYLOAD. RESET IS VALIDATED; BANK 3 ALSO REQUIRES STR8 AND
 ; AN EXPLICIT NONERASED ENTRY ADDRESS. COMPLETE IS LAST.
+; R RECLAIMS A STALE D0-D2 ROW ONLY AFTER ALL EIGHT SECTORS OF THAT BANK
+; VERIFY ERASED. IT FIRST PUTS A VERIFIED B3F BACKUP IN THAT BANK'S SECTOR F,
+; THEN REWRITES/VERIFIES B3F AND ERASES/VERIFIES THE TEMPORARY BACKUP.
 ; P PUTS ONE VALIDATED AP ENVELOPE FROM $4000 INTO BANK 0 $BF00.
 ;   THE AP MUST BE 5-$FF BYTES AND THE COMPLETE DESTINATION MUST BE ERASED.
 ; E ERASES ONE 4K SECTOR OR THE ALLOWED BANK RANGE:
@@ -23,7 +26,7 @@
 ;   ONE AP DETAIL LINE IS PRINTED FOR EACH SECTOR MARKED A.
 ; M ALSO PRINTS BANK-3 DIRECTORY TYPE, DESCRIPTION, ENTRY, AND JOURNAL.
 ; M RESTORES ITS ENTRY BANK AFTER EACH CARRIED-WORKER STAGE CALL.
-; C/D/E/M/P, CTRL-C, ABORT, AND SAFE FAILURES RETURN TO THIS MENU.
+; C/D/E/M/P/R, CTRL-C, ABORT, AND SAFE FAILURES RETURN TO THIS MENU.
 ; Q OR AN EMPTY MAIN-MENU LINE RETURNS TO STR8-N.
 ; BANK-3 ERASE REMAINS THE EXCEPTION AND RETURNS DIRECTLY TO STR8.
 ;
@@ -41,6 +44,7 @@
 ; ERASE REQUIRES EXACT `ERASE BS`, `ERASE BX-Y`, OR `ERASE BALL`.
 ; B IS THE BANK. COPY REQUIRES EXACT `COPY XY`.
 ; DIRECTORY ADOPTION REQUIRES EXACT `ADOPT BN`.
+; DIRECTORY RECLAIM REQUIRES EXACT `CLEAR DN` AFTER AN ERASED-BANK SCAN.
 ; AP PUT REQUIRES EXACT `PUT B0BF00`.
 ;
 ; RAM MAP:
@@ -64,7 +68,7 @@
 ;   $7C00 STATUS: $AC OK, $E0 ABORT, $E1 STAGE FAIL,
 ;                 $E2 PROGRAM/VERIFY FAIL, $E6 BAD RESET VECTOR,
 ;                 $E7 DIRECTORY ENROLLMENT FAIL
-;   $7C01 OPERATION: C, D, E, M, P, OR Q
+;   $7C01 OPERATION: C, D, E, M, P, Q, OR R
 ;   $7C02 SOURCE/ERASE BANK
 ;   $7C03 DESTINATION BANK
 ;   $7C04 CURRENT/FAILING SECTOR HIGH BYTE
@@ -129,6 +133,8 @@ BM_MAIN LDX #$00
         BEQ ?MAP
         CMP #'P'
         BEQ ?PUT
+        CMP #'R'
+        BEQ ?RECLAIM
         CMP #'Q'
         BNE BM_MAIN
 ?QUIT
@@ -138,6 +144,7 @@ BM_MAIN LDX #$00
         JMP $F000
 ?MAP   JMP BM_MAP
 ?PUT   JMP BM_PUT
+?RECLAIM JMP BM_RECLAIM
 ?ERASE JMP BM_ERASE
 ?ADOPT JMP BM_ADOPT
 ?COPY  JMP BM_COPY
@@ -389,6 +396,25 @@ BM_FILL LDA #$0A
         INC $CB
         DEX
         BNE ?FPAGE
+        RTS
+
+; Return C=1 only when the complete staged $0A00-$19FF sector is erased.
+BM_BUFFER_ERASED STZ $CA
+        LDA #$0A
+        STA $CB
+        LDX #$10
+?PAGE   LDY #$00
+?BYTE   LDA ($CA),Y
+        CMP #$FF
+        BNE ?USED
+        INY
+        BNE ?BYTE
+        INC $CB
+        DEX
+        BNE ?PAGE
+        SEC
+        RTS
+?USED   CLC
         RTS
 
 ; Snapshot the Bank-3 directory, restore the entry bank, then print:
@@ -1549,6 +1575,163 @@ BM_ADOPT LDA #'D'
 BM_MDENTRY DB $0D,$0A,'E','N','T','R','Y',' ','8','0','0','0','-','F','F','F','E','>',' ',0
 BM_MDADOPT DB 'T','Y','P','E',' ','A','D','O','P','T',' ','B',0
 
+; Reclaim one stale D0-D2 row after proving the corresponding payload bank is
+; completely erased. Clearing flash bits cannot restore a row to $FF, so the
+; full Bank-3 sector F is staged and backed up to the selected bank's sector F
+; before it is changed in RAM, erased, rewritten, and verified. The temporary
+; backup is erased only after B3F passes full verification.
+BM_RECLAIM LDA #'R'
+        STA $7C01
+?BANK   LDX #<BM_MRBANK
+        LDY #>BM_MRBANK
+        JSR BM_PUTS
+        JSR BM_READ
+        BCS ?BANK_READ
+        JMP BM_ABORT
+?BANK_READ
+        LDA $7C20
+        BNE ?BANK_HAVE
+        JMP BM_ABORT
+?BANK_HAVE
+        JSR BM_PARSE_BANK
+        BCC ?BANK
+        CMP #$03
+        BCS ?BANK
+        STA $7C02
+        STA $7C03
+        STA $7C05
+        JSR BM_COPY_DIR_EMPTY
+        BCC ?ROW_USED
+        LDX #<BM_MRDIR_EMPTY
+        LDY #>BM_MRDIR_EMPTY
+        JSR BM_PUTS
+        JMP BM_SUCCESS
+?ROW_USED
+; Prove all eight payload sectors erased before offering directory reclaim.
+        LDA #$80
+        STA $7C04
+?SCAN   JSR BM_STAGE
+        BCS ?STAGED
+        JMP BM_FSTAGE
+?STAGED
+        JSR BM_BUFFER_ERASED
+        BCS ?ERASED
+        JMP BM_RECLAIM_BANK_USED
+?ERASED
+        LDA $7C04
+        CLC
+        ADC #$10
+        STA $7C04
+        BNE ?SCAN
+
+        LDX #<BM_MRCLEAR
+        LDY #>BM_MRCLEAR
+        JSR BM_PUTS
+        LDA $7C05
+        CLC
+        ADC #'0'
+        JSR BM_OUT
+        LDA #'>'
+        JSR BM_OUT
+        LDA #' '
+        JSR BM_OUT
+        JSR BM_READ
+        BCS ?CONFIRM
+        JMP BM_ABORT
+?CONFIRM
+        LDA $7C28
+        BNE ?CONFIRM_BAD
+        LDX #$00
+?MATCH  LDA $7C20,X
+        CMP BM_MRCLEAR_EXACT,X
+        BNE ?CONFIRM_BAD
+        INX
+        CPX #$07
+        BNE ?MATCH
+        LDA $7C05
+        CLC
+        ADC #'0'
+        CMP $7C27
+        BEQ ?CONFIRM_OK
+?CONFIRM_BAD JMP BM_ABORT
+?CONFIRM_OK
+
+; Snapshot protected Bank-3 sector F only after every preflight check passes.
+        LDA #$03
+        STA $7C02
+        LDA #$F0
+        STA $7C04
+        JSR BM_STAGE
+        BCS ?TOP_STAGED
+        JMP BM_FSTAGE
+?TOP_STAGED
+
+; Preserve and verify the original B3F image in the selected erased bank's
+; sector F. If the later protected rewrite fails, this physical copy remains.
+        LDA $7C05
+        STA $7C03
+        JSR BM_PROGRAM
+        BCS ?BACKUP_OK
+        JMP BM_FPROGRAM
+?BACKUP_OK
+        LDX #<BM_MRBACKUP_OK
+        LDY #>BM_MRBACKUP_OK
+        JSR BM_PUTS
+
+; D0 starts at staged $19B0 and each following row is 16 bytes.
+        LDA $7C05
+        ASL A
+        ASL A
+        ASL A
+        ASL A
+        CLC
+        ADC #$B0
+        STA $CA
+        LDA #$19
+        STA $CB
+        LDY #$00
+        LDA #$FF
+?CLEAR  STA ($CA),Y
+        INY
+        CPY #$10
+        BNE ?CLEAR
+
+; Rewrite and verify the complete sector, including the preserved resident,
+; other directory rows, configuration pocket, and interrupt/reset vectors.
+        LDA #$03
+        STA $7C03
+        JSR BM_PROGRAM
+        BCS ?PROGRAMMED
+        JMP BM_FPROGRAM
+?PROGRAMMED
+
+; B3F is now independently verified. Restore the selected payload bank to the
+; fully erased state by erasing and verifying its temporary sector-F backup.
+        JSR BM_FILL
+        LDA $7C05
+        STA $7C03
+        JSR BM_PROGRAM
+        BCS ?BACKUP_CLEARED
+        JMP BM_FPROGRAM
+?BACKUP_CLEARED
+        LDA $7C05
+        STA $7C02
+        STA $7C03
+        JMP BM_SUCCESS
+BM_RECLAIM_BANK_USED
+        LDX #<BM_MRBANK_USED
+        LDY #>BM_MRBANK_USED
+        JSR BM_PUTS
+        JMP BM_ABORT
+
+BM_MRBANK DB $0D,$0A,'R','E','C','L','A','I','M',' ','B','A','N','K',' ','0','-','2','>',' ',0
+BM_MRCLEAR DB $0D,$0A,'B','3','F',' ','R','E','W','R','I','T','E',$0D,$0A
+        DB 'T','Y','P','E',' ','C','L','E','A','R',' ','D',0
+BM_MRCLEAR_EXACT DB 'C','L','E','A','R',' ','D'
+BM_MRBACKUP_OK DB 'B','A','C','K','U','P',' ','V','E','R','I','F','I','E','D',$0D,$0A,0
+BM_MRBANK_USED DB $0D,$0A,'B','A','N','K',' ','N','O','T',' ','E','R','A','S','E','D',$0D,$0A,0
+BM_MRDIR_EMPTY DB $0D,$0A,'D','I','R',' ','E','M','P','T','Y',$0D,$0A,0
+
 BM_ERASE LDA #'E'
         STA $7C01
 BM_EBANK LDX #<BM_MBANK
@@ -1818,6 +2001,7 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2',' '
         DB 'P','T',' ','E','=','E','R','A'
         DB 'S','E',' ','M','=','M','A','P','+','D','I','R'
         DB ' ','P','=','A','P',' ','B','0','B','F','0','0'
+        DB ' ','R','=','R','E','C','L','A','I','M',' ','D','I','R'
         DB ' ','Q','/','E','N','T','E','R','=','Q','U','I','T'
         DB '>',' ',0
 ; Fixed one-sector AP carrier put for the split-V1 promotion proof.
