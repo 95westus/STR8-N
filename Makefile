@@ -11,6 +11,7 @@ SYM_DIR := $(BUILD_DIR)/sym
 S19_DIR := $(RELEASE_DIR)/s19
 BIN_DIR := $(RELEASE_DIR)/bin
 TEST_DIR := $(RELEASE_DIR)/test
+INCLUDE_DIR := $(RELEASE_DIR)/include
 
 ASFLAGS := -G -L -S -W -I $(SRC_DIR)
 STR8_LINKFLAGS := -g -s -t -cF000 -hm19 -j -o
@@ -46,6 +47,7 @@ WORKER_S19 := $(S19_DIR)/str8n-v1.2-worker-0200.s19
 TOP_BIN_TOOL := tools/build_str8n_top_bin.ps1
 LAYOUT_CHECK_TOOL := tools/check_str8n_layout.ps1
 MANIFEST_TOOL := tools/write_str8n_manifest.ps1
+PUBLIC_CONTRACT_TOOL := tools/write_str8n_public_contract.ps1
 RANGE_MATRIX_TOOL := tools/test_s19_range_matrix.ps1
 RAM_LOAD_TOOL := tools/test_ram_load_contract.ps1
 RAM_ABI_CHECK_TOOL := tools/check_ram_abi_sources.ps1
@@ -69,6 +71,7 @@ RYORS_FULL_BANK_TOOL := tools/build_ryors_full_bank_s19.ps1
 RYORS_FULL_BANK_S19 := $(S19_DIR)/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
 TOP_BIN := $(BIN_DIR)/str8n-v1.2-bank3-f000-ffff.bin
 MANIFEST := $(BUILD_DIR)/str8n-manifest.json
+PUBLIC_CONTRACT := $(INCLUDE_DIR)/str8n-public.inc
 
 .NOTPARALLEL:
 .PHONY: all resident workers programmer-bin manifest bank-maint console-abi-test top-update onboard-directory-refresh ryors-full-bank layout-check embedded-layout-check range-matrix-check ram-load-contract-check ram-abi-check clean help dirs FORCE
@@ -188,8 +191,11 @@ $(RYORS_FULL_BANK_S19): $(RYORS_28K_S19) $(TOP_BIN) $(RYORS_FULL_BANK_TOOL) | di
 $(TOP_BIN): layout-check $(TOP_BIN_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_BIN_TOOL) -Str8MapPath "$(S19_DIR)/str8n-v1.2-f000.map" -Str8S19Path "$(STR8_S19)" -WorkerMapPath "$(S19_DIR)/str8n-v1.2-worker-0200.map" -WorkerS19Path "$(WORKER_S19)" -BinPath "$@"
 
-$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(BANK_MAINT_S19) $(CONSOLE_ABI_TEST_S19) $(TOP_UPDATE_S19) $(DIRECTORY_REFRESH_S19) $(MANIFEST_TOOL) FORCE
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(MANIFEST_TOOL) -Str8MapPath "$(S19_DIR)/str8n-v1.2-f000.map" -WorkerMapPath "$(S19_DIR)/str8n-v1.2-worker-0200.map" -ConsoleAbiTestMapPath "$(S19_DIR)/str8n-v1.2-console-abi-test-2000.map" -TopBinPath "$(TOP_BIN)" -WorkerS19Path "$(WORKER_S19)" -BankMaintS19Path "$(BANK_MAINT_S19)" -ConsoleAbiTestS19Path "$(CONSOLE_ABI_TEST_S19)" -TopUpdateS19Path "$(TOP_UPDATE_S19)" -DirectoryRefreshS19Path "$(DIRECTORY_REFRESH_S19)" -ManifestPath "$@"
+$(PUBLIC_CONTRACT): $(SRC_DIR)/str8-ram-abi.inc $(SRC_DIR)/str8-jump-eq.inc $(SRC_DIR)/str8-console-eq.inc $(SRC_DIR)/str8-record-eq.inc $(SRC_DIR)/str8-worker-eq.inc $(PUBLIC_CONTRACT_TOOL) | dirs
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(PUBLIC_CONTRACT_TOOL) -SourceDir "$(SRC_DIR)" -OutPath "$@"
+
+$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(BANK_MAINT_S19) $(CONSOLE_ABI_TEST_S19) $(TOP_UPDATE_S19) $(DIRECTORY_REFRESH_S19) $(PUBLIC_CONTRACT) $(MANIFEST_TOOL) FORCE
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(MANIFEST_TOOL) -Str8MapPath "$(S19_DIR)/str8n-v1.2-f000.map" -WorkerMapPath "$(S19_DIR)/str8n-v1.2-worker-0200.map" -ConsoleAbiTestMapPath "$(S19_DIR)/str8n-v1.2-console-abi-test-2000.map" -TopBinPath "$(TOP_BIN)" -WorkerS19Path "$(WORKER_S19)" -BankMaintS19Path "$(BANK_MAINT_S19)" -ConsoleAbiTestS19Path "$(CONSOLE_ABI_TEST_S19)" -TopUpdateS19Path "$(TOP_UPDATE_S19)" -DirectoryRefreshS19Path "$(DIRECTORY_REFRESH_S19)" -PublicContractPath "$(PUBLIC_CONTRACT)" -ManifestPath "$@"
 
 FORCE:
 

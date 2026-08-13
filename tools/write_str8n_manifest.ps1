@@ -8,6 +8,7 @@ param(
     [string]$ConsoleAbiTestS19Path = "BUILD/v1.2/s19/str8n-v1.2-console-abi-test-2000.s19",
     [string]$TopUpdateS19Path = "BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19",
     [string]$DirectoryRefreshS19Path = "BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19",
+    [string]$PublicContractPath = "BUILD/v1.2/include/str8n-public.inc",
     [string]$ManifestPath = "BUILD/str8n-manifest.json"
 )
 
@@ -22,7 +23,7 @@ function Get-MapSymbol {
     return [Convert]::ToInt32($match.Matches[0].Groups[1].Value, 16)
 }
 
-foreach ($path in @($Str8MapPath, $WorkerMapPath, $ConsoleAbiTestMapPath, $TopBinPath, $WorkerS19Path, $BankMaintS19Path, $ConsoleAbiTestS19Path, $TopUpdateS19Path, $DirectoryRefreshS19Path)) {
+foreach ($path in @($Str8MapPath, $WorkerMapPath, $ConsoleAbiTestMapPath, $TopBinPath, $WorkerS19Path, $BankMaintS19Path, $ConsoleAbiTestS19Path, $TopUpdateS19Path, $DirectoryRefreshS19Path, $PublicContractPath)) {
     if (-not (Test-Path -LiteralPath $path)) { throw "Required artifact not found: $path" }
 }
 
@@ -46,7 +47,7 @@ $consoleAbiTestStart = Get-MapSymbol $ConsoleAbiTestMapPath 'CAT_START'
 $consoleAbiTestEnd = Get-MapSymbol $ConsoleAbiTestMapPath '_END_CODE'
 
 $manifest = [ordered]@{
-    schema = 2
+    schema = 3
     project = 'STR8-N'
     version = '1.2'
     repository = 'https://github.com/95westus/STR8-N.git'
@@ -104,6 +105,10 @@ $manifest = [ordered]@{
             clears = 'Bank 3 CPU FFB0-FFF9 / physical 1FFB0-1FFF9'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $DirectoryRefreshS19Path).Hash
         }
+        publicContract = [ordered]@{
+            file = 'BUILD/v1.2/include/str8n-public.inc'
+            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $PublicContractPath).Hash
+        }
     }
     layout = [ordered]@{
         residentStart = ('{0:X4}' -f $residentStart)
@@ -128,6 +133,13 @@ $manifest = [ordered]@{
         str8StateEnd = '7DFF'
         bankJumpRecordStart = '7DFD'
         bankJumpRecordEnd = '7DFF'
+        bankJumpSig0 = '7DFD'
+        bankJumpSig1 = '7DFE'
+        bankLastJump = '7DFF'
+        bankJumpSignature = 'BJ'
+        bankCount = 4
+        bankNone = 255
+        bankStateByte = '7FEC'
         asmTargetEndExclusive = '7D00'
         residentVersion = 1
         residentCapabilities = 63
@@ -158,3 +170,4 @@ Write-Host ('BANK MAINT SHA-256  = {0}' -f $manifest.artifacts.bankMaintenanceS1
 Write-Host ('CONSOLE ABI SHA-256 = {0}' -f $manifest.artifacts.consoleAbiTestS19.sha256)
 Write-Host ('TOP UPDATE SHA-256   = {0}' -f $manifest.artifacts.topUpdateS19.sha256)
 Write-Host ('DIR REFRESH SHA-256  = {0}' -f $manifest.artifacts.directoryRefreshS19.sha256)
+Write-Host ('PUBLIC ABI SHA-256   = {0}' -f $manifest.artifacts.publicContract.sha256)

@@ -388,17 +388,18 @@ commands remain explicit: `H` checks the HIMON marker and enters `$C000`, while
 
 From the HIMON `>` prompt:
 
-1. Type `L` to load without starting, or `L G` to load and start.
-2. When HIMON reports that it is ready, send the RAM-addressed S19.
-3. HIMON uses STR8-N's `$F009` service to validate each record, then copies
-   valid S1 data into RAM. It rejects I/O and flash destinations.
-4. After S9, HIMON reports the byte count and start address. `L G` starts the
-   S9 address when usable; otherwise it may use the first loaded address.
+1. Type `L`.
+2. Send the RAM-addressed S19.
+3. HIMON validates S0/S1/S9 with its private resident parser, then copies
+   valid S1 data into RAM. It does not call STR8-N's `$F009` service and it
+   rejects any nonempty span touching `$7A00-$FFFF`.
+4. After S9, HIMON reports the byte count and start address without executing
+   it. Use `G start` separately when execution is wanted; `L G` and `L F` are
+   rejected by the bare-`L` grammar.
 
 Like STR8-N recovery `L`, a HIMON `L` file need not describe a 4K-aligned or
-dense flash range. HIMON additionally offers load-only behavior and its own
-broader destination policy. It must still avoid RAM needed by the running
-monitor and loader.
+dense flash range. HIMON's command is RAM-load-only and enforces its own
+destination policy so the running monitor and its workspace remain protected.
 
 ## If an install is interrupted
 

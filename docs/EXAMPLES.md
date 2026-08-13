@@ -106,7 +106,7 @@ while the stream arrives. The final dot follows `COMMIT? Y`.
 
 ## Build and install the full R-YORS `8-F` image
 
-With sibling `R-YORS` and `STR8-N Refactor` folders:
+With sibling `R-YORS` and `STR8-N` folders:
 
 ```powershell
 make ryors-full-bank

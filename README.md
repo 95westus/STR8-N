@@ -66,6 +66,7 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 - A composed 32K ASM + HIMON + STR8-N image for Bank 0, 1, or 2.
 - A manifest containing artifact paths, addresses, ABI versions, sizes, and
   hashes.
+- A generated public assembly contract consumed by adjacent R-YORS builds.
 
 ## Start here
 
@@ -82,6 +83,9 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
   — exact tested artifacts and retained renewed-board transcript.
 - [Directory Maintenance Hardware Proof](docs/DIRECTORY_MAINT_HARDWARE_PROOF_2026-08-11.md)
   — exact `D` adoption guards, commits, and post-refactor `C` regression.
+- [R-YORS Ownership-Cutover Hardware Proof](docs/R_YORS_OWNERSHIP_CUTOVER_HARDWARE_PROOF_2026-08-13.md)
+  — separated-build install, both RAM-loader paths, guarded Bank-3 copy,
+  durable Bank-0 enrollment, and final cold boot.
 - [Maps and Diagrams](docs/MAPS.md) — flash, RAM, boot, install, directory, and
   artifact flows.
 - [R-YORS Integration Boundary](docs/R_YORS_INTEGRATION.md) — how an adjacent

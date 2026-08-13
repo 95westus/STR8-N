@@ -81,7 +81,7 @@ and whole-file SHA-256.
 
 ## Build the R-YORS plus STR8-N `8-F` image
 
-With sibling `R-YORS` and `STR8-N Refactor` folders:
+With sibling `R-YORS` and `STR8-N` folders:
 
 ```powershell
 make ryors-full-bank
