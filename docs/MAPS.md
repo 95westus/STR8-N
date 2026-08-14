@@ -18,7 +18,7 @@ flowchart TB
     RAM -->|bank-maint S19| BM[Self-contained Bank Maintenance<br/>map/copy/adopt/reclaim/erase/AP put]
     BM -->|private RAM worker| FLASH2[Banked flash<br/>Bank 3 F guarded]
     BM -->|Q| S
-    B3 -->|L or L G| RAM2[HIMON RAM program]
+    B3 -->|L, then explicit G| RAM2[HIMON RAM program]
 ```
 
 ## Build and artifact flow
@@ -210,8 +210,8 @@ flowchart LR
     SL --> RP[STR8-N F009 parser]
     RP --> BOUND[check complete S1 span<br/>$2000-$7AFF]
     BOUND --> RM[copy to RAM and jump to S9]
-    CHOICE -->|monitor load/load-go| HL[HIMON L or L G]
-    HL --> RP
+    CHOICE -->|monitor load-only| HL[HIMON L]
+    HL --> HP[HIMON-private S19 parser<br/>$0000-$79FF; explicit G]
 ```
 
 ## Recovery RAM load
@@ -221,11 +221,13 @@ flowchart TD
     C[STR8-N L] --> P[Receive and validate S0/S1/S9]
     P -->|valid S1| R{Whole record inside<br/>$2000-$7AFF?}
     R -->|yes| M[Copy record to RAM]
-    R -->|no| F[Return to prompt; do not execute]
+    R -->|no| Q[Latch failure; discard through<br/>valid S9 or Ctrl-C]
     M --> P
     P -->|valid S9 after data| E{S9 inside<br/>$2000-$7AFF?}
-    E -->|no| F
+    P -->|parse/checksum/type failure| Q
+    E -->|no| F[Return to prompt; do not execute]
     E -->|yes| G[SEI, CLD, X/SP=$FF,<br/>jump to S9]
+    Q --> F
 ```
 
 ## STR8-N v1.21 RAM ownership

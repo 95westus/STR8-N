@@ -15,7 +15,7 @@ Operation                 Owner              Result
 flash S19 installation    STR8-N I           erases/programs selected flash
 recovery RAM execution    STR8-N L           copies $2000-$7AFF, jumps to S9
 S19 syntax validation     STR8-N $F009       parses one record; does not apply it
-monitor RAM loading       HIMON L / L G      load-only or load-and-start
+monitor RAM loading       HIMON L            load-only; explicit G starts
 bank selection            STR8-N $F010       changes the visible flash bank
 resident ABI discovery    STR8-N $F006       reports version and capabilities
 console initialization    STR8-N $F003       restores the FT245R-facing VIA
@@ -144,6 +144,13 @@ directory remains incomplete and the documented full-range recovery rule
 applies. It avoids placing a first-enrollment flash pause immediately after the
 first S1 line, while retaining S9 validation, final-sector holdback, explicit
 COMMIT, read-back verification, and COMPLETE-last ordering.
+
+After a fatal receive or policy failure, the installer latches failure and
+continues invoking the validated record parser without applying more data. A
+syntactically valid S9 or Ctrl-C ends this quench state. The command prompt is
+not reopened between USB packets, so the tail of a pasted file cannot become
+STR8-N commands. Quenching transport does not undo persistent transaction or
+sector changes made before the failure.
 
 On 2026-08-10, board sessions at zero terminal pacing completed a first
 Bank-3 enrollment and later ASM update, reached `OK`, and successfully entered
@@ -334,16 +341,17 @@ peripherals are inherited. No return address is prepared; the loaded program
 must not use `RTS` as a return to STR8-N. The sender must stop after S9 because
 queued console bytes are also inherited by the loaded program.
 
-There is no confirmation or load-only state. On any parse, checksum, record
-type, data-span, or S9 failure, control returns to the STR8-N prompt without a
-jump. Already copied records are not rolled back. This is safe from flash
-damage but means a failed recovery load may leave partial program bytes in
-RAM; retrying or RESET is the normal cleanup.
+There is no confirmation or load-only state. Any parse, checksum, record type,
+data-span, or S9 failure poisons the load and prevents a jump. If S9 has not
+already been consumed, STR8-N parses and discards records until a syntactically
+valid S9 or Ctrl-C, then returns to the prompt. Already copied records are not
+rolled back. This is safe from flash damage but means a failed recovery load
+may leave partial program bytes in RAM; retrying or RESET is the normal cleanup.
 
-Ctrl-C (`$03`) is the record-parser abort status. During `L`, the on-board
-STR8-N 1.21 presentation reports `BAD`, drains queued receive input, returns to
-the STR8-N prompt, and does not jump to S9. S1 records already copied into RAM
-remain present.
+Ctrl-C (`$03`) is the record-parser abort status and the explicit escape from a
+quench when a failed sender will not provide S9. During `L`, STR8-N reports
+`BAD`, returns to the prompt, and does not jump to S9. S1 records already copied
+into RAM remain present.
 
 ### STR8-N 1.21 bank-maintenance RAM image
 
@@ -552,23 +560,24 @@ RESET-vector validation.
 
 ## HIMON RAM S19 alternative
 
-HIMON `L` and `L G` provide a richer alternative to STR8-N recovery `L`.
-HIMON calls the
-public `$F009` parser on each buffered S0/S1/S9 record and then applies its own
-destination policy:
+HIMON bare `L` provides a load-only alternative to STR8-N recovery `L`. It
+uses HIMON's private S0/S1/S9 parser rather than the public `$F009` service and
+applies its own destination policy:
 
 ```text
-accepted destination bytes  $0000-$7EFF RAM
-rejected                    $7F00-$7FFF I/O
+accepted destination bytes  $0000-$79FF RAM
+rejected                    $7A00-$7FFF monitor workspace and I/O
 rejected                    $8000-$FFFF flash
 simple R-YORS program area  $2000-$4FFF
 ```
 
 This RAM stream need not be 4K-aligned or dense. The caller is responsible for
-not overwriting loader state, monitor workspace, the hardware stack, or code
-that still needs to run. Other R-YORS RAM ranges can be usable by phase; check
-its current memory report. `L G` uses a nonzero S9 as its start address; a
-zero S9 falls back to the first loaded address.
+not overwriting low-RAM state, the hardware stack, or code that still needs to
+run. Other R-YORS RAM ranges can be usable by phase; check its current memory
+report. HIMON reports S9 without executing it; `L G` and `L F` are usage
+errors, and an explicit `G address` starts a loaded program. A fatal record or
+span error latches failure, suppresses later S1 writes, and quenches through a
+valid S9 or Ctrl-C before the prompt reopens.
 
 ## Jn handoff contract
 

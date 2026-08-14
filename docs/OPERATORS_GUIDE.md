@@ -15,7 +15,7 @@ Need                         Use             Destination
 install a lasting image      STR8-N I        selected flash bank
 recovery load and execute    STR8-N L        RAM $2000-$7AFF, then S9
 load without starting        HIMON L         RAM under HIMON policy
-load and start under HIMON   HIMON L G       RAM, then the S9 start address
+start after a HIMON load     HIMON G address explicit address from L report
 start a flash-bank guest     STR8-N J0-J3    selected bank's RESET vector
 ```
 
@@ -128,6 +128,14 @@ full-range recovery procedure on the next boot.
 The S19 must contain the exact range selected at the prompts, including every
 `$FF` padding byte. Do not send an old stream with `$0200` worker records.
 
+If STR8-N detects a fatal record, density, range, entry, or worker error before
+S9, it latches the failure and silently consumes the rest of the transfer
+through a syntactically valid S9. Ctrl-C is the escape for a truncated or
+stopped transfer. Only then does STR8-N print `FAIL` and reopen its prompt, so
+USB packet gaps cannot expose the remaining S-record lines as commands. This
+input quench does not roll back START, an INCOMPLETE directory row, or any
+non-final sectors already programmed.
+
 ## Load and execute a RAM recovery program with L
 
 STR8-N `L` changes RAM only. It does not erase or program flash and does not
@@ -151,12 +159,16 @@ The RAM stream does not need to be dense, ascending, or 4K-aligned. Each S1
 record is checked independently; overlapping records are applied in received
 order. S2-S8, bad checksums, empty S1 records, an out-of-range record span, an
 out-of-range S9, or a stream with no S1 fail. On failure STR8-N does not
-execute, but bytes copied by earlier valid records remain in RAM.
+execute, but bytes copied by earlier valid records remain in RAM. A failure
+before S9 poisons the session: later S1 records are parsed and discarded until
+a syntactically valid S9 ends the transfer. If the sender stops without S9,
+press Ctrl-C to return to the prompt.
 
 Ctrl-C (`$03`) while `L` is receiving S19 cancels the load. The on-board
 STR8-N 1.21 image reports `BAD`, returns to `STR8-N>`, and does not execute the
 S9 entry. Complete S1 records accepted before Ctrl-C remain in RAM; cancellation
-is not rollback.
+is not rollback. Ctrl-C is also the explicit terminator while STR8-N is
+quenching a failed transfer.
 
 `$7B00` is the first protected parser buffer byte. The highest accepted byte
 is therefore `$7AFF`, even when one S1 record crosses a page boundary. Stop

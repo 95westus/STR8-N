@@ -759,11 +759,10 @@ STR8_DISPATCH_A:
                         BNE             ?NOT_L
                         LDX             STR8_REC_DATA_BUF+1
                         BEQ             STR8_CMD_LOAD_RAM
-                        JMP             STR8_CMD_UNKNOWN
+                        RTS
 ?NOT_L:
                         CMP             #'I'
-                        BNE             ?NOT_I
-                        JMP             STR8_CMD_INSTALL_PREVIEW
+                        BEQ             STR8_CMD_INSTALL_PREVIEW
 ?NOT_I:
                         ENDIF
                         CMP             #'J'
@@ -836,14 +835,14 @@ STR8_CMD_LOAD_RAM:
 ; 256 or more S1 records.
                         STY             STR8_RAM_LOAD_HAVE_DATA
                         BRA             ?RECORD
-?FAIL:                 JSR             STR8_I_DRAIN_QUEUED
+?FAIL:                 JSR             STR8_I_QUENCH_S19
                         JMP             STR8_CMD_ABORT
 
 ; I preflight for Banks 0-3 and the guarded write transaction.
 STR8_CMD_INSTALL_PREVIEW:
                         LDA             STR8_REC_DATA_BUF+1
                         BEQ             ?PROMPT
-                        JMP             STR8_CMD_UNKNOWN
+                        RTS
 ?PROMPT:
                         LDX             #<MSG_I_BANK
                         IF              STR8_V1_INSTALLER_TXN
@@ -1405,8 +1404,7 @@ STR8_I_RECEIVE_DENSE:
 ?NEXT_RECORD:
                         JMP             ?RECORD
 ?FINAL:                LDA             STR8_REC_DATA_LEN
-                        BEQ             ?FINAL_EXACT
-                        JMP             STR8_I_RECEIVE_DENSE_FAIL
+                        BNE             ?DENSE_FAIL
 ?FINAL_EXACT:
                         LDA             #$03
                         STA             STR8_INSTALL_PHASE
@@ -1414,8 +1412,7 @@ STR8_I_RECEIVE_DENSE:
 
 ?END:                  LDA             STR8_INSTALL_PHASE
                         CMP             #$03
-                        BEQ             ?COVERAGE_OK
-                        JMP             STR8_I_RECEIVE_DENSE_FAIL
+                        BNE             ?DENSE_FAIL
 ?COVERAGE_OK:
                         LDA             STR8_INSTALL_BANK
                         CMP             #STR8_DIR_BANK3
@@ -1513,13 +1510,7 @@ STR8_I_RECEIVE_ENTRY_FAIL:
 STR8_I_RECEIVE_FLASH_FAIL:
 STR8_I_RECEIVE_TRAIL_FAIL:
 STR8_I_RECEIVE_FAIL_A:
-                        JSR             STR8_I_DRAIN_QUEUED
-; Transaction drain normalizes carry clear; retain dry bytes unchanged.
-                        IF              STR8_V1_INSTALLER_TXN
-                        ELSE
-                        CLC
-                        ENDIF
-                        RTS
+                        JMP             STR8_I_QUENCH_S19
 
 STR8_I_STAGE_SECTOR_READY:
                         IF              STR8_V1_INSTALLER_TXN
@@ -1547,13 +1538,20 @@ STR8_I_RUN_SECTOR_WORKER:
                         RTS
                         ENDIF
 
-STR8_I_DRAIN_QUEUED:
-                        JSR             STR8_CON_FLUSH_RX
-                        BCC             STR8_I_DRAIN_QUEUED
-                        IF              STR8_V1_INSTALLER_TXN
-; Share one normalized failure carry across both transaction callers.
+; After a fatal L/I receive error, keep the command parser closed until the
+; sender reaches a validated S9 or the operator sends Ctrl-C.  Reusing the
+; record parser also resynchronizes after a malformed partial line.
+STR8_I_QUENCH_S19:
+?RECORD:               LDA             STR8_REC_KIND
+                        CMP             #STR8_REC_KIND_END
+                        BEQ             ?DONE
+                        LDA             STR8_REC_STATUS
+                        CMP             #STR8_REC_ABORT
+                        BEQ             ?DONE
+                        JSR             STR8_RECORD_SERVICE_BODY
+                        BRA             ?RECORD
+?DONE:
                         CLC
-                        ENDIF
                         RTS
                         ELSE
                         LDX             #<MSG_I_NO_WRITE
