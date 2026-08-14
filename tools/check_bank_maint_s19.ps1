@@ -1,6 +1,7 @@
 param(
     [string]$S19Path = "BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19",
-    [string]$SourcePath = "tools/bank-maint/str8n-v1.21-bank-maint-2000.asm"
+    [string]$SourcePath = "tools/bank-maint/str8n-v1.21-bank-maint-2000.asm",
+    [switch]$MenuTop
 )
 
 Set-StrictMode -Version Latest
@@ -131,11 +132,24 @@ for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) 
 }
 if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.21 banner' }
 
-foreach ($requiredText in @('D=ADOPT', 'ENTRY 8000-FFFE>', 'TYPE ADOPT B',
-        'R=RECLAIM DIR', 'RECLAIM DIR 0-3>', 'B3F REWRITE',
+$requiredTexts = @('B# 8 9 A B C D E F',
+        'ENTRY 8000-FFFE>', 'TYPE ADOPT B',
+        'RECLAIM DIR 0-3>', 'B3F REWRITE',
         'TYPE CLEAR D', 'BACKUP VERIFIED', 'BANK NOT ERASED', 'DIR EMPTY',
         'SCRATCH B', 'TYPE RESET J3>', 'J3 NOT FULL',
-        'NO ERASED SCRATCH')) {
+        'NO ERASED SCRATCH')
+if ($MenuTop) {
+    $requiredTexts += @('STR8-N 1.21 BANK MAINT + TOP',
+        'M  MAP BANKS + DIRECTORY', 'C  COPY BANK + ENROLL',
+        'D  ADOPT BANK INTO DIRECTORY', 'R  RECLAIM DIRECTORY',
+        'E  ERASE BANK RANGE', 'P  PUT AP $5000 -> B0:BF00',
+        'U  UPDATE B3:F (BACKUP B1:F; RESET)', '?  MENU',
+        'Q/ENTER  RETURN TO STR8-N', 'BM> ')
+}
+else {
+    $requiredTexts += @('D=ADOPT', 'R=RECLAIM DIR')
+}
+foreach ($requiredText in $requiredTexts) {
     $needle = [System.Text.Encoding]::ASCII.GetBytes($requiredText)
     $found = $false
     for ($offset = 0; $offset -le $programBytes.Length - $needle.Length; $offset++) {
@@ -161,7 +175,8 @@ if ($workerHash -ne $expectedWorkerHash) {
 
 $addresses = $orderedAddresses
 $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $S19Path).Hash
-Write-Host 'BANK MAINT S19      = PASS'
+$checkLabel = if ($MenuTop) { 'BANK MAINT MENU S19' } else { 'BANK MAINT S19' }
+Write-Host ('{0,-21} = PASS' -f $checkLabel)
 Write-Host ('S1 RECORDS          = {0}' -f $dataRecords)
 Write-Host ('DATA BYTES          = {0}' -f $data.Count)
 Write-Host ('ADDRESS SPAN        = ${0:X4}-${1:X4}' -f $addresses[0], $addresses[-1])

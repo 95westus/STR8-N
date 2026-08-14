@@ -319,7 +319,7 @@ install or `C` copy whenever complete-payload verification is required.
 ```text
 C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> M
 
-BANK 8 9 A B C D E F
+B# 8 9 A B C D E F
 
 B0 E E E E E E E E
 B1 E E E E E E E E

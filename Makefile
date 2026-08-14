@@ -58,6 +58,11 @@ BANK_MAINT_SRC := tools/bank-maint/str8n-v1.21-bank-maint-2000.asm
 BANK_MAINT_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-bank-maint-2000.obj
 BANK_MAINT_S19 := $(S19_DIR)/str8n-$(VERSION)-bank-maint-2000.s19
 BANK_MAINT_CHECK_TOOL := tools/check_bank_maint_s19.ps1
+BANK_MAINT_MENU_SRC := tools/bank-maint/str8n-v1.21-bank-maint-menu-2000.asm
+BANK_MAINT_MENU_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-bank-maint-menu-2000.obj
+BANK_MAINT_MENU_S19 := $(S19_DIR)/str8n-$(VERSION)-bank-maint-menu-2000.s19
+BANK_MAINT_MENU_A := tools/bank-maint/str8n-v1.21-bank-maint-menu-2000.a
+BANK_MAINT_MENU_A_TOOL := tools/make_bank_maint_menu_a.ps1
 CONSOLE_ABI_TEST_SRC := tools/console-abi-test/str8n-v1.21-console-abi-test-2000.asm
 CONSOLE_ABI_TEST_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-console-abi-test-2000.obj
 CONSOLE_ABI_TEST_S19 := $(S19_DIR)/str8n-$(VERSION)-console-abi-test-2000.s19
@@ -78,7 +83,7 @@ MANIFEST := $(BUILD_DIR)/str8n-manifest.json
 PUBLIC_CONTRACT := $(INCLUDE_DIR)/str8n-public.inc
 
 .NOTPARALLEL:
-.PHONY: all resident workers programmer-bin manifest bank-maint console-abi-test top-update onboard-directory-refresh ryors-full-bank layout-check embedded-layout-check range-matrix-check ram-load-contract-check ram-abi-check clean help dirs FORCE
+.PHONY: all resident workers programmer-bin manifest bank-maint bank-maint-menu console-abi-test top-update onboard-directory-refresh ryors-full-bank layout-check embedded-layout-check range-matrix-check ram-load-contract-check ram-abi-check clean help dirs FORCE
 
 all: manifest range-matrix-check ram-load-contract-check ram-abi-check console-abi-test top-update onboard-directory-refresh
 
@@ -91,6 +96,8 @@ programmer-bin: $(TOP_BIN)
 manifest: $(MANIFEST)
 
 bank-maint: $(BANK_MAINT_S19)
+
+bank-maint-menu: $(BANK_MAINT_MENU_S19) $(BANK_MAINT_MENU_A)
 
 console-abi-test: $(CONSOLE_ABI_TEST_S19)
 
@@ -136,10 +143,16 @@ $(WORKER_OBJ): $(WORKER_SRC) $(WORKER_INCLUDES) | dirs
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-worker.sym)
 
 $(BANK_MAINT_OBJ): $(BANK_MAINT_SRC) | dirs
-	$(ASM) -G -L -S -W $<
+	$(ASM) -G -L -S -W -DSTR8_BANK_MAINT_TOP=0 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-bank-maint-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-bank-maint-2000.sym)
+
+$(BANK_MAINT_MENU_OBJ): $(BANK_MAINT_MENU_SRC) $(BANK_MAINT_SRC) $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
+	$(ASM) -G -L -S -W -I tools/bank-maint -I tools/top-update -I $(RELEASE_DIR)/generated $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-bank-maint-menu-2000.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-bank-maint-menu-2000.sym)
 
 $(CONSOLE_ABI_TEST_OBJ): $(CONSOLE_ABI_TEST_SRC) $(SRC_DIR)/str8-console-eq.inc | dirs
 	$(ASM) -G -L -S -W -I $(SRC_DIR) $<
@@ -151,13 +164,13 @@ $(TOP_UPDATE_INC): $(TOP_BIN) $(TOP_UPDATE_INC_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_INC_TOOL) -BinPath "$(TOP_BIN)" -OutPath "$@"
 
 $(TOP_UPDATE_OBJ): $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
-	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_DIRECTORY_REFRESH=0 $<
+	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_TOP_EMBED=0 -DSTR8_DIRECTORY_REFRESH=0 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-top-update-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-top-update-2000.sym)
 
 $(DIRECTORY_REFRESH_OBJ): $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
-	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_DIRECTORY_REFRESH=1 $<
+	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_TOP_EMBED=0 -DSTR8_DIRECTORY_REFRESH=1 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-directory-refresh-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-directory-refresh-2000.sym)
@@ -174,6 +187,15 @@ $(BANK_MAINT_S19): $(BANK_MAINT_OBJ) $(BANK_MAINT_CHECK_TOOL) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(BANK_MAINT_CHECK_TOOL) -S19Path "$@"
+
+$(BANK_MAINT_MENU_S19): $(BANK_MAINT_MENU_OBJ) $(BANK_MAINT_CHECK_TOOL) $(TOP_UPDATE_CHECK_TOOL) | dirs
+	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(BANK_MAINT_CHECK_TOOL) -S19Path "$@" -SourcePath "$(BANK_MAINT_SRC)" -MenuTop
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_CHECK_TOOL) -S19Path "$@" -TopBinPath "$(TOP_BIN)"
+
+$(BANK_MAINT_MENU_A): $(BANK_MAINT_MENU_S19) $(BANK_MAINT_MENU_A_TOOL)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(BANK_MAINT_MENU_A_TOOL) -S19Path "$<" -OutPath "$@"
 
 $(CONSOLE_ABI_TEST_S19): $(CONSOLE_ABI_TEST_OBJ) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
@@ -213,6 +235,7 @@ help:
 	@echo directory refresh - merge that BIN into a verified 128K programmer readback with tools/build_directory_refresh_image.ps1
 	@echo make manifest - build the verified artifact manifest used by R-YORS
 	@echo make bank-maint - build and validate the STR8-N $(VERSION_TEXT) RAM bank-maintenance S19
+	@echo make bank-maint-menu - build menu Bank Maintenance with guarded B3:F update and ASM-F2 .a carrier
 	@echo make console-abi-test - build the L-loadable raw console ABI hardware probe
 	@echo make top-update - build the guarded L-loadable Bank-3 sector-F updater
 	@echo make onboard-directory-refresh - build the guarded L-loadable directory-pocket refresh

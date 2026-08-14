@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Firmware/programmer images must remain byte-for-byte exact.
+*.bin binary
+*.BIN binary

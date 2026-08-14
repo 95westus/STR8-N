@@ -16,7 +16,8 @@
 ; VERIFY ERASED. FOR D3 WITH A FULL JOURNAL, IT FINDS AN ERASED SCRATCH SECTOR
 ; IN BANKS 0-2 AND RESETS ONLY THE JOURNAL TO ONE COMPLETE TRANSACTION. BOTH
 ; PATHS BACK UP B3F, REWRITE/VERIFY IT, THEN ERASE/VERIFY THE BACKUP.
-; P PUTS ONE VALIDATED AP ENVELOPE FROM $4000 INTO BANK 0 $BF00.
+; P PUTS ONE VALIDATED AP ENVELOPE INTO BANK 0 $BF00. THE RELEASE TOOL READS
+;   $4000; THE MENU+TOP VARIANT READS $5000 BECAUSE $4000 HOLDS ITS TOP IMAGE.
 ;   THE AP MUST BE 5-$FF BYTES AND THE COMPLETE DESTINATION MUST BE ERASED.
 ; E ERASES ONE 4K SECTOR OR THE ALLOWED BANK RANGE:
 ;   BANKS 0-2: 8-F, ALL, OR AN X-Y RANGE WITHIN 8-F.
@@ -137,8 +138,17 @@ BM_MAIN LDX #$00
         BEQ ?PUT
         CMP #'R'
         BEQ ?RECLAIM
+        IF STR8_BANK_MAINT_TOP
+        CMP #'U'
+        BEQ ?UPDATE
+        ENDIF
         CMP #'Q'
+        IF STR8_BANK_MAINT_TOP
+        BEQ ?QUIT
+        JMP BM_MAIN
+        ELSE
         BNE BM_MAIN
+        ENDIF
 ?QUIT
         STA $7C01
         LDA #$AC
@@ -147,6 +157,9 @@ BM_MAIN LDX #$00
 ?MAP   JMP BM_MAP
 ?PUT   JMP BM_PUT
 ?RECLAIM JMP BM_RECLAIM
+        IF STR8_BANK_MAINT_TOP
+?UPDATE JMP START
+        ENDIF
 ?ERASE JMP BM_ERASE
 ?ADOPT JMP BM_ADOPT
 ?COPY  JMP BM_COPY
@@ -332,7 +345,7 @@ BM_MDIR DB $0D,$0A,'D','I','R',' ','B',' ','T',' '
         DB 'D','E','S','C',' ','E','N','T','R','Y',' '
         DB 'J','O','U','R','N','A','L'
         DB $0D,$0A,0
-BM_MMAP DB $0D,$0A,'B','A','N','K',' ','8',' ','9',' ','A'
+BM_MMAP DB $0D,$0A,'B','#',' ','8',' ','9',' ','A'
         DB ' ','B',' ','C',' ','D',' ','E',' ','F',$0D,$0A
         DB $0D,$0A,0
 BM_MLEGEND DB 'E','=','E','R','A','S','E','D',' '
@@ -2135,6 +2148,24 @@ BM_SUCCESS LDA #$AC
         JMP BM_MAIN
 
 BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','1',' '
+        IF STR8_BANK_MAINT_TOP
+        DB 'B','A','N','K',' ','M','A','I','N','T',' ','+',' ','T','O','P'
+        DB $0D,$0A
+        DB ' ','M',' ',' ','M','A','P',' ','B','A','N','K','S',' ','+',' '
+        DB 'D','I','R','E','C','T','O','R','Y',$0D,$0A
+        DB ' ','C',' ',' ','C','O','P','Y',' ','B','A','N','K',' ','+',' '
+        DB 'E','N','R','O','L','L',$0D,$0A
+        DB ' ','D',' ',' ','A','D','O','P','T',' ','B','A','N','K',' ','I','N','T','O',' '
+        DB 'D','I','R','E','C','T','O','R','Y',$0D,$0A
+        DB ' ','R',' ',' ','R','E','C','L','A','I','M',' ','D','I','R','E','C','T','O','R','Y',$0D,$0A
+        DB ' ','E',' ',' ','E','R','A','S','E',' ','B','A','N','K',' ','R','A','N','G','E',$0D,$0A
+        DB ' ','P',' ',' ','P','U','T',' ','A','P',' ','$','5','0','0','0',' ','-','>',' ','B','0',':','B','F','0','0',$0D,$0A
+        DB ' ','U',' ',' ','U','P','D','A','T','E',' ','B','3',':','F',' ','('
+        DB 'B','A','C','K','U','P',' ','B','1',':','F',';',' ','R','E','S','E','T',')',$0D,$0A
+        DB ' ','?',' ',' ','M','E','N','U',$0D,$0A
+        DB ' ','Q','/','E','N','T','E','R',' ',' ','R','E','T','U','R','N',' ','T','O',' ','S','T','R','8','-','N',$0D,$0A
+        DB 'B','M','>',' ',0
+        ELSE
         DB 'B','A','N','K',' ','M','A','I','N','T',$0D,$0A
         DB 'B','3',' ','E','R','A','S','E',' ','R','E','T','U'
         DB 'R','N','S',' ','T','O',' ','S','T','R','8',';',' '
@@ -2149,8 +2180,11 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','1',' '
         DB ' ','R','=','R','E','C','L','A','I','M',' ','D','I','R'
         DB ' ','Q','/','E','N','T','E','R','=','Q','U','I','T'
         DB '>',' ',0
+        ENDIF
 ; Fixed one-sector AP carrier put for the split-V1 promotion proof.
-; First run AP $4000 $3000 in HIMON. The outer envelope and fit are checked
+; First run AP $4000 $3000 in HIMON. The menu+top variant uses AP $5000 $3000
+; so its embedded top candidate can remain at $4000. The envelope and fit are
+; checked
 ; again here; HIMON remains the authority for the complete AP format.
 BM_PUT  BRA ?BODY
 ?MTARGET DB 'P','U','T',' ','A','P',' ','B','0',' ','$','B','F'
@@ -2161,7 +2195,11 @@ BM_PUT  BRA ?BODY
 ?BAD    JMP BM_ABORT
 ?BODY   LDA #'P'
         STA $7C01
+        IF STR8_BANK_MAINT_TOP
+        LDA $5000
+        ELSE
         LDA $4000
+        ENDIF
         CMP #'A'
         BNE ?BAD
         LDA $4001
@@ -2210,7 +2248,12 @@ BM_PUT  BRA ?BODY
         CPX #$0B
         BNE ?CONFIRM
         LDX #$00
-?OVERLAY LDA $4000,X
+?OVERLAY
+        IF STR8_BANK_MAINT_TOP
+        LDA $5000,X
+        ELSE
+        LDA $4000,X
+        ENDIF
         STA $1900,X
         INX
         CPX $7C05
@@ -2294,4 +2337,7 @@ BM_PUT  BRA ?BODY
         DB $EC,$7F,$68,$0C,$EC,$7F,$60,$CC
         DB $CE,$EC,$EE
 ; END GENERATED STR8 MUTATION WORKER
+        IF STR8_BANK_MAINT_TOP
+        INCLUDE "str8n-v1.21-top-update-2000.asm"
+        ENDIF
         END

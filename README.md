@@ -65,6 +65,9 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 - A payload S19 for the resident and an evidence S19 for its relocated worker.
 - A self-contained Bank Maintenance S19 loaded and started with `L`, including
   map, copy+directory, adopt, erase, and AP operations.
+- A host-qualified menu Bank Maintenance variant that adds `U` for the current
+  guarded Bank-3 sector-F update. Its generated `.a` image carrier reproduces
+  the WDC `.asm` S19 byte-for-byte under ASM-F2; board proof is pending.
 - A deterministic raw console ABI hardware probe covering blocking input,
   blocking output, non-consuming input readiness, initialization, and ABI
   discovery, loaded and started with `L`.
@@ -75,6 +78,30 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 - A manifest containing artifact paths, addresses, ABI versions, sizes, and
   hashes.
 - A generated public assembly contract consumed by adjacent R-YORS builds.
+
+Build the proposed combined tool with `make bank-maint-menu`. Its terminal
+card is deliberately one command per line:
+
+```text
+STR8-N 1.21 BANK MAINT + TOP
+ M  MAP BANKS + DIRECTORY
+ C  COPY BANK + ENROLL
+ D  ADOPT BANK INTO DIRECTORY
+ R  RECLAIM DIRECTORY
+ E  ERASE BANK RANGE
+ P  PUT AP $5000 -> B0:BF00
+ U  UPDATE B3:F (BACKUP B1:F; RESET)
+ ?  MENU
+ Q/ENTER  RETURN TO STR8-N
+BM>
+```
+
+`U` uses the same two exact confirmations, verified `B1:F` backup, live
+directory/configuration preservation, candidate verification, retry/restore
+recovery loop, and RESET finish as the standalone top updater.
+The combined image occupies `$2000-$4FFF`, so its `P` path reads the AP
+envelope from `$5000`; the standalone Bank Maintenance tool continues to use
+`$4000`.
 
 ## Start here
 
