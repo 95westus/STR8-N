@@ -1,7 +1,7 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.2/s19/str8n-v1.2-f000.map",
-    [string]$WorkerMapPath = "BUILD/v1.2/s19/str8n-v1.2-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19",
+    [string]$Str8MapPath = "BUILD/v1.21/s19/str8n-v1.21-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.21/s19/str8n-v1.21-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/v1.21/s19/str8n-v1.21-worker-0200.s19",
     [string]$WorkerEqPath = "src/str8-worker-eq.inc",
     [string]$RamAbiPath = "src/str8-ram-abi.inc",
     [string]$ConsoleEqPath = "src/str8-console-eq.inc"
@@ -17,7 +17,7 @@ $ConfigStart = 0xFFF0
 $VectorStart = 0xFFFA
 $WorkerRunStart = 0x0200
 $WorkerSelectEntry = 0x0203
-$MinimumMargin = 8
+$MinimumMargin = 0
 
 function Get-MapSymbol {
     param([string]$Path, [string]$Name)

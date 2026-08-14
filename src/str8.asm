@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable v1.2 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.21 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
@@ -10,7 +10,7 @@
 ;   invalid input is discarded without reprinting the command help
 ; V0 proof builds retain U instead of I for the fixed $C000-$EFFF HIMON gate.
 ;
-; Reset shows 16 unpolled attach dots, flushes RX, prints the banner, then
+; Reset prints RESET, shows unpolled attach pulses, flushes RX, prints the banner, then
 ; opens 16 live selector dots. Timeout cold-starts compatible HIMON at $C000;
 ; H warm-starts it to preserve RAM. A missing or incompatible marker falls
 ; into the STR8 menu. S enters STR8; 0-2 announce the selected bank, wait about
@@ -140,7 +140,7 @@ STR8_INSTALL_PHASE      EQU             $9E
 STR8_INSTALL_SECTOR_HI  EQU             $9F
 ; $A0 is intentionally free; the record service retains its own detailed
 ; parse/program status while the compact installer reports a single failure.
-; v1.2 selected dense range. The receiver requires this exact start and
+; v1.21 selected dense range. The receiver requires this exact start and
 ; exclusive limit while retaining a count for summaries/tests.
 STR8_INSTALL_START_HI   EQU             $A1
 STR8_INSTALL_RANGE_LIMIT_HI EQU         $A2
@@ -442,7 +442,7 @@ STR8_ENTER_HIMON_WARM:
                         IF              STR8_V1_LAYOUT
                         ELSE
 ; Minimal generic HIMON/user-app availability gate retained for V0 proof
-; layouts. v1.2 cold and warm entry both require the fixed HIMON marker below.
+; layouts. v1.21 cold and warm entry both require the fixed HIMON marker below.
 STR8_BOOT_TARGET_AVAILABLE:
                         LDY             #$00
 ?BYTE:                 LDA             STR8_HIMON_START,Y
@@ -505,7 +505,7 @@ STR8_ENTER_MENU_NO_TARGET_PRINT:
 STR8_STARTUP_DELAY:
                         STZ             STR8_BOOT_KEY_ENABLE
                         IF              STR8_V1_LAYOUT
-                        LDX             #<MSG_CRLF
+                        LDX             #<MSG_RESET
                         IF              STR8_V1_INSTALLER_TXN
                         JSR             STR8_PRINT_TXN_PAGE1_X
                         ELSE
@@ -1807,7 +1807,7 @@ STR8_BANK_SELECT_SERVICE_BODY:
 STR8_BANK_SELECT_SERVICE_BODY_END:
 
 ; ----------------------------------------------------------------------------
-; v1.2 Bank Directory validator for I and directory-gated J.
+; v1.21 Bank Directory validator for I and directory-gated J.
 ;
 ; STR8_DIR_VALIDATE_BANK_A
 ;   IN:  A=bank 0-3, Bank 3 visible
@@ -2959,6 +2959,7 @@ MSG_JUMP_FAIL:          DB              "J FAIL",$0D,$8A
                         IF              STR8_RAM_PROOF
 MSG_COPY_FAIL_AT:       DB              $0D,$0A,"COPY FAIL @ ",('$'+$80)
                         ENDIF
+MSG_RESET:              DB              "RESET"
 MSG_CRLF:               DB              $0D,$8A
                         IF              STR8_V1_LAYOUT
 MSG_BACKSPACE:          DB              $08,$20,$88

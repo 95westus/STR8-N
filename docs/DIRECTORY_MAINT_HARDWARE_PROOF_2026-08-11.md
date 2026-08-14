@@ -529,3 +529,205 @@ D2 FF B2D2X FFFF FCFFFFFF
 D3 FF RYORS C000 00FCFFFF
  OK
 ```
+
+## 2026-08-14 D3 Journal-Exhaustion Precondition
+
+The operator captured the live board state that motivated the narrow D3
+compaction path. This is precondition evidence, not acceptance of the new
+mutation path. D3 retains the expected `RYORS` / `C000` identity, but its
+journal is exhausted at `00000000`. Bank 1 sectors 8-E provide erased scratch
+space; Bank 1 sector F is used and is not assumed disposable.
+
+```text
+RESET
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.2
+0-2 H S: ......
+BOOT COLD
+RAM ZERO OK
+
+HIMON V 00.0814(1102)
+>L
+L S19
+L @2000
+L OK=162B ENTRY=2000
+>G 2000
+GO 2000
+
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> M
+
+BANK 8 9 A B C D E F
+
+B0 U U U U U U U U
+B1 E E E E E E E U
+B2 U U U U U U U U
+B3 U U U U U U U P
+E=ERASED U=USED A=AP VALID P=B3F PROTECTED
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF BKUP0 FFFF FCFFFFFF
+D1 FF XXXXX FFFF FCFFFFFF
+D2 FF BACKP FFFF FCFFFFFF
+D3 FF RYORS C000 00000000
+ OK
+
+STR8-N 1.2 BANK MAINT
+B3 ERASE RETURNS TO STR8; SELECT S
+!STR8=SOURCE HAS STR8
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q/ENTER=QUIT> Q
+RESET
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.2
+0-2 H S: ......
+BOOT COLD
+RAM ZERO OK
+
+HIMON V 00.0814(1102)
+>
+```
+
+The host-built successor makes `R` accept directory 3 only for this exact
+full-journal state. It searches B0-B2 sectors 8-F, so this map selects B1:8
+without disturbing used B1:F. It preserves D3 bytes +0..+11 and replaces only
++12..+15 with `FCFFFFFF`. `make all`, the strengthened Bank Maintenance
+checker, the R-YORS ASM smoke suite, and both repositories' `git diff --check`
+pass. The candidate S19 SHA-256 is
+`B1088334157A242B4F94AD2228BF4DAEE6328500D6C9533BF9F57E955CF98B73`.
+Board execution and the post-operation map remain open evidence.
+
+## 2026-08-14 D3 Journal Compaction Acceptance
+
+The subsequent `1157` board continuation closes the mutation and post-map
+evidence left open above. The guarded path selected the expected erased B1:8
+scratch sector, accepted only exact `RESET J3`, verified its backup, rewrote
+B3F, erased the temporary backup, and returned `OK`:
+
+```text
+RECLAIM DIR 0-3> 3
+
+B3F REWRITE
+SCRATCH B1:8
+TYPE RESET J3> RESET J3
+BACKUP VERIFIED
+ OK
+```
+
+The immediate map proved that B1:8 was erased again, D3's type, description,
+and entry were unchanged, and only its journal was compacted:
+
+```text
+B1 E E E E E E E U
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF BKUP0 FFFF FCFFFFFF
+D1 FF XXXXX FFFF FCFFFFFF
+D2 FF BACKP FFFF FCFFFFFF
+D3 FF RYORS C000 FCFFFFFF
+ OK
+```
+
+This accepts the D3 compactor's protected mutation, identity preservation,
+verified backup/B3F rewrite, and scratch cleanup on hardware. The integrated
+R-YORS closure card still requests an explicit STR8-N `J3` command to prove
+the compacted row through the selector's directory gate; that is a launch
+integration check, not an open Bank Maintenance mutation check.
+
+## 2026-08-14 Compacted-D3 `J3` Launch Acceptance
+
+The next operator continuation closes that launch integration check. From the
+live STR8-N shell, explicit `J3` selected Bank 3 and followed its RESET vector.
+The normal timeout then cold-booted matching HIMON `00.0814(1157)`, and `Q`
+reached its NMI monitor:
+
+```text
+STR8-N>J3
+J B3
+RESET
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.2
+0-2 H S: ......
+BOOT COLD
+RAM ZERO OK
+
+HIMON V 00.0814(1157)
+>Q
+
+NMI PC=C54B
+A=C5 X=FF Y=07 P=A5 S=FB Nv-bdIzC
+>
+```
+
+Result: the compacted D3 row passes the actual `J3` directory gate. D3
+mutation, post-map, cleanup, and launch integration are all board-accepted.
+
+### Operator correction: launch evidence is inconclusive
+
+The operator subsequently reported possible physical RESET intervention after
+`J B3`. The transcript therefore proves command recognition but cannot
+causally attribute the following RESET/cold path to `J3`. Superseding the
+launch-acceptance statement above, the Bank Maintenance mutation, post-map,
+identity preservation, and scratch cleanup remain accepted; the integrated
+`J3` launch must be repeated without touching RESET or sending input between
+the command and the matching HIMON identity.
+
+### Uninterrupted `J3` rerun acceptance
+
+The operator supplied the required continuous rerun and confirmed that no
+physical RESET or other input intervened after `J3`:
+
+```text
+>STR8
+RUN STR8: BOOTLOADER @F000 K=03 ? y
+
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.2
+0-2 H S: ..S
+I L H J
+STR8-N>J3
+J B3
+RESET
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.2
+0-2 H S: ......
+BOOT COLD
+RAM ZERO OK
+
+HIMON V 00.0814(1157)
+>
+```
+
+This supersedes the causal qualification above while preserving it as part of
+the evidence history. The installed STR8-N `1.2` / R-YORS `1157` image now has
+accepted compacted-D3 mutation, post-map, scratch cleanup, directory-gated
+`J3` selection, RESET-vector handoff, and matching cold HIMON identity. It is
+historical evidence only; the rebuilt STR8-N `1.21` / R-YORS `1303` image still
+requires its own installation and identity smoke.
+
+### Operator correction: rerun RESET was physical
+
+The operator subsequently clarified that every RESET indicated in the logs,
+including the RESET after `J B3` in the rerun above, was physical and
+intentional. This supersedes the rerun-acceptance interpretation while leaving
+the transcript intact. The rerun proves explicit `J3` recognition and `J B3`
+output, but the following physical RESET prevents causal attribution of the
+Bank-3 RESET-vector handoff to `J3`. The D3 compaction, post-map, identity
+preservation, and scratch cleanup remain accepted. Launch integration remains
+open until `J3` is followed by the matching cold HIMON identity without any
+physical RESET or intervening input.
+
+### Synthetic-RESET `J3` acceptance
+
+The operator then supplied a new continuous capture and explicitly identified
+the RESET immediately following `J B3` as synthetic. It ran from a live HIMON
+`STR8` launch through STR8-N `J3`, the synthetic Bank-3 RESET-vector transition,
+the normal cold timeout, and matching HIMON `00.0814(1157)` without a physical
+reset after `J3`.
+
+This is the explicit exception to the preceding physical-reset clarification.
+For the installed STR8-N `1.2` / R-YORS `1157` image, compacted-D3 mutation,
+post-map, scratch cleanup, directory-gated `J3` selection, and RESET-vector
+handoff are now board-accepted. STR8-N `1.21` / R-YORS `1303` remains a
+separate installation and current-identity smoke.

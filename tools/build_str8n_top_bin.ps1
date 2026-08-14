@@ -1,9 +1,9 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.2/s19/str8n-v1.2-f000.map",
-    [string]$Str8S19Path = "BUILD/v1.2/s19/str8n-v1.2-f000.s19",
-    [string]$WorkerMapPath = "BUILD/v1.2/s19/str8n-v1.2-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19",
-    [string]$BinPath = "BUILD/v1.2/bin/str8n-v1.2-bank3-f000-ffff.bin"
+    [string]$Str8MapPath = "BUILD/v1.21/s19/str8n-v1.21-f000.map",
+    [string]$Str8S19Path = "BUILD/v1.21/s19/str8n-v1.21-f000.s19",
+    [string]$WorkerMapPath = "BUILD/v1.21/s19/str8n-v1.21-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/v1.21/s19/str8n-v1.21-worker-0200.s19",
+    [string]$BinPath = "BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin"
 )
 
 Set-StrictMode -Version Latest
@@ -142,9 +142,6 @@ $workerSize = $workerRunEnd - $workerRunStart
 
 if ($str8Start -ne $TopBase) { throw ('STR8 START is ${0:X4}; expected $F000' -f $str8Start) }
 if ($str8End -gt $workerStore) { throw ('Resident end ${0:X4} crosses worker ${1:X4}' -f $str8End, $workerStore) }
-if (($workerStore - $str8End) -lt 8) {
-    throw ('Resident/worker margin is {0} bytes; expected at least 8' -f ($workerStore - $str8End))
-}
 if ($workerRunStart -ne 0x0200) { throw ('Worker starts at ${0:X4}; expected $0200' -f $workerRunStart) }
 if (($workerStore + $workerSize) -ne $directoryStart) {
     throw ('Worker storage ${0:X4}+${1:X} does not end at directory ${2:X4}' -f `

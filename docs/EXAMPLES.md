@@ -1,4 +1,4 @@
-# STR8-N v1.2 Worked Examples
+# STR8-N v1.21 Worked Examples
 
 These examples show what to type and which S19 file to send. Text after `<-`
 is explanation, not terminal input. Use normal full-speed text-file transfer
@@ -9,8 +9,9 @@ with zero character and line delay.
 Wait until the identity and live dots appear, then press `S`:
 
 ```text
+RESET
 WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
-STR8-N 1.2
+STR8-N 1.21
 0-2 H S: ..S
 I L H J
 STR8-N>
@@ -115,7 +116,7 @@ make ryors-full-bank
 This creates:
 
 ```text
-BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
+BUILD/v1.21/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
 ```
 
 Install it in Bank 0, 1, or 2:
@@ -169,13 +170,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
+BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19
 ```
 
 It starts automatically:
 
 ```text
-STR8-N 1.2 BANK MAINT
+STR8-N 1.21 BANK MAINT
 B3 ERASE RETURNS TO STR8; SELECT S
 !STR8=SOURCE HAS STR8
 C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT>
@@ -210,9 +211,9 @@ If the payload bank was deliberately erased but its old directory row remains,
 reclaim that one row before retrying the copy:
 
 ```text
-STR8-N 1.2 BANK MAINT
+STR8-N 1.21 BANK MAINT
 ... R=RECLAIM DIR ...> R
-RECLAIM BANK 0-2> 0
+RECLAIM DIR 0-3> 0
 
 B3F REWRITE
 TYPE CLEAR D0> CLEAR D0
@@ -225,6 +226,26 @@ Bank-0 payload sectors is `$FF`. It temporarily uses Bank 0 sector F for the
 verified B3F backup, then erases that backup only after the protected rewrite
 verifies. Do not interrupt it. After `OK`, `M` must show D0 completely erased
 and all Bank-0 sectors erased; `C` can then copy and enroll Bank 3 normally.
+
+If D3's journal is exhausted, compact only that journal without replacing the
+installed STR8-N or R-YORS payload. At least one Bank-0/1/2 sector must be
+completely erased for the verified temporary B3F backup:
+
+```text
+STR8-N 1.21 BANK MAINT
+... R=RECLAIM DIR ...> R
+RECLAIM DIR 0-3> 3
+
+B3F REWRITE
+SCRATCH B1:8
+TYPE RESET J3> RESET J3
+BACKUP VERIFIED
+ OK
+```
+
+After `OK`, use `M` and require the D3 identity and entry to be unchanged and
+its journal to read `FCFFFFFF`. The chosen scratch sector must again show `E`.
+The compaction leaves 15 additional `I3` transactions.
 
 ## Refresh all directory rows onboard
 
@@ -241,13 +262,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19
+BUILD/v1.21/s19/str8n-v1.21-directory-refresh-2000.s19
 ```
 
 The guarded confirmations and successful result are:
 
 ```text
-STR8-N 1.2 DIRECTORY REFRESH
+STR8-N 1.21 DIRECTORY REFRESH
 BACKUP B1:F; TARGET B3:F
 TYPE BACKUP B1F> BACKUP B1F
 BACKUP VERIFIED

@@ -10,8 +10,8 @@ Everything persistent and every flash/selection worker fits in Bank 3's top
 4K:
 
 ```text
-$F000-$FD53  resident code/data             3412 bytes
-$FD54-$FD5B  enforced unused reserve            8 bytes
+$F000-$FD59  resident code/data             3418 bytes
+$FD5A-$FD5B  available resident growth           2 bytes
 $FD5C-$FFAF  unified worker                   596 bytes
 $FFB0-$FFEF  directory                         64 bytes
 $FFF0-$FFF9  identity/configuration reserve     10 bytes
@@ -20,9 +20,10 @@ $FFFA-$FFFF  NMI/RESET/IRQ vectors               6 bytes
                                               4096 bytes
 ```
 
-`make layout-check` reads the linked maps and fails if the reserve falls below
-8 bytes, a published worker constant becomes stale, or a fixed gate/tail
-address moves.
+`make layout-check` reads the linked maps and fails if the resident crosses the
+fixed `$FD5C` worker boundary, a published worker constant becomes stale, or a
+fixed gate/tail address moves. STR8-N v1.21 consumes one formerly reserved byte
+for its longer identity; the remaining two bytes are available, not reserved.
 
 ## Settled interfaces
 
@@ -130,7 +131,7 @@ adds bytes to the protected 4K resident image.
 - `make bank-maint` validates the maintenance S19 and private-worker hash.
 - `make ryors-full-bank` validates and composes the full 32K image.
 
-## Hardware evidence and remaining gate
+## Hardware evidence and remaining qualification
 
 Retained terminal sessions have shown the startup display, a full-speed
 Bank-3 `8-E` install, HIMON start, separate ASM `8-B` installation and start,
@@ -144,10 +145,35 @@ its precommit guards, and a subsequent `C` regression. The 2026-08-13
 stale-directory recovery run additionally accepted `R` for D0: an incorrect
 confirmation caused no mutation, exact `CLEAR D0` completed the verified B3F
 backup/rewrite path, and the immediately following eight-sector B3-to-B0 copy
-completed and enrolled D0.
+completed and enrolled D0. The 2026-08-14 successor's guarded D3
+journal-compaction branch is also board-accepted through verified B3F rewrite,
+identity retention, `FCFFFFFF` post-map, and erased-scratch cleanup. Earlier
+explicit STR8-N `J3` captures printed `J B3` but were followed by operator-
+identified physical resets. A new continuous rerun explicitly identifies the
+RESET after `J B3` as synthetic and proceeds through the cold timeout to
+matching HIMON `00.0814(1157)`. The compacted-D3 launch integration is accepted
+for the installed STR8-N `1.2` / R-YORS `1157` image.
+
+The 2026-08-14 STR8-N `1.21` top updater is also board-accepted. It verified
+the B1:F backup, reported sum `$08F8`, erased and verified B3:F, and entered a
+live STR8-N `1.21` resident. The current R-YORS `1303` Bank-3 `8-E` payload
+committed and warm-booted successfully. A later transfer failed after the six
+pre-commit dots, returned before `COMMIT`, and rejected the remaining stream at
+the shell; a clean retry committed and again reached HIMON `1303`. The cause is
+not established, but failure containment and retry recovery are accepted.
+
+The final current-image continuation completes the STR8-N `1.21` integration
+smoke. An intentional physical RESET retained `1.21` and cold-booted HIMON
+`1303`; the fixed `$C000` head and ASM-F2 `1303` identity matched. The renamed
+Bank Maintenance tool loaded, produced the expected protected-sector/directory
+map, and quit without mutation. The operator identified every later RESET in
+that capture as synthetic, so explicit `J3` causally passed the D3 gate and
+returned through the Bank-3 RESET vector to matching `1.21`/`1303` identities.
 
 Still retain board-proof runs for the generated Bank-0/1/2 `8-F` image, every
 boundary size, interruption/recovery points, explicit `J0`/`J1`/`J2` commands,
-journal exhaustion, AP put, and rejected `L` limits. Archive exact binaries,
-hashes, flash readbacks, and terminal transcripts. Host checks complement but
-do not replace hardware qualification.
+AP put, and rejected `L` limits. The current `1.21` top installation,
+physical-reset persistence, renamed RAM-tool smoke, and `J3` identity handoff
+need no further repetition.
+Archive exact binaries, hashes, flash readbacks, and terminal transcripts. Host
+checks complement but do not replace hardware qualification.

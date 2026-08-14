@@ -293,7 +293,7 @@ RAM move. Only then may the Top Update release target be enabled.
 Create:
 
 ```text
-tools/top-update/str8n-v1.2-top-update-2000.asm
+tools/top-update/str8n-v1.21-top-update-2000.asm
 BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19
 ```
 

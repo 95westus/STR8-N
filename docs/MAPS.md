@@ -1,6 +1,6 @@
-# STR8-N v1.2 Maps and Diagrams
+# STR8-N v1.21 Maps and Diagrams
 
-These diagrams describe the current v1.2 implementation.
+These diagrams describe the current v1.21 implementation.
 
 ## Ownership
 
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.2/
+|-- v1.21/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -47,7 +47,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.2 top updater S19]
+    TOP --> UPDATE[guarded v1.21 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup then clear $FFB0-$FFF9| B3F
@@ -86,7 +86,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[Six one-second WAIT pulses<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.2]
+    A --> P[Flush input<br/>STR8-N 1.21]
     P --> Q{Six live selector dots<br/>0-2 H S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -157,9 +157,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        596 B   |
 $FD5B  +------------------------------+
-       | free margin            8 B   |
-$FD53  +------------------------------+
-       | resident code/data  3412 B   |
+       | available growth       2 B   |
+$FD59  +------------------------------+
+       | resident code/data  3418 B   |
 $F000  +------------------------------+
 ```
 
@@ -228,7 +228,7 @@ flowchart TD
     E -->|yes| G[SEI, CLD, X/SP=$FF,<br/>jump to S9]
 ```
 
-## STR8-N v1.2 RAM ownership
+## STR8-N v1.21 RAM ownership
 
 ```text
 $7DFF  +------------------------------+
@@ -258,7 +258,7 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-`$1A00-$1FFF` is free for user programs in v1.2: STR8-N, HIMON, ASM-F2, and
+`$1A00-$1FFF` is free for user programs in v1.21: STR8-N, HIMON, ASM-F2, and
 the maintained RAM tools do not allocate it. Bank Maintenance and the other
 foreground tools use the single-owner `$7C00-$7DBF` overlay. The exact
 `$7DE9-$7DFF` Recovery State Capsule fields are listed in the
@@ -301,9 +301,12 @@ flowchart TD
     COPY --> ID[TYPE + five-character DESC<br/>START, identity, COMPLETE]
     M -->|D| ADOPT[Validate existing RESET<br/>require empty directory row]
     ADOPT --> ID2[TYPE + DESC + B3 ENTRY<br/>START, identity, COMPLETE]
-    M -->|R| RECLAIM[Prove all 8 payload sectors erased<br/>confirm CLEAR Dn]
+    M -->|R D0-D2| RECLAIM[Prove all 8 payload sectors erased<br/>confirm CLEAR Dn]
+    M -->|R D3| COMPACT[Require journal 00000000<br/>find erased scratch; confirm RESET J3]
     RECLAIM --> BACKUP[Verify original B3F backup<br/>in selected bank sector F]
+    COMPACT --> BACKUP2[Verify original B3F backup<br/>in discovered erased sector]
     BACKUP --> TOP[Rewrite and verify Bank 3 F<br/>then erase backup]
+    BACKUP2 --> TOP2[Write D3 journal FCFFFFFF<br/>verify B3F; then erase backup]
     M -->|E| ERASE[Erase selected sectors<br/>Bank 3 F protected]
     M -->|P| AP[Validated AP put<br/>Bank 0 $BF00]
     M -->|Q| Q[Jump Bank 3 $F000]
@@ -320,6 +323,24 @@ $0A00-$19FF  staged flash sector                  4096 bytes
 $7C00-$7D1A  maintenance state/tables              283 bytes allocated
 $2000-$362A  loaded program, padding, stored worker 5675 bytes
 ```
+
+## Accepted v1.21 board path
+
+```mermaid
+flowchart LR
+    TOP[Guarded v1.21 top updater] -->|verified B1:F backup| B3F[B3:F programmed and verified]
+    B3F --> S[STR8-N 1.21]
+    PAYLOAD[R-YORS 1303 8-E S19] -->|six sectors + final commit| B3[R-YORS in Bank 3]
+    S --> B3
+    B3 -->|intentional physical RESET| COLD[STR8-N 1.21 cold path<br/>HIMON 1303]
+    COLD --> BM[Bank Maintenance map<br/>no mutation]
+    BM -->|Q, then J3| SYN[Synthetic RESET-vector handoff]
+    SYN --> COLD
+```
+
+This complete path is board-accepted. The one failed intermediate `8-E`
+transfer stopped before `COMMIT`; a clean retry completed, preserving the
+fail-closed transaction boundary.
 
 ## Supported interfaces
 

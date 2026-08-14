@@ -1,6 +1,6 @@
-; STR8-N v1.2 BANK-3 TOP-SECTOR UPDATE / DIRECTORY REFRESH TOOL.
-; Load with an installed STR8-N v1.1/v1.2 L command; S9 starts at $2000.
-; The exact verified v1.2 top-sector BIN is generated into the $4000 image.
+; STR8-N v1.21 BANK-3 TOP-SECTOR UPDATE / DIRECTORY REFRESH TOOL.
+; Load with an installed STR8-N v1.1/v1.2/v1.21 L command; S9 starts at $2000.
+; The exact verified v1.21 top-sector BIN is generated into the $4000 image.
 ; This program uses direct FT245R and flash access after active erase begins.
 ; STR8_DIRECTORY_REFRESH=0 preserves the live directory/configuration pocket.
 ; STR8_DIRECTORY_REFRESH=1 leaves the candidate's erased pocket intact.
@@ -540,9 +540,9 @@ TU_IN_READY:           LDA             #TU_FTDI_RXF
                         RTS
 
                         IF              STR8_DIRECTORY_REFRESH
-TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.2 DIRECTORY REFRESH",$0D,$0A
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.21 DIRECTORY REFRESH",$0D,$0A
                         ELSE
-TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.2 TOP UPDATE",$0D,$0A
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.21 TOP UPDATE",$0D,$0A
                         ENDIF
                         DB              "BACKUP B1:F; TARGET B3:F",$0D,$0A,0
 TU_MSG_BACKUP:         DB              "TYPE BACKUP B1F> ",0
@@ -552,14 +552,14 @@ TU_MSG_RECEIPT:        DB              "SAFE PHY $0F000-$0FFFF; TARGET PHY "
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_FINAL:          DB              "TYPE ERASE DIRECTORY> ",0
                         ELSE
-TU_MSG_FINAL:          DB              "TYPE STR8-N 1.2> ",0
+TU_MSG_FINAL:          DB              "TYPE STR8-N 1.21> ",0
                         ENDIF
 TU_MSG_ERASE:          DB              "ERASING B3:F - NO RESET/NMI/POWER",$0D,$0A,0
 TU_MSG_RECOVERY:       DB              "WRITE FAIL: R=RETRY O=RESTORE OLD> ",0
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_OK:             DB              "DIRECTORY EMPTY; STR8-N VERIFIED; RESET",$0D,$0A,0
                         ELSE
-TU_MSG_OK:             DB              "STR8-N 1.2 VERIFIED; RESET",$0D,$0A,0
+TU_MSG_OK:             DB              "STR8-N 1.21 VERIFIED; RESET",$0D,$0A,0
                         ENDIF
 TU_MSG_OLD_OK:         DB              "OLD TOP RESTORED; RESET",$0D,$0A,0
                         IF              STR8_DIRECTORY_REFRESH
@@ -571,7 +571,7 @@ TU_CONFIRM_BACKUP:     DB              "BACKUP B1F",0
                         IF              STR8_DIRECTORY_REFRESH
 TU_CONFIRM_FINAL:      DB              "ERASE DIRECTORY",0
                         ELSE
-TU_CONFIRM_FINAL:      DB              "STR8-N 1.2",0
+TU_CONFIRM_FINAL:      DB              "STR8-N 1.21",0
                         ENDIF
 
 ; TU_CONFIRM receives the expected string in X/Y. These call sites use a
@@ -580,5 +580,5 @@ TU_CONFIRM_FINAL:      DB              "STR8-N 1.2",0
 
                         ORG             $4000
 TU_CANDIDATE_IMAGE:
-                        INCLUDE         "str8n-v1.2-top-image.inc"
+                        INCLUDE         "str8n-v1.21-top-image.inc"
                         END

@@ -1,6 +1,6 @@
 param(
-    [string]$S19Path = "BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19",
-    [string]$TopBinPath = "BUILD/v1.2/bin/str8n-v1.2-bank3-f000-ffff.bin",
+    [string]$S19Path = "BUILD/v1.21/s19/str8n-v1.21-top-update-2000.s19",
+    [string]$TopBinPath = "BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin",
     [switch]$DirectoryRefresh
 )
 
@@ -28,6 +28,20 @@ foreach ($raw in Get-Content -LiteralPath $S19Path) {
 if($entry -ne 0x2000){throw ('Top updater S9 is ${0:X4}; expected $2000' -f $entry)}
 foreach($address in @(0x2000,0x4000,0x4FFF)){if(-not $data.ContainsKey($address)){throw ('Required byte ${0:X4} absent' -f $address)}}
 for($address=0x4000;$address -le 0x4FFF;$address++){if(-not $data.ContainsKey($address)){throw ('Candidate image hole at ${0:X4}' -f $address)}}
+
+[byte[]]$toolBytes = for($address=0x2000;$address -lt 0x4000;$address++){
+    if($data.ContainsKey($address)){[byte]$data[$address]}
+}
+$toolText = [System.Text.Encoding]::ASCII.GetString($toolBytes)
+$requiredText = if($DirectoryRefresh){
+    @('STR8-N 1.21 DIRECTORY REFRESH')
+}else{
+    @('STR8-N 1.21 TOP UPDATE','TYPE STR8-N 1.21> ',
+      'STR8-N 1.21 VERIFIED; RESET')
+}
+foreach($text in $requiredText){
+    if(-not $toolText.Contains($text)){throw "Top updater is missing required text: $text"}
+}
 
 [byte[]]$top = [System.IO.File]::ReadAllBytes($TopBinPath)
 if($top.Length -ne 0x1000){throw ('Top BIN is {0} bytes; expected 4096' -f $top.Length)}

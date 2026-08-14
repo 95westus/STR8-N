@@ -1,10 +1,10 @@
-; STR8-N V1.2 BANK MAINTENANCE, LOAD ADDRESS $2000.
+; STR8-N V1.21 BANK MAINTENANCE, LOAD ADDRESS $2000.
 ; INTERACTIVE BANK COPY/ERASE/MAP MAINTENANCE FOR STR8-N L.
 ;
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
+;   send BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -13,8 +13,9 @@
 ; REWRITING ITS PAYLOAD. RESET IS VALIDATED; BANK 3 ALSO REQUIRES STR8 AND
 ; AN EXPLICIT NONERASED ENTRY ADDRESS. COMPLETE IS LAST.
 ; R RECLAIMS A STALE D0-D2 ROW ONLY AFTER ALL EIGHT SECTORS OF THAT BANK
-; VERIFY ERASED. IT FIRST PUTS A VERIFIED B3F BACKUP IN THAT BANK'S SECTOR F,
-; THEN REWRITES/VERIFIES B3F AND ERASES/VERIFIES THE TEMPORARY BACKUP.
+; VERIFY ERASED. FOR D3 WITH A FULL JOURNAL, IT FINDS AN ERASED SCRATCH SECTOR
+; IN BANKS 0-2 AND RESETS ONLY THE JOURNAL TO ONE COMPLETE TRANSACTION. BOTH
+; PATHS BACK UP B3F, REWRITE/VERIFY IT, THEN ERASE/VERIFY THE BACKUP.
 ; P PUTS ONE VALIDATED AP ENVELOPE FROM $4000 INTO BANK 0 $BF00.
 ;   THE AP MUST BE 5-$FF BYTES AND THE COMPLETE DESTINATION MUST BE ERASED.
 ; E ERASES ONE 4K SECTOR OR THE ALLOWED BANK RANGE:
@@ -44,7 +45,8 @@
 ; ERASE REQUIRES EXACT `ERASE BS`, `ERASE BX-Y`, OR `ERASE BALL`.
 ; B IS THE BANK. COPY REQUIRES EXACT `COPY XY`.
 ; DIRECTORY ADOPTION REQUIRES EXACT `ADOPT BN`.
-; DIRECTORY RECLAIM REQUIRES EXACT `CLEAR DN` AFTER AN ERASED-BANK SCAN.
+; DIRECTORY RECLAIM REQUIRES EXACT `CLEAR DN` AFTER AN ERASED-BANK SCAN, OR
+; EXACT `RESET J3` AFTER A FULL-JOURNAL CHECK AND ERASED-SCRATCH SEARCH.
 ; AP PUT REQUIRES EXACT `PUT B0BF00`.
 ;
 ; RAM MAP:
@@ -1576,10 +1578,11 @@ BM_MDENTRY DB $0D,$0A,'E','N','T','R','Y',' ','8','0','0','0','-','F','F','F','E
 BM_MDADOPT DB 'T','Y','P','E',' ','A','D','O','P','T',' ','B',0
 
 ; Reclaim one stale D0-D2 row after proving the corresponding payload bank is
-; completely erased. Clearing flash bits cannot restore a row to $FF, so the
-; full Bank-3 sector F is staged and backed up to the selected bank's sector F
-; before it is changed in RAM, erased, rewritten, and verified. The temporary
-; backup is erased only after B3F passes full verification.
+; completely erased, or compact a full D3 journal while preserving its sealed
+; identity. Clearing flash bits cannot restore a row to $FF, so the full Bank-3
+; sector F is staged and backed up before it is changed in RAM, erased,
+; rewritten, and verified. The temporary backup is erased only after B3F
+; passes full verification.
 BM_RECLAIM LDA #'R'
         STA $7C01
 ?BANK   LDX #<BM_MRBANK
@@ -1595,11 +1598,15 @@ BM_RECLAIM LDA #'R'
 ?BANK_HAVE
         JSR BM_PARSE_BANK
         BCC ?BANK
-        CMP #$03
+        CMP #$04
         BCS ?BANK
         STA $7C02
         STA $7C03
         STA $7C05
+        CMP #$03
+        BNE ?STALE_ROW
+        JMP BM_RECLAIM_J3
+?STALE_ROW
         JSR BM_COPY_DIR_EMPTY
         BCC ?ROW_USED
         LDX #<BM_MRDIR_EMPTY
@@ -1724,13 +1731,151 @@ BM_RECLAIM_BANK_USED
         JSR BM_PUTS
         JMP BM_ABORT
 
-BM_MRBANK DB $0D,$0A,'R','E','C','L','A','I','M',' ','B','A','N','K',' ','0','-','2','>',' ',0
+; Compact an exhausted D3 journal to FCFFFFFF. This retains one COMPLETE pair,
+; so D3 remains launchable and fifteen later I3 transactions remain. The first
+; erased sector in B0-B2 is used as the verified temporary B3F backup.
+BM_RECLAIM_J3
+        LDA #$03
+        JSR $0203
+        JSR BM_COPY_DIR_BASE
+        LDY #$0C
+?FULL   LDA ($CA),Y
+        BNE ?NOT_FULL
+        INY
+        CPY #$10
+        BNE ?FULL
+
+; Find the first completely erased scratch sector in Banks 0-2, sectors 8-F.
+        STZ $7C08
+?SCRATCH_BANK
+        LDA #$80
+        STA $7C09
+?SCRATCH_SECTOR
+        LDA $7C08
+        STA $7C02
+        LDA $7C09
+        STA $7C04
+        JSR BM_STAGE
+        BCC ?STAGE_FAIL
+        JSR BM_BUFFER_ERASED
+        BCS ?SCRATCH_FOUND
+        LDA $7C09
+        CLC
+        ADC #$10
+        STA $7C09
+        BNE ?SCRATCH_SECTOR
+        INC $7C08
+        LDA $7C08
+        CMP #$03
+        BNE ?SCRATCH_BANK
+        LDX #<BM_MRNO_SCRATCH
+        LDY #>BM_MRNO_SCRATCH
+        JSR BM_PUTS
+        JMP BM_ABORT
+?STAGE_FAIL
+        JMP BM_FSTAGE
+?NOT_FULL
+        LDX #<BM_MRJ3_NOT_FULL
+        LDY #>BM_MRJ3_NOT_FULL
+        JSR BM_PUTS
+        JMP BM_ABORT
+
+?SCRATCH_FOUND
+        LDX #<BM_MRJ3
+        LDY #>BM_MRJ3
+        JSR BM_PUTS
+        LDA $7C08
+        CLC
+        ADC #'0'
+        JSR BM_OUT
+        LDA #':'
+        JSR BM_OUT
+        LDA $7C09
+        LSR A
+        LSR A
+        LSR A
+        LSR A
+        JSR BM_NIBBLE
+        LDX #<BM_MRJ3_CONFIRM
+        LDY #>BM_MRJ3_CONFIRM
+        JSR BM_PUTS
+        JSR BM_READ
+        BCC ?CONFIRM_BAD
+        LDA $7C28
+        BNE ?CONFIRM_BAD
+        LDX #$00
+?MATCH  LDA $7C20,X
+        CMP BM_MRJ3_EXACT,X
+        BNE ?CONFIRM_BAD
+        INX
+        CPX #$08
+        BNE ?MATCH
+
+; Snapshot B3F again after confirmation, then put the verified backup in the
+; erased scratch sector found above.
+        LDA #$03
+        STA $7C02
+        LDA #$F0
+        STA $7C04
+        JSR BM_STAGE
+        BCC ?STAGE_FAIL
+        LDA $7C08
+        STA $7C03
+        LDA $7C09
+        STA $7C04
+        JSR BM_PROGRAM
+        BCC ?PROGRAM_FAIL
+        LDX #<BM_MRBACKUP_OK
+        LDY #>BM_MRBACKUP_OK
+        JSR BM_PUTS
+
+; D3 begins at staged $19E0; replace only its four journal bytes. FCFFFFFF is
+; one complete transaction followed by fifteen unused transaction pairs.
+        LDA #$FC
+        STA $19EC
+        LDA #$FF
+        STA $19ED
+        STA $19EE
+        STA $19EF
+        LDA #$03
+        STA $7C03
+        LDA #$F0
+        STA $7C04
+        JSR BM_PROGRAM
+        BCC ?PROGRAM_FAIL
+
+; B3F now verifies. Erase and verify the temporary scratch-sector backup.
+        JSR BM_FILL
+        LDA $7C08
+        STA $7C03
+        LDA $7C09
+        STA $7C04
+        JSR BM_PROGRAM
+        BCC ?PROGRAM_FAIL
+        LDA #$03
+        STA $7C02
+        STA $7C03
+        LDA #$F0
+        STA $7C04
+        JMP BM_SUCCESS
+?CONFIRM_BAD
+        JMP BM_ABORT
+?PROGRAM_FAIL
+        JMP BM_FPROGRAM
+
+BM_MRBANK DB $0D,$0A,'R','E','C','L','A','I','M',' ','D','I','R',' ','0','-','3','>',' ',0
 BM_MRCLEAR DB $0D,$0A,'B','3','F',' ','R','E','W','R','I','T','E',$0D,$0A
         DB 'T','Y','P','E',' ','C','L','E','A','R',' ','D',0
 BM_MRCLEAR_EXACT DB 'C','L','E','A','R',' ','D'
 BM_MRBACKUP_OK DB 'B','A','C','K','U','P',' ','V','E','R','I','F','I','E','D',$0D,$0A,0
 BM_MRBANK_USED DB $0D,$0A,'B','A','N','K',' ','N','O','T',' ','E','R','A','S','E','D',$0D,$0A,0
 BM_MRDIR_EMPTY DB $0D,$0A,'D','I','R',' ','E','M','P','T','Y',$0D,$0A,0
+BM_MRJ3 DB $0D,$0A,'B','3','F',' ','R','E','W','R','I','T','E',$0D,$0A
+        DB 'S','C','R','A','T','C','H',' ','B',0
+BM_MRJ3_CONFIRM DB $0D,$0A,'T','Y','P','E',' ','R','E','S','E','T',' ','J','3','>',' ',0
+BM_MRJ3_EXACT DB 'R','E','S','E','T',' ','J','3'
+BM_MRJ3_NOT_FULL DB $0D,$0A,'J','3',' ','N','O','T',' ','F','U','L','L',$0D,$0A,0
+BM_MRNO_SCRATCH DB $0D,$0A,'N','O',' ','E','R','A','S','E','D',' ','S','C','R','A','T','C','H',$0D,$0A,0
 
 BM_ERASE LDA #'E'
         STA $7C01
@@ -1989,7 +2134,7 @@ BM_SUCCESS LDA #$AC
         JSR BM_OUT
         JMP BM_MAIN
 
-BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2',' '
+BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','1',' '
         DB 'B','A','N','K',' ','M','A','I','N','T',$0D,$0A
         DB 'B','3',' ','E','R','A','S','E',' ','R','E','T','U'
         DB 'R','N','S',' ','T','O',' ','S','T','R','8',';',' '

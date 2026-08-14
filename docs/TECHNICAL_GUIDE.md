@@ -1,4 +1,4 @@
-# STR8-N v1.2 Technical Guide
+# STR8-N v1.21 Technical Guide
 
 This document is the current STR8-N integration and image-format contract.
 Numeric address ranges are inclusive unless an end is explicitly called
@@ -57,14 +57,16 @@ STR8-N code and data.
 
 ### Power-up visibility and selector timing
 
-After console initialization, STR8-N emits six `WAIT...` pulses approximately
+After console initialization, STR8-N prints `RESET`, then emits six `WAIT...`
+pulses approximately
 one second apart. This unpolled phase gives the FT245R and host terminal time
 to attach while showing continuing board activity. STR8-N then flushes queued
 input and prints its identity and selector:
 
 ```text
+RESET
 WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
-STR8-N 1.2
+STR8-N 1.21
 0-2 H S: ......
 ```
 
@@ -77,8 +79,8 @@ HIMON. Total automatic startup time remains approximately twelve seconds.
 The complete protected sector is exactly 4096 bytes:
 
 ```text
-$F000-$FD53  resident supervisor, installer, loader   3412 bytes
-$FD54-$FD5B  enforced unused margin                     8 bytes
+$F000-$FD59  resident supervisor, installer, loader   3418 bytes
+$FD5A-$FD5B  currently unused margin                     2 bytes
 $FD5C-$FFAF  stored unified worker                    596 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
 $FFF0-$FFF9  configuration pocket                      10 bytes
@@ -87,9 +89,11 @@ $FFFA-$FFFF  NMI, RESET, IRQ/BRK vectors                 6 bytes
                                                        4096 bytes
 ```
 
-The 23-byte gap is the only build-certified growth room inside the protected
-sector. The layout checker requires at least 8 bytes. `$FF` bytes found
-inside linked code are not automatically free space.
+The bytes between `_END_DATA` and `$FD5C` are available resident growth room.
+There is no longer a policy reserve: the layout checker permits the resident
+to end exactly at the fixed worker boundary but still rejects any overlap.
+The current v1.21 banner consumes one formerly reserved byte and leaves two.
+`$FF` bytes found inside linked code are not automatically free space.
 
 The stored worker is copied to `$0200-$0453` before an install or bank handoff.
 Each copied byte is immediately read back and compared before the next byte.
@@ -232,7 +236,7 @@ fixed HIMON identity and enters `$C000`, while `J3` uses Bank 3's RESET vector.
 Historical combined streams that start with S1 records at `$0200` are invalid.
 The first S1 for `I` must be the selected flash start, normally `$8000`,
 `$9000`, and so on. The worker component in
-`BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19` is build and integration evidence, not a file
+`BUILD/v1.21/s19/str8n-v1.21-worker-0200.s19` is build and integration evidence, not a file
 to send to `I`.
 
 ## Creating and checking install files
@@ -249,7 +253,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BinPath C:\IMAGES\guest.bin `
   -BaseAddress 32768 `
   -Bank 0 `
-  -S19Path BUILD/v1.2/s19/guest-bank0-8000-ffff.s19
+  -S19Path BUILD/v1.21/s19/guest-bank0-8000-ffff.s19
 ```
 
 For a first Bank-3 HIMON image:
@@ -261,7 +265,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BaseAddress 49152 `
   -EntryAddress 49152 `
   -Bank 3 `
-  -S19Path BUILD/v1.2/s19/himon-bank3-c000-efff.s19
+  -S19Path BUILD/v1.21/s19/himon-bank3-c000-efff.s19
 ```
 
 `tools/compose_str8n_install_s19.ps1` validates an existing payload and writes
@@ -272,11 +276,11 @@ per-sector CRC-16, and whole-file SHA-256. For an existing Bank-3 row, pass
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools/compose_str8n_install_s19.ps1 `
-  -PayloadS19Path BUILD/v1.2/s19/guest-bank0-8000-ffff.s19 `
+  -PayloadS19Path BUILD/v1.21/s19/guest-bank0-8000-ffff.s19 `
   -PayloadStart 32768 `
   -PayloadEndExclusive 65536 `
   -Bank 0 `
-  -S19Path BUILD/v1.2/s19/str8n-i-guest.s19
+  -S19Path BUILD/v1.21/s19/str8n-i-guest.s19
 ```
 
 ## Transaction timing and recovery
@@ -337,14 +341,14 @@ damage but means a failed recovery load may leave partial program bytes in
 RAM; retrying or RESET is the normal cleanup.
 
 Ctrl-C (`$03`) is the record-parser abort status. During `L`, the on-board
-STR8-N 1.2 presentation reports `BAD`, drains queued receive input, returns to
+STR8-N 1.21 presentation reports `BAD`, drains queued receive input, returns to
 the STR8-N prompt, and does not jump to S9. S1 records already copied into RAM
 remain present.
 
-### STR8-N 1.2 bank-maintenance RAM image
+### STR8-N 1.21 bank-maintenance RAM image
 
 `make bank-maint` builds and validates
-`BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19`. Its S9 entry is `$2000`; the S1
+`BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19`. Its S9 entry is `$2000`; the S1
 address span is `$2000-$362A`, wholly inside the `L` contract. The WDC linker
 fills the unused space before the embedded worker, so the stream contains
 5,675 RAM data bytes even though the executable regions are smaller.
@@ -373,9 +377,12 @@ The carried worker privately implements the staging/programming operations
 needed by the maintenance tool. It calls the worker at `$0200` directly and
 does not depend on resident console or ABI-query gates. Every programmed
 sector is verified. Ordinary erase protects Bank 3 sector `$F000-$FFFF`; the
-separate `R` path can rewrite it only after an erased-bank proof and exact
-directory-clear confirmation. The copy guard recognizes the v1.2 resident
-signature at `$F00C` (`53 52 02 03`).
+separate `R` path can rewrite it only after either an erased-bank proof and
+exact directory-clear confirmation or an exhausted-D3-journal proof, automatic
+erased-scratch selection, and exact `RESET J3` confirmation. D3 compaction
+changes only its journal from `00000000` to `FCFFFFFF`, retaining a COMPLETE
+record and 15 free transaction pairs. The copy guard recognizes the v1.21
+resident signature at `$F00C` (`53 52 02 03`).
 
 The `C` path requires an all-`$FF` destination directory row before changing
 the destination. After the eight copied sectors verify, it collects TYPE and
@@ -430,7 +437,7 @@ the guarded RAM directory-refresh tool or an external programmer must refresh
 the protected sector before another install to that bank.
 
 The programmer BIN and the candidate embedded by
-`str8n-v1.2-directory-refresh-2000.s19` contain an all-`$FF`
+`str8n-v1.21-directory-refresh-2000.s19` contain an all-`$FF`
 directory/configuration pocket. Refreshing it erases every bank's journal and
 Bank-3 install identity. The onboard tool first verifies an exact live-sector
 backup in Bank 1 sector F and retains retry/restore control in RAM while the
@@ -498,7 +505,7 @@ helper begins at `$0500`, above the worker's fixed `$0453` last byte.
 
 ### `$1A00-$1FFF`: user-free low RAM
 
-STR8-N v1.2, HIMON v1.2, ASM-F2, Bank Maintenance, and the maintained RAM
+STR8-N v1.21, HIMON v1.2, ASM-F2, Bank Maintenance, and the maintained RAM
 tools make no fixed runtime allocation in `$1A00-$1FFF`. The complete 1536
 bytes are free for user code and data. As with all RAM, a HIMON cold start
 clears it, and an application must still avoid colliding with another user
@@ -507,7 +514,7 @@ program that it loaded itself.
 The v1.2 capsule and optional-tool allocations in this range are obsolete.
 Do not use a v1.2 RAM tool with the v1.2 firmware set.
 
-### STR8-N v1.2 high-RAM ABI
+### STR8-N v1.21 high-RAM ABI
 
 ```text
 $7C00-$7DBF  foreground High Tool Overlay
@@ -742,7 +749,7 @@ make top-update              build the guarded Bank-3 top updater
 make onboard-directory-refresh
                              build the guarded directory-pocket refresh
 make ryors-full-bank         compose the R-YORS plus STR8-N 32K image
-make layout-check            enforce fixed addresses and the 8-byte reserve
+make layout-check            enforce fixed addresses and no worker overlap
 make range-matrix-check      test documented flash install ranges
 make ram-load-contract-check test STR8-N L address and S9 boundaries
 make programmer-bin          create the exact 4096-byte top-sector BIN
@@ -750,11 +757,11 @@ make clean                   remove generated BUILD artifacts
 ```
 
 `make layout-check` verifies fixed entry points, vectors, worker span, metadata
-placement, exact image size, and at least 8 bytes of free resident margin.
+placement, exact image size, and a resident end no later than `$FD5C`.
 `BUILD/str8n-manifest.json` publishes the resulting addresses and hashes.
 `make range-matrix-check` generates and re-validates every top-aligned 4K-32K
 Bank 0-2 range, every 4K-28K Bank-3 range, and representative middle spans.
-These host fixtures are written below `BUILD/v1.2/test/range-matrix`; they do not
+These host fixtures are written below `BUILD/v1.21/test/range-matrix`; they do not
 change the firmware image or consume protected-sector space.
 `make ram-load-contract-check` verifies the linked `L` entry and every lower,
 upper, crossing-record, empty-record, and S9 boundary case.
@@ -767,25 +774,25 @@ dense 32K Bank-0/1/2 payload. It deliberately does not use the older STR8-N
 copy embedded in R-YORS's previously combined BIN.
 
 ```text
-BUILD/v1.2/bin/str8n-v1.2-bank3-f000-ffff.bin
+BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin
                                       exact 4096-byte programmer image
-BUILD/v1.2/s19/str8n-v1.2-f000.s19         resident build component
-BUILD/v1.2/s19/str8n-v1.2-worker-0200.s19  worker evidence/build component
-BUILD/v1.2/s19/str8n-v1.2-bank-maint-2000.s19
+BUILD/v1.21/s19/str8n-v1.21-f000.s19         resident build component
+BUILD/v1.21/s19/str8n-v1.21-worker-0200.s19  worker evidence/build component
+BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19
                                       self-contained RAM maintenance program
-BUILD/v1.2/s19/str8n-v1.2-console-abi-test-2000.s19
+BUILD/v1.21/s19/str8n-v1.21-console-abi-test-2000.s19
                                       raw console ABI hardware probe
-BUILD/v1.2/s19/str8n-v1.2-top-update-2000.s19
+BUILD/v1.21/s19/str8n-v1.21-top-update-2000.s19
                                       guarded Bank-3 sector-F updater
-BUILD/v1.2/s19/str8n-v1.2-directory-refresh-2000.s19
+BUILD/v1.21/s19/str8n-v1.21-directory-refresh-2000.s19
                                       guarded directory-pocket refresh
-BUILD/v1.2/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
+BUILD/v1.21/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
                                       32K ASM+HIMON+STR8-N Bank-0/1/2 payload
 BUILD/str8n-manifest.json             sizes, addresses, ABI, and hashes
 ```
 
 All BIN, S19, and generated S19 qualification fixtures live below the version
-root `BUILD/v1.2/`. The compatibility manifest remains at
+root `BUILD/v1.21/`. The compatibility manifest remains at
 `BUILD/str8n-manifest.json` and records the versioned artifact paths.
 Compiler/linker intermediates remain directly below `BUILD/obj`, `BUILD/lst`,
 and `BUILD/sym`.
@@ -797,6 +804,14 @@ file offset $000-$FFF -> CPU $F000-$FFFF -> physical $1F000-$1FFFF
 ```
 
 ### Qualification evidence and remaining board tests
+
+The 2026-08-14 v1.21/R-YORS `1303` board card is complete. The guarded updater
+verified B1:F and B3:F, the dense Bank-3 `8-E` payload committed, and an
+intentional physical RESET retained STR8-N `1.21` and HIMON `1303`. The fixed
+HIMON head and ASM-F2 identity matched, the renamed Bank Maintenance image
+mapped the installed banks without mutation, and explicit `J3` generated the
+synthetic RESET-vector return to the same identities. A separate failed
+transfer returned before `COMMIT`; a clean retry succeeded.
 
 The [2026-08-11 expanded resident ABI hardware proof](RESIDENT_ABI_HARDWARE_PROOF_2026-08-11.md)
 accepts the current top-sector image for guarded onboard update, verified
@@ -819,7 +834,7 @@ nonempty-row refusal, low/erased ENTRY rejection, DESC-length rejection,
 precommit cancellation, bad-RESET refusal, successful D1/D3 commits, and the
 shared `C` commit-path regression.
 
-Observed v1.2 board sessions have established:
+Earlier v1.2 board sessions additionally established:
 
 - physical RESET selects Bank 3 and reaches STR8-N;
 - the six `WAIT...` pulses and later identity/selector are visible;

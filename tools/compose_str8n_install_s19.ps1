@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)][string]$PayloadS19Path,
-    [string]$S19Path = "BUILD/v1.2/s19/str8n-install.s19",
+    [string]$S19Path = "BUILD/v1.21/s19/str8n-install.s19",
     [int]$PayloadStart = 0x8000,
     [int]$PayloadEndExclusive = 0x10000,
     [ValidateRange(0, 3)][int]$Bank = 0,
