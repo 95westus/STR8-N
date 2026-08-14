@@ -1,1 +1,6 @@
-BUILD/
+BUILD/**
+
+# Keep build intermediates ignored, but retain firmware artifacts as evidence.
+!BUILD/**/
+!BUILD/**/*.[bB][iI][nN]
+!BUILD/**/*.[sS]19

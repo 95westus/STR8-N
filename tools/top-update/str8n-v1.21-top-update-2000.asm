@@ -6,8 +6,15 @@
 ; STR8_DIRECTORY_REFRESH=1 leaves the candidate's erased pocket intact.
 ; ENTER AT EITHER PRE-ERASE CONFIRMATION CANCELS AND RETURNS TO STR8-N.
 
+; STR8_TOP_EMBED=1 relocates the updater behind Bank Maintenance and returns
+; pre-erase failures/cancellation to its menu. Active-write success or recovery
+; still ends through RESET, exactly like the standalone updater.
+                        IF              STR8_TOP_EMBED
+                        ORG             $3700
+                        ELSE
                         MODULE          STR8N_V12_TOP_UPDATE
                         ORG             $2000
+                        ENDIF
 
 TU_FTDI_CTRL            EQU             $7FE0
 TU_FTDI_DATA            EQU             $7FE1
@@ -206,7 +213,11 @@ TU_FAIL_SAFE:           STA             TU_STATUS
 ; STR8-N L jumps to S9 with a fresh stack and no return address. Empty or
 ; rejected pre-erase confirmations therefore leave through resident STR8,
 ; never RTS. The active-write failure path remains in TU_RECOVERY above.
+                        IF              STR8_TOP_EMBED
+                        JMP             BM_MAIN
+                        ELSE
                         JMP             $F000
+                        ENDIF
 
 ; Save live directory/config $FFB0-$FFF9 before using the staging tray.
 TU_SAVE_META:           LDX             #$00
@@ -581,4 +592,7 @@ TU_CONFIRM_FINAL:      DB              "STR8-N 1.21",0
                         ORG             $4000
 TU_CANDIDATE_IMAGE:
                         INCLUDE         "str8n-v1.21-top-image.inc"
+                        IF              STR8_TOP_EMBED
+                        ELSE
                         END
+                        ENDIF
