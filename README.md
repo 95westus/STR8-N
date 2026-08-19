@@ -38,7 +38,10 @@ original migration sequence is tracked in the
 The current v1.21 board line is accepted with R-YORS `00.0814(1303)`: guarded
 B3:F update, dense Bank-3 `8-E` installation, physical-reset persistence,
 renamed Bank Maintenance load/map, and an uninterrupted synthetic `J3` handoff
-all pass. The protected sector uses `$F000-$FD59` for the 3418-byte resident,
+all pass. The 2026-08-18 continuation additionally accepts the combined menu's
+guarded `U`, full-bank copy/enrollment, separate metadata-only `D2` adoption,
+directory-gated `J2` launch of the factory onboard firmware, and physical-reset
+recovery. The protected sector uses `$F000-$FD59` for the 3418-byte resident,
 leaves `$FD5A-$FD5B` available, and retains the fixed worker at `$FD5C-$FFAF`.
 
 ## Console commands
@@ -65,9 +68,10 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 - A payload S19 for the resident and an evidence S19 for its relocated worker.
 - A self-contained Bank Maintenance S19 loaded and started with `L`, including
   map, copy+directory, adopt, erase, and AP operations.
-- A host-qualified menu Bank Maintenance variant that adds `U` for the current
+- A host- and board-qualified menu Bank Maintenance variant that adds `U` for the current
   guarded Bank-3 sector-F update. Its generated `.a` image carrier reproduces
-  the WDC `.asm` S19 byte-for-byte under ASM-F2; board proof is pending.
+  the WDC `.asm` S19 byte-for-byte under ASM-F2; update, copy, adopt, launch,
+  and recovery edges are board-accepted as of 2026-08-18.
 - A deterministic raw console ABI hardware probe covering blocking input,
   blocking output, non-consuming input readiness, initialization, and ABI
   discovery, loaded and started with `L`.
@@ -79,7 +83,7 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
   hashes.
 - A generated public assembly contract consumed by adjacent R-YORS builds.
 
-Build the proposed combined tool with `make bank-maint-menu`. Its terminal
+Build the combined tool with `make bank-maint-menu`. Its terminal
 card is deliberately one command per line:
 
 ```text
@@ -117,7 +121,8 @@ envelope from `$5000`; the standalone Bank Maintenance tool continues to use
 - [Expanded ABI Hardware Proof](docs/RESIDENT_ABI_HARDWARE_PROOF_2026-08-11.md)
   — exact tested artifacts and retained renewed-board transcript.
 - [Directory Maintenance Hardware Proof](docs/DIRECTORY_MAINT_HARDWARE_PROOF_2026-08-11.md)
-  — exact `D` adoption guards, commits, and post-refactor `C` regression.
+  — exact `D` adoption guards, commits, post-refactor `C` regression, and the
+  v1.21 combined-menu copy-cancel-adopt-`J2` continuation.
 - [R-YORS Ownership-Cutover Hardware Proof](docs/R_YORS_OWNERSHIP_CUTOVER_HARDWARE_PROOF_2026-08-13.md)
   — separated-build install, both RAM-loader paths, guarded Bank-3 copy,
   durable Bank-0 enrollment, and final cold boot.

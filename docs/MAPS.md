@@ -301,9 +301,12 @@ flowchart TD
     M -->|M| MAP[Stage and inspect sectors<br/>no flash mutation]
     M -->|C| COPY[Require empty directory row<br/>copy and verify full bank]
     COPY --> ID[TYPE + five-character DESC<br/>START, identity, COMPLETE]
+    COPY -->|identity cancelled| PAYLOAD[Verified payload remains<br/>directory row stays erased]
     M -->|D| ADOPT[Validate existing RESET<br/>require empty directory row]
+    PAYLOAD --> ADOPT
     ADOPT --> ID2[TYPE + DESC + B3 ENTRY<br/>START, identity, COMPLETE]
     M -->|R D0-D2| RECLAIM[Prove all 8 payload sectors erased<br/>confirm CLEAR Dn]
+    RECLAIM -->|any used sector, including retained F backup| REFUSE[BANK NOT ERASED<br/>no mutation]
     M -->|R D3| COMPACT[Require journal 00000000<br/>find erased scratch; confirm RESET J3]
     RECLAIM --> BACKUP[Verify original B3F backup<br/>in selected bank sector F]
     COMPACT --> BACKUP2[Verify original B3F backup<br/>in discovered erased sector]
@@ -315,6 +318,7 @@ flowchart TD
     MAP --> M
     ID --> M
     ID2 --> M
+    REFUSE --> M
     ERASE --> M
     AP --> M
 ```
@@ -338,11 +342,19 @@ flowchart LR
     COLD --> BM[Bank Maintenance map<br/>no mutation]
     BM -->|Q, then J3| SYN[Synthetic RESET-vector handoff]
     SYN --> COLD
+    BM -->|C copy; cancel identity| B2P[B2 payload present<br/>D2 erased]
+    B2P -->|D ADOPT B2| D2[D2 COMPLETE]
+    D2 -->|J2| FACTORY[Factory onboard firmware]
+    FACTORY -->|physical RESET| COLD
+    BM -->|U verified backup| B1F[Retained B1:F recovery backup]
+    B1F -->|E B1 8-E| B1HOLD[B1 E E E E E E E U<br/>J1 prohibited]
+    B1HOLD -->|R D1| GUARD[BANK NOT ERASED<br/>backup preserved]
 ```
 
 This complete path is board-accepted. The one failed intermediate `8-E`
 transfer stopped before `COMMIT`; a clean retry completed, preserving the
-fail-closed transaction boundary.
+fail-closed transaction boundary. The 2026-08-18 continuation adds the
+copy-cancel-adopt-`J2` path and the retained-B1:F reclaim refusal shown above.
 
 ## Supported interfaces
 
