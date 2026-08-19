@@ -10,8 +10,8 @@ Everything persistent and every flash/selection worker fits in Bank 3's top
 4K:
 
 ```text
-$F000-$FD59  resident code/data             3418 bytes
-$FD5A-$FD5B  available resident growth           2 bytes
+$F000-$FD54  resident code/data             3413 bytes
+$FD55-$FD5B  available resident growth           7 bytes
 $FD5C-$FFAF  unified worker                   596 bytes
 $FFB0-$FFEF  directory                         64 bytes
 $FFF0-$FFF9  identity/configuration reserve     10 bytes
@@ -22,8 +22,8 @@ $FFFA-$FFFF  NMI/RESET/IRQ vectors               6 bytes
 
 `make layout-check` reads the linked maps and fails if the resident crosses the
 fixed `$FD5C` worker boundary, a published worker constant becomes stale, or a
-fixed gate/tail address moves. STR8-N v1.21 consumes one formerly reserved byte
-for its longer identity; the remaining two bytes are available, not reserved.
+fixed gate/tail address moves. The v1.22 warm-default candidate with explicit
+`C` cold and `W` warm selection leaves 7 bytes available, not reserved.
 
 ## Settled interfaces
 
@@ -55,8 +55,8 @@ Startup has two approximately six-second phases:
 
 ```text
 WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...  keys ignored
-STR8-N 1.1
-0-2 H S: ......                                  keys live
+STR8-N 1.22
+0-2 C W S: ......                                keys live
 ```
 
 STR8-N flushes queued input between the phases. This provides a visible
@@ -121,6 +121,27 @@ the independent recovery fallback.
 `make ryors-full-bank` combines the R-YORS ASM+HIMON `8-E` payload with the
 current STR8-N top BIN to produce a Bank-0/1/2 `8-F` image. Neither artifact
 adds bytes to the protected 4K resident image.
+
+## Nice-to-have: reset-aware HIMON entry
+
+This is a future direction, not promised v1.22 behavior. The desired policy is:
+
+- physical RESET with a valid HIMON RAM cookie enters HIMON warm;
+- power-up, a missing cookie, or an invalid cookie enters HIMON cold;
+- explicit `C` enters HIMON cold regardless of any cookie.
+
+The current v1.22 candidate implements explicit `C` cold and `W` warm at both
+the live selector and the `STR8-N>` prompt; selector timeout remains warm. A
+future reset-aware design
+should use a HIMON-owned, versioned, false-positive-resistant RAM cookie that
+is distinct from the transient STR8-to-HIMON warm-entry signature. HIMON should
+publish it only after successful cold initialization, and incompatible updates
+or untrustworthy state must invalidate it.
+
+This policy needs code reduction before implementation can do the distinction
+and its failure handling justice: only 7 resident bytes remain. It also needs
+a settled RAM ABI and board gates proving retained-cookie RESET is warm, true
+power-up and invalid-cookie RESET are cold, and explicit `C` is always cold.
 
 ## Deferred Bank Maintenance usability goals
 

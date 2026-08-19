@@ -1,5 +1,10 @@
 # STR8-N v1.21 Operator's Guide
 
+This guide retains the v1.21 operating baseline. The compact v1.22 C/W
+selector was board-accepted by the operator on 2026-08-19 and has its own card in
+[STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md](STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md);
+its retained transcript and operator acceptance are linked there.
+
 This is the board-facing guide. You do not need to know assembly language to
 use it.
 

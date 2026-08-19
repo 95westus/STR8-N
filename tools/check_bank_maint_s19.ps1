@@ -1,6 +1,6 @@
 param(
-    [string]$S19Path = "BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19",
-    [string]$SourcePath = "tools/bank-maint/str8n-v1.21-bank-maint-2000.asm",
+    [string]$S19Path = "BUILD/v1.22/s19/str8n-v1.22-bank-maint-2000.s19",
+    [string]$SourcePath = "tools/bank-maint/str8n-v1.22-bank-maint-2000.asm",
     [switch]$MenuTop
 )
 
@@ -115,7 +115,7 @@ foreach ($required in @(0x2000, 0x3400, 0x362A)) {
 
 $orderedAddresses = @($data.Keys | Sort-Object)
 [byte[]]$programBytes = $orderedAddresses | ForEach-Object { $data[$_] }
-$banner = [System.Text.Encoding]::ASCII.GetBytes('STR8-N 1.21 BANK MAINT')
+$banner = [System.Text.Encoding]::ASCII.GetBytes('STR8-N 1.22 BANK MAINT')
 $bannerFound = $false
 for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) {
     $match = $true
@@ -130,7 +130,7 @@ for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) 
         break
     }
 }
-if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.21 banner' }
+if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.22 banner' }
 
 $requiredTexts = @('B# 8 9 A B C D E F',
         'ENTRY 8000-FFFE>', 'TYPE ADOPT B',
@@ -139,7 +139,7 @@ $requiredTexts = @('B# 8 9 A B C D E F',
         'SCRATCH B', 'TYPE RESET J3>', 'J3 NOT FULL',
         'NO ERASED SCRATCH')
 if ($MenuTop) {
-    $requiredTexts += @('STR8-N 1.21 BANK MAINT + TOP',
+    $requiredTexts += @('STR8-N 1.22 BANK MAINT + TOP',
         'M  MAP BANKS + DIRECTORY', 'C  COPY BANK + ENROLL',
         'D  ADOPT BANK INTO DIRECTORY', 'R  RECLAIM DIRECTORY',
         'E  ERASE BANK RANGE', 'P  PUT AP $5000 -> B0:BF00',
