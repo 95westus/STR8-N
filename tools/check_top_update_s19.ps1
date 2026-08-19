@@ -1,6 +1,6 @@
 param(
-    [string]$S19Path = "BUILD/v1.21/s19/str8n-v1.21-top-update-2000.s19",
-    [string]$TopBinPath = "BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin",
+    [string]$S19Path = "BUILD/v1.22/s19/str8n-v1.22-top-update-2000.s19",
+    [string]$TopBinPath = "BUILD/v1.22/bin/str8n-v1.22-bank3-f000-ffff.bin",
     [switch]$DirectoryRefresh
 )
 
@@ -34,10 +34,10 @@ for($address=0x4000;$address -le 0x4FFF;$address++){if(-not $data.ContainsKey($a
 }
 $toolText = [System.Text.Encoding]::ASCII.GetString($toolBytes)
 $requiredText = if($DirectoryRefresh){
-    @('STR8-N 1.21 DIRECTORY REFRESH')
+    @('STR8-N 1.22 DIRECTORY REFRESH')
 }else{
-    @('STR8-N 1.21 TOP UPDATE','TYPE STR8-N 1.21> ',
-      'STR8-N 1.21 VERIFIED; RESET')
+    @('STR8-N 1.22 TOP UPDATE','TYPE STR8-N 1.22> ',
+      'STR8-N 1.22 VERIFIED; RESET')
 }
 foreach($text in $requiredText){
     if(-not $toolText.Contains($text)){throw "Top updater is missing required text: $text"}

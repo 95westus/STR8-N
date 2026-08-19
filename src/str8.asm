@@ -1,18 +1,19 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable v1.21 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.22 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
 ;   L  load an S19 into $2000-$7AFF RAM and execute its S9 address
-;   H  warm-entry local HIMON without changing banks
+;   C  cold-entry local HIMON and request its normal RAM initialization
+;   W  warm-entry local HIMON without changing banks
 ;   J0/J1/J2/J3  non-destructive reset-vector handoff to bank 0/1/2/3
 ;   invalid input is discarded without reprinting the command help
 ; V0 proof builds retain U instead of I for the fixed $C000-$EFFF HIMON gate.
 ;
 ; Reset prints RESET, shows unpolled attach pulses, flushes RX, prints the banner, then
-; opens 16 live selector dots. Timeout cold-starts compatible HIMON at $C000;
-; H warm-starts it to preserve RAM. A missing or incompatible marker falls
+; opens six live selector dots. Timeout warm-starts compatible HIMON at $C000;
+; W selects the same RAM-preserving entry. A missing or incompatible marker falls
 ; into the STR8 menu. S enters STR8; 0-2 announce the selected bank, wait about
 ; 3 more seconds, then reuse the non-destructive J handoff.
 ;
@@ -140,7 +141,7 @@ STR8_INSTALL_PHASE      EQU             $9E
 STR8_INSTALL_SECTOR_HI  EQU             $9F
 ; $A0 is intentionally free; the record service retains its own detailed
 ; parse/program status while the compact installer reports a single failure.
-; v1.21 selected dense range. The receiver requires this exact start and
+; v1.22 selected dense range. The receiver requires this exact start and
 ; exclusive limit while retaining a count for summaries/tests.
 STR8_INSTALL_START_HI   EQU             $A1
 STR8_INSTALL_RANGE_LIMIT_HI EQU         $A2
@@ -181,6 +182,9 @@ STR8_CON_FLUSH_RX_MAX   EQU             $FF
 ; 2026-05-07T19:14-05:00        WLP2        Timeout enters HIMON warm; S/s takes STR8.
 ; 2026-05-14T00:00-05:00        WLP2        Timeout enters HIMON cold after half delay.
 ; 2026-08-02T00:00-05:00        Codex       Missing local C000 target falls into STR8.
+; 2026-08-18T00:00-05:00        Codex       Timeout again enters HIMON warm and preserves RAM.
+; 2026-08-19T00:00-05:00        Codex       C explicitly enters HIMON cold.
+; 2026-08-19T00:00-05:00        Codex       Live selector and prompt use paired C/W entry.
 START:
                         JMP             STR8_BOOT_START
 
@@ -267,12 +271,12 @@ STR8_BOOT_START:
                         BCC             ?HIMON
                         CMP             #'S'
                         BEQ             ?STR8_KEY
-                        IF              STR8_V1_LAYOUT
-                        CMP             #'H'
-                        ELSE
                         CMP             #'3'
-                        ENDIF
+                        IF              STR8_V1_LAYOUT
+                        BCS             ?HIMON_KEY
+                        ELSE
                         BEQ             ?HIMON_KEY
+                        ENDIF
                         AND             #$03
                         JSR             STR8_BOOT_JUMP_BANK_A
                         BRA             ?STR8_TAKEOVER
@@ -285,7 +289,7 @@ STR8_BOOT_START:
                         LDY             #>MSG_CRLF
                         JSR             STR8_PRINT_XY
                         ENDIF
-                        JMP             STR8_ENTER_HIMON_COLD
+                        JMP             STR8_ENTER_HIMON_WARM
 ?STR8_KEY:             JSR             STR8_CON_FLUSH_RX
                         LDX             #<MSG_BOOT_MENU
                         IF              STR8_V1_INSTALLER_TXN
@@ -403,23 +407,14 @@ STR8_IVY_ENTRY_IRQ_MASTER:
                         PLA
                         RTI
 
-STR8_ENTER_HIMON_COLD:
-                        IF              STR8_V1_LAYOUT
-                        JSR             STR8_LOCAL_HIMON_AVAILABLE
-                        ELSE
-                        JSR             STR8_BOOT_TARGET_AVAILABLE
-                        ENDIF
-                        BCC             STR8_ENTER_MENU_NO_BOOT
-                        LDX             #HIMON_IMAGE_ID_SIZE-1
-?SIG:                  STZ             STR8_HIMON_RESET_SIG0,X
-                        DEX
-                        BPL             ?SIG
-                        JMP             STR8_HIMON_START
-
 STR8_ENTER_HIMON_WARM:
                         IF              STR8_V1_LAYOUT
                         JSR             STR8_LOCAL_HIMON_AVAILABLE
+                        IF              STR8_V1_INSTALLER_TXN
+                        BCC             STR8_ENTER_MENU_NO_BOOT
+                        ELSE
                         BCC             STR8_ENTER_MENU_NO_HIMON
+                        ENDIF
                         LDX             #HIMON_IMAGE_ID_SIZE-1
 ?SIG:                  LDA             STR8_HIMON_WARM_SIGNATURE,X
                         STA             STR8_HIMON_RESET_SIG0,X
@@ -440,9 +435,20 @@ STR8_ENTER_HIMON_WARM:
                         JMP             STR8_HIMON_START
 
                         IF              STR8_V1_LAYOUT
+STR8_ENTER_HIMON_COLD:
+                        JSR             STR8_LOCAL_HIMON_AVAILABLE
+                        BCC             STR8_ENTER_MENU_NO_BOOT
+                        LDX             #HIMON_IMAGE_ID_SIZE-1
+?SIG:                  STZ             STR8_HIMON_RESET_SIG0,X
+                        DEX
+                        BPL             ?SIG
+                        JMP             STR8_HIMON_START
+                        ENDIF
+
+                        IF              STR8_V1_LAYOUT
                         ELSE
 ; Minimal generic HIMON/user-app availability gate retained for V0 proof
-; layouts. v1.21 cold and warm entry both require the fixed HIMON marker below.
+; layouts. v1.22 warm entry requires the fixed HIMON marker below.
 STR8_BOOT_TARGET_AVAILABLE:
                         LDY             #$00
 ?BYTE:                 LDA             STR8_HIMON_START,Y
@@ -472,11 +478,10 @@ STR8_LOCAL_HIMON_AVAILABLE:
 ?NO:                   CLC
                         RTS
 
+                        IF              STR8_V1_INSTALLER_TXN
+                        ELSE
 STR8_ENTER_MENU_NO_HIMON:
                         LDX             #<MSG_NO_TARGET
-                        IF              STR8_V1_INSTALLER_TXN
-                        BRA             STR8_ENTER_MENU_NO_TARGET_PRINT
-                        ELSE
                         LDY             #>MSG_NO_HIMON
                         BRA             STR8_ENTER_MENU_NO_TARGET_PRINT
                         ENDIF
@@ -574,9 +579,8 @@ STR8_DELAY_FIXED_A:
 
 STR8_BOOT_KEY_POLL_IF_ENABLED:
                         LDA             STR8_BOOT_KEY_ENABLE
-                        BEQ             ?NO
-                        BRA             STR8_BOOT_KEY_POLL
-?NO:                   CLC
+                        BNE             STR8_BOOT_KEY_POLL
+                        CLC
                         RTS
 
 ; 2026-08-05T00:00-05:00        Codex       Echo only accepted live-dot keys.
@@ -594,7 +598,9 @@ STR8_BOOT_KEY_POLL:
                         BCC             ?YES
 ?NOT_DIGIT:
                         IF              STR8_V1_LAYOUT
-                        CMP             #'H'
+                        CMP             #'C'
+                        BEQ             ?YES
+                        CMP             #'W'
                         BEQ             ?YES
                         ENDIF
                         CMP             #'S'
@@ -741,8 +747,11 @@ STR8_TO_UPPER_A:
 ; ----------------------------------------------------------------------------
 STR8_DISPATCH_A:
                         IF              STR8_V1_LAYOUT
-                        CMP             #'H'
+                        CMP             #'C'
+                        BEQ             ?HIMON
+                        CMP             #'W'
                         BNE             ?NOT_SELECT
+?HIMON:
                         LDX             STR8_REC_DATA_BUF+1
                         BNE             ?NOT_SELECT
                         JMP             STR8_CMD_SELECT_HIMON
@@ -1475,7 +1484,7 @@ STR8_I_RECEIVE_DENSE:
                         STA             STR8_INSTALL_ENTRY_HI
                         BRA             ?COMMIT
 
-?ENTRY_FAIL:           JMP             STR8_I_RECEIVE_ENTRY_FAIL
+?ENTRY_FAIL:           BRA             STR8_I_RECEIVE_ENTRY_FAIL
 
 ?COMMIT:               JSR             STR8_I_CONFIRM_COMMIT
                         BCC             STR8_I_RECEIVE_TRAIL_FAIL
@@ -1510,7 +1519,7 @@ STR8_I_RECEIVE_ENTRY_FAIL:
 STR8_I_RECEIVE_FLASH_FAIL:
 STR8_I_RECEIVE_TRAIL_FAIL:
 STR8_I_RECEIVE_FAIL_A:
-                        JMP             STR8_I_QUENCH_S19
+                        BRA             STR8_I_QUENCH_S19
 
 STR8_I_STAGE_SECTOR_READY:
                         IF              STR8_V1_INSTALLER_TXN
@@ -1602,9 +1611,10 @@ STR8_CMD_SELECT_A:
                         JMP             STR8_JUMP_BANK_LAUNCH
                         ENDIF
 
-; H enters the local warm target without selecting a bank. The RAM-proof
+; C/W enter the local cold/warm target without selecting a bank. The RAM-proof
 ; V0 path retains its legacy explicit Bank-3 selection before entering HIMON.
 STR8_CMD_SELECT_HIMON:
+                        PHA
                         IF              STR8_RAM_PROOF
                         JSR             STR8_SELECT_BANK_3
                         ENDIF
@@ -1615,6 +1625,15 @@ STR8_CMD_SELECT_HIMON:
                         ELSE
                         LDY             #>MSG_CRLF
                         JSR             STR8_PRINT_XY
+                        ENDIF
+                        IF              STR8_V1_LAYOUT
+                        PLA
+                        CMP             #'C'
+                        BNE             ?WARM
+                        JMP             STR8_ENTER_HIMON_COLD
+?WARM:
+                        ELSE
+                        PLA
                         ENDIF
                         JMP             STR8_ENTER_HIMON_WARM
 
@@ -1805,7 +1824,7 @@ STR8_BANK_SELECT_SERVICE_BODY:
 STR8_BANK_SELECT_SERVICE_BODY_END:
 
 ; ----------------------------------------------------------------------------
-; v1.21 Bank Directory validator for I and directory-gated J.
+; v1.22 Bank Directory validator for I and directory-gated J.
 ;
 ; STR8_DIR_VALIDATE_BANK_A
 ;   IN:  A=bank 0-3, Bank 3 visible
@@ -2148,12 +2167,13 @@ STR8_REC_PARSE:
                         JMP             STR8_REC_FAIL_READ_TYPE
 ?HAVE_TYPE:
                         STA             STR8_REC_WORK_TYPE
-                        CMP             #'0'
-                        BEQ             STR8_REC_PARSE_BODY
-                        CMP             #'1'
-                        BEQ             STR8_REC_PARSE_BODY
                         CMP             #'9'
                         BEQ             STR8_REC_PARSE_BODY
+                        CMP             #'0'
+                        BCC             ?BAD_TYPE
+                        CMP             #'2'
+                        BCC             STR8_REC_PARSE_BODY
+?BAD_TYPE:
                         LDA             #STR8_REC_BAD_TYPE
                         JMP             STR8_REC_FAIL_A
 
@@ -2164,14 +2184,12 @@ STR8_REC_PARSE_BODY:
 ?HAVE_COUNT:
                         STA             STR8_REC_WORK_COUNT
                         CMP             #$03
+                        BEQ             ?COUNT_OK
                         BCC             ?BAD_COUNT
 ?COUNT_MIN_OK:
                         LDA             STR8_REC_WORK_TYPE
                         CMP             #'9'
                         BNE             ?COUNT_OK
-                        LDA             STR8_REC_WORK_COUNT
-                        CMP             #$03
-                        BEQ             ?COUNT_OK
 ?BAD_COUNT:
                         LDA             #STR8_REC_BAD_COUNT
                         JMP             STR8_REC_FAIL_A
@@ -2210,7 +2228,7 @@ STR8_REC_PARSE_BODY:
                         CMP             #$FF
                         BEQ             ?CHECKSUM_OK
                         LDA             #STR8_REC_BAD_CHECKSUM
-                        JMP             STR8_REC_FAIL_A
+                        BRA             STR8_REC_FAIL_A
 ?CHECKSUM_OK:
                         LDA             STR8_REC_SOURCE
                         CMP             #STR8_REC_SOURCE_BUFFER
@@ -2218,7 +2236,7 @@ STR8_REC_PARSE_BODY:
                         LDA             STR8_REC_WORK_REMAIN
                         BEQ             ?PUBLISH
                         LDA             #STR8_REC_BAD_END
-                        JMP             STR8_REC_FAIL_A
+                        BRA             STR8_REC_FAIL_A
 ?CONSOLE_END:
                         JSR             STR8_REC_READ_CHAR
                         BCS             ?HAVE_END
@@ -2237,7 +2255,7 @@ STR8_REC_PARSE_BODY:
                         CMP             #$0A
                         BEQ             ?PUBLISH
                         LDA             #STR8_REC_BAD_END
-                        JMP             STR8_REC_FAIL_A
+                        BRA             STR8_REC_FAIL_A
 
 ?PUBLISH:
                         LDA             #STR8_REC_DATA_BUF_LO
@@ -2250,7 +2268,7 @@ STR8_REC_PARSE_BODY:
                         AND             #$0F
                         INC             A
                         STA             STR8_REC_KIND
-                        JMP             STR8_REC_RETURN_OK
+                        BRA             STR8_REC_RETURN_OK
 ?END:
                         LDA             #STR8_REC_KIND_END
                         STA             STR8_REC_KIND
@@ -2260,7 +2278,12 @@ STR8_REC_PARSE_BODY:
                         STA             STR8_REC_ENTRY_LO
                         LDA             STR8_REC_ADDR_HI
                         STA             STR8_REC_ENTRY_HI
-                        JMP             STR8_REC_RETURN_OK
+
+STR8_REC_RETURN_OK:
+                        STZ             STR8_REC_STATUS
+                        LDA             #STR8_REC_OK
+                        SEC
+                        RTS
 
 STR8_REC_FAIL_READ_START:
                         LDX             #STR8_REC_BAD_START
@@ -2276,11 +2299,17 @@ STR8_REC_FAIL_READ_END:
 STR8_REC_FAIL_READ_X:
                         LDA             STR8_REC_STATUS
                         CMP             #STR8_REC_ABORT
-                        BNE             ?NOT_ABORT
-                        JMP             STR8_REC_RETURN_CURRENT_FAIL
-?NOT_ABORT:
+                        BNE             STR8_REC_FAIL_READ_NOT_ABORT
+STR8_REC_RETURN_CURRENT_FAIL:
+                        LDA             STR8_REC_STATUS
+                        CLC
+                        RTS
+STR8_REC_FAIL_READ_NOT_ABORT:
                         TXA
-                        JMP             STR8_REC_FAIL_A
+STR8_REC_FAIL_A:
+                        STA             STR8_REC_STATUS
+                        CLC
+                        RTS
 
 ; Public APPLY_LF is retired. Directory programming alone uses these pointer
 ; and failure-detail helpers before and after its private mode-$07 worker.
@@ -2413,20 +2442,6 @@ STR8_REC_READ_CHAR:
                         SEC
                         RTS
 ?EMPTY:
-                        CLC
-                        RTS
-
-STR8_REC_RETURN_OK:
-                        STZ             STR8_REC_STATUS
-                        LDA             #STR8_REC_OK
-                        SEC
-                        RTS
-STR8_REC_RETURN_CURRENT_FAIL:
-                        LDA             STR8_REC_STATUS
-                        CLC
-                        RTS
-STR8_REC_FAIL_A:
-                        STA             STR8_REC_STATUS
                         CLC
                         RTS
 
@@ -2686,7 +2701,7 @@ STR8_PRINT_COPY_FAIL:
 STR8_PRINT_JUMP_FAIL:
                         LDX             #<MSG_JUMP_FAIL
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE1_X
+                        BRA             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDY             #>MSG_JUMP_FAIL
                         JMP             STR8_PRINT_XY
@@ -2874,7 +2889,7 @@ STR8_ID_MARKER_BYTES:   DB              STR8_ID_MARKER0,STR8_ID_MARKER1
                         ELSE
                         IF              STR8_V1_LAYOUT
                         DB              $0D,$0A
-MSG_BOOT_PROMPT:        DB              "0-2 H S:",$A0
+MSG_BOOT_PROMPT:        DB              "0-2 C W S:",$A0
 MSG_WAIT:               DB              "WAIT...",$A0
 MSG_LIVE_DOT:           DB              ('.'+$80)
                         ELSE
@@ -2891,7 +2906,7 @@ MSG_SCREEN:
                         ENDIF
 MSG_HELP:
                         IF              STR8_V1_LAYOUT
-                        DB              "I L H J",$0D,$8A
+                        DB              "I L C W J",$0D,$8A
                         ELSE
                         DB              "U 0-3 J0-3",$0D,$8A
                         ENDIF

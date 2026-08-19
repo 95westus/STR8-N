@@ -1,6 +1,6 @@
-# STR8-N v1.21 Maps and Diagrams
+# STR8-N v1.22 Candidate Maps and Diagrams
 
-These diagrams describe the current v1.21 implementation.
+These diagrams describe the host-qualified v1.22 board candidate.
 
 ## Ownership
 
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.21/
+|-- v1.22/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -47,7 +47,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.21 top updater S19]
+    TOP --> UPDATE[guarded v1.22 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup then clear $FFB0-$FFF9| B3F
@@ -86,13 +86,13 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[Six one-second WAIT pulses<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.21]
-    P --> Q{Six live selector dots<br/>0-2 H S}
+    A --> P[Flush input<br/>STR8-N 1.22]
+    P --> Q{Six live selector dots<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
     C -->|yes| J[Select bank and jump through RESET vector]
-    Q -->|H or timeout| M{Compatible HIMON marker?}
-    M -->|H: warm; timeout: cold| H[HIMON at $C000]
+    Q -->|C, W, or timeout| M{Compatible HIMON marker?}
+    M -->|C cold; W/timeout warm| H[HIMON at $C000]
     M -->|no| S[STR8-N prompt]
     Q -->|S| S
     S -->|J0-J3| J
@@ -157,9 +157,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        596 B   |
 $FD5B  +------------------------------+
-       | available growth       2 B   |
-$FD59  +------------------------------+
-       | resident code/data  3418 B   |
+       | available growth       7 B   |
+$FD54  +------------------------------+
+       | resident code/data  3413 B   |
 $F000  +------------------------------+
 ```
 
@@ -230,7 +230,7 @@ flowchart TD
     Q --> F
 ```
 
-## STR8-N v1.21 RAM ownership
+## STR8-N v1.22 candidate RAM ownership
 
 ```text
 $7DFF  +------------------------------+
@@ -260,7 +260,7 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-`$1A00-$1FFF` is free for user programs in v1.21: STR8-N, HIMON, ASM-F2, and
+`$1A00-$1FFF` is free for user programs in v1.22: STR8-N, HIMON, ASM-F2, and
 the maintained RAM tools do not allocate it. Bank Maintenance and the other
 foreground tools use the single-owner `$7C00-$7DBF` overlay. The exact
 `$7DE9-$7DFF` Recovery State Capsule fields are listed in the

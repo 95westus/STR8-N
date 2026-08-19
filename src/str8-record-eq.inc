@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8-record-eq.inc
-; Fixed STR8-N record-service ABI V2; independent of product version v1.21.
+; Fixed STR8-N record-service ABI V2; independent of the product release.
 ; Version/capabilities intentionally distinguish this parser-only public
 ; service from the historical V1 APPLY_LF contract.
 ; ----------------------------------------------------------------------------

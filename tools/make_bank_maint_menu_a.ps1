@@ -1,6 +1,6 @@
 param(
-    [string]$S19Path = "BUILD/v1.21/s19/str8n-v1.21-bank-maint-menu-2000.s19",
-    [string]$OutPath = "tools/bank-maint/str8n-v1.21-bank-maint-menu-2000.a"
+    [string]$S19Path = "BUILD/v1.22/s19/str8n-v1.22-bank-maint-menu-2000.s19",
+    [string]$OutPath = "tools/bank-maint/str8n-v1.22-bank-maint-menu-2000.a"
 )
 
 Set-StrictMode -Version Latest
@@ -41,7 +41,7 @@ if ($data.Count -eq 0) { throw 'S19 contains no data' }
 $addresses = @($data.Keys | Sort-Object)
 
 $lines = [System.Collections.Generic.List[string]]::new()
-$lines.Add('; STR8N-V1.21-BANK-MAINT-MENU-2000.A')
+$lines.Add('; STR8N-V1.22-BANK-MAINT-MENU-2000.A')
 $lines.Add('; GENERATED ASM-F2-NATIVE IMAGE CARRIER; EDIT THE .ASM SOURCES.')
 $lines.Add(';')
 $lines.Add('; ASSEMBLE AND RUN:')

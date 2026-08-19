@@ -1,14 +1,14 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.21/s19/str8n-v1.21-f000.map",
-    [string]$WorkerMapPath = "BUILD/v1.21/s19/str8n-v1.21-worker-0200.map",
-    [string]$ConsoleAbiTestMapPath = "BUILD/v1.21/s19/str8n-v1.21-console-abi-test-2000.map",
-    [string]$TopBinPath = "BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin",
-    [string]$WorkerS19Path = "BUILD/v1.21/s19/str8n-v1.21-worker-0200.s19",
-    [string]$BankMaintS19Path = "BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19",
-    [string]$ConsoleAbiTestS19Path = "BUILD/v1.21/s19/str8n-v1.21-console-abi-test-2000.s19",
-    [string]$TopUpdateS19Path = "BUILD/v1.21/s19/str8n-v1.21-top-update-2000.s19",
-    [string]$DirectoryRefreshS19Path = "BUILD/v1.21/s19/str8n-v1.21-directory-refresh-2000.s19",
-    [string]$PublicContractPath = "BUILD/v1.21/include/str8n-public.inc",
+    [string]$Str8MapPath = "BUILD/v1.22/s19/str8n-v1.22-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.22/s19/str8n-v1.22-worker-0200.map",
+    [string]$ConsoleAbiTestMapPath = "BUILD/v1.22/s19/str8n-v1.22-console-abi-test-2000.map",
+    [string]$TopBinPath = "BUILD/v1.22/bin/str8n-v1.22-bank3-f000-ffff.bin",
+    [string]$WorkerS19Path = "BUILD/v1.22/s19/str8n-v1.22-worker-0200.s19",
+    [string]$BankMaintS19Path = "BUILD/v1.22/s19/str8n-v1.22-bank-maint-2000.s19",
+    [string]$ConsoleAbiTestS19Path = "BUILD/v1.22/s19/str8n-v1.22-console-abi-test-2000.s19",
+    [string]$TopUpdateS19Path = "BUILD/v1.22/s19/str8n-v1.22-top-update-2000.s19",
+    [string]$DirectoryRefreshS19Path = "BUILD/v1.22/s19/str8n-v1.22-directory-refresh-2000.s19",
+    [string]$PublicContractPath = "BUILD/v1.22/include/str8n-public.inc",
     [string]$ManifestPath = "BUILD/str8n-manifest.json"
 )
 
@@ -49,20 +49,20 @@ $consoleAbiTestEnd = Get-MapSymbol $ConsoleAbiTestMapPath '_END_CODE'
 $manifest = [ordered]@{
     schema = 3
     project = 'STR8-N'
-    version = '1.21'
+    version = '1.22'
     repository = 'https://github.com/95westus/STR8-N.git'
     commit = $commit.ToLowerInvariant()
     dirty = $dirty
     artifacts = [ordered]@{
         topSector = [ordered]@{
-            file = 'BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin'
+            file = 'BUILD/v1.22/bin/str8n-v1.22-bank3-f000-ffff.bin'
             size = $top.Length
             cpuStart = 'F000'
             cpuEnd = 'FFFF'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopBinPath).Hash
         }
         workerS19 = [ordered]@{
-            file = 'BUILD/v1.21/s19/str8n-v1.21-worker-0200.s19'
+            file = 'BUILD/v1.22/s19/str8n-v1.22-worker-0200.s19'
             size = $workerEnd - $workerRun
             runStart = ('{0:X4}' -f $workerRun)
             runEnd = ('{0:X4}' -f ($workerEnd - 1))
@@ -70,7 +70,7 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $WorkerS19Path).Hash
         }
         bankMaintenanceS19 = [ordered]@{
-            file = 'BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19'
+            file = 'BUILD/v1.22/s19/str8n-v1.22-bank-maint-2000.s19'
             ramStart = '2000'
             ramEnd = '362A'
             entry = '2000'
@@ -78,14 +78,14 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $BankMaintS19Path).Hash
         }
         consoleAbiTestS19 = [ordered]@{
-            file = 'BUILD/v1.21/s19/str8n-v1.21-console-abi-test-2000.s19'
+            file = 'BUILD/v1.22/s19/str8n-v1.22-console-abi-test-2000.s19'
             ramStart = ('{0:X4}' -f $consoleAbiTestStart)
             ramEnd = ('{0:X4}' -f ($consoleAbiTestEnd - 1))
             entry = '2000'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $ConsoleAbiTestS19Path).Hash
         }
         topUpdateS19 = [ordered]@{
-            file = 'BUILD/v1.21/s19/str8n-v1.21-top-update-2000.s19'
+            file = 'BUILD/v1.22/s19/str8n-v1.22-top-update-2000.s19'
             ramStart = '2000'
             ramEnd = '4FFF'
             candidateStart = '4000'
@@ -95,7 +95,7 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopUpdateS19Path).Hash
         }
         directoryRefreshS19 = [ordered]@{
-            file = 'BUILD/v1.21/s19/str8n-v1.21-directory-refresh-2000.s19'
+            file = 'BUILD/v1.22/s19/str8n-v1.22-directory-refresh-2000.s19'
             ramStart = '2000'
             ramEnd = '4FFF'
             candidateStart = '4000'
@@ -106,7 +106,7 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $DirectoryRefreshS19Path).Hash
         }
         publicContract = [ordered]@{
-            file = 'BUILD/v1.21/include/str8n-public.inc'
+            file = 'BUILD/v1.22/include/str8n-public.inc'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $PublicContractPath).Hash
         }
     }

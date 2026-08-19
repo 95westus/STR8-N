@@ -1,4 +1,4 @@
-# STR8-N v1.21
+# STR8-N v1.22 Board Candidate
 
 STR8-N is the reset supervisor, recovery console, and guarded flash installer
 for a W65C02SXB/EDU with four 32K flash banks. It lives in the protected Bank-3
@@ -17,39 +17,44 @@ The letters also loosely evoke **S**oftware or **S**ystem **T**o **R**eset,
 
 ## Feature card
 
-| Capability | What STR8-N v1.21 can do | Safety boundary |
+| Capability | What STR8-N v1.22 can do | Safety boundary |
 | --- | --- | --- |
 | Reset supervision | Take physical RESET in Bank 3, print `RESET`, provide a visible terminal-attach interval, and enter STR8-N or compatible HIMON | Input received during the initial `WAIT...` interval is deliberately discarded |
 | Multi-bank boot | Start enrolled systems in Banks 0-2 with `J0`-`J2`, or hand off through the Bank-3 RESET vector with `J3` | Banks 0-2 must have a COMPLETE directory journal and a valid RESET vector |
-| Warm monitor entry | Enter compatible Bank-3 HIMON with `H`, preserving RAM | Refuses an incompatible or missing HIMON marker |
+| HIMON entry | Enter compatible Bank-3 HIMON warm with `W`, preserving RAM, or explicitly cold with `C` | Refuses an incompatible or missing HIMON marker |
 | Flash installation | Install dense S19 payloads with `I` into any legal contiguous 4K sector range | Bank 3 `$F000-$FFFF` is never writable through `I`; final sector and COMPLETE state commit last |
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
-| Protected top upgrade | Load the supplied v1.21 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.21 sector, and verify all 4 KiB | Exact v1.21 protected update and physical-reset persistence accepted onboard 2026-08-14; external recovery remains separate |
+| Protected top upgrade | Load the supplied v1.22 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.22 sector, and verify all 4 KiB | The final v1.22 C/W selector update is board-accepted as of 2026-08-19 |
 | Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, and replace Bank-3 sector F with the current image's erased directory/configuration pocket | Backup, rewrite, RESET, empty-directory map, and subsequent B3-to-B2 copy+enrollment accepted onboard 2026-08-11 |
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and no overlap with the fixed worker |
 
-The v1.21 host verification suite covers the relocated RAM ABI and artifact
+The v1.22 candidate host verification suite covers the relocated RAM ABI and artifact
 layout. Retained v1.1/v1.2 board sessions remain historical evidence; the
 original migration sequence is tracked in the
 [v1.2 Implementation Plan](docs/STR8N_V1_2_IMPLEMENTATION_PLAN.md).
 
-The current v1.21 board line is accepted with R-YORS `00.0814(1303)`: guarded
+The last board-accepted v1.21 line uses R-YORS `00.0814(1303)`: guarded
 B3:F update, dense Bank-3 `8-E` installation, physical-reset persistence,
 renamed Bank Maintenance load/map, and an uninterrupted synthetic `J3` handoff
 all pass. The 2026-08-18 continuation additionally accepts the combined menu's
 guarded `U`, full-bank copy/enrollment, separate metadata-only `D2` adoption,
 directory-gated `J2` launch of the factory onboard firmware, and physical-reset
-recovery. The protected sector uses `$F000-$FD59` for the 3418-byte resident,
-leaves `$FD5A-$FD5B` available, and retains the fixed worker at `$FD5C-$FFAF`.
+recovery. The v1.22 C/W selector is board-accepted as of 2026-08-19 for guarded
+update, automatic and explicit warm entry, and explicit cold entry. The operator
+cleared the uncaptured canary, prompt-C, installed-byte, and uninterrupted-J3
+items as acceptance blockers. Its protected sector uses `$F000-$FD54` for the
+3413-byte resident, leaves `$FD55-$FD5B` available, and retains the fixed worker
+at `$FD5C-$FFAF`.
 
 ## Console commands
 
 ```text
 I        install a dense payload-only S19 in selected flash sectors
 L        load a recovery S19 into RAM and execute its S9 address
-H        warm-enter compatible Bank-3 HIMON at $C000
+C        cold-enter compatible Bank-3 HIMON at $C000
+W        warm-enter compatible Bank-3 HIMON at $C000
 J0-J2    start an enrolled Bank 0, 1, or 2 guest
 J3       hand off through the Bank-3 RESET vector
 ```
@@ -59,8 +64,10 @@ and discards records through a syntactically valid S9 or Ctrl-C. Ctrl-C during
 `L` reports `BAD`, returns to `STR8-N>`, and does not execute S9. RAM records
 already accepted are not rolled back.
 
-At RESET, `0`, `1`, and `2` provide direct guest selection, `H` selects HIMON,
-and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
+At RESET, `0`, `1`, and `2` provide direct guest selection, `C` cold-enters
+HIMON, `W` warm-enters HIMON, and `S` stays in STR8-N. A selector timeout also
+warm-starts compatible HIMON and preserves RAM. `C` and `W` have the same
+meanings at the `STR8-N>` prompt.
 
 ## Ready-made artifacts
 
@@ -75,7 +82,7 @@ and `S` stays in STR8-N. A selector timeout cold-starts compatible HIMON.
 - A deterministic raw console ABI hardware probe covering blocking input,
   blocking output, non-consuming input readiness, initialization, and ABI
   discovery, loaded and started with `L`.
-- A guarded v1.21 top-sector updater S19 loaded and started with `L`.
+- A guarded v1.22 top-sector updater S19 loaded and started with `L`.
 - A guarded onboard directory-pocket refresh S19 with backup, retry, and
   restore.
 - A composed 32K ASM + HIMON + STR8-N image for Bank 0, 1, or 2.
@@ -87,7 +94,7 @@ Build the combined tool with `make bank-maint-menu`. Its terminal
 card is deliberately one command per line:
 
 ```text
-STR8-N 1.21 BANK MAINT + TOP
+STR8-N 1.22 BANK MAINT + TOP
  M  MAP BANKS + DIRECTORY
  C  COPY BANK + ENROLL
  D  ADOPT BANK INTO DIRECTORY
