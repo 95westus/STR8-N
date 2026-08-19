@@ -143,9 +143,29 @@ and its failure handling justice: only 7 resident bytes remain. It also needs
 a settled RAM ABI and board gates proving retained-cookie RESET is warm, true
 power-up and invalid-cookie RESET are cold, and explicit `C` is always cold.
 
+## Nice-to-have: configurable timeout bank and previous-bank command
+
+This is a possible future enhancement, not promised v1.22 behavior. A timeout
+default for Bank 0-2 must not depend on RAM that a guest may overwrite. Prefer
+either a build-time resident constant or a versioned record in Bank 3's
+`$FFF0-$FFF9` configuration pocket. Erased or invalid configuration should
+retain the current warm-HIMON timeout. A configured bank must still pass the
+existing COMPLETE-directory and RESET-vector gates; failure should remain in
+Bank 3 and enter the STR8 menu.
+
+A `P` command could reuse the published `BJ` Bank Jump Record at
+`$7DFD-$7DFF` as a best-effort repeat of the last successful jump. It must
+validate the signature and bank and then use the normal guarded launch path.
+Because Banks 0-2 may overwrite that RAM, `P` cannot promise persistence or
+accuracy across arbitrary guest execution or power loss. Do not write Bank-3
+flash on every jump merely to make `P` durable; reliable persistent history
+would require suitable external nonvolatile storage. Also settle whether `P`
+means the last jump, including `J3` as the current record does, or a distinct
+last guest bank before changing the published ABI semantics.
+
 ## Deferred Bank Maintenance usability goals
 
-These are design notes, not current `v1.21` behavior or scheduled work. The
+These are design notes, not current `v1.22` behavior or scheduled work. The
 factory-onboard-firmware preservation run succeeded, but using a full-bank
 `C`, declining its enrollment, and then issuing a separate `D` made the
 copy/adopt process more convoluted than it should be.

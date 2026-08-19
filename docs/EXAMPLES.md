@@ -1,4 +1,4 @@
-# STR8-N v1.21 Worked Examples
+# STR8-N v1.22 Worked Examples
 
 These examples show what to type and which S19 file to send. Text after `<-`
 is explanation, not terminal input. Use normal full-speed text-file transfer
@@ -11,14 +11,15 @@ Wait until the identity and live dots appear, then press `S`:
 ```text
 RESET
 WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
-STR8-N 1.21
-0-2 H S: ..S
-I L H J
+STR8-N 1.22
+0-2 C W S: ..S
+I L C W J
 STR8-N>
 ```
 
 A key typed during `WAIT...` is ignored and flushed. The selector accepts only
-`0`, `1`, `2`, `H`, or `S`.
+`0`, `1`, `2`, `C`, `W`, or `S`. If no key is pressed, timeout warm-starts
+compatible HIMON and preserves RAM.
 
 ## First Bank-3 install: HIMON only
 
@@ -40,8 +41,8 @@ I B3 C-E WRITE? Y: Y
 S19
 ..COMMIT? Y: Y.
 OK
-STR8-N>H
-BOOT WARM
+STR8-N>C
+BOOT COLD
 
 HIMON V 00.0810(1814)
 >
@@ -67,7 +68,7 @@ I B3 8-B WRITE? Y: Y
 S19
 ...COMMIT? Y: Y.
 OK
-STR8-N>H
+STR8-N>W
 BOOT WARM
 
 HIMON V 00.0810(1814)
@@ -116,7 +117,7 @@ make ryors-full-bank
 This creates:
 
 ```text
-C:/SRC/R-YORS/RELEASE/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+C:/SRC/STR8-N/BUILD/v1.22/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 ```
 
 Install it in Bank 0, 1, or 2:
@@ -170,13 +171,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19
+BUILD/v1.22/s19/str8n-v1.22-bank-maint-2000.s19
 ```
 
 It starts automatically:
 
 ```text
-STR8-N 1.21 BANK MAINT
+STR8-N 1.22 BANK MAINT
 B3 ERASE RETURNS TO STR8; SELECT S
 !STR8=SOURCE HAS STR8
 C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT>
@@ -211,7 +212,7 @@ If the payload bank was deliberately erased but its old directory row remains,
 reclaim that one row before retrying the copy:
 
 ```text
-STR8-N 1.21 BANK MAINT
+STR8-N 1.22 BANK MAINT
 ... R=RECLAIM DIR ...> R
 RECLAIM DIR 0-3> 0
 
@@ -232,7 +233,7 @@ installed STR8-N or R-YORS payload. At least one Bank-0/1/2 sector must be
 completely erased for the verified temporary B3F backup:
 
 ```text
-STR8-N 1.21 BANK MAINT
+STR8-N 1.22 BANK MAINT
 ... R=RECLAIM DIR ...> R
 RECLAIM DIR 0-3> 3
 
@@ -262,13 +263,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.21/s19/str8n-v1.21-directory-refresh-2000.s19
+BUILD/v1.22/s19/str8n-v1.22-directory-refresh-2000.s19
 ```
 
 The guarded confirmations and successful result are:
 
 ```text
-STR8-N 1.21 DIRECTORY REFRESH
+STR8-N 1.22 DIRECTORY REFRESH
 BACKUP B1:F; TARGET B3:F
 TYPE BACKUP B1F> BACKUP B1F
 BACKUP VERIFIED
