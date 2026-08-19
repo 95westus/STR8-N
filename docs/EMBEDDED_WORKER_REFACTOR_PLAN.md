@@ -122,6 +122,32 @@ the independent recovery fallback.
 current STR8-N top BIN to produce a Bank-0/1/2 `8-F` image. Neither artifact
 adds bytes to the protected 4K resident image.
 
+## Deferred Bank Maintenance usability goals
+
+These are design notes, not current `v1.21` behavior or scheduled work. The
+factory-onboard-firmware preservation run succeeded, but using a full-bank
+`C`, declining its enrollment, and then issuing a separate `D` made the
+copy/adopt process more convoluted than it should be.
+
+- Consider separating payload copy from directory enrollment and extending
+  `C` (or a distinct advanced command) to accept explicit source and
+  destination sectors/ranges. An optional compare-first mode could write only
+  differing sectors. A partial or differential copy must never imply that a
+  complete guest exists or auto-enroll it; retain exact confirmation,
+  protected-sector guards, per-sector readback verification, and an explicit
+  later `D` when whole-bank adoption is actually valid.
+- Consider displaying a retained B3:F backup role instead of leaving B1:F as
+  generic `U`. Keep current `P` reserved for the live protected B3:F sector.
+  `S` is attractive for positively identified STR8-N/system content, while
+  `B` would describe a verified backup role without confusing content with
+  protection. Choose the final one-character map vocabulary only with an
+  unambiguous legend.
+- Consider a `W` map marker for positively recognized factory onboard
+  firmware in Banks 0-2. First define and prove a stable signature with low
+  false-positive risk; the observed banner and board-local `WDC*` directory
+  labels alone are not sufficient provenance. Until then, such sectors remain
+  `U` rather than receiving a guessed identity.
+
 ## Host verification
 
 - `make layout-check` checks top-sector ownership and fixed interfaces.
