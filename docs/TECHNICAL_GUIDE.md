@@ -228,7 +228,7 @@ contiguous spans inside `8-E` are also legal.
 The R-YORS v1.2 streams are dense, payload-only examples:
 
 ```text
-ryors-v1.2-asm-himon-bank3-8-e.s19  $8000-$EFFF  28K  S9 $C000
+ryors-v1.2-himon-asm-bank3-8-e.s19  $8000-$EFFF  28K  S9 $C000
 ryors-v1.2-himon-bank3-c-e.s19      $C000-$EFFF  12K  S9 $C000
 ryors-v1.2-asm-bank3-8-b.s19        $8000-$BFFF  16K  S9 $FFFF
 ```
@@ -415,6 +415,13 @@ the `SR 02 03` resident signature, an explicit entry in `$8000-$FFFE`, and at
 least one non-`$FF` byte at that entry. After exact `ADOPT Bn` confirmation,
 `D` uses the same START/identity/COMPLETE record writer as `C`. It cannot edit,
 repair, or replace a nonempty row.
+
+The 2026-08-18 v1.21 combined-menu board continuation proves the full edge:
+verified Bank-0-to-Bank-2 copy with identity entry cancelled, D2 still erased,
+metadata-only `ADOPT B2`, COMPLETE D2 persistence, directory-gated `J2` launch,
+and physical RESET back to Bank 3. It also proves the negative reclaim edge for
+an intentionally retained B1:F top-sector backup: with only B1 `8-E` erased,
+`R D1` reports `BANK NOT ERASED` without mutation.
 
 `tools/check_bank_maint_s19.ps1` rejects malformed checksums, unsupported
 record types, duplicate destination bytes, RAM addresses outside
@@ -795,8 +802,8 @@ BUILD/v1.21/s19/str8n-v1.21-top-update-2000.s19
                                       guarded Bank-3 sector-F updater
 BUILD/v1.21/s19/str8n-v1.21-directory-refresh-2000.s19
                                       guarded directory-pocket refresh
-BUILD/v1.21/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
-                                      32K ASM+HIMON+STR8-N Bank-0/1/2 payload
+R-YORS/RELEASE/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+                                      32K STR8-N+HIMON+ASM Bank-0/1/2 payload
 BUILD/str8n-manifest.json             sizes, addresses, ABI, and hashes
 ```
 

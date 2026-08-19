@@ -90,7 +90,7 @@ make ryors-full-bank
 Output:
 
 ```text
-BUILD/v1.21/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
+C:/SRC/R-YORS/RELEASE/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 $8000-$BFFF  ASM-F2
 $C000-$EFFF  HIMON
 $F000-$FFFF  current STR8-N 1.21 top sector

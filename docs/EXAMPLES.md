@@ -25,7 +25,7 @@ A key typed during `WAIT...` is ignored and flushed. The selector accepts only
 Use the R-YORS 12K HIMON file:
 
 ```text
-C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-bank3-c-e.s19
+C:/SRC/R-YORS/RELEASE/ryors-v1.2-himon-bank3-c-e.s19
 ```
 
 Example session:
@@ -56,7 +56,7 @@ After HIMON has established Bank 3's identity and entry, install the 16K
 ASM-only file:
 
 ```text
-C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.2-asm-bank3-8-b.s19
+C:/SRC/R-YORS/RELEASE/ryors-v1.2-asm-bank3-8-b.s19
 ```
 
 ```text
@@ -84,7 +84,7 @@ entry. It is not a valid first Bank-3 enrollment.
 The simplest complete writable Bank-3 payload is:
 
 ```text
-C:/SRC/R-YORS/SRC/BUILD/s19/ryors-v1.2-asm-himon-bank3-8-e.s19
+C:/SRC/R-YORS/RELEASE/ryors-v1.2-himon-asm-bank3-8-e.s19
 ```
 
 Select Bank 3 and range `8-E`. On a new directory row, supply TYPE and DESC.
@@ -116,7 +116,7 @@ make ryors-full-bank
 This creates:
 
 ```text
-BUILD/v1.21/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
+C:/SRC/R-YORS/RELEASE/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 ```
 
 Install it in Bank 0, 1, or 2:

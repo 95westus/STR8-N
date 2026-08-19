@@ -226,7 +226,7 @@ Before starting:
    `BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin` off-board.
 2. Confirm Bank 1 CPU `$F000-$FFFF` may be erased. The updater uses it as the
    raw backup sector (`STR8_TOP_SAFE`, physical `$0F000-$0FFFF`).
-3. Install `ryors-v1.2-asm-himon-bank3-8-e.s19` into Bank 3 sectors `8-E`
+3. Install `ryors-v1.2-himon-asm-bank3-8-e.s19` into Bank 3 sectors `8-E`
    using the existing STR8-N `I` command.
 4. Return to STR8-N; do not use old ASM to write `$7Dxx` during the migration
    window.
@@ -272,9 +272,10 @@ Enrollment writes the journal START marker first, the immutable identity
 second, and COMPLETE last. `OK` therefore means both the 32K copy and its
 directory enrollment were verified, and `J0`-`J2` may use the destination.
 If enrollment is cancelled, interrupted, or fails, the copied bytes can
-remain in the destination but STR8-N keeps that bank non-bootable. An existing
-or incomplete directory row must be handled through `I`, not overwritten by
-`C`.
+remain in the destination but STR8-N keeps that bank non-bootable. If the row
+is still completely erased and the copied payload has a valid RESET vector,
+`D` can enroll it later without copying the payload again. A nonempty or
+incomplete directory row must not be overwritten by `C` or `D`.
 
 `E` erases payload sectors but cannot restore the corresponding Bank-3
 directory row: flash programming only clears bits, while D0-D2 require all
@@ -319,6 +320,18 @@ D3 FF RYORS C000 FCFFFFFF
 directory sector again if the desired row is not completely erased.
 The erased-row, RESET/ENTRY, DESC-length, cancellation, D1/D3 commit, and
 post-adoption `C` regression paths were accepted on hardware on 2026-08-11.
+On 2026-08-18 the v1.21 combined menu separately copied a full payload while
+leaving D2 erased, adopted it with exact `ADOPT B2`, displayed
+`D2 F2 WDCDG FFFF FCFFFFFF`, launched it successfully through `J2`, and
+returned to Bank 3 on physical RESET. The payload's observed banner identifies
+it only as the factory onboard firmware; the operator-assigned `WDCDG` label
+does not establish WDCMONv2 provenance.
+
+The same accepted final state deliberately retains the verified B3:F backup in
+B1:F while B1 sectors `8-E` are erased. `M` therefore shows B1 as
+`E E E E E E E U`. D1 still contains its former guest identity, so do not use
+`J1`. Do not erase B1:F while the backup is required. `R D1` is safe to try but
+cannot reclaim this partial state; it must refuse with `BANK NOT ERASED`.
 
 ## Banks 0-2
 
@@ -377,7 +390,7 @@ must point to real code in that bank. `J0`-`J2` ignore S9 and follow RESET.
 the current STR8-N 1.21 top sector:
 
 ```text
-BUILD/v1.21/s19/ryors-v1.2-asm-himon-str8n-bank0-2-8-f.s19
+C:/SRC/R-YORS/RELEASE/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 $8000-$BFFF  ASM-F2
 $C000-$EFFF  HIMON
 $F000-$FFFF  STR8-N 1.21 clone
@@ -407,7 +420,7 @@ SIZE   TOP-ALIGNED RANGE  ADDRESS RANGE
 
 ```text
 FILE                                      RANGE  CONTENT           S9
-ryors-v1.2-asm-himon-bank3-8-e.s19        8-E    ASM + HIMON       $C000
+ryors-v1.2-himon-asm-bank3-8-e.s19        8-E    HIMON + ASM       $C000
 ryors-v1.2-himon-bank3-c-e.s19            C-E    HIMON             $C000
 ryors-v1.2-asm-bank3-8-b.s19              8-B    ASM               $FFFF
 ```

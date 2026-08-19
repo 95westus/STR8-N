@@ -1,6 +1,3 @@
+# BUILD is disposable compiler output. Current release firmware and source
+# snapshots are published to the adjacent R-YORS/RELEASE directory.
 BUILD/**
-
-# Keep build intermediates ignored, but retain firmware artifacts as evidence.
-!BUILD/**/
-!BUILD/**/*.[bB][iI][nN]
-!BUILD/**/*.[sS]19

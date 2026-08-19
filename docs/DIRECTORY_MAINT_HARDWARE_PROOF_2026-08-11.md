@@ -3,6 +3,9 @@
 Status: accepted for Bank Maintenance `D` metadata-only adoption, its erased-row
 and RESET/ENTRY guards, its TYPE/DESC validation and precommit cancellation,
 the refactored shared directory commit path, and a subsequent `C` copy regression.
+The appended 2026-08-18 STR8-N `1.21` continuation additionally accepts the
+combined menu's guarded `U`, copy-with-enrollment-cancelled state, positive D2
+adoption and `J2` launch, retained B1:F guard, and physical-reset recovery.
 
 Exact tested Bank Maintenance artifact:
 
@@ -731,3 +734,129 @@ For the installed STR8-N `1.2` / R-YORS `1157` image, compacted-D3 mutation,
 post-map, scratch cleanup, directory-gated `J3` selection, and RESET-vector
 handoff are now board-accepted. STR8-N `1.21` / R-YORS `1303` remains a
 separate installation and current-identity smoke.
+
+## 2026-08-18 STR8-N `1.21` Combined-Menu Adoption And Launch
+
+This append-only continuation accepts the current combined Bank Maintenance
+menu's positive metadata-only adoption edge separately from `C` enrollment.
+Terminology in this section calls the observed non-R-YORS payload the
+**factory onboard firmware**. Literal operator directory descriptions `WDCV2`,
+`WDCBK`, and `WDCDG` are evidence labels, not proof that the payload is
+WDCMONv2.
+
+The combined menu first completed its guarded top update, verified the B1:F
+backup, preserved the live directory, and reset through the new B3:F image:
+
+```text
+BM> U
+
+STR8-N 1.21 TOP UPDATE
+BACKUP B1:F; TARGET B3:F
+TYPE BACKUP B1F> BACKUP B1F
+BACKUP VERIFIED
+SAFE PHY $0F000-$0FFFF; TARGET PHY $1F000-$1FFFF; SUM=$0715
+TYPE STR8-N 1.21> STR8-N 1.21
+ERASING B3:F - NO RESET/NMI/POWER
+STR8-N 1.21 VERIFIED; RESET
+RESET
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.21
+```
+
+With D2 erased, `C` then copied and verified all eight Bank-0 sectors to Bank
+2. The operator cancelled at the identity prompt, leaving the payload present
+and its directory row erased:
+
+```text
+BM> C
+SOURCE BANK 0-3> 0
+DEST BANK 0-2> 2
+TYPE COPY 02> COPY 02
+
+........
+TYPE 00-FF> ABORT
+
+BM> M
+
+B2 U U U U U U U U
+
+DIR B T DESC ENTRY JOURNAL
+D0 02 WDCV2 FFFF FCFFFFFF
+D1 F2 WDCBK FFFF FCFFFFFF
+D2 FF ..... FFFF FFFFFFFF
+D3 FF RYORS C000 000000FF
+ OK
+```
+
+`D` adopted those existing bytes without a second copy, committed D2, and the
+following map retained its COMPLETE journal:
+
+```text
+BM> D
+BANK 0-3> 2
+
+TYPE 00-FF> F2
+DESC 5 CHARS> WDCDG
+TYPE ADOPT B2> ADOPT B2
+ OK
+
+BM> M
+
+D0 02 WDCV2 FFFF FCFFFFFF
+D1 F2 WDCBK FFFF FCFFFFFF
+D2 F2 WDCDG FFFF FCFFFFFF
+D3 FF RYORS C000 000000FF
+ OK
+```
+
+The operator intentionally erased only B1 sectors `8-E`, retaining B1:F as
+the verified B3:F recovery backup. The map and reclaim refusal prove the guard
+recognized that retained sector and made no directory mutation:
+
+```text
+B1 E E E E E E E U
+
+BM> R
+
+RECLAIM DIR 0-3> 1
+
+BANK NOT ERASED
+ABORT
+```
+
+D1 still describes the former Bank-1 guest, so `J1` is prohibited in this
+intentional recovery state. B1:F must not be erased while that backup is
+required.
+
+Finally, returning to STR8-N and selecting Bank 2 passed the new D2 record's
+directory gate and entered the adopted payload through its RESET vector:
+
+```text
+BM> Q
+RESET
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.21
+0-2 H S: .2
+J B2
+3S
+
+================================
+  W65C02SXB + EDU Kit  Rev 1.0
+  W65C02S @ 8 MHz  |  5V System
+  I2C/SPI bit-banged via W65C22
+================================
+Initializing...
+Scanning devices...
+  OLED (SSD1306)     $3C  OK
+  RTC  (MCP79411)    $6F  OK
+  SPI SRAM           OK
+Init complete.
+```
+
+An intentional physical RESET returned to STR8-N `1.21`; `H` warm-entered
+HIMON `00.0818(1108)`, and a final Bank Maintenance map preserved B1 as
+`E E E E E E E U` and D2 as `F2 WDCDG FFFF FCFFFFFF`. This accepts the
+combined-menu `U`, separate copy-without-enrollment state, positive `D2`
+adoption, COMPLETE persistence, directory-gated `J2`, factory-firmware guest
+initialization, retained-backup reclaim refusal, and physical-reset recovery.
+No exact full-bank SHA-256 or CRC identity is claimed for the factory firmware.
