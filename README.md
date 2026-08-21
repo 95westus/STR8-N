@@ -1,5 +1,111 @@
 # STR8-N v1.22 Board Candidate
 
+> [!IMPORTANT]
+> **Hardware validation announcement — 2026-08-21:** STR8-N v1.22 has been
+> validated on a physical WDC W65C02SXB/EDU system. Before programming, the
+> board's original flash contents at physical `$18000-$1FFFF` (Bank 3) were
+> copied to `$10000-$17FFF` (Bank 2). A combined 32K STR8-N/HIMON/ASM binary
+> was then programmed into Bank 3. After the flash device was reinstalled,
+> STR8-N booted, warm-started HIMON `00.0821(1059)`, returned through the
+> STR8 bootloader, and launched the copied Bank-2 firmware through both the
+> `J2` prompt path and the reset-selector `2` path. The EDU application reached
+> its full menu and detected the SSD1306 OLED, MCP79411 RTC, and SPI SRAM. This
+> was stronger evidence than the expected CS0-CS3 and EDU LED activity alone.
+>
+> <details>
+> <summary>Retained board transcript</summary>
+>
+> ```text
+> RESET
+> WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+> STR8-N 1.22
+> 0-2 C W S: ......
+> BOOT WARM
+>
+> HIMON V 00.0821(1059)
+>
+> > STR8
+> > RUN STR8: BOOTLOADER @F000 K=03 ? y
+> > RESET
+> > WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+> > STR8-N 1.22
+> > 0-2 C W S: .S
+> > I L C W J
+> > STR8-N>J2
+> > J B2
+>
+> ================================
+> W65C02SXB + EDU Kit  Rev 1.0
+> W65C02S @ 8 MHz  |  5V System
+> I2C/SPI bit-banged via W65C22
+> =============================
+>
+> Initializing...
+> Scanning devices...
+> OLED (SSD1306)     $3C  OK
+> RTC  (MCP79411)    $6F  OK
+> SPI SRAM           OK
+> ADC  (ADS1015)     $48  not found
+> CardKB             $5F  not found
+> Init complete.
+>
+> --- W65C02SXB + EDU Kit ---
+> T - Set Time   (HHMMSS)
+> D - Set Date   (MMDDYY+DOW)
+> P - Print Time/Date
+> N - Set Name   (16 max)
+> S - SRAM Test
+> H/? - Help
+>
+> > RESET
+> > WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+> > STR8-N 1.22
+> > 0-2 C W S: .2
+> > J B2
+> > 3S
+>
+> ================================
+> W65C02SXB + EDU Kit  Rev 1.0
+> W65C02S @ 8 MHz  |  5V System
+> I2C/SPI bit-banged via W65C22
+> =============================
+>
+> Initializing...
+> Scanning devices...
+> OLED (SSD1306)     $3C  OK
+> RTC  (MCP79411)    $6F  OK
+> SPI SRAM           OK
+> ADC  (ADS1015)     $48  not found
+> CardKB             $5F  not found
+> Init complete.
+>
+> --- W65C02SXB + EDU Kit ---
+> T - Set Time   (HHMMSS)
+> D - Set Date   (MMDDYY+DOW)
+> P - Print Time/Date
+> N - Set Name   (16 max)
+> S - SRAM Test
+> H/? - Help
+> ```
+>
+> The operator repeated the complete sequence with the same result.
+>
+> </details>
+
+> [!NOTE]
+> **WDC and toolchain disclaimer:** STR8-N and R-YORS are independent projects
+> and are not affiliated with, sponsored by, endorsed by, or supported by The
+> Western Design Center, Inc. WDC, W65C02S, W65C02SXB, and W65C02SXB/EDU names
+> are used only to identify the hardware and compatibility target; associated
+> names and marks belong to their respective owners. Use of this software and
+> any flash-programming procedure is at the user's own risk and remains subject
+> to the repository license and warranty disclaimer. Rebuilding the supplied
+> artifacts requires an external toolchain, including WDC assembler/linker
+> tools and script dependencies that include Python. Installing, configuring,
+> learning, licensing, or supporting that toolchain is outside this project's
+> scope. Contact WDC for W65C02SXB/EDU hardware and WDC toolchain information
+> and support.
+
 STR8-N is the reset supervisor, recovery console, and guarded flash installer
 for a W65C02SXB/EDU with four 32K flash banks. It lives in the protected Bank-3
 top sector at CPU `$F000-$FFFF`; HIMON, ASM, and guest systems remain separate
