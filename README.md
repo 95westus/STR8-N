@@ -11,7 +11,7 @@
 > `J2` prompt path and the reset-selector `2` path. The EDU application reached
 > its full menu and detected the SSD1306 OLED, MCP79411 RTC, and SPI SRAM.
 >
-> The operator was pleasantly surprised to see this older board version's full SPI menu; only CS0-CS3 and EDU LED activity had been expected.
+> The operator was pleasantly surprised to see the newer board's full SPI menu; only CS0-CS3 and EDU LED activity had been expected.
 >
 > <details>
 > <summary>Retained board transcript</summary>
