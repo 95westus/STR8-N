@@ -9,8 +9,9 @@
 > STR8-N booted, warm-started HIMON `00.0821(1059)`, returned through the
 > STR8 bootloader, and launched the copied Bank-2 firmware through both the
 > `J2` prompt path and the reset-selector `2` path. The EDU application reached
-> its full menu and detected the SSD1306 OLED, MCP79411 RTC, and SPI SRAM. This
-> was stronger evidence than the expected CS0-CS3 and EDU LED activity alone.
+> its full menu and detected the SSD1306 OLED, MCP79411 RTC, and SPI SRAM. The
+> operator was pleasantly surprised to see this older board version's full SPI
+> menu; only CS0-CS3 and EDU LED activity had been expected.
 >
 > <details>
 > <summary>Retained board transcript</summary>
