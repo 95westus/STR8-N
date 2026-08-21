@@ -1,4 +1,4 @@
-# STR8-N v1.22 Board Candidate
+# STR8-N v1.22 Hardware Validated
 
 > [!IMPORTANT]
 > **Hardware validation announcement — 2026-08-21:** STR8-N v1.22 has been
@@ -10,6 +10,12 @@
 > STR8 bootloader, and launched the copied Bank-2 firmware through both the
 > `J2` prompt path and the reset-selector `2` path. The EDU application reached
 > its full menu and detected the SSD1306 OLED, MCP79411 RTC, and SPI SRAM.
+>
+> **Board-important note:** At this time there is no way back from the copied
+> Bank-2 firmware to Bank 3 other than physical RESET. A program that controls
+> FA15 and FAMS would need to provide an exit while running in the Bank-2
+> environment, select Bank 3 (`FAMS:FA15 = 11`), and then enter the Bank-3 RESET
+> path.
 >
 > The operator was pleasantly surprised to see the newer board's full SPI menu; only CS0-CS3 and EDU LED activity had been expected.
 >
@@ -137,7 +143,7 @@ The letters also loosely evoke **S**oftware or **S**ystem **T**o **R**eset,
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and no overlap with the fixed worker |
 
-The v1.22 candidate host verification suite covers the relocated RAM ABI and artifact
+The v1.22 host verification suite covers the relocated RAM ABI and artifact
 layout. Retained v1.1/v1.2 board sessions remain historical evidence; the
 original migration sequence is tracked in the
 [v1.2 Implementation Plan](docs/STR8N_V1_2_IMPLEMENTATION_PLAN.md).
@@ -252,7 +258,7 @@ envelope from `$5000`; the standalone Bank Maintenance tool continues to use
 
 ## Deliberate scope
 
-STR8-N v1.21 is a recovery and installation layer, not a general-purpose flash
+STR8-N v1.22 is a recovery and installation layer, not a general-purpose flash
 filesystem. The resident `I` installer does not rewrite its protected top
 sector, export S-records, allocate backups, count flash wear, or expose a
 general destructive worker API. Separate, explicitly confirmed RAM tools can
