@@ -250,9 +250,10 @@ $1FFF  +------------------------------+
 $19FF  +------------------------------+
        | 4K sector tray $0A00-$19FF  |
 $09FF  +------------------------------+
-       | other RAM                    |
+       | free WCT tail $0454-$09FF    |
+       | allocate down from $09FF     |
 $0453  +------------------------------+
-       | worker $0200-$0453           |
+       | current worker $0200-$0453   |
 $01FF  +------------------------------+
        | stack                        |
 $00FF  +------------------------------+
@@ -261,10 +262,20 @@ $0000  +------------------------------+
 ```
 
 `$1A00-$1FFF` is free for user programs in v1.22: STR8-N, HIMON, ASM-F2, and
-the maintained RAM tools do not allocate it. Bank Maintenance and the other
-foreground tools use the single-owner `$7C00-$7DBF` overlay. The exact
-`$7DE9-$7DFF` Recovery State Capsule fields are listed in the
-[Technical Guide](TECHNICAL_GUIDE.md#str8-n-v12-high-ram-abi).
+the maintained RAM tools do not allocate it. The whole `$0200-$09FF` Worker
+Code Tray (WCT) remains phase-owned and volatile during worker calls, but the
+maintained runtime workers do not extend above `$0453`: the unified STR8-N
+worker ends at `$0453`, the Bank Maintenance private worker ends at `$042A`,
+and HIMON's bank-safe helpers end below both. A phase-local allocator may
+therefore consume the currently free `$0454-$09FF` tail downward from `$09FF`,
+provided it checks its low-water mark against the published exclusive
+`STR8_WORKER_END` and does not expect those bytes to survive a worker call.
+Development and proof programs may still use other addresses in the WCT and
+are not covered by this maintained-runtime high-water guarantee.
+
+Bank Maintenance and the other foreground tools use the single-owner
+`$7C00-$7DBF` overlay. The exact `$7DE9-$7DFF` Recovery State Capsule fields
+are listed in the [Technical Guide](TECHNICAL_GUIDE.md#str8-n-v12-high-ram-abi).
 
 ## RAM capacity by operating path
 
