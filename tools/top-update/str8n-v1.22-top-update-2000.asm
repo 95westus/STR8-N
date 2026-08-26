@@ -591,6 +591,10 @@ TU_CONFIRM_FINAL:      DB              "STR8-N 1.22",0
 ; prompt pointer first, so expose small wrappers with fixed expected strings.
 ; The assembler resolves the rewritten calls below through these entry labels.
 
+                        IF              STR8_TOP_EMBED
+                        INCLUDE         "str8n-v1.22-bank-maint-rename.inc"
+                        ENDIF
+
                         ORG             $4000
 TU_CANDIDATE_IMAGE:
                         INCLUDE         "str8n-v1.22-top-image.inc"

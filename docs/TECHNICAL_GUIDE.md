@@ -384,6 +384,8 @@ $7C40-$7C7F  staged Bank-3 directory
 $7C80-$7D1A  first-valid-AP inventory
 $2000-...    bank-maintenance program and text
 $3400-$362A  stored private mutation worker
+$3700-$3987  standalone rename/AP extension tray
+$3D00-$3F87  menu+top rename/AP extension tray
 ```
 
 The carried worker privately implements the staging/programming operations
@@ -396,6 +398,14 @@ erased-scratch selection, and exact `RESET J3` confirmation. D3 compaction
 changes only its journal from `00000000` to `FCFFFFFF`, retaining a COMPLETE
 record and 15 free transaction pairs. The copy guard recognizes the v1.21
 resident signature at `$F00C` (`53 52 02 03`).
+
+The separate `N` path renames the five-character description of one COMPLETE
+D0-D3 record. It validates reserved bytes, the existing description, seal,
+entry rules, and the complete one-way journal before accepting a replacement.
+After finding an erased non-role scratch sector, exact `RENAME Dn XXXXX`
+confirmation enters the same verified backup/B3:F rewrite/scratch-erase path
+used by D3 reclamation. Only bytes `+4..+8` of the selected staged row change;
+type, seal, entry, journal, configuration, vectors, and other rows are retained.
 
 The `C` path requires an all-`$FF` destination directory row before changing
 the destination. After the eight copied sectors verify, it collects TYPE and
@@ -446,8 +456,10 @@ record types, duplicate destination bytes, RAM addresses outside
 ```
 
 Descriptions accept uppercase `A-Z`, digits, hyphen, underscore, and period.
-Type, description, seal, and Bank-3 entry are immutable because STR8-N never
-erases its own sector.
+Normal resident transactions treat type, description, seal, and Bank-3 entry
+as immutable because STR8-N never erases its own sector. Bank Maintenance `N`
+is the guarded description-only exception: it backs up and rewrites the whole
+protected sector while preserving every other record field.
 
 Each bank has its own 32-bit journal, arranged as 16 START/COMPLETE pairs.
 Bits change only from 1 to 0. A failed install and full recovery finish the

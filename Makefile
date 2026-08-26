@@ -56,6 +56,7 @@ RANGE_MATRIX_TOOL := tools/test_s19_range_matrix.ps1
 RAM_LOAD_TOOL := tools/test_ram_load_contract.ps1
 RAM_ABI_CHECK_TOOL := tools/check_ram_abi_sources.ps1
 BANK_MAINT_SRC := tools/bank-maint/str8n-v1.22-bank-maint-2000.asm
+BANK_MAINT_RENAME_SRC := tools/bank-maint/str8n-v1.22-bank-maint-rename.inc
 BANK_MAINT_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-bank-maint-2000.obj
 BANK_MAINT_S19 := $(S19_DIR)/str8n-$(VERSION)-bank-maint-2000.s19
 BANK_MAINT_CHECK_TOOL := tools/check_bank_maint_s19.ps1
@@ -143,13 +144,13 @@ $(WORKER_OBJ): $(WORKER_SRC) $(WORKER_INCLUDES) | dirs
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-worker.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-worker.sym)
 
-$(BANK_MAINT_OBJ): $(BANK_MAINT_SRC) | dirs
-	$(ASM) -G -L -S -W -DSTR8_BANK_MAINT_TOP=0 $<
+$(BANK_MAINT_OBJ): $(BANK_MAINT_SRC) $(BANK_MAINT_RENAME_SRC) | dirs
+	$(ASM) -G -L -S -W -I tools/bank-maint -DSTR8_BANK_MAINT_TOP=0 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-bank-maint-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-bank-maint-2000.sym)
 
-$(BANK_MAINT_MENU_OBJ): $(BANK_MAINT_MENU_SRC) $(BANK_MAINT_SRC) $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
+$(BANK_MAINT_MENU_OBJ): $(BANK_MAINT_MENU_SRC) $(BANK_MAINT_SRC) $(BANK_MAINT_RENAME_SRC) $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
 	$(ASM) -G -L -S -W -I tools/bank-maint -I tools/top-update -I $(RELEASE_DIR)/generated $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-bank-maint-menu-2000.lst)
