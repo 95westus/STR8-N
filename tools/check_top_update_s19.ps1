@@ -50,8 +50,13 @@ for($offset=0;$offset -lt 0x1000;$offset++){
 }
 
 if($DirectoryRefresh){
-    for($offset=0x0FB0;$offset -le 0x0FF9;$offset++){
+    for($offset=0x0FB0;$offset -le 0x0FEF;$offset++){
         if($data[0x4000+$offset] -ne 0xFF){throw ('Directory-refresh candidate byte ${0:X3} is not erased' -f $offset)}
+    }
+    if($data[0x4FF0] -ne 0x1E){throw ('Directory-refresh WORK locator is ${0:X2}; expected $1E' -f $data[0x4FF0])}
+    if($data[0x4FF1] -ne 0x1F){throw ('Directory-refresh top-backup locator is ${0:X2}; expected $1F' -f $data[0x4FF1])}
+    for($offset=0x0FF2;$offset -le 0x0FF9;$offset++){
+        if($data[0x4000+$offset] -ne 0xFF){throw ('Reserved configuration byte ${0:X3} is not erased' -f $offset)}
     }
     $code = for($address=0x2000;$address -lt 0x4000;$address++){if($data.ContainsKey($address)){[byte]$data[$address]}}
     for($offset=0;$offset -le $code.Count-3;$offset++){

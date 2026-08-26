@@ -50,7 +50,7 @@ flowchart LR
     TOP --> UPDATE[guarded v1.22 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
-    REFRESH -->|STR8-N L, backup then clear $FFB0-$FFF9| B3F
+    REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
     TOP --> ABI_TEST[resident ABI hardware-probe S19]
     BM -->|STR8-N L| RAM_TOOL[temporary maintenance session]
     FULL -->|STR8-N I| GUEST[enrolled Bank 0, 1, or 2]
@@ -151,7 +151,7 @@ the protected rewrite verifies.
 $FFFF  +------------------------------+
        | hardware vectors       6 B   |
 $FFF9  +------------------------------+
-       | configuration         10 B   |
+       | WORK=$1E + reserve     10 B   |
 $FFEF  +------------------------------+
        | bank directory        64 B   |
 $FFAF  +------------------------------+
@@ -347,7 +347,7 @@ flowchart LR
     D2 -->|J2| FACTORY[Factory onboard firmware]
     FACTORY -->|physical RESET| COLD
     BM -->|U verified backup| B1F[Retained B1:F recovery backup]
-    B1F -->|E B1 8-E| B1HOLD[B1 E E E E E E E U<br/>J1 prohibited]
+    B1F -->|E B1 8-D| B1HOLD[B1 E E E E E E W B<br/>J1 prohibited]
     B1HOLD -->|R D1| GUARD[BANK NOT ERASED<br/>backup preserved]
 ```
 

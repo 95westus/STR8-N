@@ -8,6 +8,14 @@ $ErrorActionPreference = "Stop"
 
 $groups = @(
     [ordered]@{
+        File = 'str8-config-eq.inc'
+        Names = @(
+            'STR8_CONFIG_BASE', 'STR8_CONFIG_END', 'STR8_CONFIG_NONE',
+            'STR8_CONFIG_WORK_SECTOR', 'STR8_CONFIG_WORK_DEFAULT',
+            'STR8_CONFIG_TOP_BACKUP_SECTOR', 'STR8_CONFIG_TOP_BACKUP_DEFAULT'
+        )
+    },
+    [ordered]@{
         File = 'str8-ram-abi.inc'
         Names = @(
             'STR8_RAM_ABI_VERSION',

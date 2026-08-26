@@ -139,7 +139,7 @@ The letters also loosely evoke **S**oftware or **S**ystem **T**o **R**eset,
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
 | Protected top upgrade | Load the supplied v1.22 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.22 sector, and verify all 4 KiB | The final v1.22 C/W selector update is board-accepted as of 2026-08-19 |
-| Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, and replace Bank-3 sector F with the current image's erased directory/configuration pocket | Backup, rewrite, RESET, empty-directory map, and subsequent B3-to-B2 copy+enrollment accepted onboard 2026-08-11 |
+| Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The current image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F`; the normal guarded top-update path is board-accepted on 2026-08-26 |
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and no overlap with the fixed worker |
 
@@ -221,7 +221,7 @@ BM>
 ```
 
 `U` uses the same two exact confirmations, verified `B1:F` backup, live
-directory/configuration preservation, candidate verification, retry/restore
+directory preservation, candidate-configuration installation, verification, retry/restore
 recovery loop, and RESET finish as the standalone top updater.
 The combined image occupies `$2000-$4FFF`, so its `P` path reads the AP
 envelope from `$5000`; the standalone Bank Maintenance tool continues to use
@@ -259,11 +259,15 @@ envelope from `$5000`; the standalone Bank Maintenance tool continues to use
 ## Deliberate scope
 
 STR8-N v1.22 is a recovery and installation layer, not a general-purpose flash
-filesystem. The resident `I` installer does not rewrite its protected top
+filesystem. Bank 3 publishes two packed sector roles: `$FFF0=$1E` assigns
+B1:E as application WORK, and `$FFF1=$1F` protects B1:F as the raw B3:F
+recovery backup. `$FFF2-$FFF9` remain erased for later configuration,
+including a possible larger-directory locator. The resident
+`I` installer does not rewrite its protected top
 sector, export S-records, allocate backups, count flash wear, or expose a
 general destructive worker API. Separate, explicitly confirmed RAM tools can
-replace sector F either while preserving the live directory/configuration
-bytes or while intentionally refreshing them to the erased state. An external
+replace sector F either while preserving the live directory or while
+intentionally refreshing it. Both install the candidate configuration. An external
 programmer remains the recovery fallback.
 
 > [!WARNING]

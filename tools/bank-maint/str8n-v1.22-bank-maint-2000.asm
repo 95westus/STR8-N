@@ -24,7 +24,8 @@
 ;   BANK 3:     8-E, ALL, OR AN X-Y RANGE WITHIN 8-E.
 ; A IS SECTOR A. ALL IS THE COMPLETE VALID RANGE. B3 SECTOR F IS PROTECTED.
 ; M READS ALL BANK/SECTOR CONTENTS: E=ERASED, U=USED, A=VALID AP,
-;   P=PROTECTED B3F. A REQUIRES A COMPLETE ENVELOPE AND MATCHING BODY FNV.
+;   W=CONFIGURED APPLICATION WORK SECTOR, B=PROTECTED B3F BACKUP,
+;   P=PROTECTED LIVE B3F. A REQUIRES A COMPLETE ENVELOPE AND MATCHING BODY FNV.
 ;   ONE AP DETAIL LINE IS PRINTED FOR EACH SECTOR MARKED A.
 ; M ALSO PRINTS BANK-3 DIRECTORY TYPE, DESCRIPTION, ENTRY, AND JOURNAL.
 ; M RESTORES ITS ENTRY BANK AFTER EACH CARRIED-WORKER STAGE CALL.
@@ -60,6 +61,7 @@
 ;   $7C18-$7C1D  DIRECTORY TYPE AND FIVE-CHARACTER DESCRIPTION
 ;   $7C1E-$7C1F  DIRECTORY ENTRY, LOW/HIGH
 ;   $7C20-$7C2F  INPUT BUFFER
+;   $7C30-$7C32  CONFIGURED WORK/BACKUP LOCATORS / PACKING SCRATCH
 ;   $7C40-$7C7F  STAGED BANK-3 DIRECTORY
 ;   $7C80-$7D1A  FIRST VALID AP PER MAPPED SECTOR, 31 X 5 BYTES
 ;   $2000-...    THIS PROGRAM
@@ -117,13 +119,35 @@ BM_MAIN LDX #$00
         LDA $7FEC
         AND #$EE
         STA $7C0C
+; Cache Bank 3 role locators while the selector is resident. Each packed byte
+; is bank:sector; $FF means no configured sector.
+        LDA #$FF
+        STA $7C30
+        STA $7C32
+        PHP
+        SEI
+        LDA #$03
+        JSR $0203
+        BCC ?CONFIG_RESTORE
+        LDA $FFF0
+        STA $7C30
+        LDA $FFF1
+        STA $7C32
+?CONFIG_RESTORE
+        LDA #$EE
+        TRB $7FEC
+        LDA $7C0C
+        TSB $7FEC
+        PLP
         LDX #<BM_MTITLE
         LDY #>BM_MTITLE
         JSR BM_PUTS
         JSR BM_READ
         BCC BM_ABORT
         LDA $7C21
-        BNE BM_MAIN
+        BEQ ?COMMAND
+        JMP BM_MAIN
+?COMMAND
         LDA $7C20
         BEQ ?QUIT
         CMP #'C'
@@ -147,7 +171,8 @@ BM_MAIN LDX #$00
         BEQ ?QUIT
         JMP BM_MAIN
         ELSE
-        BNE BM_MAIN
+        BEQ ?QUIT
+        JMP BM_MAIN
         ENDIF
 ?QUIT
         STA $7C01
@@ -350,7 +375,8 @@ BM_MMAP DB $0D,$0A,'B','#',' ','8',' ','9',' ','A'
         DB $0D,$0A,0
 BM_MLEGEND DB 'E','=','E','R','A','S','E','D',' '
         DB 'U','=','U','S','E','D',' ','A','=','A','P',' '
-        DB 'V','A','L','I','D',' ','P','=','B','3','F',' '
+        DB 'V','A','L','I','D',' ','W','=','W','O','R','K',' '
+        DB 'B','=','B','3','F',' ','B','K','U','P',' ','P','=','B','3','F',' '
         DB 'P','R','O','T'
         DB 'E','C','T','E','D'
         DB $0D,$0A,0
@@ -364,6 +390,7 @@ BM_MSEC02 DB 'S','E','C','T','O','R',' ','8','-','F',','
         DB ' ','B','3',' ','M','A','X',' ','E','>',' ',0
 BM_MCTYPE DB 'T','Y','P','E',' ','C','O','P','Y',' ',0
 BM_METYPE DB 'T','Y','P','E',' ','E','R','A','S','E',' ',0
+BM_MEPROTECTED DB 'P','R','O','T','E','C','T','E','D',' ','R','O','L','E',$0D,$0A,0
 
 BM_PARSE_BANK LDA $7C21
         BNE ?BAD
@@ -958,7 +985,8 @@ BM_APLIST BRA ?BODY
         BNE ?ROW
         RTS
 
-; Read-only live map: E=erased, U=used, A=valid AP, P=protected B3F.
+; Read-only live map: E=erased, U=used, A=valid AP, W=work, B=B3F backup,
+; P=protected live B3F.
 BM_MAP  LDA #'M'
         STA $7C01
         STZ $7C0F
@@ -976,6 +1004,27 @@ BM_MAP  LDA #'M'
         STA $7C04
 ?SECTOR LDA #' '
         JSR BM_OUT
+        LDA $7C02
+        ASL A
+        ASL A
+        ASL A
+        ASL A
+        STA $7C31
+        LDA $7C04
+        LSR A
+        LSR A
+        LSR A
+        LSR A
+        ORA $7C31
+        CMP $7C30
+        BNE ?BACKUP
+        LDA #'W'
+        BRA ?MARK
+?BACKUP CMP $7C32
+        BNE ?PROTECTED
+        LDA #'B'
+        BRA ?MARK
+?PROTECTED
         LDA $7C02
         CMP #$03
         BNE ?STAGE
@@ -1028,7 +1077,9 @@ BM_MAP  LDA #'M'
         CLC
         ADC #$10
         STA $7C04
-        BNE ?SECTOR
+        BEQ ?NEXT_BANK
+        JMP ?SECTOR
+?NEXT_BANK
         LDA #$0D
         JSR BM_OUT
         LDA #$0A
@@ -1765,6 +1816,22 @@ BM_RECLAIM_J3
         STA $7C09
 ?SCRATCH_SECTOR
         LDA $7C08
+        ASL A
+        ASL A
+        ASL A
+        ASL A
+        STA $7C31
+        LDA $7C09
+        LSR A
+        LSR A
+        LSR A
+        LSR A
+        ORA $7C31
+        CMP $7C30
+        BEQ ?SCRATCH_NEXT
+        CMP $7C32
+        BEQ ?SCRATCH_NEXT
+        LDA $7C08
         STA $7C02
         LDA $7C09
         STA $7C04
@@ -1772,6 +1839,7 @@ BM_RECLAIM_J3
         BCC ?STAGE_FAIL
         JSR BM_BUFFER_ERASED
         BCS ?SCRATCH_FOUND
+?SCRATCH_NEXT
         LDA $7C09
         CLC
         ADC #$10
@@ -2012,7 +2080,39 @@ BM_EBAD CLC
 BM_ETABLE DB $80,$90,$00,$00,$00,$00,$00,$00,$00
         DB $A0,$B0,$C0,$D0,$E0,$F0
 
-BM_ECONF LDX #<BM_METYPE
+; Return C=1 only if the requested erase range excludes configured roles.
+BM_ECHECK_ROLES
+        LDA $7C02
+        ASL A
+        ASL A
+        ASL A
+        ASL A
+        STA $7C31
+        LDA $7C04
+        LSR A
+        LSR A
+        LSR A
+        LSR A
+        ORA $7C31
+        LDY $7C05
+?ROLE  CMP $7C30
+        BEQ ?BLOCK
+        CMP $7C32
+        BEQ ?BLOCK
+        CLC
+        ADC #$01
+        DEY
+        BNE ?ROLE
+        SEC
+        RTS
+?BLOCK CLC
+        RTS
+
+BM_ECONF JSR BM_ECHECK_ROLES
+        BCS ?ROLE_OK
+        JMP BM_EPROTECTED
+?ROLE_OK
+        LDX #<BM_METYPE
         LDY #>BM_METYPE
         JSR BM_PUTS
         LDA $7C02
@@ -2076,6 +2176,11 @@ BM_ESELEND
 BM_EONELEN LDA $7C28
         BEQ BM_EYES
 BM_ENO JMP BM_ABORT
+BM_EPROTECTED
+        LDX #<BM_MEPROTECTED
+        LDY #>BM_MEPROTECTED
+        JSR BM_PUTS
+        JMP BM_MAIN
 BM_EYES
         JSR BM_FILL
         LDA #$0D
