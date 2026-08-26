@@ -102,7 +102,8 @@ $manifest = [ordered]@{
             candidateEnd = '4FFF'
             entry = '2000'
             backup = 'Bank 1 CPU F000-FFFF / physical 0F000-0FFFF'
-            clears = 'Bank 3 CPU FFB0-FFF9 / physical 1FFB0-1FFF9'
+            clears = 'Bank 3 CPU FFB0-FFEF / physical 1FFB0-1FFEF'
+            installs = 'Bank 3 CPU FFF0=1E (B1:E WORK); FFF1=1F (B1:F protected B3:F backup); FFF2-FFF9 erased'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $DirectoryRefreshS19Path).Hash
         }
         publicContract = [ordered]@{
@@ -118,6 +119,14 @@ $manifest = [ordered]@{
         directoryEnd = 'FFEF'
         configurationStart = 'FFF0'
         configurationEnd = 'FFF9'
+        workSectorAddress = 'FFF0'
+        workSector = 'B1:E'
+        workSectorPacked = '1E'
+        topBackupSectorAddress = 'FFF1'
+        topBackupSector = 'B1:F'
+        topBackupSectorPacked = '1F'
+        reservedConfigurationStart = 'FFF2'
+        reservedConfigurationEnd = 'FFF9'
         vectorsStart = 'FFFA'
         vectorsEnd = 'FFFF'
     }

@@ -42,7 +42,9 @@ record service version/capabilities, and hashes for every maintained RAM tool.
 Bank Maintenance loads at `$2000-$362A`, keeps its private worker at
 `$3400-$362A`, and offers map, copy+directory, adopt, erase, and AP operations.
 The directory-refresh image preserves a verified copy in Bank 1 sector F
-before clearing Bank 3 `$FFB0-$FFF9`. The
+before clearing Bank 3 `$FFB0-$FFEF`; it then installs `$FFF0=$1E` for B1:E
+WORK, `$FFF1=$1F` for the protected B1:F B3:F backup, and leaves
+`$FFF2-$FFF9` erased. The
 R-YORS lock binds the core top-sector/public-contract content needed by its build.
 R-YORS verifies the locked values, resident ABI gates, fixed service
 addresses, vectors, and protected layout before constructing Bank 3.

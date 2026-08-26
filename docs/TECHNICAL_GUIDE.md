@@ -84,7 +84,9 @@ $F000-$FD54  resident supervisor, installer, loader   3413 bytes
 $FD55-$FD5B  currently unused margin                     7 bytes
 $FD5C-$FFAF  stored unified worker                    596 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
-$FFF0-$FFF9  configuration pocket                      10 bytes
+$FFF0        WORK sector locator (`$1E` = B1:E)          1 byte
+$FFF1        protected B3:F backup locator (`$1F`=B1:F)  1 byte
+$FFF2-$FFF9  reserved configuration (erased)             8 bytes
 $FFFA-$FFFF  NMI, RESET, IRQ/BRK vectors                 6 bytes
                                                        ----------
                                                        4096 bytes
@@ -455,9 +457,11 @@ the guarded RAM directory-refresh tool or an external programmer must refresh
 the protected sector before another install to that bank.
 
 The programmer BIN and the candidate embedded by
-`str8n-v1.22-directory-refresh-2000.s19` contain an all-`$FF`
-directory/configuration pocket. Refreshing it erases every bank's journal and
-Bank-3 install identity. The onboard tool first verifies an exact live-sector
+`str8n-v1.22-directory-refresh-2000.s19` contain an all-`$FF` directory and
+the current configuration: `$FFF0=$1E` selects B1:E as application WORK and
+`$FFF1=$1F` protects B1:F as the raw B3:F backup; `$FFF2-$FFF9` remain erased.
+Refreshing erases every bank's journal and Bank-3 install identity but retains
+both configured roles. The onboard tool first verifies an exact live-sector
 backup in Bank 1 sector F and retains retry/restore control in RAM while the
 Bank-3 reset sector is unavailable.
 

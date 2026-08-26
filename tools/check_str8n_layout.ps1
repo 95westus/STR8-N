@@ -4,7 +4,8 @@ param(
     [string]$WorkerS19Path = "BUILD/v1.22/s19/str8n-v1.22-worker-0200.s19",
     [string]$WorkerEqPath = "src/str8-worker-eq.inc",
     [string]$RamAbiPath = "src/str8-ram-abi.inc",
-    [string]$ConsoleEqPath = "src/str8-console-eq.inc"
+    [string]$ConsoleEqPath = "src/str8-console-eq.inc",
+    [string]$ConfigEqPath = "src/str8-config-eq.inc"
 )
 
 Set-StrictMode -Version Latest
@@ -14,6 +15,9 @@ $TopStart = 0xF000
 $DirectoryStart = 0xFFB0
 $DirectoryEnd = 0xFFEF
 $ConfigStart = 0xFFF0
+$ConfigEnd = 0xFFF9
+$WorkSectorDefault = 0x1E
+$TopBackupDefault = 0x1F
 $VectorStart = 0xFFFA
 $WorkerRunStart = 0x0200
 $WorkerSelectEntry = 0x0203
@@ -88,6 +92,12 @@ Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_BASE') 0x7DE9 'STR8 state sta
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_END') 0x7DFF 'STR8 state end'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_JUMP_SIG0') 0x7DFD 'Bank Jump Record start'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_LAST_JUMP') 0x7DFF 'Bank Jump Record end'
+Assert-Equal (Get-EquValue $ConfigEqPath 'STR8_CONFIG_BASE') $ConfigStart 'Configuration start'
+Assert-Equal (Get-EquValue $ConfigEqPath 'STR8_CONFIG_END') $ConfigEnd 'Configuration end'
+Assert-Equal (Get-EquValue $ConfigEqPath 'STR8_CONFIG_WORK_SECTOR') $ConfigStart 'WORK locator address'
+Assert-Equal (Get-EquValue $ConfigEqPath 'STR8_CONFIG_WORK_DEFAULT') $WorkSectorDefault 'WORK locator default'
+Assert-Equal (Get-EquValue $ConfigEqPath 'STR8_CONFIG_TOP_BACKUP_SECTOR') ($ConfigStart + 1) 'top-backup locator address'
+Assert-Equal (Get-EquValue $ConfigEqPath 'STR8_CONFIG_TOP_BACKUP_DEFAULT') $TopBackupDefault 'top-backup locator default'
 Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_CONSOLE_INIT_SERVICE') 0xF003 'Published CONSOLE_INIT service'
 Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_ABI_QUERY_SERVICE') 0xF006 'Published ABI_QUERY service'
 Assert-Equal (Get-EquValue $ConsoleEqPath 'STR8_CHARIN_SERVICE') 0xF013 'Published CHARIN service'

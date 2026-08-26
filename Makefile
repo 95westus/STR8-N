@@ -25,6 +25,7 @@ STR8_SRC := $(SRC_DIR)/str8.asm
 WORKER_SRC := $(SRC_DIR)/str8-worker.asm
 DELAY_SRC := $(SRC_DIR)/util-delay.asm
 STR8_INCLUDES := \
+	$(SRC_DIR)/str8-config-eq.inc \
 	$(SRC_DIR)/himon-image-eq.inc \
 	$(SRC_DIR)/str8-console-eq.inc \
 	$(SRC_DIR)/str8-directory-eq.inc \
@@ -217,7 +218,7 @@ $(RYORS_FULL_BANK_S19): $(RYORS_28K_S19) $(TOP_BIN) $(RYORS_FULL_BANK_TOOL) | di
 $(TOP_BIN): layout-check $(TOP_BIN_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_BIN_TOOL) -Str8MapPath "$(STR8_MAP)" -Str8S19Path "$(STR8_S19)" -WorkerMapPath "$(WORKER_MAP)" -WorkerS19Path "$(WORKER_S19)" -BinPath "$@"
 
-$(PUBLIC_CONTRACT): $(SRC_DIR)/str8-ram-abi.inc $(SRC_DIR)/str8-jump-eq.inc $(SRC_DIR)/str8-console-eq.inc $(SRC_DIR)/str8-record-eq.inc $(SRC_DIR)/str8-worker-eq.inc $(PUBLIC_CONTRACT_TOOL) | dirs
+$(PUBLIC_CONTRACT): $(SRC_DIR)/str8-config-eq.inc $(SRC_DIR)/str8-ram-abi.inc $(SRC_DIR)/str8-jump-eq.inc $(SRC_DIR)/str8-console-eq.inc $(SRC_DIR)/str8-record-eq.inc $(SRC_DIR)/str8-worker-eq.inc $(PUBLIC_CONTRACT_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(PUBLIC_CONTRACT_TOOL) -SourceDir "$(SRC_DIR)" -OutPath "$@"
 
 $(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(BANK_MAINT_S19) $(CONSOLE_ABI_TEST_S19) $(TOP_UPDATE_S19) $(DIRECTORY_REFRESH_S19) $(PUBLIC_CONTRACT) $(MANIFEST_TOOL) FORCE

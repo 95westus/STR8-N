@@ -280,9 +280,9 @@ DIRECTORY EMPTY; STR8-N VERIFIED; RESET
 ```
 
 `$hhhh` is the checksum of the live top sector and can vary with the installed
-image. Do not continue unless Bank 1 sector F is sacrificial and `BACKUP
-VERIFIED` appears. Do not press RESET/NMI or remove power during the erase and
-rewrite.
+image. Do not continue unless Bank 1 sector F may be replaced by the protected
+backup and `BACKUP VERIFIED` appears. Do not press RESET/NMI or remove power
+during the erase and rewrite.
 
 ## Adopt an existing bank after a directory refresh
 

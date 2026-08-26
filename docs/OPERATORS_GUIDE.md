@@ -230,8 +230,9 @@ Before starting:
 
 1. Keep both the v1.1 rollback BIN and
    `BUILD/v1.22/bin/str8n-v1.22-bank3-f000-ffff.bin` off-board.
-2. Confirm Bank 1 CPU `$F000-$FFFF` may be erased. The updater uses it as the
-   raw backup sector (`STR8_TOP_SAFE`, physical `$0F000-$0FFFF`).
+2. Confirm Bank 1 CPU `$F000-$FFFF` may be replaced by the fresh protected
+   raw backup (`STR8_TOP_SAFE`, physical `$0F000-$0FFFF`). The successful
+   updater leaves that backup in place; it is not scratch space afterward.
 3. Install `ryors-v1.2-himon-asm-bank3-8-e.s19` into Bank 3 sectors `8-E`
    using the existing STR8-N `I` command.
 4. Return to STR8-N; do not use old ASM to write `$7Dxx` during the migration
@@ -241,8 +242,8 @@ Then update the protected top sector:
 
 1. Type `L` and send `str8n-v1.22-top-update-2000.s19` at normal full speed.
 2. Check that the tool prints `BACKUP B1:F; TARGET B3:F`.
-3. Type the exact first confirmation `BACKUP B1F` only if Bank 1 sector F is
-   sacrificial.
+3. Type the exact first confirmation `BACKUP B1F` only if Bank 1 sector F may
+   be replaced by the fresh protected backup.
 4. Require `BACKUP VERIFIED` before continuing.
 5. Type the exact final confirmation `STR8-N 1.22`.
 6. Do not press NMI or RESET, remove power, or disturb the flash/FTDI hardware
@@ -335,9 +336,9 @@ it only as the factory onboard firmware; the operator-assigned `WDCDG` label
 does not establish WDCMONv2 provenance.
 
 The same accepted final state deliberately retains the verified B3:F backup in
-B1:F while B1 sectors `8-E` are erased. `M` therefore shows B1 as
-`E E E E E E E U`. D1 still contains its former guest identity, so do not use
-`J1`. Do not erase B1:F while the backup is required. `R D1` is safe to try but
+B1:F while B1 sectors `8-E` are erased. Current `M` identifies the configured
+backup as `B`, so B1 appears `E E E E E E E B`. D1 still contains its former
+guest identity, so do not use `J1`. The erase command protects B1:F. `R D1` is safe to try but
 cannot reclaim this partial state; it must refuse with `BANK NOT ERASED`.
 
 ## Banks 0-2
@@ -480,23 +481,26 @@ below or the external-programmer fallback.
 
 `BUILD/v1.22/s19/str8n-v1.22-directory-refresh-2000.s19` is a dedicated
 RAM-resident sector-F rewrite. It embeds the exact current 4096-byte top BIN,
-whose directory and configuration pocket is erased. Unlike the normal top
-updater, it intentionally does not restore the live `$FFB0-$FFF9` bytes into
-the candidate before programming.
+whose directory is erased and whose configuration publishes B1:E as WORK at
+`$FFF0=$1E` and B1:F as the protected Bank-3:F backup at `$FFF1=$1F`.
+Unlike the normal top updater, it intentionally does not restore
+the live `$FFB0-$FFEF` directory bytes into the candidate before programming;
+both updater variants install the candidate `$FFF0-$FFF9` configuration.
 
 The refresh otherwise uses the hardware-proven top-updater safety path. It
 copies the complete live Bank-3 sector F into Bank 1 sector F, verifies that
 backup, runs from RAM while Bank-3 sector F is unavailable, verifies the new
 sector, and offers retry or restoration after a write failure.
 
-Before starting, Bank 1 sector F must be sacrificial. Its current contents are
-replaced by a fresh exact backup of the live Bank-3 sector F.
+Before starting, Bank 1 sector F must be replaceable. Its current contents are
+replaced by a fresh exact backup of the live Bank-3 sector F, and the backup is
+retained as a protected role after success.
 
 1. At STR8-N, type `L`, then `S19`, and send
    `BUILD/v1.22/s19/str8n-v1.22-directory-refresh-2000.s19`.
 2. Require the title `STR8-N 1.22 DIRECTORY REFRESH` and
    `BACKUP B1:F; TARGET B3:F`.
-3. Type `BACKUP B1F` only if Bank 1 sector F is sacrificial.
+3. Type `BACKUP B1F` only if Bank 1 sector F may be replaced by that backup.
 4. Require `BACKUP VERIFIED` and record the safe/target physical ranges and
    old-sector checksum.
 5. Type the exact final confirmation `ERASE DIRECTORY`.
@@ -524,8 +528,10 @@ file offset $000-$FFF  -> CPU $F000-$FFFF
 ```
 
 Do not program byte zero of this file at physical device address zero. A new
-top-sector BIN contains an erased directory and configuration pocket. Writing
-it therefore clears all STR8-N install journals and Bank-3 identity; existing
+top-sector BIN contains an erased directory, `$FFF0=$1E` for B1:E WORK,
+`$FFF1=$1F` for the protected B1:F B3:F backup, and erased `$FFF2-$FFF9`
+reserve. Writing it therefore clears all STR8-N install
+journals and Bank-3 identity; existing
 Bank 0-2 contents are not erased, but `J0`-`J2` remain directory-gated until
 those banks are installed again through `I`.
 
@@ -558,7 +564,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/build_directory_refres
 The merge tool requires two distinct readback paths and refuses them unless
 both files are exactly 128 KiB with identical SHA-256 hashes. It also refuses
 a top BIN that is not exactly 4096 bytes, a mismatched STR8-N signature/RESET
-vector, or a top BIN whose directory/configuration pocket is not all `$FF`.
+vector, an unerased directory, role locators other than `$1E/$1F`, or non-`$FF`
+bytes in `$FFF2-$FFF9`.
 It never modifies either archived readback and changes only output offsets
 `$1F000-$1FFFF`.
 

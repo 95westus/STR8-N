@@ -2,8 +2,9 @@
 ; Load with an installed STR8-N v1.1/v1.2/v1.21 L command; S9 starts at $2000.
 ; The exact host-verified v1.22 top-sector BIN is generated into the $4000 image.
 ; This program uses direct FT245R and flash access after active erase begins.
-; STR8_DIRECTORY_REFRESH=0 preserves the live directory/configuration pocket.
-; STR8_DIRECTORY_REFRESH=1 leaves the candidate's erased pocket intact.
+; STR8_DIRECTORY_REFRESH=0 preserves the live directory and installs the
+; candidate configuration pocket. STR8_DIRECTORY_REFRESH=1 clears only the
+; directory and installs the same candidate configuration.
 ; ENTER AT EITHER PRE-ERASE CONFIRMATION CANCELS AND RETURNS TO STR8-N.
 
 ; STR8_TOP_EMBED=1 relocates the updater behind Bank Maintenance and returns
@@ -35,7 +36,7 @@ TU_OLD_SUM_LO            EQU             $7C04
 TU_OLD_SUM_HI            EQU             $7C05
 TU_INPUT                 EQU             $7C20
 TU_META                  EQU             $7C40
-TU_META_SIZE             EQU             $4A
+TU_META_SIZE             EQU             $40
 
 TU_SRC_LO                EQU             $C8
 TU_SRC_HI                EQU             $C9
@@ -219,7 +220,8 @@ TU_FAIL_SAFE:           STA             TU_STATUS
                         JMP             $F000
                         ENDIF
 
-; Save live directory/config $FFB0-$FFF9 before using the staging tray.
+; Save the live directory $FFB0-$FFEF before using the staging tray. The
+; candidate-owned $FFF0-$FFF9 configuration pocket is not overlaid.
 TU_SAVE_META:           LDX             #$00
 TU_SAVE_META_BYTE:      LDA             $FFB0,X
                         STA             TU_META,X

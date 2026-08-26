@@ -163,11 +163,13 @@ for ($address = $directoryStart; $address -le $directoryEnd; $address++) {
         throw ('New-image directory byte ${0:X4} is not erased' -f $address)
     }
 }
-for ($address = 0xFFF0; $address -lt $VectorBase; $address++) {
+for ($address = 0xFFF2; $address -lt $VectorBase; $address++) {
     if ($image[$address - $TopBase] -ne 0xFF) {
         throw ('Configuration byte ${0:X4} is not erased' -f $address)
     }
 }
+Set-ImageByte -Image $image -Address 0xFFF0 -Value 0x1E -Source 'B1:E WORK sector locator'
+Set-ImageByte -Image $image -Address 0xFFF1 -Value 0x1F -Source 'B1:F protected B3:F backup locator'
 
 [byte[]]$vectors = @(
     [byte]($str8Nmi -band 0xFF), [byte](($str8Nmi -shr 8) -band 0xFF),
@@ -191,6 +193,7 @@ Write-Host ('STR8 RESIDENT       = ${0:X4}-${1:X4}' -f $str8Start, ($str8End - 1
 Write-Host ('UNIFIED WORKER      = run ${0:X4}-${1:X4}; stored ${2:X4}-${3:X4}' -f `
     $workerRunStart, ($workerRunEnd - 1), $workerStore, ($workerStore + $workerSize - 1))
 Write-Host ('NEW DIRECTORY       = ${0:X4}-${1:X4}; all FF' -f $directoryStart, $directoryEnd)
+Write-Host ('SECTOR ROLES        = $FFF0=$1E B1:E WORK; $FFF1=$1F B1:F B3:F backup; $FFF2-$FFF9 all FF')
 Write-Host ('VECTORS FFFA-FFFF   = {0}' -f ($tail -join ' '))
 Write-Host ('CPU RANGE           = $F000-$FFFF; 4096 bytes')
 Write-Host ('SST39SF010A B3 PHYS = $1F000-$1FFFF; file offset $000-$FFF')

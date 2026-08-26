@@ -14,7 +14,9 @@ $F000-$FD54  resident code/data             3413 bytes
 $FD55-$FD5B  available resident growth           7 bytes
 $FD5C-$FFAF  unified worker                   596 bytes
 $FFB0-$FFEF  directory                         64 bytes
-$FFF0-$FFF9  identity/configuration reserve     10 bytes
+$FFF0        WORK sector locator (`$1E`=B1:E)    1 byte
+$FFF1        B3:F backup locator (`$1F`=B1:F)    1 byte
+$FFF2-$FFF9  identity/configuration reserve      8 bytes
 $FFFA-$FFFF  NMI/RESET/IRQ vectors               6 bytes
                                               ----------
                                               4096 bytes
@@ -114,7 +116,8 @@ private worker is stored at `$3400-$362A` and copied to `$0200-$042A`.
 
 `make onboard-directory-refresh` creates the guarded RAM tool that backs up
 the complete live Bank-3 top sector into Bank 1 sector F, verifies it, then
-rewrites the current top image with `$FF` in `$FFB0-$FFF9`. This is the onboard
+rewrites the current top image with `$FF` in `$FFB0-$FFEF`, `$1E` at `$FFF0`,
+`$1F` at `$FFF1`, and `$FF` in `$FFF2-$FFF9`. This is the onboard
 directory/journal reset path; the checked full-device programmer merge remains
 the independent recovery fallback.
 
@@ -177,12 +180,9 @@ copy/adopt process more convoluted than it should be.
   complete guest exists or auto-enroll it; retain exact confirmation,
   protected-sector guards, per-sector readback verification, and an explicit
   later `D` when whole-bank adoption is actually valid.
-- Consider displaying a retained B3:F backup role instead of leaving B1:F as
-  generic `U`. Keep current `P` reserved for the live protected B3:F sector.
-  `S` is attractive for positively identified STR8-N/system content, while
-  `B` would describe a verified backup role without confusing content with
-  protection. Choose the final one-character map vocabulary only with an
-  unambiguous legend.
+- Bank Maintenance now displays configured B1:F as `B` (B3:F backup), while
+  `P` remains the live protected B3:F sector. Its erase and scratch-selection
+  paths reject both configured B1:E WORK and B1:F backup roles.
 - Consider a `W` map marker for positively recognized factory onboard
   firmware in Banks 0-2. First define and prove a stable signature with low
   false-positive risk; the observed banner and board-local `WDC*` directory

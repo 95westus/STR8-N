@@ -18,6 +18,9 @@ $DeviceSize = 0x20000
 $TopStart = 0x1F000
 $TopSize = 0x1000
 $DirectoryOffset = 0x0FB0
+$DirectoryEndOffset = 0x0FEF
+$WorkSectorOffset = 0x0FF0
+$TopBackupSectorOffset = 0x0FF1
 $ConfigEndOffset = 0x0FF9
 
 $readbackFullPath = [System.IO.Path]::GetFullPath($ReadbackPath)
@@ -69,9 +72,20 @@ if ($top[0x0FFC] -ne 0x00 -or $top[0x0FFD] -ne 0xF0) {
     throw ('Top BIN RESET vector is ${0:X2}{1:X2}; expected $F000' -f $top[0x0FFD], $top[0x0FFC])
 }
 
-for ($offset = $DirectoryOffset; $offset -le $ConfigEndOffset; $offset++) {
+for ($offset = $DirectoryOffset; $offset -le $DirectoryEndOffset; $offset++) {
     if ($top[$offset] -ne 0xFF) {
-        throw ('Top BIN directory/config byte ${0:X3} is ${1:X2}; expected erased $FF' -f $offset, $top[$offset])
+        throw ('Top BIN directory byte ${0:X3} is ${1:X2}; expected erased $FF' -f $offset, $top[$offset])
+    }
+}
+if ($top[$WorkSectorOffset] -ne 0x1E) {
+    throw ('Top BIN WORK locator is ${0:X2}; expected B1:E $1E' -f $top[$WorkSectorOffset])
+}
+if ($top[$TopBackupSectorOffset] -ne 0x1F) {
+    throw ('Top BIN protected backup locator is ${0:X2}; expected B1:F $1F' -f $top[$TopBackupSectorOffset])
+}
+for ($offset = $TopBackupSectorOffset + 1; $offset -le $ConfigEndOffset; $offset++) {
+    if ($top[$offset] -ne 0xFF) {
+        throw ('Top BIN reserved config byte ${0:X3} is ${1:X2}; expected erased $FF' -f $offset, $top[$offset])
     }
 }
 
@@ -101,7 +115,9 @@ Write-Host ('TOP BIN              = {0}; {1} bytes' -f $topFullPath, $top.Length
 Write-Host ('TOP BIN SHA-256      = {0}' -f $topHash)
 Write-Host ('CHANGED PHYSICAL     = $1F000-$1FFFF only')
 Write-Host ('ERASED DIRECTORY     = $1FFB0-$1FFEF')
-Write-Host ('ERASED CONFIG        = $1FFF0-$1FFF9')
+Write-Host ('WORK SECTOR LOCATOR  = $1FFF0:$1E (B1:E)')
+Write-Host ('TOP BACKUP LOCATOR   = $1FFF1:$1F (B1:F; protected B3:F backup)')
+Write-Host ('RESERVED CONFIG      = $1FFF2-$1FFF9 erased')
 Write-Host ('RESET VECTOR         = $F000')
 Write-Host ('PROGRAMMER IMAGE     = {0}; {1} bytes' -f $outFullPath, $merged.Length)
 Write-Host ('PROGRAMMER SHA-256   = {0}' -f $outHash)
