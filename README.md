@@ -215,7 +215,7 @@ STR8-N 1.23 BANK MAINT + TOP
  N  RENAME DIR
  R  RECLAIM DIR
  E  ERASE BANK RANGE
- P  PUT AP $5000 -> B0:BF00
+ P  PUT AP $7000 -> BANK SECTOR
  U  UPDATE B3:F (BACKUP B1:F; RESET)
  ?  MENU
  Q/ENTER  RETURN TO STR8-N
@@ -228,9 +228,13 @@ recovery loop, and RESET finish as the standalone top updater.
 `N` accepts exactly five description characters and exact confirmation
 `RENAME Dn XXXXX`. It preserves the selected record's type, seal, entry, and
 journal, as well as every other directory row.
-The combined image occupies `$2000-$4FFF`, so its `P` path reads the AP
-envelope from `$5000`; the standalone Bank Maintenance tool continues to use
-`$4000`.
+The combined image occupies `$2000-$4FFF`, and ASM-F2 owns `$5000-$6D6D`, so
+its `P` path reads the AP envelope from `$7000`; the standalone Bank
+Maintenance tool continues to use `$4000`. `P` accepts an AP v2 envelope of
+`$0005-$00FF` bytes at a Bank 0-2
+sector base, rejects configured WORK/BKUP roles, requires the complete package
+range to be erased, and uses a target-specific confirmation such as
+`PUT B28000`.
 
 ## Start here
 

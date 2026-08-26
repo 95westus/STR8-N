@@ -4,7 +4,8 @@
 ; Maintenance body. U embeds the current guarded Bank-3 F-to-F updater at
 ; $3700-$3FFF and its exact verified STR8-N top image at $4000-$4FFF.
 ; Build with `make bank-maint-menu`; load the resulting S19 with STR8-N L.
-; If P is needed, stage its AP envelope at $5000 before loading this image.
+; If P is needed, stage its AP envelope at $7000 before loading this image.
+; P selects a Bank 0-2 sector base and requires an exact target confirmation.
 
 STR8_BANK_MAINT_TOP     EQU 1
 STR8_TOP_EMBED          EQU 1

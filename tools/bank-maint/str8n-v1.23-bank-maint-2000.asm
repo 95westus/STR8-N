@@ -18,9 +18,12 @@
 ; PATHS BACK UP B3F, REWRITE/VERIFY IT, THEN ERASE/VERIFY THE BACKUP.
 ; N RENAMES THE FIVE-CHARACTER DESCRIPTION OF ONE COMPLETE D0-D3 RECORD.
 ; IT PRESERVES TYPE, SEAL, ENTRY, JOURNAL, AND EVERY OTHER DIRECTORY ROW.
-; P PUTS ONE VALIDATED AP ENVELOPE INTO BANK 0 $BF00. THE RELEASE TOOL READS
-;   $4000; THE MENU+TOP VARIANT READS $5000 BECAUSE $4000 HOLDS ITS TOP IMAGE.
-;   THE AP MUST BE 5-$FF BYTES AND THE COMPLETE DESTINATION MUST BE ERASED.
+; P PUTS ONE VALIDATED AP ENVELOPE AT THE BASE OF A SELECTED BANK 0-2 SECTOR.
+;   THE RELEASE TOOL READS $4000; THE MENU+TOP VARIANT READS $7000 BECAUSE
+;   $4000 HOLDS ITS TOP IMAGE AND $5000-$6D6D IS ASM-F2 WORKSPACE. THE AP MUST
+;   BE 5-$FF BYTES, THE COMPLETE
+;   DESTINATION RANGE MUST BE ERASED, AND CONFIGURED WORK/BACKUP SECTORS ARE
+;   REFUSED.
 ; E ERASES ONE 4K SECTOR OR THE ALLOWED BANK RANGE:
 ;   BANKS 0-2: 8-F, ALL, OR AN X-Y RANGE WITHIN 8-F.
 ;   BANK 3:     8-E, ALL, OR AN X-Y RANGE WITHIN 8-E.
@@ -53,7 +56,7 @@
 ; EXACT `RESET J3` AFTER A FULL-JOURNAL CHECK AND ERASED-SCRATCH SEARCH.
 ; DIRECTORY RENAME REQUIRES EXACT `RENAME DN XXXXX` AFTER RECORD VALIDATION
 ; AND ERASED-SCRATCH SEARCH; XXXXX IS THE NEW FIVE-CHARACTER DESCRIPTION.
-; AP PUT REQUIRES EXACT `PUT B0BF00`.
+; AP PUT REQUIRES AN EXACT TARGET-SPECIFIC CONFIRMATION SUCH AS `PUT B28000`.
 ;
 ; RAM MAP:
 ;   $0200-$09FF  STR8 RAM WORKER TRAY
@@ -2293,7 +2296,7 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','3',' '
         DB ' ','N',' ',' ','R','E','N','A','M','E',' ','D','I','R',$0D,$0A
         DB ' ','R',' ',' ','R','E','C','L','A','I','M',' ','D','I','R',$0D,$0A
         DB ' ','E',' ',' ','E','R','A','S','E',' ','B','A','N','K',' ','R','A','N','G','E',$0D,$0A
-        DB ' ','P',' ',' ','P','U','T',' ','A','P',' ','$','5','0','0','0',' ','-','>',' ','B','0',':','B','F','0','0',$0D,$0A
+        DB ' ','P',' ',' ','P','U','T',' ','A','P',' ','$','7','0','0','0',' ','-','>',' ','B','A','N','K',' ','S','E','C','T','O','R',$0D,$0A
         DB ' ','U',' ',' ','U','P','D','A','T','E',' ','B','3',':','F',' ','('
         DB 'B','A','C','K','U','P',' ','B','1',':','F',';',' ','R','E','S','E','T',')',$0D,$0A
         DB ' ','?',' ',' ','M','E','N','U',$0D,$0A
@@ -2311,7 +2314,7 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','3',' '
         DB 'P','T',' ','E','=','E','R','A'
         DB 'S','E',' ','M','=','M','A','P','+','D','I','R'
         DB ' ','N','=','R','E','N','A','M','E',' ','D','I','R'
-        DB ' ','P','=','A','P',' ','B','0','B','F','0','0'
+        DB ' ','P','=','A','P',' ','$','4','0','0','0','-','>','B','A','N','K',' ','S','E','C','T','O','R'
         DB ' ','R','=','R','E','C','L','A','I','M',' ','D','I','R'
         DB ' ','Q','/','E','N','T','E','R','=','Q','U','I','T'
         DB '>',' ',0

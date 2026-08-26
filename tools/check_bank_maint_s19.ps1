@@ -84,6 +84,14 @@ foreach ($requiredCode in @('BM_RENAME LDA', 'BM_RENAME_VALIDATE',
 if (([regex]::Matches($renameCode, 'JSR\s+BM_PROGRAM')).Count -ne 1) {
     throw 'Bank Maintenance rename extension must not carry a second protected-sector rewrite path'
 }
+foreach ($requiredCode in @('BM_PUT  BRA', 'JSR BM_EHEX',
+        'JSR BM_ECHECK_ROLES', 'JSR BM_STAGE', 'LDA $0A00,X',
+        'STA $0A00,X', 'JSR BM_PROGRAM', 'CMP #$02',
+        'LDA $7000', 'LDA $7000,X')) {
+    if (-not $renameCode.Contains($requiredCode)) {
+        throw "Bank Maintenance banked AP put is missing '$requiredCode'"
+    }
+}
 
 foreach ($rawLine in Get-Content -LiteralPath $S19Path) {
     $line = $rawLine.Trim()
@@ -166,13 +174,15 @@ if ($MenuTop) {
     $requiredTexts += @('STR8-N 1.23 BANK MAINT + TOP',
         'M  MAP+DIR', 'C  COPY+ENROLL', 'D  ADOPT DIR',
         'N  RENAME DIR', 'R  RECLAIM DIR',
-        'E  ERASE BANK RANGE', 'P  PUT AP $5000 -> B0:BF00',
+        'E  ERASE BANK RANGE', 'P  PUT AP $7000 -> BANK SECTOR',
         'U  UPDATE B3:F (BACKUP B1:F; RESET)', '?  MENU',
         'Q/ENTER  RETURN TO STR8-N', 'BM> ')
 }
 else {
-    $requiredTexts += @('D=ADOPT', 'N=RENAME DIR', 'R=RECLAIM DIR')
+    $requiredTexts += @('D=ADOPT', 'N=RENAME DIR', 'P=AP $4000->BANK SECTOR',
+        'R=RECLAIM DIR')
 }
+if ($MenuTop) { $requiredTexts += @('TYPE PUT BnS000 (n=0-2,S=8-F)>') }
 foreach ($requiredText in $requiredTexts) {
     $needle = [System.Text.Encoding]::ASCII.GetBytes($requiredText)
     $found = $false
