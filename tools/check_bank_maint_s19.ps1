@@ -25,6 +25,10 @@ $sourceLines = [System.IO.File]::ReadAllLines((Resolve-Path $SourcePath))
 $codeText = ($sourceLines | ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
 $renameLines = [System.IO.File]::ReadAllLines((Resolve-Path $RenameSourcePath))
 $renameCode = ($renameLines | ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
+$apHead = [regex]::Match($codeText, '(?ms)^BM_APHEAD\s+BRA.*?(?=^BM_APSEAL\s+BRA)')
+if (-not $apHead.Success -or $apHead.Value -notmatch 'CMP\s+#\$02') {
+    throw 'Bank Maintenance map scanner must recognize the AP v2 envelope written by P'
+}
 $reclaimStart = $codeText.IndexOf('BM_RECLAIM LDA')
 $reclaimEnd = $codeText.IndexOf('BM_ERASE LDA')
 if ($reclaimStart -lt 0 -or $reclaimEnd -le $reclaimStart) {
