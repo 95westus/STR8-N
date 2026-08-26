@@ -623,9 +623,11 @@ BM_APADV STA $D8
 ?BAD   CLC
         RTS
 
-; Match tag A plus its one-byte payload length, then skip the tag header.
+; Match AP-v2 tag A plus its little-endian payload length, then skip the
+; three-byte tag header. This compact map scanner accepts metadata sections
+; through $00FF bytes; BODY retains its separate full 16-bit length check.
 BM_APTAG STA $D7
-        LDA #$02
+        LDA #$03
         JSR BM_APNEED
         BCC ?BAD
         LDY #$00
@@ -635,7 +637,10 @@ BM_APTAG STA $D7
         INY
         LDA ($CE),Y
         STA $D2
-        LDA #$02
+        INY
+        LDA ($CE),Y
+        BNE ?BAD
+        LDA #$03
         JMP BM_APADV
 ?BAD   CLC
         RTS
@@ -790,21 +795,19 @@ BM_APREL BRA ?BODY
         SEC
         RTS
 
-; Validate an export/import record section selected by tag A.
+; Bound an AP-v2 export/import record section selected by tag A. HIMON/APMAN
+; performs the authoritative row parser before load or execution; this compact
+; informational map scanner requires a nonempty bounded payload before
+; advancing to its exact BODY/FNV checks.
 BM_APREC BRA ?BODY
 ?BAD    CLC
         RTS
 ?BODY   JSR BM_APTAG
         BCC ?BAD
         LDA $D2
-        CMP #$02
-        BCC ?BAD
+        BEQ ?BAD
         JSR BM_APNEED
         BCC ?BAD
-        LDY #$01
-        LDA ($CE),Y
-        CMP $D2
-        BNE ?BAD
         LDA $D2
         JSR BM_APADV
         BCC ?BAD
