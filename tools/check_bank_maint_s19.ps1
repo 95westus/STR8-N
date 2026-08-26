@@ -1,7 +1,7 @@
 param(
-    [string]$S19Path = "BUILD/v1.22/s19/str8n-v1.22-bank-maint-2000.s19",
-    [string]$SourcePath = "tools/bank-maint/str8n-v1.22-bank-maint-2000.asm",
-    [string]$RenameSourcePath = "tools/bank-maint/str8n-v1.22-bank-maint-rename.inc",
+    [string]$S19Path = "BUILD/v1.23/s19/str8n-v1.23-bank-maint-2000.s19",
+    [string]$SourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-2000.asm",
+    [string]$RenameSourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-rename.inc",
     [switch]$MenuTop
 )
 
@@ -138,7 +138,7 @@ foreach ($required in @(0x2000, 0x3400, 0x362A)) {
 
 $orderedAddresses = @($data.Keys | Sort-Object)
 [byte[]]$programBytes = $orderedAddresses | ForEach-Object { $data[$_] }
-$banner = [System.Text.Encoding]::ASCII.GetBytes('STR8-N 1.22 BANK MAINT')
+$banner = [System.Text.Encoding]::ASCII.GetBytes('STR8-N 1.23 BANK MAINT')
 $bannerFound = $false
 for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) {
     $match = $true
@@ -153,7 +153,7 @@ for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) 
         break
     }
 }
-if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.22 banner' }
+if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.23 banner' }
 
 $requiredTexts = @('B# 8 9 A B C D E F',
         'ENTRY 8000-FFFE>', 'TYPE ADOPT B',
@@ -163,7 +163,7 @@ $requiredTexts = @('B# 8 9 A B C D E F',
         'NO ERASED SCRATCH', 'RENAME DIR 0-3>', 'DIR NOT COMPLETE',
         'NAME UNCHANGED', 'TYPE RENAME D')
 if ($MenuTop) {
-    $requiredTexts += @('STR8-N 1.22 BANK MAINT + TOP',
+    $requiredTexts += @('STR8-N 1.23 BANK MAINT + TOP',
         'M  MAP+DIR', 'C  COPY+ENROLL', 'D  ADOPT DIR',
         'N  RENAME DIR', 'R  RECLAIM DIR',
         'E  ERASE BANK RANGE', 'P  PUT AP $5000 -> B0:BF00',
