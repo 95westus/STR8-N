@@ -29,6 +29,12 @@ $apHead = [regex]::Match($codeText, '(?ms)^BM_APHEAD\s+BRA.*?(?=^BM_APSEAL\s+BRA
 if (-not $apHead.Success -or $apHead.Value -notmatch 'CMP\s+#\$02') {
     throw 'Bank Maintenance map scanner must recognize the AP v2 envelope written by P'
 }
+$apTag = [regex]::Match($codeText, '(?ms)^BM_APTAG\s+STA.*?(?=^BM_APSEAL\s+BRA)')
+if (-not $apTag.Success -or
+        $apTag.Value -notmatch 'LDA\s+#\$03' -or
+        $apTag.Value -notmatch 'LDA\s+\(\$CE\),Y\s*\r?\n\s*BNE\s+\?BAD') {
+    throw 'Bank Maintenance map scanner must consume the AP v2 16-bit section header'
+}
 $reclaimStart = $codeText.IndexOf('BM_RECLAIM LDA')
 $reclaimEnd = $codeText.IndexOf('BM_ERASE LDA')
 if ($reclaimStart -lt 0 -or $reclaimEnd -le $reclaimStart) {
