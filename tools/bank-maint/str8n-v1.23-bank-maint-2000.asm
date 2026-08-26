@@ -669,7 +669,7 @@ BM_APHEAD BRA ?BODY
         BNE ?BAD
         INY
         LDA ($CC),Y
-        CMP #$01
+        CMP #$02
         BNE ?BAD
         INY
         LDA ($CC),Y
