@@ -16,6 +16,8 @@
 ; VERIFY ERASED. FOR D3 WITH A FULL JOURNAL, IT FINDS AN ERASED SCRATCH SECTOR
 ; IN BANKS 0-2 AND RESETS ONLY THE JOURNAL TO ONE COMPLETE TRANSACTION. BOTH
 ; PATHS BACK UP B3F, REWRITE/VERIFY IT, THEN ERASE/VERIFY THE BACKUP.
+; N RENAMES THE FIVE-CHARACTER DESCRIPTION OF ONE COMPLETE D0-D3 RECORD.
+; IT PRESERVES TYPE, SEAL, ENTRY, JOURNAL, AND EVERY OTHER DIRECTORY ROW.
 ; P PUTS ONE VALIDATED AP ENVELOPE INTO BANK 0 $BF00. THE RELEASE TOOL READS
 ;   $4000; THE MENU+TOP VARIANT READS $5000 BECAUSE $4000 HOLDS ITS TOP IMAGE.
 ;   THE AP MUST BE 5-$FF BYTES AND THE COMPLETE DESTINATION MUST BE ERASED.
@@ -29,7 +31,7 @@
 ;   ONE AP DETAIL LINE IS PRINTED FOR EACH SECTOR MARKED A.
 ; M ALSO PRINTS BANK-3 DIRECTORY TYPE, DESCRIPTION, ENTRY, AND JOURNAL.
 ; M RESTORES ITS ENTRY BANK AFTER EACH CARRIED-WORKER STAGE CALL.
-; C/D/E/M/P/R, CTRL-C, ABORT, AND SAFE FAILURES RETURN TO THIS MENU.
+; C/D/E/M/N/P/R, CTRL-C, ABORT, AND SAFE FAILURES RETURN TO THIS MENU.
 ; Q OR AN EMPTY MAIN-MENU LINE RETURNS TO STR8-N.
 ; BANK-3 ERASE REMAINS THE EXCEPTION AND RETURNS DIRECTLY TO STR8.
 ;
@@ -49,6 +51,8 @@
 ; DIRECTORY ADOPTION REQUIRES EXACT `ADOPT BN`.
 ; DIRECTORY RECLAIM REQUIRES EXACT `CLEAR DN` AFTER AN ERASED-BANK SCAN, OR
 ; EXACT `RESET J3` AFTER A FULL-JOURNAL CHECK AND ERASED-SCRATCH SEARCH.
+; DIRECTORY RENAME REQUIRES EXACT `RENAME DN XXXXX` AFTER RECORD VALIDATION
+; AND ERASED-SCRATCH SEARCH; XXXXX IS THE NEW FIVE-CHARACTER DESCRIPTION.
 ; AP PUT REQUIRES EXACT `PUT B0BF00`.
 ;
 ; RAM MAP:
@@ -73,7 +77,7 @@
 ;   $7C00 STATUS: $AC OK, $E0 ABORT, $E1 STAGE FAIL,
 ;                 $E2 PROGRAM/VERIFY FAIL, $E6 BAD RESET VECTOR,
 ;                 $E7 DIRECTORY ENROLLMENT FAIL
-;   $7C01 OPERATION: C, D, E, M, P, Q, OR R
+;   $7C01 OPERATION: C, D, E, M, N, P, Q, OR R
 ;   $7C02 SOURCE/ERASE BANK
 ;   $7C03 DESTINATION BANK
 ;   $7C04 CURRENT/FAILING SECTOR HIGH BYTE
@@ -158,6 +162,8 @@ BM_MAIN LDX #$00
         BEQ ?ERASE
         CMP #'M'
         BEQ ?MAP
+        CMP #'N'
+        BEQ ?RENAME
         CMP #'P'
         BEQ ?PUT
         CMP #'R'
@@ -180,6 +186,7 @@ BM_MAIN LDX #$00
         STA $7C00
         JMP $F000
 ?MAP   JMP BM_MAP
+?RENAME JMP BM_RENAME
 ?PUT   JMP BM_PUT
 ?RECLAIM JMP BM_RECLAIM
         IF STR8_BANK_MAINT_TOP
@@ -1802,6 +1809,9 @@ BM_RECLAIM_J3
         LDA #$03
         JSR $0203
         JSR BM_COPY_DIR_BASE
+        LDA $7C01
+        CMP #'N'
+        BEQ ?SCRATCH_BEGIN
         LDY #$0C
 ?FULL   LDA ($CA),Y
         BNE ?NOT_FULL
@@ -1810,6 +1820,7 @@ BM_RECLAIM_J3
         BNE ?FULL
 
 ; Find the first completely erased scratch sector in Banks 0-2, sectors 8-F.
+?SCRATCH_BEGIN
         STZ $7C08
 ?SCRATCH_BANK
         LDA #$80
@@ -1877,6 +1888,11 @@ BM_RECLAIM_J3
         LSR A
         LSR A
         JSR BM_NIBBLE
+        LDA $7C01
+        CMP #'N'
+        BNE ?J3_CONFIRM
+        JMP BM_RENAME_CONFIRM
+?J3_CONFIRM
         LDX #<BM_MRJ3_CONFIRM
         LDY #>BM_MRJ3_CONFIRM
         JSR BM_PUTS
@@ -1891,39 +1907,57 @@ BM_RECLAIM_J3
         INX
         CPX #$08
         BNE ?MATCH
+        BRA ?CONFIRM_OK
+?CONFIRM_BAD
+        JMP BM_ABORT
+?CONFIRM_OK
 
 ; Snapshot B3F again after confirmation, then put the verified backup in the
 ; erased scratch sector found above.
+BM_B3F_REWRITE_CONFIRMED
         LDA #$03
         STA $7C02
         LDA #$F0
         STA $7C04
         JSR BM_STAGE
-        BCC ?STAGE_FAIL
+        BCS ?B3F_STAGED
+        JMP BM_FSTAGE
+?B3F_STAGED
         LDA $7C08
         STA $7C03
         LDA $7C09
         STA $7C04
         JSR BM_PROGRAM
-        BCC ?PROGRAM_FAIL
+        BCS ?BACKUP_PROGRAMMED
+        JMP BM_FPROGRAM
+?BACKUP_PROGRAMMED
         LDX #<BM_MRBACKUP_OK
         LDY #>BM_MRBACKUP_OK
         JSR BM_PUTS
 
-; D3 begins at staged $19E0; replace only its four journal bytes. FCFFFFFF is
-; one complete transaction followed by fifteen unused transaction pairs.
+; Rename changes only the selected staged row's description. Reclaim changes
+; only D3's four journal bytes to one COMPLETE pair and fifteen unused pairs.
+        LDA $7C01
+        CMP #'N'
+        BNE ?RESET_J3
+        JSR BM_RENAME_APPLY
+        BRA ?STAGE_CHANGED
+?RESET_J3
         LDA #$FC
         STA $19EC
         LDA #$FF
         STA $19ED
         STA $19EE
         STA $19EF
+?STAGE_CHANGED
         LDA #$03
         STA $7C03
         LDA #$F0
         STA $7C04
         JSR BM_PROGRAM
-        BCC ?PROGRAM_FAIL
+        BCS ?B3F_PROGRAMMED
+        JMP BM_FPROGRAM
+?B3F_PROGRAMMED
 
 ; B3F now verifies. Erase and verify the temporary scratch-sector backup.
         JSR BM_FILL
@@ -1932,18 +1966,15 @@ BM_RECLAIM_J3
         LDA $7C09
         STA $7C04
         JSR BM_PROGRAM
-        BCC ?PROGRAM_FAIL
+        BCS ?SCRATCH_CLEARED
+        JMP BM_FPROGRAM
+?SCRATCH_CLEARED
         LDA #$03
         STA $7C02
         STA $7C03
         LDA #$F0
         STA $7C04
         JMP BM_SUCCESS
-?CONFIRM_BAD
-        JMP BM_ABORT
-?PROGRAM_FAIL
-        JMP BM_FPROGRAM
-
 BM_MRBANK DB $0D,$0A,'R','E','C','L','A','I','M',' ','D','I','R',' ','0','-','3','>',' ',0
 BM_MRCLEAR DB $0D,$0A,'B','3','F',' ','R','E','W','R','I','T','E',$0D,$0A
         DB 'T','Y','P','E',' ','C','L','E','A','R',' ','D',0
@@ -2256,13 +2287,11 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','2',' '
         IF STR8_BANK_MAINT_TOP
         DB 'B','A','N','K',' ','M','A','I','N','T',' ','+',' ','T','O','P'
         DB $0D,$0A
-        DB ' ','M',' ',' ','M','A','P',' ','B','A','N','K','S',' ','+',' '
-        DB 'D','I','R','E','C','T','O','R','Y',$0D,$0A
-        DB ' ','C',' ',' ','C','O','P','Y',' ','B','A','N','K',' ','+',' '
-        DB 'E','N','R','O','L','L',$0D,$0A
-        DB ' ','D',' ',' ','A','D','O','P','T',' ','B','A','N','K',' ','I','N','T','O',' '
-        DB 'D','I','R','E','C','T','O','R','Y',$0D,$0A
-        DB ' ','R',' ',' ','R','E','C','L','A','I','M',' ','D','I','R','E','C','T','O','R','Y',$0D,$0A
+        DB ' ','M',' ',' ','M','A','P','+','D','I','R',$0D,$0A
+        DB ' ','C',' ',' ','C','O','P','Y','+','E','N','R','O','L','L',$0D,$0A
+        DB ' ','D',' ',' ','A','D','O','P','T',' ','D','I','R',$0D,$0A
+        DB ' ','N',' ',' ','R','E','N','A','M','E',' ','D','I','R',$0D,$0A
+        DB ' ','R',' ',' ','R','E','C','L','A','I','M',' ','D','I','R',$0D,$0A
         DB ' ','E',' ',' ','E','R','A','S','E',' ','B','A','N','K',' ','R','A','N','G','E',$0D,$0A
         DB ' ','P',' ',' ','P','U','T',' ','A','P',' ','$','5','0','0','0',' ','-','>',' ','B','0',':','B','F','0','0',$0D,$0A
         DB ' ','U',' ',' ','U','P','D','A','T','E',' ','B','3',':','F',' ','('
@@ -2281,94 +2310,12 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','2',' '
         DB 'C','=','C','O','P','Y','+','D','I','R',' ','D','=','A','D','O'
         DB 'P','T',' ','E','=','E','R','A'
         DB 'S','E',' ','M','=','M','A','P','+','D','I','R'
+        DB ' ','N','=','R','E','N','A','M','E',' ','D','I','R'
         DB ' ','P','=','A','P',' ','B','0','B','F','0','0'
         DB ' ','R','=','R','E','C','L','A','I','M',' ','D','I','R'
         DB ' ','Q','/','E','N','T','E','R','=','Q','U','I','T'
         DB '>',' ',0
         ENDIF
-; Fixed one-sector AP carrier put for the split-V1 promotion proof.
-; First run AP $4000 $3000 in HIMON. The menu+top variant uses AP $5000 $3000
-; so its embedded top candidate can remain at $4000. The envelope and fit are
-; checked
-; again here; HIMON remains the authority for the complete AP format.
-BM_PUT  BRA ?BODY
-?MTARGET DB 'P','U','T',' ','A','P',' ','B','0',' ','$','B','F'
-        DB '0','0',$0D,$0A
-        DB 'T','Y','P','E',' ','P','U','T',' ','B','0','B','F'
-        DB '0','0','>',' ',0
-?EXACT  DB 'P','U','T',' ','B','0','B','F','0','0',0
-?BAD    JMP BM_ABORT
-?BODY   LDA #'P'
-        STA $7C01
-        IF STR8_BANK_MAINT_TOP
-        LDA $5000
-        ELSE
-        LDA $4000
-        ENDIF
-        CMP #'A'
-        BNE ?BAD
-        LDA $4001
-        CMP #'P'
-        BNE ?BAD
-        LDA $4002
-        CMP #$01
-        BNE ?BAD
-        LDA $4004
-        BNE ?BAD
-        LDA $4003
-        CMP #$05
-        BCC ?BAD
-        STA $7C05
-        STZ $7C02
-        STZ $7C03
-        LDA #$B0
-        STA $7C04
-        JSR BM_STAGE
-        BCS ?STAGED
-        JMP BM_FSTAGE
-?STAGED
-        LDX #$00
-?ERASED LDA $1900,X
-        CMP #$FF
-        BEQ ?ERASEOK
-        JMP BM_ABORT
-?ERASEOK
-        INX
-        CPX $7C05
-        BNE ?ERASED
-        LDX #<?MTARGET
-        LDY #>?MTARGET
-        JSR BM_PUTS
-        JSR BM_READ
-        BCS ?READOK
-        JMP BM_ABORT
-?READOK
-        LDX #$00
-?CONFIRM LDA $7C20,X
-        CMP ?EXACT,X
-        BEQ ?MATCH
-        JMP BM_ABORT
-?MATCH
-        INX
-        CPX #$0B
-        BNE ?CONFIRM
-        LDX #$00
-?OVERLAY
-        IF STR8_BANK_MAINT_TOP
-        LDA $5000,X
-        ELSE
-        LDA $4000,X
-        ENDIF
-        STA $1900,X
-        INX
-        CPX $7C05
-        BNE ?OVERLAY
-        JSR BM_PROGRAM
-        BCS ?PROGRAMMED
-        JMP BM_FPROGRAM
-?PROGRAMMED
-        JMP BM_SUCCESS
-
 ; BEGIN GENERATED STR8 MUTATION WORKER
         ORG $3400
         DB $4C,$07,$02,$49,$57,$01,$FE,$08
@@ -2444,5 +2391,7 @@ BM_PUT  BRA ?BODY
 ; END GENERATED STR8 MUTATION WORKER
         IF STR8_BANK_MAINT_TOP
         INCLUDE "str8n-v1.22-top-update-2000.asm"
+        ELSE
+        INCLUDE "str8n-v1.22-bank-maint-rename.inc"
         ENDIF
         END

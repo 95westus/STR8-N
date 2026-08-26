@@ -1,6 +1,7 @@
 param(
     [string]$S19Path = "BUILD/v1.22/s19/str8n-v1.22-bank-maint-2000.s19",
     [string]$SourcePath = "tools/bank-maint/str8n-v1.22-bank-maint-2000.asm",
+    [string]$RenameSourcePath = "tools/bank-maint/str8n-v1.22-bank-maint-rename.inc",
     [switch]$MenuTop
 )
 
@@ -17,8 +18,13 @@ $startRecords = 0
 if (-not (Test-Path -LiteralPath $SourcePath)) {
     throw "Missing Bank Maintenance source: $SourcePath"
 }
+if (-not (Test-Path -LiteralPath $RenameSourcePath)) {
+    throw "Missing Bank Maintenance rename source: $RenameSourcePath"
+}
 $sourceLines = [System.IO.File]::ReadAllLines((Resolve-Path $SourcePath))
 $codeText = ($sourceLines | ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
+$renameLines = [System.IO.File]::ReadAllLines((Resolve-Path $RenameSourcePath))
+$renameCode = ($renameLines | ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
 $reclaimStart = $codeText.IndexOf('BM_RECLAIM LDA')
 $reclaimEnd = $codeText.IndexOf('BM_ERASE LDA')
 if ($reclaimStart -lt 0 -or $reclaimEnd -le $reclaimStart) {
@@ -60,6 +66,23 @@ $journalStoreTargets = @([regex]::Matches($j3ReclaimCode, 'STA\s+\$(19E[0-9A-F])
     ForEach-Object { $_.Groups[1].Value })
 if (($journalStoreTargets -join ',') -ne '19EC,19ED,19EE,19EF') {
     throw "Bank Maintenance D3 compaction writes unexpected D3 bytes: $($journalStoreTargets -join ',')"
+}
+foreach ($requiredCode in @("CMP #'N'", 'JMP BM_RENAME',
+        'JSR BM_RENAME_APPLY', 'JMP BM_RENAME_CONFIRM')) {
+    if (-not $codeText.Contains($requiredCode)) {
+        throw "Bank Maintenance rename dispatch/shared rewrite is missing '$requiredCode'"
+    }
+}
+foreach ($requiredCode in @('BM_RENAME LDA', 'BM_RENAME_VALIDATE',
+        'JSR BM_DESC_BYTE', 'BM_RENAME_CONFIRM', 'BM_RENAME_APPLY',
+        'JMP BM_RECLAIM_J3', 'STA ($CA),Y',
+        "BM_MNEXACT DB 'R','E','N','A','M','E',' ','D'")) {
+    if (-not $renameCode.Contains($requiredCode)) {
+        throw "Bank Maintenance rename extension is missing '$requiredCode'"
+    }
+}
+if (([regex]::Matches($renameCode, 'JSR\s+BM_PROGRAM')).Count -ne 1) {
+    throw 'Bank Maintenance rename extension must not carry a second protected-sector rewrite path'
 }
 
 foreach ($rawLine in Get-Content -LiteralPath $S19Path) {
@@ -137,17 +160,18 @@ $requiredTexts = @('B# 8 9 A B C D E F',
         'RECLAIM DIR 0-3>', 'B3F REWRITE',
         'TYPE CLEAR D', 'BACKUP VERIFIED', 'BANK NOT ERASED', 'DIR EMPTY',
         'SCRATCH B', 'TYPE RESET J3>', 'J3 NOT FULL',
-        'NO ERASED SCRATCH')
+        'NO ERASED SCRATCH', 'RENAME DIR 0-3>', 'DIR NOT COMPLETE',
+        'NAME UNCHANGED', 'TYPE RENAME D')
 if ($MenuTop) {
     $requiredTexts += @('STR8-N 1.22 BANK MAINT + TOP',
-        'M  MAP BANKS + DIRECTORY', 'C  COPY BANK + ENROLL',
-        'D  ADOPT BANK INTO DIRECTORY', 'R  RECLAIM DIRECTORY',
+        'M  MAP+DIR', 'C  COPY+ENROLL', 'D  ADOPT DIR',
+        'N  RENAME DIR', 'R  RECLAIM DIR',
         'E  ERASE BANK RANGE', 'P  PUT AP $5000 -> B0:BF00',
         'U  UPDATE B3:F (BACKUP B1:F; RESET)', '?  MENU',
         'Q/ENTER  RETURN TO STR8-N', 'BM> ')
 }
 else {
-    $requiredTexts += @('D=ADOPT', 'R=RECLAIM DIR')
+    $requiredTexts += @('D=ADOPT', 'N=RENAME DIR', 'R=RECLAIM DIR')
 }
 foreach ($requiredText in $requiredTexts) {
     $needle = [System.Text.Encoding]::ASCII.GetBytes($requiredText)

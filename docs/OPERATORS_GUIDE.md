@@ -197,6 +197,7 @@ The menu commands are:
 M  map every bank and show the Bank-3 directory; does not write flash
 C  copy a complete 32K bank and enroll its empty destination directory row
 D  adopt an existing payload into an empty directory row; payload is read-only
+N  rename one COMPLETE D0-D3 five-character description through guarded B3:F rewrite
 E  erase selected 4K sectors; Bank 3 sector F is always protected
 P  install the narrow, validated AP carrier at Bank 0 $BF00
 R  clear an erased D0-D2 row, or compact an exhausted D3 install journal
@@ -208,8 +209,9 @@ as `Q`: it leaves Bank Maintenance and returns to STR8-N. Ctrl-C and empty
 lines at operation subprompts cancel that operation and return to the Bank
 Maintenance menu.
 
-The shortest safe rule is: use `M` freely; treat `C`, `D`, `E`, and `P` as flash
-operations.
+The shortest safe rule is: use `M` freely; treat `C`, `D`, `E`, `N`, `P`, and
+`R` as flash operations. `N` requires exact `RENAME Dn XXXXX` and preserves
+the selected row's type, seal, entry, and journal.
 
 ### Upgrade Bank 3 sector F to STR8-N v1.22
 

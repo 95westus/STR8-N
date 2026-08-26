@@ -187,11 +187,12 @@ meanings at the `STR8-N>` prompt.
 - The exact 4096-byte Bank-3 top-sector BIN for an external programmer.
 - A payload S19 for the resident and an evidence S19 for its relocated worker.
 - A self-contained Bank Maintenance S19 loaded and started with `L`, including
-  map, copy+directory, adopt, erase, and AP operations.
+  map, copy+directory, adopt, guarded rename/reclaim, erase, and AP operations.
 - A host- and board-qualified menu Bank Maintenance variant that adds `U` for the current
   guarded Bank-3 sector-F update. Its generated `.a` image carrier reproduces
   the WDC `.asm` S19 byte-for-byte under ASM-F2; update, copy, adopt, launch,
-  and recovery edges are board-accepted as of 2026-08-18.
+  and recovery edges are board-accepted as of 2026-08-18. The new guarded `N`
+  rename path is host-checked and still awaits its separate board transcript.
 - A deterministic raw console ABI hardware probe covering blocking input,
   blocking output, non-consuming input readiness, initialization, and ABI
   discovery, loaded and started with `L`.
@@ -208,10 +209,11 @@ card is deliberately one command per line:
 
 ```text
 STR8-N 1.22 BANK MAINT + TOP
- M  MAP BANKS + DIRECTORY
- C  COPY BANK + ENROLL
- D  ADOPT BANK INTO DIRECTORY
- R  RECLAIM DIRECTORY
+ M  MAP+DIR
+ C  COPY+ENROLL
+ D  ADOPT DIR
+ N  RENAME DIR
+ R  RECLAIM DIR
  E  ERASE BANK RANGE
  P  PUT AP $5000 -> B0:BF00
  U  UPDATE B3:F (BACKUP B1:F; RESET)
@@ -223,6 +225,9 @@ BM>
 `U` uses the same two exact confirmations, verified `B1:F` backup, live
 directory preservation, candidate-configuration installation, verification, retry/restore
 recovery loop, and RESET finish as the standalone top updater.
+`N` accepts exactly five description characters and exact confirmation
+`RENAME Dn XXXXX`. It preserves the selected record's type, seal, entry, and
+journal, as well as every other directory row.
 The combined image occupies `$2000-$4FFF`, so its `P` path reads the AP
 envelope from `$5000`; the standalone Bank Maintenance tool continues to use
 `$4000`.

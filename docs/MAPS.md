@@ -306,7 +306,7 @@ arbitrary guest leaves every other byte unused.
 
 ```mermaid
 flowchart TD
-    L[STR8-N L] --> S[S19 loads $2000-$362A<br/>S9=$2000]
+    L[STR8-N L] --> S[S19 loads $2000-$3987<br/>S9=$2000]
     S --> B[Copy private worker<br/>$3400-$362A to $0200-$042A]
     B --> M{Command}
     M -->|M| MAP[Stage and inspect sectors<br/>no flash mutation]
@@ -319,10 +319,13 @@ flowchart TD
     M -->|R D0-D2| RECLAIM[Prove all 8 payload sectors erased<br/>confirm CLEAR Dn]
     RECLAIM -->|any used sector, including retained F backup| REFUSE[BANK NOT ERASED<br/>no mutation]
     M -->|R D3| COMPACT[Require journal 00000000<br/>find erased scratch; confirm RESET J3]
+    M -->|N D0-D3| RENAME[Validate COMPLETE record + new DESC<br/>find erased scratch; confirm RENAME Dn XXXXX]
     RECLAIM --> BACKUP[Verify original B3F backup<br/>in selected bank sector F]
     COMPACT --> BACKUP2[Verify original B3F backup<br/>in discovered erased sector]
+    RENAME --> BACKUP3[Verify original B3F backup<br/>in discovered erased sector]
     BACKUP --> TOP[Rewrite and verify Bank 3 F<br/>then erase backup]
     BACKUP2 --> TOP2[Write D3 journal FCFFFFFF<br/>verify B3F; then erase backup]
+    BACKUP3 --> TOP3[Change only selected DESC bytes<br/>verify B3F; then erase backup]
     M -->|E| ERASE[Erase selected sectors<br/>Bank 3 F protected]
     M -->|P| AP[Validated AP put<br/>Bank 0 $BF00]
     M -->|Q| Q[Jump Bank 3 $F000]
@@ -330,6 +333,7 @@ flowchart TD
     ID --> M
     ID2 --> M
     REFUSE --> M
+    TOP3 --> M
     ERASE --> M
     AP --> M
 ```
