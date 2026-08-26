@@ -26,7 +26,7 @@ compatible HIMON and preserves RAM.
 Use the R-YORS 12K HIMON file:
 
 ```text
-C:/SRC/R-YORS/RELEASE/ryors-v1.2-himon-bank3-c-e.s19
+C:/SRC/R-YORS/RELEASE/ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-himon-bank3-c-e.s19
 ```
 
 Example session:
@@ -57,7 +57,7 @@ After HIMON has established Bank 3's identity and entry, install the 16K
 ASM-only file:
 
 ```text
-C:/SRC/R-YORS/RELEASE/ryors-v1.2-asm-bank3-8-b.s19
+C:/SRC/R-YORS/RELEASE/ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-asm-bank3-8-b.s19
 ```
 
 ```text
