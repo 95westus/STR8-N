@@ -1,6 +1,6 @@
-# STR8-N v1.22 Candidate Maps and Diagrams
+# STR8-N v1.23 Candidate Maps and Diagrams
 
-These diagrams describe the host-qualified v1.22 board candidate.
+These diagrams describe the host-qualified v1.23 board candidate.
 
 ## Ownership
 
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.22/
+|-- v1.23/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -47,7 +47,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.22 top updater S19]
+    TOP --> UPDATE[guarded v1.23 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
@@ -86,7 +86,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[Six one-second WAIT pulses<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.22]
+    A --> P[Flush input<br/>STR8-N 1.23]
     P --> Q{Six live selector dots<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -230,7 +230,7 @@ flowchart TD
     Q --> F
 ```
 
-## STR8-N v1.22 candidate RAM ownership
+## STR8-N v1.23 candidate RAM ownership
 
 ```text
 $7DFF  +------------------------------+
@@ -261,7 +261,7 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-`$1A00-$1FFF` is free for user programs in v1.22: STR8-N, HIMON, ASM-F2, and
+`$1A00-$1FFF` is free for user programs in v1.23: STR8-N, HIMON, ASM-F2, and
 the maintained RAM tools do not allocate it. The whole `$0200-$09FF` Worker
 Code Tray (WCT) remains phase-owned and volatile during worker calls, but the
 maintained runtime workers do not extend above `$0453`: the unified STR8-N

@@ -1,10 +1,10 @@
-; STR8-N V1.22 BANK MAINTENANCE, LOAD ADDRESS $2000.
+; STR8-N V1.23 BANK MAINTENANCE, LOAD ADDRESS $2000.
 ; INTERACTIVE BANK COPY/ERASE/MAP MAINTENANCE FOR STR8-N L.
 ;
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.22/s19/str8n-v1.22-bank-maint-2000.s19
+;   send BUILD/v1.23/s19/str8n-v1.23-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -2283,7 +2283,7 @@ BM_SUCCESS LDA #$AC
         JSR BM_OUT
         JMP BM_MAIN
 
-BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','2',' '
+BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','3',' '
         IF STR8_BANK_MAINT_TOP
         DB 'B','A','N','K',' ','M','A','I','N','T',' ','+',' ','T','O','P'
         DB $0D,$0A
@@ -2390,8 +2390,8 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','2',' '
         DB $CE,$EC,$EE
 ; END GENERATED STR8 MUTATION WORKER
         IF STR8_BANK_MAINT_TOP
-        INCLUDE "str8n-v1.22-top-update-2000.asm"
+        INCLUDE "str8n-v1.23-top-update-2000.asm"
         ELSE
-        INCLUDE "str8n-v1.22-bank-maint-rename.inc"
+        INCLUDE "str8n-v1.23-bank-maint-rename.inc"
         ENDIF
         END
