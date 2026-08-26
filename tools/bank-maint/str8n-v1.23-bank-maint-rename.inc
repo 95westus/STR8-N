@@ -211,77 +211,121 @@ BM_MNSAME DB $0D,$0A,'N','A','M','E',' ','U','N','C','H','A','N','G','E','D',$0D
 BM_MNCONFIRM DB $0D,$0A,'T','Y','P','E',' ','R','E','N','A','M','E',' ','D',0
 BM_MNEXACT DB 'R','E','N','A','M','E',' ','D'
 
-; Fixed one-sector AP carrier put for the split-V1 promotion proof. It shares
-; this extension tray so the maintained core remains below the fixed worker.
+; One-sector AP carrier put. The package is written at the selected sector
+; base so the later HIMON command is simply AP Bn $s000 dst. The target line
+; is also the exact destructive confirmation: for example, PUT B28000.
 BM_PUT  BRA ?BODY
-?MTARGET DB 'P','U','T',' ','A','P',' ','B','0',' ','$','B','F'
-        DB '0','0',$0D,$0A
-        DB 'T','Y','P','E',' ','P','U','T',' ','B','0','B','F'
-        DB '0','0','>',' ',0
-?EXACT  DB 'P','U','T',' ','B','0','B','F','0','0',0
+?MTARGET DB "TYPE PUT BnS000 (n=0-2,S=8-F)> ",0
+?PREFIX DB 'P','U','T',' ','B'
 ?BAD    JMP BM_ABORT
 ?BODY   LDA #'P'
         STA $7C01
         IF STR8_BANK_MAINT_TOP
-        LDA $5000
+        LDA $7000
         ELSE
         LDA $4000
         ENDIF
         CMP #'A'
         BNE ?BAD
+        IF STR8_BANK_MAINT_TOP
+        LDA $7001
+        ELSE
         LDA $4001
+        ENDIF
         CMP #'P'
         BNE ?BAD
+        IF STR8_BANK_MAINT_TOP
+        LDA $7002
+        ELSE
         LDA $4002
-        CMP #$01
+        ENDIF
+        CMP #$02
         BNE ?BAD
+        IF STR8_BANK_MAINT_TOP
+        LDA $7004
+        ELSE
         LDA $4004
+        ENDIF
         BNE ?BAD
+        IF STR8_BANK_MAINT_TOP
+        LDA $7003
+        ELSE
         LDA $4003
+        ENDIF
         CMP #$05
         BCC ?BAD
         STA $7C05
-        STZ $7C02
-        STZ $7C03
-        LDA #$B0
-        STA $7C04
-        JSR BM_STAGE
-        BCS ?STAGED
-        JMP BM_FSTAGE
-?STAGED
-        LDX #$00
-?ERASED LDA $1900,X
-        CMP #$FF
-        BEQ ?ERASEOK
-        JMP BM_ABORT
-?ERASEOK
-        INX
-        CPX $7C05
-        BNE ?ERASED
+
         LDX #<?MTARGET
         LDY #>?MTARGET
         JSR BM_PUTS
         JSR BM_READ
-        BCS ?READOK
-        JMP BM_ABORT
-?READOK
+        BCC ?BAD
         LDX #$00
-?CONFIRM LDA $7C20,X
-        CMP ?EXACT,X
-        BEQ ?MATCH
-        JMP BM_ABORT
-?MATCH
+?PREFIX_CHECK
+        LDA $7C20,X
+        CMP ?PREFIX,X
+        BNE ?BAD
         INX
-        CPX #$0B
-        BNE ?CONFIRM
+        CPX #$05
+        BNE ?PREFIX_CHECK
+        LDA $7C25
+        SEC
+        SBC #'0'
+        BCC ?BAD
+        CMP #$03
+        BCS ?BAD
+        STA $7C02
+        STA $7C03
+        LDA $7C26
+        JSR BM_EHEX
+        BCC ?BAD
+        STA $7C04
+        LDX #$07
+?ZERO_CHECK
+        LDA $7C20,X
+        CMP #'0'
+        BNE ?BAD
+        INX
+        CPX #$0A
+        BNE ?ZERO_CHECK
+        LDA $7C2A
+        BNE ?BAD
+
+; Reject configured WORK and B3F-backup roles even if their leading bytes
+; happen to be erased. BM_ECHECK_ROLES consumes $7C05 as a sector count.
+        LDA $7C05
+        PHA
+        LDA #$01
+        STA $7C05
+        JSR BM_ECHECK_ROLES
+        PLA
+        STA $7C05
+        BCS ?ROLEOK
+        JMP BM_EPROTECTED
+
+?ROLEOK JSR BM_STAGE
+        BCS ?STAGED
+        JMP BM_FSTAGE
+?STAGED
+        LDX #$00
+?ERASED LDA $0A00,X
+        CMP #$FF
+        BEQ ?ERASED_BYTE
+        JMP BM_ABORT
+?ERASED_BYTE
+        INX
+        CPX $7C05
+        BNE ?ERASED
+
         LDX #$00
 ?OVERLAY
         IF STR8_BANK_MAINT_TOP
-        LDA $5000,X
+        LDA $7000,X
         ELSE
         LDA $4000,X
         ENDIF
-        STA $1900,X
+        STA $0A00,X
         INX
         CPX $7C05
         BNE ?OVERLAY
