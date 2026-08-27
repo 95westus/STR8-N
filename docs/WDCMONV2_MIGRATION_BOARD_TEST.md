@@ -30,7 +30,7 @@ SHA-256 3212469D695EFC7228EB2DBABAF05E09234AB58B2925AA7D6DA8896323E8278A
 Bank 3 $8000-$EFFF; S9 $C000
 
 tools/wdcmonv2/start_wdcmonv2_ram.ps1
-SHA-256 7881B2C685636B74481FD3F88C012120EB5A14280F4EBAABEBA5CEB67618DFF6
+SHA-256 676FAA446C0AC63AF726C5966A42167E6C13CA1D89FE6971F05CDDDB3D3E8799
 binary WDCMONv2 load/readback/execute plus retained terminal handle
 ```
 
@@ -127,13 +127,13 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\TOOLS\extract_wdcmonv2_archive.ps1 `
-  -TranscriptPath .\stock-b0-b3-capture.log `
+  -TranscriptPath .\LOCAL\stock-b0-b3-capture.log `
   -OutputDirectory .\LOCAL\stock-board `
   -Bank 0
 
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\TOOLS\extract_wdcmonv2_archive.ps1 `
-  -TranscriptPath .\stock-b0-b3-capture.log `
+  -TranscriptPath .\LOCAL\stock-b0-b3-capture.log `
   -OutputDirectory .\LOCAL\stock-board `
   -Bank 3
 ```
@@ -212,8 +212,12 @@ Run only if Phase A passed and B0 is erased or already identical to B3.
 7. Type exact `INSTALL STR8-N 1.23`.
 8. Do not touch RESET, NMI, or power while B3:F is active.
 9. Require `STR8-N VERIFIED; RESET`, followed by the STR8-N reset banner and
-   selector.
+   selector. This first banner follows the installer's software jump through
+   the newly written B3 RESET vector; it is not yet the physical-reset proof.
 10. Select `S` and remain at `STR8-N>`.
+11. Press physical RESET. Require the STR8-N banner and selector again, select
+    `S`, and return to `STR8-N>`. Do not accept a DTR transition or software
+    jump as this proof.
 
 If the active top write reports failure, retain the complete transcript. Use
 `R` to retry the carried candidate or `O` to restore B0:F while the RAM

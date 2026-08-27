@@ -3,8 +3,11 @@ param(
     [string]$ZipPath = 'BUILD/v1.23/str8n-v1.23-wdcmonv2-ryors-migration-kit.zip',
     [string]$ArchiveS19Path = 'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.s19',
     [string]$InstallS19Path = 'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19',
+    [string]$TopBinPath = 'BUILD/v1.23/bin/str8n-v1.23-bank3-f000-ffff.bin',
     [string]$CandidateBinPath = 'BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin',
-    [string]$RyorsS19Path = '../R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-asm-bank3-8-e.s19'
+    [string]$RyorsS19Path = '../R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-asm-bank3-8-e.s19',
+    [string]$HostBridgePath = 'tools/wdcmonv2/start_wdcmonv2_ram.ps1',
+    [string]$BoardTestPath = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md'
 )
 
 Set-StrictMode -Version Latest
@@ -13,6 +16,36 @@ $ErrorActionPreference = 'Stop'
 function Get-Sha256 {
     param([Parameter(Mandatory = $true)][string]$Path)
     return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash
+}
+
+function Assert-DocumentedHash {
+    param(
+        [Parameter(Mandatory = $true)][string]$Document,
+        [Parameter(Mandatory = $true)][string]$Label,
+        [Parameter(Mandatory = $true)][string]$Path
+    )
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Documented artifact missing: $Path" }
+    $pattern = '(?m)^' + [regex]::Escape($Label) + '\r?\nSHA-256 ([0-9A-F]{64})$'
+    $match = [regex]::Match($Document, $pattern)
+    if (-not $match.Success) { throw "Board card lacks an exact SHA-256 row for: $Label" }
+    $actualHash = Get-Sha256 -Path $Path
+    if ($match.Groups[1].Value -ne $actualHash) {
+        throw "Board card SHA-256 is stale for ${Label}: documented=$($match.Groups[1].Value), actual=$actualHash"
+    }
+}
+
+if (-not (Test-Path -LiteralPath $BoardTestPath -PathType Leaf)) { throw "Board test missing: $BoardTestPath" }
+$boardTest = Get-Content -Raw -LiteralPath $BoardTestPath
+$documentedArtifacts = [ordered]@{
+    'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.s19' = $ArchiveS19Path
+    'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19' = $InstallS19Path
+    'BUILD/v1.23/bin/str8n-v1.23-bank3-f000-ffff.bin' = $TopBinPath
+    'BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin' = $CandidateBinPath
+    '../R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-asm-bank3-8-e.s19' = $RyorsS19Path
+    'tools/wdcmonv2/start_wdcmonv2_ram.ps1' = $HostBridgePath
+}
+foreach ($item in $documentedArtifacts.GetEnumerator()) {
+    Assert-DocumentedHash -Document $boardTest -Label $item.Key -Path $item.Value
 }
 
 $expected = @(
@@ -113,3 +146,4 @@ try {
 Write-Host ('MIGRATION PACKAGE   = PASS; {0} allowlisted files' -f $expected.Count)
 Write-Host ('PACKAGE ZIP SHA256  = {0}' -f (Get-Sha256 -Path $ZipPath))
 Write-Host 'WDC FIRMWARE/ARCHIVE = ABSENT BY ALLOWLIST'
+Write-Host 'BOARD CARD HASHES    = CURRENT FOR ALL SIX PINNED INPUTS'
