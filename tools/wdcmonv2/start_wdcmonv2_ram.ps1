@@ -4,6 +4,7 @@ param(
     [int]$BaudRate = 115200,
     [int]$ChunkBytes = 256,
     [string]$TranscriptPath,
+    [string]$EventLogPath,
     [string]$TransferPath,
     [switch]$NoReset,
     [switch]$NoTerminal,
@@ -135,6 +136,20 @@ $script:WdcWriteMemory = [byte]0x02
 $script:WdcReadMemory = [byte]0x03
 $script:WdcExecuteMemory = [byte]0x06
 $script:WdcBoardInfo = [byte]0x0C
+$script:EventWriter = $null
+
+function Write-SessionEvent {
+    param([Parameter(Mandatory = $true)][string]$Text)
+    if ($null -eq $script:EventWriter) { return }
+    $script:EventWriter.WriteLine(('{0} {1}' -f ([DateTime]::UtcNow.ToString('o')), $Text))
+    $script:EventWriter.Flush()
+}
+
+function Get-ByteSha256 {
+    param([Parameter(Mandatory = $true)][byte[]]$Bytes)
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash($Bytes))).Replace('-', '') } finally { $sha.Dispose() }
+}
 
 function Convert-ToByteArray {
     param([Parameter(Mandatory = $true)][object[]]$Values)
@@ -338,6 +353,7 @@ function Start-RawTerminal {
         [string]$LogPath,
         [byte[]]$TransferBytes,
         [string]$TransferName,
+        [string]$TransferSha256,
         [switch]$ReplaceLog
     )
     $log = $null
@@ -352,6 +368,8 @@ function Start-RawTerminal {
     $stdout = [Console]::OpenStandardOutput()
     $oldControlC = [Console]::TreatControlCAsInput
     [Console]::TreatControlCAsInput = $true
+    $txLine = [System.Text.StringBuilder]::new()
+    Write-SessionEvent 'TERMINAL START'
     if ($null -ne $TransferBytes) {
         Write-Host ("TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; CTRL+U SENDS {0}; ENTER SENDS CR" -f $TransferName)
     } else {
@@ -372,18 +390,24 @@ function Start-RawTerminal {
             if ([Console]::KeyAvailable) {
                 $key = [Console]::ReadKey($true)
                 $value = [int]$key.KeyChar
-                if ($value -eq 0x1D) { break }
+                if ($value -eq 0x1D) {
+                    Write-SessionEvent 'CTRL+] TERMINAL EXIT'
+                    break
+                }
                 if ($value -eq 0x02) {
                     try {
                         $probe = Get-WdcBoardInfo -Serial $Serial
                         if ($null -ne $log) { $log.Write($probe.Raw, 0, $probe.Raw.Length); $log.Flush() }
+                        Write-SessionEvent ("CTRL+B WDCMON PROBE PASS TAG={0} HW={1:N2} WDCMON={2:N2}" -f $probe.Tag, ($probe.Hardware / 100.0), ($probe.Software / 100.0))
                         Write-Host ("`nWDCMON PROBE = {0}; HW={1:N2}; WDCMON={2:N2}" -f $probe.Tag, ($probe.Hardware / 100.0), ($probe.Software / 100.0))
                     } catch {
+                        Write-SessionEvent ("CTRL+B WDCMON PROBE FAIL {0}" -f $_.Exception.Message)
                         Write-Warning ("WDCMON probe failed: {0}" -f $_.Exception.Message)
                     }
                     continue
                 }
                 if ($value -eq 0x15 -and $null -ne $TransferBytes) {
+                    Write-SessionEvent ("CTRL+U FILE SEND NAME={0} BYTES={1} SHA256={2}" -f $TransferName, $TransferBytes.Length, $TransferSha256)
                     Write-Host ("`nSENDING {0} ({1} bytes)" -f $TransferName, $TransferBytes.Length)
                     for ($offset = 0; $offset -lt $TransferBytes.Length; $offset += 64) {
                         $count = [Math]::Min(64, $TransferBytes.Length - $offset)
@@ -393,7 +417,17 @@ function Start-RawTerminal {
                     Write-Host 'FILE SENT'
                     continue
                 }
-                if ($key.Key -eq [ConsoleKey]::Enter) { $value = 0x0D }
+                if ($key.Key -eq [ConsoleKey]::Enter) {
+                    Write-SessionEvent ("TX LINE {0}" -f $txLine.ToString())
+                    $null = $txLine.Clear()
+                    $value = 0x0D
+                } elseif ($value -eq 0x08 -or $value -eq 0x7F) {
+                    if ($txLine.Length -gt 0) { $null = $txLine.Remove($txLine.Length - 1, 1) }
+                } elseif ($value -ge 0x20 -and $value -le 0x7E) {
+                    $null = $txLine.Append([char]$value)
+                } elseif ($value -ge 0 -and $value -le 0xFF) {
+                    Write-SessionEvent ('TX BYTE ${0:X2}' -f $value)
+                }
                 if ($value -ge 0 -and $value -le 0xFF) {
                     Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($value))
                 }
@@ -401,6 +435,7 @@ function Start-RawTerminal {
             if ($available -eq 0) { Start-Sleep -Milliseconds 10 }
         }
     } finally {
+        Write-SessionEvent 'TERMINAL STOP'
         [Console]::TreatControlCAsInput = $oldControlC
         if ($null -ne $log) { $log.Dispose() }
     }
@@ -473,8 +508,22 @@ if ($SelfTest) {
         throw 'WDCMONv2 wire-framing self-test failed'
     }
     if ($mock.Receive.Count -ne 0 -or $mock.State -ne 'SYNC') { throw 'WDCMONv2 protocol self-test left unread or partial state' }
+    $eventMemory = [System.IO.MemoryStream]::new()
+    $eventEncoding = [System.Text.UTF8Encoding]::new($false)
+    $eventWriter = [System.IO.StreamWriter]::new($eventMemory, $eventEncoding, 1024, $true)
+    $script:EventWriter = $eventWriter
+    try {
+        Write-SessionEvent 'SELFTEST EVENT'
+    } finally {
+        $eventWriter.Dispose()
+        $script:EventWriter = $null
+    }
+    $eventText = $eventEncoding.GetString($eventMemory.ToArray())
+    $eventMemory.Dispose()
+    if ($eventText -notmatch 'SELFTEST EVENT') { throw 'Session event-log self-test failed' }
     Write-Host 'WDCMONV2 HOST BRIDGE SELF-TEST = PASS'
     Write-Host 'PROTOCOL EMULATOR = PASS; $0C/$02/$03/$06 EXACT WIRE FRAMES'
+    Write-Host 'SESSION EVENT LOG SELF-TEST = PASS'
     if (-not $ImagePath) { return }
 }
 
@@ -503,6 +552,7 @@ if (-not $ProbeOnly -and $ListenOnlySeconds -eq 0 -and -not $NoTerminal) {
     if ([Console]::IsInputRedirected) { throw 'Interactive terminal input is redirected; use a real console or make -NoTerminal explicit' }
     try { $null = [Console]::KeyAvailable } catch { throw ('Interactive console is unavailable: {0}' -f $_.Exception.Message) }
 }
+$transcriptFull = $null
 if (-not $ProbeOnly -and $TranscriptPath -and ($ListenOnlySeconds -gt 0 -or -not $NoTerminal)) {
     $transcriptFull = Get-HostFullPath -Path $TranscriptPath
     if ((Test-Path -LiteralPath $transcriptFull) -and -not $Force) {
@@ -513,13 +563,34 @@ if (-not $ProbeOnly -and $TranscriptPath -and ($ListenOnlySeconds -gt 0 -or -not
         New-Item -ItemType Directory -Force -Path $transcriptParent | Out-Null
     }
 }
+$eventFull = $null
+if ($EventLogPath) {
+    $eventFull = Get-HostFullPath -Path $EventLogPath
+} elseif ($null -ne $transcriptFull) {
+    $eventFull = $transcriptFull + '.events.txt'
+}
+if ($null -ne $transcriptFull -and $null -ne $eventFull -and
+    [string]::Equals($transcriptFull, $eventFull, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw '-TranscriptPath and -EventLogPath must name different files'
+}
+if ($null -ne $eventFull) {
+    if ((Test-Path -LiteralPath $eventFull) -and -not $Force) {
+        throw "Session event log exists; use -Force to replace it: $eventFull"
+    }
+    $eventParent = Split-Path -Parent $eventFull
+    if ($eventParent -and -not (Test-Path -LiteralPath $eventParent)) {
+        New-Item -ItemType Directory -Force -Path $eventParent | Out-Null
+    }
+}
 $transferBytes = $null
 $transferName = $null
+$transferSha256 = $null
 if (-not $ProbeOnly -and $ListenOnlySeconds -eq 0 -and -not $NoTerminal -and $TransferPath) {
     if (-not (Test-Path -LiteralPath $TransferPath -PathType Leaf)) { throw "Transfer file not found: $TransferPath" }
     $transferFull = (Resolve-Path -LiteralPath $TransferPath).Path
     $transferBytes = [System.IO.File]::ReadAllBytes($transferFull)
     $transferName = Split-Path -Leaf $transferFull
+    $transferSha256 = Get-ByteSha256 -Bytes $transferBytes
 }
 
 $serial = [System.IO.Ports.SerialPort]::new($Port, $BaudRate, [System.IO.Ports.Parity]::None, 8, [System.IO.Ports.StopBits]::One)
@@ -527,7 +598,20 @@ $serial.Handshake = [System.IO.Ports.Handshake]::RequestToSend
 $serial.ReadTimeout = 1000
 $serial.WriteTimeout = 5000
 $serial.DtrEnable = $false
+$sessionOutcome = 'INCOMPLETE'
 try {
+    if ($null -ne $eventFull) {
+        $eventEncoding = [System.Text.UTF8Encoding]::new($false)
+        $script:EventWriter = [System.IO.StreamWriter]::new($eventFull, $false, $eventEncoding)
+        Write-Host "SESSION EVENT LOG = $eventFull"
+        Write-SessionEvent ("SESSION START PORT={0} BAUD={1} RESET={2}" -f $Port, $BaudRate, (-not $NoReset))
+        if ($null -ne $image) {
+            Write-SessionEvent ("IMAGE SHA256={0} RANGE=${1:X4}-${2:X4} BYTES={3} ENTRY=${4:X4} FNV1A={5:X8}" -f $image.Sha256, $image.First, $image.Last, $image.Bytes.Length, $image.Entry, $image.Fnv1a)
+        }
+        if ($null -ne $transferBytes) {
+            Write-SessionEvent ("TRANSFER READY NAME={0} BYTES={1} SHA256={2}" -f $transferName, $transferBytes.Length, $transferSha256)
+        }
+    }
     $serial.Open()
     $serial.DiscardInBuffer()
     $serial.DiscardOutBuffer()
@@ -542,12 +626,15 @@ try {
 
     if ($ListenOnlySeconds -gt 0) {
         Receive-SerialWindow -Serial $serial -Seconds $ListenOnlySeconds -LogPath $TranscriptPath
+        $sessionOutcome = 'LISTEN WINDOW COMPLETE'
         return
     }
 
     $board = Get-WdcBoardInfo -Serial $serial
+    Write-SessionEvent ('BOARD TAG={0} HW={1:N2} WDCMON={2:N2}' -f $board.Tag, ($board.Hardware / 100.0), ($board.Software / 100.0))
     Write-Host ('BOARD      = {0}; HW={1:N2}; WDCMON={2:N2}' -f $board.Tag, ($board.Hardware / 100.0), ($board.Software / 100.0))
     if ($ProbeOnly) {
+        $sessionOutcome = 'PROBE PASS; NO RAM OR FLASH COMMAND ISSUED'
         Write-Host 'WDCMONV2 PROBE = PASS; NO RAM OR FLASH COMMAND ISSUED'
         return
     }
@@ -566,16 +653,28 @@ try {
         }
         Write-Host -NoNewline '.'
     }
+    Write-SessionEvent 'RAM READBACK BYTE-EXACT'
     Write-Host "`nRAM READBACK = BYTE-EXACT"
     Write-Host ('EXECUTE      = ${0:X4}' -f $image.Entry)
+    Write-SessionEvent ('EXECUTE ${0:X4}' -f $image.Entry)
     Start-WdcMemory -Serial $serial -Address $image.Entry
 
     if ($NoTerminal) {
+        $sessionOutcome = 'RAM APPLICATION STARTED; PORT CLOSED BY REQUEST'
         Write-Warning 'RAM application is running, but this process will close the port. Reopening a terminal may toggle DTR and reset the board.'
     } else {
-        Start-RawTerminal -Serial $serial -LogPath $TranscriptPath -TransferBytes $transferBytes -TransferName $transferName -ReplaceLog:$Force
+        Start-RawTerminal -Serial $serial -LogPath $TranscriptPath -TransferBytes $transferBytes -TransferName $transferName -TransferSha256 $transferSha256 -ReplaceLog:$Force
+        $sessionOutcome = 'TERMINAL CLOSED BY OPERATOR'
     }
+} catch {
+    Write-SessionEvent ("ERROR {0}" -f $_.Exception.Message)
+    throw
 } finally {
+    Write-SessionEvent ("SESSION END OUTCOME={0}" -f $sessionOutcome)
     if ($serial.IsOpen) { $serial.Close() }
     $serial.Dispose()
+    if ($null -ne $script:EventWriter) {
+        $script:EventWriter.Dispose()
+        $script:EventWriter = $null
+    }
 }
