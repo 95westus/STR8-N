@@ -350,21 +350,11 @@ function Start-WdcMemory {
 function Start-RawTerminal {
     param(
         [Parameter(Mandatory = $true)][System.IO.Ports.SerialPort]$Serial,
-        [string]$LogPath,
+        [System.IO.Stream]$Log,
         [byte[]]$TransferBytes,
         [string]$TransferName,
-        [string]$TransferSha256,
-        [switch]$ReplaceLog
+        [string]$TransferSha256
     )
-    $log = $null
-    if ($LogPath) {
-        $full = Get-HostFullPath -Path $LogPath
-        if ((Test-Path -LiteralPath $full) -and -not $ReplaceLog) { throw "Transcript exists; use -Force to replace it: $full" }
-        $parent = Split-Path -Parent $full
-        if ($parent -and -not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Force -Path $parent | Out-Null }
-        $log = [System.IO.File]::Open($full, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
-        Write-Host "RAW RX TRANSCRIPT = $full"
-    }
     $stdout = [Console]::OpenStandardOutput()
     $oldControlC = [Console]::TreatControlCAsInput
     [Console]::TreatControlCAsInput = $true
@@ -384,7 +374,7 @@ function Start-RawTerminal {
                 if ($count -gt 0) {
                     $stdout.Write($buffer, 0, $count)
                     $stdout.Flush()
-                    if ($null -ne $log) { $log.Write($buffer, 0, $count); $log.Flush() }
+                    if ($null -ne $Log) { $Log.Write($buffer, 0, $count); $Log.Flush() }
                 }
             }
             if ([Console]::KeyAvailable) {
@@ -397,7 +387,7 @@ function Start-RawTerminal {
                 if ($value -eq 0x02) {
                     try {
                         $probe = Get-WdcBoardInfo -Serial $Serial
-                        if ($null -ne $log) { $log.Write($probe.Raw, 0, $probe.Raw.Length); $log.Flush() }
+                        if ($null -ne $Log) { $Log.Write($probe.Raw, 0, $probe.Raw.Length); $Log.Flush() }
                         Write-SessionEvent ("CTRL+B WDCMON PROBE PASS TAG={0} HW={1:N2} WDCMON={2:N2}" -f $probe.Tag, ($probe.Hardware / 100.0), ($probe.Software / 100.0))
                         Write-Host ("`nWDCMON PROBE = {0}; HW={1:N2}; WDCMON={2:N2}" -f $probe.Tag, ($probe.Hardware / 100.0), ($probe.Software / 100.0))
                     } catch {
@@ -437,7 +427,6 @@ function Start-RawTerminal {
     } finally {
         Write-SessionEvent 'TERMINAL STOP'
         [Console]::TreatControlCAsInput = $oldControlC
-        if ($null -ne $log) { $log.Dispose() }
     }
 }
 
@@ -445,35 +434,25 @@ function Receive-SerialWindow {
     param(
         [Parameter(Mandatory = $true)][System.IO.Ports.SerialPort]$Serial,
         [Parameter(Mandatory = $true)][int]$Seconds,
-        [string]$LogPath
+        [System.IO.Stream]$Log
     )
-    $log = $null
-    if ($LogPath) {
-        $full = Get-HostFullPath -Path $LogPath
-        $log = [System.IO.File]::Open($full, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
-        Write-Host "LISTEN RX CAPTURE = $full"
-    }
     $stdout = [Console]::OpenStandardOutput()
     $deadline = [DateTime]::UtcNow.AddSeconds($Seconds)
     $total = 0
-    try {
-        $buffer = New-Object byte[] 4096
-        while ([DateTime]::UtcNow -lt $deadline) {
-            $available = $Serial.BytesToRead
-            if ($available -gt 0) {
-                $count = $Serial.Read($buffer, 0, [Math]::Min($available, $buffer.Length))
-                if ($count -gt 0) {
-                    $total += $count
-                    $stdout.Write($buffer, 0, $count)
-                    $stdout.Flush()
-                    if ($null -ne $log) { $log.Write($buffer, 0, $count); $log.Flush() }
-                }
-            } else {
-                Start-Sleep -Milliseconds 10
+    $buffer = New-Object byte[] 4096
+    while ([DateTime]::UtcNow -lt $deadline) {
+        $available = $Serial.BytesToRead
+        if ($available -gt 0) {
+            $count = $Serial.Read($buffer, 0, [Math]::Min($available, $buffer.Length))
+            if ($count -gt 0) {
+                $total += $count
+                $stdout.Write($buffer, 0, $count)
+                $stdout.Flush()
+                if ($null -ne $Log) { $Log.Write($buffer, 0, $count); $Log.Flush() }
             }
+        } else {
+            Start-Sleep -Milliseconds 10
         }
-    } finally {
-        if ($null -ne $log) { $log.Dispose() }
     }
     Write-Host ("`nLISTEN ONLY = COMPLETE; RX={0} BYTES; TX=0 BYTES" -f $total)
 }
@@ -599,10 +578,15 @@ $serial.ReadTimeout = 1000
 $serial.WriteTimeout = 5000
 $serial.DtrEnable = $false
 $sessionOutcome = 'INCOMPLETE'
+$eventStream = $null
+$rawLog = $null
 try {
     if ($null -ne $eventFull) {
         $eventEncoding = [System.Text.UTF8Encoding]::new($false)
-        $script:EventWriter = [System.IO.StreamWriter]::new($eventFull, $false, $eventEncoding)
+        $eventMode = [System.IO.FileMode]::CreateNew
+        if ($Force) { $eventMode = [System.IO.FileMode]::Create }
+        $eventStream = [System.IO.File]::Open($eventFull, $eventMode, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
+        $script:EventWriter = [System.IO.StreamWriter]::new($eventStream, $eventEncoding)
         Write-Host "SESSION EVENT LOG = $eventFull"
         Write-SessionEvent ("SESSION START PORT={0} BAUD={1} RESET={2}" -f $Port, $BaudRate, (-not $NoReset))
         if ($null -ne $image) {
@@ -611,6 +595,13 @@ try {
         if ($null -ne $transferBytes) {
             Write-SessionEvent ("TRANSFER READY NAME={0} BYTES={1} SHA256={2}" -f $transferName, $transferBytes.Length, $transferSha256)
         }
+    }
+    if ($null -ne $transcriptFull) {
+        $rawMode = [System.IO.FileMode]::CreateNew
+        if ($Force) { $rawMode = [System.IO.FileMode]::Create }
+        $rawLog = [System.IO.File]::Open($transcriptFull, $rawMode, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
+        Write-Host "RAW RX TRANSCRIPT = $transcriptFull"
+        Write-SessionEvent ("RAW RX LOG READY PATH={0}" -f $transcriptFull)
     }
     $serial.Open()
     $serial.DiscardInBuffer()
@@ -625,7 +616,7 @@ try {
     }
 
     if ($ListenOnlySeconds -gt 0) {
-        Receive-SerialWindow -Serial $serial -Seconds $ListenOnlySeconds -LogPath $TranscriptPath
+        Receive-SerialWindow -Serial $serial -Seconds $ListenOnlySeconds -Log $rawLog
         $sessionOutcome = 'LISTEN WINDOW COMPLETE'
         return
     }
@@ -663,7 +654,7 @@ try {
         $sessionOutcome = 'RAM APPLICATION STARTED; PORT CLOSED BY REQUEST'
         Write-Warning 'RAM application is running, but this process will close the port. Reopening a terminal may toggle DTR and reset the board.'
     } else {
-        Start-RawTerminal -Serial $serial -LogPath $TranscriptPath -TransferBytes $transferBytes -TransferName $transferName -TransferSha256 $transferSha256 -ReplaceLog:$Force
+        Start-RawTerminal -Serial $serial -Log $rawLog -TransferBytes $transferBytes -TransferName $transferName -TransferSha256 $transferSha256
         $sessionOutcome = 'TERMINAL CLOSED BY OPERATOR'
     }
 } catch {
@@ -673,8 +664,10 @@ try {
     Write-SessionEvent ("SESSION END OUTCOME={0}" -f $sessionOutcome)
     if ($serial.IsOpen) { $serial.Close() }
     $serial.Dispose()
+    if ($null -ne $rawLog) { $rawLog.Dispose() }
     if ($null -ne $script:EventWriter) {
         $script:EventWriter.Dispose()
         $script:EventWriter = $null
     }
+    if ($null -ne $eventStream) { $eventStream.Dispose() }
 }

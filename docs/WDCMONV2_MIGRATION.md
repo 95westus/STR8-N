@@ -184,9 +184,12 @@ explicit. If `-EventLogPath` is supplied, it must differ from
 
 Before resetting the board, the full path also requires an interactive console,
 checks that requested raw and event logs do not already exist unless `-Force`
-is explicit, creates their parent directories, and reads/hashes the optional
-transfer file. These host-side failures therefore occur before command `$06`
-hands control to RAM.
+is explicit, creates their parent directories, reads/hashes the optional
+transfer file, and opens both evidence files with live handles. Without
+`-Force`, exclusive create semantics also reject a file that appears after the
+initial check. Evidence-path and permissions failures therefore occur before
+the serial reset/synchronization, and necessarily before command `$06` hands
+control to RAM.
 
 If probe synchronization times out, stop binary traffic. A diagnostic
 `-ListenOnlySeconds 5` run may use the same `-Port` and optional
