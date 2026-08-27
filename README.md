@@ -200,6 +200,18 @@ meanings at the `STR8-N>` prompt.
 - A guarded onboard directory-pocket refresh S19 with backup, retry, and
   restore.
 - A composed 32K ASM + HIMON + STR8-N image for Bank 0, 1, or 2.
+- A read-only `$2000` bank inventory/archive S19, an explicit binary-WDCMONv2
+  load/readback/execute bridge, and a host extractor that produce a checked
+  local 32K BIN, S19, and receipt. This migration stage is host-qualified and
+  still awaits its stock-board transcript.
+- A separately gated RAM seed installer that accepts only an
+  erased or already-identical B0, preserves stock B3 there, carries an
+  unconfigured STR8-N top sector, and leaves B1/B2 untouched. It is
+  host-qualified and not yet stock-board accepted.
+- An explicit `make wdcmonv2-package` publication kit containing the verified
+  STR8-N/R-YORS artifacts, source, binary-monitor/terminal host bridge,
+  procedures, license, manifest, and self-verifier. Its allowlist excludes
+  WDCMONv2 firmware and owner bank archives.
 - A manifest containing artifact paths, addresses, ABI versions, sizes, and
   hashes.
 - A generated public assembly contract consumed by adjacent R-YORS builds.
@@ -259,6 +271,12 @@ range to be erased, and uses a target-specific confirmation such as
   artifact flows.
 - [R-YORS Integration Boundary](docs/R_YORS_INTEGRATION.md) — how an adjacent
   R-YORS checkout consumes STR8-N artifacts.
+- [Stock WDCMONv2 Migration](docs/WDCMONV2_MIGRATION.md) — exact binary host
+  launch, read-only first stage, local Bank-0/3 preservation, extraction, and
+  remaining install gates.
+- [WDCMONv2 Migration Board Test](docs/WDCMONV2_MIGRATION_BOARD_TEST.md) —
+  exact artifacts, refusal tests, preservation/install sequence, readback
+  checks, and evidence required for physical acceptance.
 - [Implementation Record](docs/EMBEDDED_WORKER_REFACTOR_PLAN.md) — settled
   design decisions, retained hardware evidence, and open board-proof work.
 - [v1.2 Implementation Plan](docs/STR8N_V1_2_IMPLEMENTATION_PLAN.md) — the

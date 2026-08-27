@@ -80,14 +80,34 @@ DIRECTORY_REFRESH_S19 := $(S19_DIR)/str8n-$(VERSION)-directory-refresh-2000.s19
 RYORS_28K_S19 ?= ../R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-asm-bank3-8-e.s19
 RYORS_FULL_BANK_TOOL := tools/build_ryors_full_bank_s19.ps1
 RYORS_FULL_BANK_S19 := $(S19_DIR)/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+WDCMONV2_ARCHIVE_SRC := tools/wdcmonv2/wdcmonv2str8n-archive-2000.asm
+WDCMONV2_ARCHIVE_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-wdcmonv2-archive-2000.obj
+WDCMONV2_ARCHIVE_S19 := $(S19_DIR)/str8n-$(VERSION)-wdcmonv2-archive-2000.s19
+WDCMONV2_ARCHIVE_MAP := $(WDCMONV2_ARCHIVE_S19:.s19=.map)
+WDCMONV2_ARCHIVE_CHECK := tools/wdcmonv2/check_wdcmonv2_archive.ps1
+WDCMONV2_ARCHIVE_EXTRACT := tools/wdcmonv2/extract_wdcmonv2_archive.ps1
+WDCMONV2_INSTALL_SRC := tools/wdcmonv2/wdcmonv2str8n-install-2000.asm
+WDCMONV2_INSTALL_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.obj
+WDCMONV2_INSTALL_S19 := $(S19_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.s19
+WDCMONV2_INSTALL_MAP := $(WDCMONV2_INSTALL_S19:.s19=.map)
+WDCMONV2_INSTALL_CHECK := tools/wdcmonv2/check_wdcmonv2_install.ps1
+WDCMONV2_INSTALL_INC_TOOL := tools/wdcmonv2/make_wdcmonv2_install_image_inc.ps1
+WDCMONV2_INSTALL_INC := $(RELEASE_DIR)/generated/str8n-$(VERSION)-wdcmonv2-install-image.inc
+WDCMONV2_INSTALL_TOP_BIN := $(BIN_DIR)/str8n-$(VERSION)-wdcmonv2-bank3-f000-ffff.bin
+WDCMONV2_HOST_LOADER := tools/wdcmonv2/start_wdcmonv2_ram.ps1
+WDCMONV2_PACKAGE_TOOL := tools/wdcmonv2/make_wdcmonv2_migration_package.ps1
+WDCMONV2_PACKAGE_CHECK := tools/wdcmonv2/check_wdcmonv2_migration_package.ps1
+WDCMONV2_PACKAGE_VERIFY := tools/wdcmonv2/verify_wdcmonv2_migration_kit.ps1
+WDCMONV2_PACKAGE_DIR := $(RELEASE_DIR)/wdcmonv2-ryors-migration-kit
+WDCMONV2_PACKAGE_ZIP := $(RELEASE_DIR)/str8n-$(VERSION)-wdcmonv2-ryors-migration-kit.zip
 TOP_BIN := $(BIN_DIR)/str8n-$(VERSION)-bank3-f000-ffff.bin
 MANIFEST := $(BUILD_DIR)/str8n-manifest.json
 PUBLIC_CONTRACT := $(INCLUDE_DIR)/str8n-public.inc
 
 .NOTPARALLEL:
-.PHONY: all resident workers programmer-bin manifest bank-maint bank-maint-menu console-abi-test top-update onboard-directory-refresh ryors-full-bank layout-check embedded-layout-check range-matrix-check ram-load-contract-check ram-abi-check clean help dirs FORCE
+.PHONY: all resident workers programmer-bin manifest bank-maint bank-maint-menu console-abi-test top-update onboard-directory-refresh ryors-full-bank wdcmonv2-archive wdcmonv2-install wdcmonv2-host-check wdcmonv2-package layout-check embedded-layout-check range-matrix-check ram-load-contract-check ram-abi-check clean help dirs FORCE
 
-all: manifest range-matrix-check ram-load-contract-check ram-abi-check console-abi-test top-update onboard-directory-refresh
+all: manifest range-matrix-check ram-load-contract-check ram-abi-check console-abi-test top-update onboard-directory-refresh wdcmonv2-archive wdcmonv2-install wdcmonv2-host-check
 
 resident: $(STR8_S19)
 
@@ -108,6 +128,17 @@ top-update: ram-abi-check layout-check range-matrix-check ram-load-contract-chec
 onboard-directory-refresh: ram-abi-check layout-check range-matrix-check ram-load-contract-check bank-maint programmer-bin $(DIRECTORY_REFRESH_S19)
 
 ryors-full-bank: $(RYORS_FULL_BANK_S19)
+
+wdcmonv2-archive: $(WDCMONV2_ARCHIVE_S19)
+
+wdcmonv2-install: $(WDCMONV2_INSTALL_S19)
+
+wdcmonv2-host-check: $(WDCMONV2_HOST_LOADER) $(WDCMONV2_ARCHIVE_S19) $(WDCMONV2_INSTALL_S19)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -SelfTest
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$(WDCMONV2_ARCHIVE_S19)" -ValidateOnly
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$(WDCMONV2_INSTALL_S19)" -ValidateOnly
+
+wdcmonv2-package: $(WDCMONV2_PACKAGE_ZIP)
 
 layout-check: $(STR8_S19) $(WORKER_S19) $(LAYOUT_CHECK_TOOL)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(LAYOUT_CHECK_TOOL)
@@ -177,6 +208,21 @@ $(DIRECTORY_REFRESH_OBJ): $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-directory-refresh-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-directory-refresh-2000.sym)
 
+$(WDCMONV2_ARCHIVE_OBJ): $(WDCMONV2_ARCHIVE_SRC) | dirs
+	$(ASM) -G -L -S -W $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-wdcmonv2-archive-2000.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-wdcmonv2-archive-2000.sym)
+
+$(WDCMONV2_INSTALL_INC): $(TOP_BIN) $(WDCMONV2_INSTALL_INC_TOOL) | dirs
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_INSTALL_INC_TOOL) -TopBinPath "$(TOP_BIN)" -OutPath "$@" -CandidateBinPath "$(WDCMONV2_INSTALL_TOP_BIN)"
+
+$(WDCMONV2_INSTALL_OBJ): $(WDCMONV2_INSTALL_SRC) $(WDCMONV2_INSTALL_INC) | dirs
+	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.sym)
+
 $(STR8_S19): $(STR8_OBJ) $(DELAY_OBJ) | dirs
 	$(LINKER) $(STR8_LINKFLAGS) $@ $(STR8_OBJ) $(DELAY_OBJ)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S903F0000C'; Set-Content -LiteralPath $$p -Value $$lines"
@@ -213,6 +259,27 @@ $(DIRECTORY_REFRESH_S19): $(DIRECTORY_REFRESH_OBJ) $(TOP_UPDATE_CHECK_TOOL) | di
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_CHECK_TOOL) -S19Path "$@" -TopBinPath "$(TOP_BIN)" -DirectoryRefresh
 
+$(WDCMONV2_ARCHIVE_S19): $(WDCMONV2_ARCHIVE_OBJ) $(WDCMONV2_ARCHIVE_CHECK) $(WDCMONV2_ARCHIVE_EXTRACT) | dirs
+	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_ARCHIVE_CHECK) -SourcePath "$(WDCMONV2_ARCHIVE_SRC)" -S19Path "$@" -MapPath "$(WDCMONV2_ARCHIVE_MAP)" -ExtractorPath "$(WDCMONV2_ARCHIVE_EXTRACT)"
+
+$(WDCMONV2_INSTALL_S19): $(WDCMONV2_INSTALL_OBJ) $(WDCMONV2_INSTALL_CHECK) $(TOP_BIN) $(WDCMONV2_INSTALL_TOP_BIN) | dirs
+	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_INSTALL_CHECK) -SourcePath "$(WDCMONV2_INSTALL_SRC)" -S19Path "$@" -MapPath "$(WDCMONV2_INSTALL_MAP)" -TopBinPath "$(TOP_BIN)" -CandidateBinPath "$(WDCMONV2_INSTALL_TOP_BIN)"
+
+$(WDCMONV2_INSTALL_TOP_BIN): $(WDCMONV2_INSTALL_INC)
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "if (-not (Test-Path -LiteralPath '$@' -PathType Leaf)) { throw 'Missing generated migration candidate: $@' }"
+
+$(WDCMONV2_PACKAGE_ZIP): $(WDCMONV2_ARCHIVE_S19) $(WDCMONV2_INSTALL_S19) $(WDCMONV2_INSTALL_TOP_BIN) $(WDCMONV2_INSTALL_INC) $(RYORS_28K_S19) $(WDCMONV2_HOST_LOADER) $(WDCMONV2_PACKAGE_TOOL) $(WDCMONV2_PACKAGE_CHECK) $(WDCMONV2_PACKAGE_VERIFY) $(WDCMONV2_ARCHIVE_SRC) $(WDCMONV2_INSTALL_SRC) $(WDCMONV2_ARCHIVE_EXTRACT) docs/WDCMONV2_MIGRATION.md docs/WDCMONV2_MIGRATION_BOARD_TEST.md docs/WDCMONV2_MIGRATION_PROVENANCE.md LICENSE | dirs
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -SelfTest
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$(WDCMONV2_ARCHIVE_S19)" -ValidateOnly
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$(WDCMONV2_INSTALL_S19)" -ValidateOnly
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_PACKAGE_TOOL) -ArchiveS19Path "$(WDCMONV2_ARCHIVE_S19)" -InstallS19Path "$(WDCMONV2_INSTALL_S19)" -CandidateBinPath "$(WDCMONV2_INSTALL_TOP_BIN)" -InstallIncludePath "$(WDCMONV2_INSTALL_INC)" -RyorsS19Path "$(RYORS_28K_S19)" -KitDirectory "$(WDCMONV2_PACKAGE_DIR)" -ZipPath "$@"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_PACKAGE_CHECK) -KitDirectory "$(WDCMONV2_PACKAGE_DIR)" -ZipPath "$@" -ArchiveS19Path "$(WDCMONV2_ARCHIVE_S19)" -InstallS19Path "$(WDCMONV2_INSTALL_S19)" -CandidateBinPath "$(WDCMONV2_INSTALL_TOP_BIN)" -RyorsS19Path "$(RYORS_28K_S19)"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File "$(WDCMONV2_PACKAGE_DIR)/VERIFY-PACKAGE.ps1"
+
 $(RYORS_FULL_BANK_S19): $(RYORS_28K_S19) $(TOP_BIN) $(RYORS_FULL_BANK_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RYORS_FULL_BANK_TOOL) -PayloadS19Path "$(RYORS_28K_S19)" -TopBinPath "$(TOP_BIN)" -S19Path "$@"
 
@@ -222,8 +289,8 @@ $(TOP_BIN): layout-check $(TOP_BIN_TOOL) | dirs
 $(PUBLIC_CONTRACT): $(SRC_DIR)/str8-config-eq.inc $(SRC_DIR)/str8-ram-abi.inc $(SRC_DIR)/str8-jump-eq.inc $(SRC_DIR)/str8-console-eq.inc $(SRC_DIR)/str8-record-eq.inc $(SRC_DIR)/str8-worker-eq.inc $(PUBLIC_CONTRACT_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(PUBLIC_CONTRACT_TOOL) -SourceDir "$(SRC_DIR)" -OutPath "$@"
 
-$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(BANK_MAINT_S19) $(CONSOLE_ABI_TEST_S19) $(TOP_UPDATE_S19) $(DIRECTORY_REFRESH_S19) $(PUBLIC_CONTRACT) $(MANIFEST_TOOL) FORCE
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(MANIFEST_TOOL) -Str8MapPath "$(STR8_MAP)" -WorkerMapPath "$(WORKER_MAP)" -ConsoleAbiTestMapPath "$(CONSOLE_ABI_TEST_MAP)" -TopBinPath "$(TOP_BIN)" -WorkerS19Path "$(WORKER_S19)" -BankMaintS19Path "$(BANK_MAINT_S19)" -ConsoleAbiTestS19Path "$(CONSOLE_ABI_TEST_S19)" -TopUpdateS19Path "$(TOP_UPDATE_S19)" -DirectoryRefreshS19Path "$(DIRECTORY_REFRESH_S19)" -PublicContractPath "$(PUBLIC_CONTRACT)" -ManifestPath "$@"
+$(MANIFEST): $(TOP_BIN) $(WORKER_S19) $(BANK_MAINT_S19) $(CONSOLE_ABI_TEST_S19) $(TOP_UPDATE_S19) $(DIRECTORY_REFRESH_S19) $(WDCMONV2_ARCHIVE_S19) $(WDCMONV2_INSTALL_S19) $(PUBLIC_CONTRACT) $(MANIFEST_TOOL) FORCE
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(MANIFEST_TOOL) -Str8MapPath "$(STR8_MAP)" -WorkerMapPath "$(WORKER_MAP)" -ConsoleAbiTestMapPath "$(CONSOLE_ABI_TEST_MAP)" -TopBinPath "$(TOP_BIN)" -WorkerS19Path "$(WORKER_S19)" -BankMaintS19Path "$(BANK_MAINT_S19)" -ConsoleAbiTestS19Path "$(CONSOLE_ABI_TEST_S19)" -TopUpdateS19Path "$(TOP_UPDATE_S19)" -DirectoryRefreshS19Path "$(DIRECTORY_REFRESH_S19)" -Wdcmonv2ArchiveMapPath "$(WDCMONV2_ARCHIVE_MAP)" -Wdcmonv2ArchiveS19Path "$(WDCMONV2_ARCHIVE_S19)" -Wdcmonv2InstallMapPath "$(WDCMONV2_INSTALL_MAP)" -Wdcmonv2InstallS19Path "$(WDCMONV2_INSTALL_S19)" -Wdcmonv2InstallTopBinPath "$(WDCMONV2_INSTALL_TOP_BIN)" -PublicContractPath "$(PUBLIC_CONTRACT)" -ManifestPath "$@"
 
 FORCE:
 
@@ -242,6 +309,10 @@ help:
 	@echo make top-update - build the guarded L-loadable Bank-3 sector-F updater
 	@echo make onboard-directory-refresh - build the guarded L-loadable directory-pocket refresh
 	@echo make ryors-full-bank - compose ASM plus HIMON plus current STR8-N as Bank 0-2 8-F S19
+	@echo make wdcmonv2-archive - build and validate the read-only stock-monitor bank archive S19
+	@echo make wdcmonv2-install - build and validate the guarded stock-monitor STR8-N seed installer S19
+	@echo make wdcmonv2-host-check - self-test the binary monitor bridge and validate both migration S19 files
+	@echo make wdcmonv2-package - build an allowlisted publishable migration ZIP with no WDC firmware or local archives
 	@echo make layout-check - require the resident to end at or before the fixed worker
 	@echo make embedded-layout-check - alias for layout-check
 	@echo make range-matrix-check - validate every documented 4K-aligned install size

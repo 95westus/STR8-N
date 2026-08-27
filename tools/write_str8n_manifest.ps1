@@ -8,6 +8,11 @@ param(
     [string]$ConsoleAbiTestS19Path = "BUILD/v1.23/s19/str8n-v1.23-console-abi-test-2000.s19",
     [string]$TopUpdateS19Path = "BUILD/v1.23/s19/str8n-v1.23-top-update-2000.s19",
     [string]$DirectoryRefreshS19Path = "BUILD/v1.23/s19/str8n-v1.23-directory-refresh-2000.s19",
+    [string]$Wdcmonv2ArchiveMapPath = "BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.map",
+    [string]$Wdcmonv2ArchiveS19Path = "BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.s19",
+    [string]$Wdcmonv2InstallMapPath = "BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.map",
+    [string]$Wdcmonv2InstallS19Path = "BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19",
+    [string]$Wdcmonv2InstallTopBinPath = "BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin",
     [string]$PublicContractPath = "BUILD/v1.23/include/str8n-public.inc",
     [string]$ManifestPath = "BUILD/str8n-manifest.json"
 )
@@ -23,7 +28,7 @@ function Get-MapSymbol {
     return [Convert]::ToInt32($match.Matches[0].Groups[1].Value, 16)
 }
 
-foreach ($path in @($Str8MapPath, $WorkerMapPath, $ConsoleAbiTestMapPath, $TopBinPath, $WorkerS19Path, $BankMaintS19Path, $ConsoleAbiTestS19Path, $TopUpdateS19Path, $DirectoryRefreshS19Path, $PublicContractPath)) {
+foreach ($path in @($Str8MapPath, $WorkerMapPath, $ConsoleAbiTestMapPath, $TopBinPath, $WorkerS19Path, $BankMaintS19Path, $ConsoleAbiTestS19Path, $TopUpdateS19Path, $DirectoryRefreshS19Path, $Wdcmonv2ArchiveMapPath, $Wdcmonv2ArchiveS19Path, $Wdcmonv2InstallMapPath, $Wdcmonv2InstallS19Path, $Wdcmonv2InstallTopBinPath, $PublicContractPath)) {
     if (-not (Test-Path -LiteralPath $path)) { throw "Required artifact not found: $path" }
 }
 
@@ -45,6 +50,10 @@ $selectorEntry = Get-MapSymbol $WorkerMapPath 'STR8W_BANK_SELECT_SERVICE'
 $selectorEnd = Get-MapSymbol $WorkerMapPath 'STR8W_LINKED_SELECT_END'
 $consoleAbiTestStart = Get-MapSymbol $ConsoleAbiTestMapPath 'CAT_START'
 $consoleAbiTestEnd = Get-MapSymbol $ConsoleAbiTestMapPath '_END_CODE'
+$wdcmonv2ArchiveStart = Get-MapSymbol $Wdcmonv2ArchiveMapPath 'START'
+$wdcmonv2ArchiveEnd = Get-MapSymbol $Wdcmonv2ArchiveMapPath '_END_DATA'
+$wdcmonv2InstallStart = Get-MapSymbol $Wdcmonv2InstallMapPath 'START'
+$wdcmonv2InstallEnd = Get-MapSymbol $Wdcmonv2InstallMapPath '_END_CODE'
 
 $manifest = [ordered]@{
     schema = 3
@@ -105,6 +114,29 @@ $manifest = [ordered]@{
             clears = 'Bank 3 CPU FFB0-FFEF / physical 1FFB0-1FFEF'
             installs = 'Bank 3 CPU FFF0=1E (B1:E WORK); FFF1=1F (B1:F protected B3:F backup); FFF2-FFF9 erased'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $DirectoryRefreshS19Path).Hash
+        }
+        wdcmonv2ArchiveS19 = [ordered]@{
+            file = 'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.s19'
+            ramStart = ('{0:X4}' -f $wdcmonv2ArchiveStart)
+            ramEnd = ('{0:X4}' -f ($wdcmonv2ArchiveEnd - 1))
+            entry = '2000'
+            flashMutation = $false
+            export = 'selected complete 32K bank as dense S1/S9 plus FNV receipt'
+            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2ArchiveS19Path).Hash
+        }
+        wdcmonv2InstallS19 = [ordered]@{
+            file = 'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19'
+            ramStart = ('{0:X4}' -f $wdcmonv2InstallStart)
+            ramEnd = ('{0:X4}' -f ($wdcmonv2InstallEnd - 1))
+            entry = '2000'
+            candidateStart = '4000'
+            candidateEnd = '4FFF'
+            migrationConfiguration = 'FFF0=FF no WORK; FFF1=FF no top backup'
+            destinationPolicy = 'B0 erased or byte-identical to B3; B1/B2 untouched; B3:F last'
+            hardwareStatus = 'host-qualified; stock-board proof pending'
+            candidateTopBin = 'BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin'
+            candidateTopSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2InstallTopBinPath).Hash
+            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2InstallS19Path).Hash
         }
         publicContract = [ordered]@{
             file = 'BUILD/v1.23/include/str8n-public.inc'
@@ -179,4 +211,7 @@ Write-Host ('BANK MAINT SHA-256  = {0}' -f $manifest.artifacts.bankMaintenanceS1
 Write-Host ('CONSOLE ABI SHA-256 = {0}' -f $manifest.artifacts.consoleAbiTestS19.sha256)
 Write-Host ('TOP UPDATE SHA-256   = {0}' -f $manifest.artifacts.topUpdateS19.sha256)
 Write-Host ('DIR REFRESH SHA-256  = {0}' -f $manifest.artifacts.directoryRefreshS19.sha256)
+Write-Host ('WDC ARCHIVE SHA-256  = {0}' -f $manifest.artifacts.wdcmonv2ArchiveS19.sha256)
+Write-Host ('WDC INSTALL SHA-256  = {0}' -f $manifest.artifacts.wdcmonv2InstallS19.sha256)
+Write-Host ('WDC TOP BIN SHA-256  = {0}' -f $manifest.artifacts.wdcmonv2InstallS19.candidateTopSha256)
 Write-Host ('PUBLIC ABI SHA-256   = {0}' -f $manifest.artifacts.publicContract.sha256)
