@@ -17,6 +17,7 @@ implemented, host-checked      guarded B3 -> erased B0 copy and exact verify
 implemented, host-checked      guarded STR8-N seed install into Bank-3 sector F
 awaiting board transcript      copy, recovery, RESET into STR8-N, and J0 stock
 existing STR8-N path           install R-YORS Bank-3 sectors 8-E with I
+awaiting board transcript      first-use C/?/config/STR8/cold/J0 sequence
 ```
 
 The archive artifact is intentionally not an installer. It has no flash
@@ -165,11 +166,27 @@ The transcript contains raw received bytes, including a successful probe's
 DTR and reset the board. `-NoReset` is for a deliberately synchronized
 already-running monitor, not the normal first attempt.
 
+When `-TranscriptPath` is present, the bridge keeps two evidence streams:
+
+```text
+archive-capture.log             exact raw board RX; extractor input
+archive-capture.log.events.txt  timestamped host actions and checks
+```
+
+The companion event log is created automatically unless `-EventLogPath`
+names another file. It records the selected image range/hash, transfer
+name/length/hash, board identity, byte-exact RAM readback, execute address,
+completed TX lines, `Ctrl+U`, `Ctrl+B`, errors, and terminal exit. Host events
+are never inserted into the raw RX transcript, so dense S-record extraction
+remains byte-clean. Existing raw or event logs are refused unless `-Force` is
+explicit. If `-EventLogPath` is supplied, it must differ from
+`-TranscriptPath`.
+
 Before resetting the board, the full path also requires an interactive console,
-checks that a requested transcript does not already exist unless `-Force` is
-explicit, creates its parent directory, and reads the optional transfer file.
-These host-side failures therefore occur before command `$06` hands control to
-RAM.
+checks that requested raw and event logs do not already exist unless `-Force`
+is explicit, creates their parent directories, and reads/hashes the optional
+transfer file. These host-side failures therefore occur before command `$06`
+hands control to RAM.
 
 If probe synchronization times out, stop binary traffic. A diagnostic
 `-ListenOnlySeconds 5` run may use the same `-Port` and optional
@@ -451,13 +468,15 @@ The implemented and remaining migration gates are:
 8  physical RESET into STR8-N and remain with S
 9  let STR8-N I install and verify R-YORS Bank-3 sectors 8-E
 10 prove C enters R-YORS and J0 enters the preserved stock guest
+11 prove first use with help, FF/FF/FF config, STR8 return, cold C, and J0
 ```
 
 Archive, onboard copy, erase, installation, directory enrollment, backup
 rotation, and FNV/AP search enrollment are separate state transitions. No
 successful earlier transition silently authorizes the next one.
 
-Stages 4-9 are host-built but not yet accepted on a stock board. Keep an
+Stages 4-11 are host-built or procedurally specified but not yet accepted on a
+stock board. Keep an
 external programmer and a known-good full-device image available. A failed
 Bank-3 top sector has no onboard software recovery path after RESET or power
 loss.

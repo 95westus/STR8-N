@@ -89,7 +89,8 @@ $readme = @(
     '',
     'The documented stock-board entry command uses TOOLS/start_wdcmonv2_ram.ps1.',
     'It speaks binary WDCMONv2, verifies RAM byte-for-byte, executes, and stays',
-    'on the same open COM handle as the ASCII terminal/capture front end.'
+    'on the same open COM handle as the ASCII terminal/capture front end.',
+    'Each -TranscriptPath also creates a separate .events.txt host-action log; keep both.'
 )
 [System.IO.File]::WriteAllLines($readmePath, $readme, [System.Text.Encoding]::ASCII)
 

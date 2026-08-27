@@ -110,7 +110,10 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 4. Require `BOARD = SXB2`, the expected image SHA-256/range/S9, one progress
    dot per verified chunk, `RAM READBACK = BYTE-EXACT`, and `EXECUTE = $2000`.
    Any binary sync, identity, write acknowledgement, or readback failure stops
-   this phase; do not fall through to a guessed command or address.
+   this phase; do not fall through to a guessed command or address. Require the
+   automatic `stock-b0-b3-capture.log.events.txt` companion to record the same
+   image, board, readback, execute, and completed TX-line facts without
+   inserting host events into the raw extractor input.
 5. Require the archive title and complete B0-B3 inventory in the same session.
 6. At the prompt, enter `0` to export the user's present Bank 0, then enter
    `3` to export the executing stock bank.
@@ -274,6 +277,48 @@ OK
 Press physical RESET, select `C`, and require the R-YORS/HIMON banner and
 prompt. Reset once more and use `J0` to prove the stock guest remains intact.
 
+## Phase F: first use without inventing configuration
+
+Phase F proves that the migrated board is useful in its deliberately
+unconfigured state. It does not assign WORK/top-backup sectors, initialize a
+VTOC, enroll B0-B2 in FNV/AP search, or start backup rotation.
+
+1. Press physical RESET and select `C`.
+2. Record the exact R-YORS and HIMON version banners.
+3. At HIMON, enter `?` and retain the complete help line. This is a read-only
+   command-surface check, not proof of every advertised command.
+4. Enter `D FFF0 FFF2`. Require three `$FF` configuration bytes:
+
+```text
+$FFF0=$FF  no WORK sector assigned
+$FFF1=$FF  no protected B3:F backup sector assigned
+$FFF2=$FF  automatic external FNV/AP bank search disabled
+```
+
+5. Enter `STR8` and require return to the standalone `STR8-N>` prompt.
+6. Press physical RESET, select `C` again, and require the same R-YORS/HIMON
+   identity. This proves first use survives a cold restart.
+7. Use `J0` and `Ctrl+B` once more to prove the retained stock guest after the
+   first-use checks, then press physical RESET back to STR8-N.
+
+Do not use a monitor memory command to try to change `$FFF0-$FFF2`; they are
+flash bytes in protected B3:F. The proposed post-migration Bank Maintenance
+role-assignment transaction is not implemented or accepted yet. Until it is,
+features requiring WORK, protected top backup, or automatic external-bank
+search remain intentionally unavailable. Ordinary HIMON operation and the
+already-installed R-YORS payload do not require those roles.
+
+Phase F acceptance:
+
+```text
+R-YORS/HIMON banner and help captured
+FFF0-FFF2 read FF FF FF
+STR8 command returns to standalone STR8-N
+cold C launch repeats the same identity
+J0 still produces the stock WDCMON binary identity
+no flash mutation occurs during Phase F
+```
+
 ## Final readback and retained evidence
 
 Use the external programmer to save a post-migration 128K readback. Verify:
@@ -291,8 +336,9 @@ Retain:
 ```text
 pre/post 128K hashes
 archive BIN/S19/receipt
+raw RX transcripts and companion `.events.txt` host-action logs
 exact artifact hashes
-complete Phase A-E terminal transcript
+complete Phase A-F terminal transcript
 observed bank inventory and FNV values
 stock J0 WDCMON binary identity proof and R-YORS C banner
 any failure/retry/restore transcript
