@@ -250,6 +250,9 @@ range to be erased, and uses a target-specific confirmation such as
 
 ## Start here
 
+- [Task List](TASKS.md) - current hardware migration and Bank-1 example
+  backlog.
+
 - [Operator's Guide](docs/OPERATORS_GUIDE.md) — board operation, prompts,
   installs, recovery, and maintenance.
 - [Worked Examples](docs/EXAMPLES.md) — complete terminal sessions for HIMON,
