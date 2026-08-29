@@ -1,26 +1,21 @@
-# STR8-N v1.23 Release Candidate
+# STR8-N v1.28
 
 > [!IMPORTANT]
-> **Hardware validation baseline — 2026-08-21:** STR8-N v1.22 was
-> validated on a physical WDC W65C02SXB/EDU system. Before programming, the
-> board's original flash contents at physical `$18000-$1FFFF` (Bank 3) were
-> copied to `$10000-$17FFF` (Bank 2). A combined 32K STR8-N/HIMON/ASM binary
-> was then programmed into Bank 3. After the flash device was reinstalled,
-> STR8-N booted, warm-started HIMON `00.0821(1059)`, returned through the
-> STR8 bootloader, and launched the copied Bank-2 firmware through both the
-> `J2` prompt path and the reset-selector `2` path. The EDU application reached
-> its full menu and detected the SSD1306 OLED, MCP79411 RTC, and SPI SRAM.
+> **Hardware validation baseline — 2026-08-28:** The one-command factory
+> WDCMONv2 migration is accepted on a physical W65C02SXB/EDU. It copied and
+> exactly verified all of stock B3 in B0, installed STR8-N 1.28 in B3:F,
+> published retained WDCMONv2 as COMPLETE D0 `WDCM2`, launched it through
+> `J0`, and captured physical RESET returning to STR8-N 1.28. The retained
+> EDU application reached its full menu with OLED, RTC, SPI SRAM, ADC, and
+> CardKB all `OK`; the operator visually verified the CS0-CS3 chase. B1/B2
+> remained untouched, and no HIMON, ASM-F2, or R-YORS payload was installed by
+> the migration.
 >
-> **Board-important note:** At this time there is no way back from the copied
-> Bank-2 firmware to Bank 3 other than physical RESET. A program that controls
-> FA15 and FAMS would need to provide an exit while running in the Bank-2
-> environment, select Bank 3 (`FAMS:FA15 = 11`), and then enter the Bank-3 RESET
-> path.
->
-> The operator was pleasantly surprised to see the newer board's full SPI menu; only CS0-CS3 and EDU LED activity had been expected.
+> The earlier v1.22 Bank-2 recovery/guest proof remains below as historical
+> evidence of the general multibank handoff path.
 >
 > <details>
-> <summary>Retained board transcript</summary>
+> <summary>Earlier 2026-08-21 v1.22 board transcript</summary>
 >
 > ```text
 > RESET
@@ -130,21 +125,23 @@ The letters also loosely evoke **S**oftware or **S**ystem **T**o **R**eset,
 
 ## Feature card
 
-| Capability | What STR8-N v1.23 can do | Safety boundary |
+| Capability | What STR8-N v1.28 can do | Safety boundary |
 | --- | --- | --- |
-| Reset supervision | Take physical RESET in Bank 3, print `RESET`, provide a visible terminal-attach interval, and enter STR8-N or compatible HIMON | Input received during the initial `WAIT...` interval is deliberately discarded |
+| Reset supervision | Take physical RESET in Bank 3, run the board-proven pre-I/O settling interval, print `RESET`, and enter STR8-N or compatible HIMON | Quarantine/live-key timing is retained, but the former `WAIT...`/dot chatter is intentionally silent |
 | Multi-bank boot | Start enrolled systems in Banks 0-2 with `J0`-`J2`, or hand off through the Bank-3 RESET vector with `J3` | Banks 0-2 must have a COMPLETE directory journal and a valid RESET vector |
 | HIMON entry | Enter compatible Bank-3 HIMON warm with `W`, preserving RAM, or explicitly cold with `C` | Refuses an incompatible or missing HIMON marker |
 | Flash installation | Install dense S19 payloads with `I` into any legal contiguous 4K sector range | Bank 3 `$F000-$FFFF` is never writable through `I`; final sector and COMPLETE state commit last |
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
+| Factory migration | Preserve stock WDCMONv2 from B3 into B0, publish D0 `WDCM2`, and install STR8-N 1.28 in B3:F through the RAM migrator | Requires `SXB2`, supported `$BF/$B5` flash, and B0 erased or already byte-identical; B1/B2 remain untouched |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
-| Protected top upgrade | Load the supplied v1.23 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.23 sector, and verify all 4 KiB | The v1.22 C/W selector update is board-accepted; the v1.23 updater is host-qualified and awaits its board transcript |
-| Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The v1.23 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F`; the v1.22 guarded path is board-accepted |
+| Protected top upgrade | Load the supplied v1.28 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.28 sector, and verify all 4 KiB | The promoted resident bytes are board-accepted; each write still requires the guarded updater confirmations and recovery copy |
+| Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The v1.28 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and no overlap with the fixed worker |
 
-The v1.23 host verification suite covers the relocated RAM ABI and artifact
-layout. Retained v1.1/v1.2 board sessions remain historical evidence; the
+The v1.28 host verification suite covers the relocated RAM ABI, artifact
+layout, and byte-exact promotion from the accepted STR8-iN/65 image. Retained
+v1.1/v1.2 board sessions remain historical evidence; the
 original migration sequence is tracked in the
 [v1.2 Implementation Plan](docs/STR8N_V1_2_IMPLEMENTATION_PLAN.md).
 
@@ -160,6 +157,11 @@ cleared the uncaptured canary, prompt-C, installed-byte, and uninterrupted-J3
 items as acceptance blockers. Its protected sector uses `$F000-$FD54` for the
 3413-byte resident, leaves `$FD55-$FD5B` available, and retains the fixed worker
 at `$FD5C-$FFAF`.
+
+The 2026-08-28 WDC board run accepts the v1.28 cold-start sequence: its
+calibrated pre-I/O delay, no reset-time `$7FEC` write, and silent timing pulses
+survive software reset, physical RESET, and cold power-up. The promoted
+resident occupies `$F000-$FD40`, leaving 27 bytes before the fixed worker.
 
 ## Console commands
 
@@ -196,22 +198,22 @@ meanings at the `STR8-N>` prompt.
 - A deterministic raw console ABI hardware probe covering blocking input,
   blocking output, non-consuming input readiness, initialization, and ABI
   discovery, loaded and started with `L`.
-- A guarded v1.23 top-sector updater S19 loaded and started with `L`.
+- A guarded v1.28 top-sector updater S19 loaded and started with `L`.
 - A guarded onboard directory-pocket refresh S19 with backup, retry, and
   restore.
 - A composed 32K ASM + HIMON + STR8-N image for Bank 0, 1, or 2.
 - A read-only `$2000` bank inventory/archive S19, an explicit binary-WDCMONv2
   load/readback/execute bridge, and a host extractor that produce a checked
-  local 32K BIN, S19, and receipt. This migration stage is host-qualified and
-  still awaits its stock-board transcript.
-- A separately gated RAM seed installer that accepts only an
-  erased or already-identical B0, preserves stock B3 there, carries an
-  unconfigured STR8-N top sector, and leaves B1/B2 untouched. It is
-  host-qualified and not yet stock-board accepted.
+  local 32K BIN, S19, and receipt. This migration stage is board-accepted on
+  the retained transcript.
+- A one-confirmation factory-board RAM migrator that accepts only an erased or
+  already-identical B0, preserves and exactly verifies stock B3 there, installs
+  STR8-N 1.28 in B3:F, publishes retained WDCMONv2 as D0 `WDCM2`, and leaves
+  B1/B2 untouched. The kit exposes it as `MIGRATE-WDC-TO-STR8N.ps1 -Port COMx`.
 - An explicit `make wdcmonv2-package` publication kit containing the verified
-  STR8-N/R-YORS artifacts, source, binary-monitor/terminal host bridge,
-  procedures, license, manifest, and self-verifier. Its allowlist excludes
-  WDCMONv2 firmware and owner bank archives.
+  STR8-N artifacts, source, binary-monitor/terminal host bridge, procedures,
+  license, manifest, and self-verifier. Its allowlist excludes WDCMONv2
+  firmware, owner bank archives, and every R-YORS/HIMON/ASM-F2 payload.
 - A manifest containing artifact paths, addresses, ABI versions, sizes, and
   hashes.
 - A generated public assembly contract consumed by adjacent R-YORS builds.
@@ -220,7 +222,7 @@ Build the combined tool with `make bank-maint-menu`. Its terminal
 card is deliberately one command per line:
 
 ```text
-STR8-N 1.23 BANK MAINT + TOP
+STR8-N 1.28 BANK MAINT + TOP
  M  MAP+DIR
  C  COPY+ENROLL
  D  ADOPT DIR
@@ -250,7 +252,7 @@ range to be erased, and uses a target-specific confirmation such as
 
 ## Start here
 
-- [Task List](TASKS.md) - current hardware migration and Bank-1 example
+- [Task List](TASKS.md) - v1.28 release-staging gates and later Bank-1 example
   backlog.
 
 - [Operator's Guide](docs/OPERATORS_GUIDE.md) — board operation, prompts,
@@ -274,9 +276,11 @@ range to be erased, and uses a target-specific confirmation such as
   artifact flows.
 - [R-YORS Integration Boundary](docs/R_YORS_INTEGRATION.md) — how an adjacent
   R-YORS checkout consumes STR8-N artifacts.
-- [Stock WDCMONv2 Migration](docs/WDCMONV2_MIGRATION.md) — exact binary host
-  launch, read-only first stage, local Bank-0/3 preservation, extraction, and
-  remaining install gates.
+- [Stock WDCMONv2 Migration](docs/WDCMONV2_MIGRATION.md) — one-command factory
+  migration, retained Bank-0 WDCMONv2, ordinary-terminal handoff, and optional
+  read-only map/dump/archive evidence.
+- [HIMON And ASM-F2 After STR8-N](docs/HIMON_ASMF2_AFTER_STR8N.md) - optional
+  separate component loads performed only after WDC migration is complete.
 - [WDCMONv2 Migration Board Test](docs/WDCMONV2_MIGRATION_BOARD_TEST.md) —
   exact artifacts, refusal tests, preservation/install sequence, readback
   checks, and evidence required for physical acceptance.
@@ -288,7 +292,7 @@ range to be erased, and uses a target-specific confirmation such as
 
 ## Deliberate scope
 
-STR8-N v1.23 is a recovery and installation layer, not a general-purpose flash
+STR8-N v1.28 is a recovery and installation layer, not a general-purpose flash
 filesystem. Bank 3 publishes two packed sector roles: `$FFF0=$1E` assigns
 B1:E as application WORK, and `$FFF1=$1F` protects B1:F as the raw B3:F
 recovery backup. `$FFF2-$FFF9` remain erased for later configuration,

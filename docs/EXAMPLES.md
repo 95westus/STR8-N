@@ -1,4 +1,4 @@
-# STR8-N v1.23 Worked Examples
+# STR8-N v1.28 Worked Examples
 
 These examples show what to type and which S19 file to send. Text after `<-`
 is explanation, not terminal input. Use normal full-speed text-file transfer
@@ -6,20 +6,38 @@ with zero character and line delay.
 
 ## Stay in STR8-N after RESET
 
-Wait until the identity and live dots appear, then press `S`:
+Wait until the identity and selector appear, then press `S` during the silent
+live-key interval:
 
 ```text
 RESET
-WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
-STR8-N 1.23
-0-2 C W S: ..S
+STR8-N 1.28
+0-2 C W S: S
 I L C W J
 STR8-N>
 ```
 
-A key typed during `WAIT...` is ignored and flushed. The selector accepts only
+A key typed during the silent quarantine interval is ignored and flushed. The selector accepts only
 `0`, `1`, `2`, `C`, `W`, or `S`. If no key is pressed, timeout warm-starts
 compatible HIMON and preserves RAM.
+
+## Migrate a factory WDCMONv2 board
+
+From an extracted v1.28 migration kit, use the stock board's COM port:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass `
+  -File .\MIGRATE-WDC-TO-STR8N.ps1 -Port COM4
+```
+
+At the physical-reset gate, reset the board, wait two seconds, and press Enter
+in PowerShell. After byte-exact RAM verification, type the single exact flash
+confirmation requested by the RAM program. The accepted result preserves all
+of stock B3 in B0, installs STR8-N 1.28 only in B3:F, and publishes COMPLETE
+D0 `WDCM2`; it does not install HIMON, ASM-F2, or R-YORS. Exit the bridge with
+Ctrl+], connect an ordinary 115200-8N1 terminal, and prove `J0` plus physical
+RESET. See [WDCMONV2_MIGRATION.md](WDCMONV2_MIGRATION.md) for the complete
+safety and recovery contract.
 
 ## First Bank-3 install: HIMON only
 
@@ -117,7 +135,7 @@ make ryors-full-bank
 This creates:
 
 ```text
-C:/SRC/STR8-N/BUILD/v1.23/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+C:/SRC/STR8-N/BUILD/v1.28/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 ```
 
 Install it in Bank 0, 1, or 2:
@@ -171,16 +189,16 @@ S19
 Send:
 
 ```text
-BUILD/v1.23/s19/str8n-v1.23-bank-maint-2000.s19
+BUILD/v1.28/s19/str8n-v1.28-bank-maint-2000.s19
 ```
 
 It starts automatically:
 
 ```text
-STR8-N 1.23 BANK MAINT
+STR8-N 1.28 BANK MAINT
 B3 ERASE RETURNS TO STR8; SELECT S
 !STR8=SOURCE HAS STR8
-C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT>
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR N=RENAME DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT>
 ```
 
 ## Copy a full bank and enroll it
@@ -189,7 +207,7 @@ C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT>
 destination's Bank-3 directory record. The destination must be Bank 0-2.
 
 ```text
-C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> C
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR N=RENAME DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> C
 SOURCE BANK 0-3> 3
 DEST BANK 0-2> 2
 !STR8
@@ -212,7 +230,7 @@ If the payload bank was deliberately erased but its old directory row remains,
 reclaim that one row before retrying the copy:
 
 ```text
-STR8-N 1.23 BANK MAINT
+STR8-N 1.28 BANK MAINT
 ... R=RECLAIM DIR ...> R
 RECLAIM DIR 0-3> 0
 
@@ -233,7 +251,7 @@ installed STR8-N or R-YORS payload. At least one Bank-0/1/2 sector must be
 completely erased for the verified temporary B3F backup:
 
 ```text
-STR8-N 1.23 BANK MAINT
+STR8-N 1.28 BANK MAINT
 ... R=RECLAIM DIR ...> R
 RECLAIM DIR 0-3> 3
 
@@ -263,13 +281,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.23/s19/str8n-v1.23-directory-refresh-2000.s19
+BUILD/v1.28/s19/str8n-v1.28-directory-refresh-2000.s19
 ```
 
 The guarded confirmations and successful result are:
 
 ```text
-STR8-N 1.23 DIRECTORY REFRESH
+STR8-N 1.28 DIRECTORY REFRESH
 BACKUP B1:F; TARGET B3:F
 TYPE BACKUP B1F> BACKUP B1F
 BACKUP VERIFIED
@@ -292,7 +310,7 @@ bank must have a usable RESET vector. This example restores the current R-YORS
 Bank-3 identity after a directory refresh:
 
 ```text
-C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> D
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR N=RENAME DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> D
 BANK 0-3> 3
 TYPE 00-FF> FF
 DESC 5 CHARS> RYORS
@@ -318,7 +336,7 @@ install or `C` copy whenever complete-payload verification is required.
 `M` is read-only:
 
 ```text
-C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> M
+C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR N=RENAME DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT> M
 
 B# 8 9 A B C D E F
 

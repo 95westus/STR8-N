@@ -1,6 +1,6 @@
-# STR8-N v1.23 Candidate Maps and Diagrams
+# STR8-N v1.28 Maps and Diagrams
 
-These diagrams describe the host-qualified v1.23 board candidate.
+These diagrams describe the host-qualified and board-derived v1.28 release.
 
 ## Ownership
 
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.23/
+|-- v1.28/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -47,13 +47,16 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.23 top updater S19]
+    TOP --> UPDATE[guarded v1.28 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
     TOP --> ABI_TEST[resident ABI hardware-probe S19]
     BM -->|STR8-N L| RAM_TOOL[temporary maintenance session]
     FULL -->|STR8-N I| GUEST[enrolled Bank 0, 1, or 2]
+    TOP --> WDC_TOP[migration-configured top<br/>D0 WDCM2; roles FF/FF]
+    WDC_TOP --> WDC_INSTALL[factory migration RAM S19]
+    WDC_INSTALL --> KIT[allowlisted migration ZIP<br/>no WDC/R-YORS payload bytes]
 ```
 
 The top updater preserves the live directory pocket. The directory-refresh
@@ -85,9 +88,9 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    R[Physical RESET<br/>forces Bank 3] --> A[Six one-second WAIT pulses<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.23]
-    P --> Q{Six live selector dots<br/>0-2 C W S}
+    R[Physical RESET<br/>forces Bank 3] --> A[Silent pre-I/O quarantine<br/>keys ignored]
+    A --> P[Flush input<br/>STR8-N 1.28]
+    P --> Q{Silent live selector interval<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
     C -->|yes| J[Select bank and jump through RESET vector]
@@ -99,6 +102,28 @@ flowchart TD
     S -->|I| I[Installer]
     S -->|L| L[Load RAM $2000-$7AFF<br/>and execute S9]
 ```
+
+## Factory WDCMONv2 migration
+
+```mermaid
+flowchart TD
+    F[Factory board<br/>stock WDCMONv2 in B3; B0 erased] --> H[PowerShell bridge<br/>physical-reset gate]
+    H --> V[Require SXB2 identity<br/>RAM load/readback byte-exact]
+    V --> M{Exact MIGRATE confirmation?}
+    M -->|no| X[Cancel in RAM<br/>flash unchanged]
+    M -->|yes| C[Copy all eight B3 sectors to B0]
+    C --> E[Whole-bank FNV prefilter<br/>plus byte-exact B0/B3 compare]
+    E --> T[Validate carried 4K top<br/>then program/verify B3:F]
+    T --> D[Publish COMPLETE D0 WDCM2<br/>roles FFF0/FFF1 remain FF/FF]
+    D --> S[STR8-N 1.28 in B3]
+    S -->|selector 0 or J0| W[Retained WDCMONv2 in B0<br/>CS0-CS3 chase]
+    W -->|physical RESET| S
+```
+
+The accepted minimal path never writes B1 or B2 and does not install HIMON,
+ASM-F2, or R-YORS. The optional read-only archive path remains available for
+additional owner-local evidence but is not a gate for an erased-B0 factory
+board.
 
 ## Install transaction
 
@@ -157,9 +182,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        596 B   |
 $FD5B  +------------------------------+
-       | available growth       7 B   |
-$FD54  +------------------------------+
-       | resident code/data  3413 B   |
+       | available growth      27 B   |
+$FD40  +------------------------------+
+       | resident code/data  3393 B   |
 $F000  +------------------------------+
 ```
 
@@ -230,7 +255,7 @@ flowchart TD
     Q --> F
 ```
 
-## STR8-N v1.23 candidate RAM ownership
+## STR8-N v1.28 RAM ownership
 
 ```text
 $7DFF  +------------------------------+
@@ -261,7 +286,7 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-`$1A00-$1FFF` is free for user programs in v1.23: STR8-N, HIMON, ASM-F2, and
+`$1A00-$1FFF` is free for user programs in v1.28: STR8-N, HIMON, ASM-F2, and
 the maintained RAM tools do not allocate it. The whole `$0200-$09FF` Worker
 Code Tray (WCT) remains phase-owned and volatile during worker calls, but the
 maintained runtime workers do not extend above `$0453`: the unified STR8-N
@@ -287,7 +312,7 @@ Fixed delay and IVI cells                        13 bytes
 Maximum hardware stack                         256 bytes  dynamic
 Outside named I/fixed areas                  27,484 bytes  before stack use
 R-YORS normal application convention         18,694 bytes  monitor-dependent
-Bank-maint loaded image                       5,675 bytes  $2000-$362A
+Bank-maint loaded image                       6,579 bytes  $2000-$39B2
 ```
 
 ```mermaid
@@ -295,8 +320,8 @@ flowchart LR
     TOTAL[32,512 B board RAM] --> LOW[8,192 B below $2000]
     TOTAL --> LWIN[23,296 B accepted by STR8-N L]
     TOTAL --> HIGH[1,024 B $7B00-$7EFF<br/>parser, IVI, I/O-adjacent]
-    LWIN --> BMIMG[5,675 B bank-maint image]
-    LWIN --> LOTHER[18,645 B remaining in L window]
+    LWIN --> BMIMG[6,579 B bank-maint image]
+    LWIN --> LOTHER[16,717 B remaining in L window]
 ```
 
 The numbers describe STR8-N boundaries, not a promise that HIMON, ASM, or an
@@ -306,7 +331,7 @@ arbitrary guest leaves every other byte unused.
 
 ```mermaid
 flowchart TD
-    L[STR8-N L] --> S[S19 loads $2000-$3987<br/>S9=$2000]
+    L[STR8-N L] --> S[S19 loads $2000-$39B2<br/>S9=$2000]
     S --> B[Copy private worker<br/>$3400-$362A to $0200-$042A]
     B --> M{Command}
     M -->|M| MAP[Stage and inspect sectors<br/>no flash mutation]
@@ -342,8 +367,30 @@ flowchart TD
 $0200-$042A  runtime private mutation worker       555 bytes
 $0A00-$19FF  staged flash sector                  4096 bytes
 $7C00-$7D1A  maintenance state/tables              283 bytes allocated
-$2000-$362A  loaded program, padding, stored worker 5675 bytes
+$2000-$39B2  loaded program, worker, extensions     6579 bytes
 ```
+
+The isolated STR8-iN/65 maintenance image used during WDC migration is a
+separate `$2000-$3B15` / 6,934-byte artifact. It adds prompted defaults for
+adoption and the scoped-search `F` byte, remains outside the canonical
+manifest and migration ZIP, and is not required by the current migrator
+because that migrator already publishes COMPLETE D0 `WDCM2`.
+
+## Accepted v1.28 factory-board path
+
+```mermaid
+flowchart LR
+    STOCK[Factory WDCMONv2<br/>B3] -->|verified eight-sector copy| B0[Retained WDCMONv2<br/>B0 + D0 WDCM2]
+    STOCK -->|replace B3:F only| N[STR8-N 1.28<br/>B3:F]
+    N -->|S| SHELL[STR8-N prompt]
+    SHELL -->|J0| B0
+    N -->|selector 0| B0
+    B0 -->|physical RESET| N
+```
+
+The 2026-08-28 board capture proves the copy, candidate verification, STR8-N
+launch, full retained EDU application startup, and final physical RESET.
+The operator separately observed the expected CS0-CS3 chase.
 
 ## Accepted v1.21 board path
 
