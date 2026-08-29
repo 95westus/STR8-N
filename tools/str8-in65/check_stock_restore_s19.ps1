@@ -78,6 +78,12 @@ if ($minAddress -ne 0x2000 -or $maxAddress -ge 0x4000 -or $entry -ne 0x2000) {
 }
 
 $ascii = [System.Text.Encoding]::ASCII.GetString($payload.ToArray())
+[byte[]]$quietStart = 0x78, 0xA9, 0x30, 0x8D, 0xA1, 0x7F
+for ($i = 0; $i -lt $quietStart.Length; $i++) {
+    if ($payload[$i] -ne $quietStart[$i]) {
+        throw 'Stock restore must begin SEI; LDA #$30; STA $7FA1 to mute the EDU buzzer immediately'
+    }
+}
 foreach ($prompt in @(
     "STR8-N $VersionText STOCK RESTORE",
     'SOURCE B0 FNV1A=',
