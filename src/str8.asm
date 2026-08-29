@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable v1.23 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.28 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
@@ -264,7 +264,11 @@ STR8_BOOT_START:
                         LDX             #$FF
                         TXS
                         JSR             STR8_IVY_INIT
+                        IF              STR8_IN65_COLD_BOOT
+                        JSR             STR8_IN65_COLD_CON_INIT
+                        ELSE
                         JSR             STR8_CON_INIT
+                        ENDIF
                         IF              STR8_RAM_PROOF
                         ELSE
                         JSR             STR8_STARTUP_DELAY
@@ -504,9 +508,10 @@ STR8_ENTER_MENU_NO_TARGET_PRINT:
                         ELSE
 ; OUT: C=1 and A='0'/'1'/'2'/'H'/'S' when a choice was consumed.
 ;      C=0 if the timeout elapsed.
-; Six one-second WAIT pulses quarantine USB enumeration and cannot consume a
-; key. At the midpoint RX is flushed, identity and selector are printed, and
-; six one-second live dots poll only 0/1/2/H/S.
+; Six one-second quarantine ticks cannot consume a key. At the midpoint RX is
+; flushed, identity and selector are printed, and six one-second live ticks
+; poll only 0/1/2/H/S. The STR8-iN/65 diagnostic build keeps all twelve timing
+; ticks but suppresses their WAIT/dot text to recover protected-sector bytes.
 STR8_STARTUP_DELAY:
                         STZ             STR8_BOOT_KEY_ENABLE
                         IF              STR8_V1_LAYOUT
@@ -540,6 +545,8 @@ STR8_STARTUP_DELAY:
                         ENDIF
 ?WAIT:
                         IF              STR8_V1_LAYOUT
+                        IF              STR8_IN65_COLD_BOOT
+                        ELSE
                         LDX             #<MSG_WAIT
                         LDA             STR8_BOOT_KEY_ENABLE
                         BEQ             ?PULSE
@@ -550,6 +557,7 @@ STR8_STARTUP_DELAY:
                         ELSE
                         LDY             #>MSG_WAIT
                         JSR             STR8_PRINT_XY
+                        ENDIF
                         ENDIF
                         ENDIF
                         LDA             #STR8_STARTUP_DOT_A
@@ -2806,7 +2814,12 @@ STR8_JUMP_BANK_RAM:
 STR8_PRINT_PROMPT:
                         LDX             #<MSG_PROMPT
                         IF              STR8_V1_INSTALLER_TXN
+                        IF              STR8_IN65_COLD_BOOT
+; The STR8-iN/65 prompt already falls through to this adjacent helper.  Keep
+; its diagnostic bootstrap inside the protected-sector size limit.
+                        ELSE
                         BRA             STR8_PRINT_TXN_PAGE0_X
+                        ENDIF
                         ELSE
                         LDY             #>MSG_PROMPT
                         JMP             STR8_PRINT_XY
@@ -2835,6 +2848,16 @@ STR8_PRINT_XY:
 ?LAST:                  AND             #$7F
                         JMP             STR8_CON_WRITE_BYTE_BLOCK
 
+                        IF              STR8_IN65_COLD_BOOT
+STR8_IN65_COLD_CON_INIT:
+; Stock WDCMON waits through a long cold-board peripheral sweep before its
+; first VIA/FT245 access.  IVY returns A=STR8_IVY_SIG0_VAL ('I'); reuse that
+; stable nonzero count with the calibrated delay routine before touching I/O.
+                        JSR             STR8_DELAY_FIXED_A
+; Reset-selected Bank 3 is established by the board pull-ups while the VIA
+; bank-select pins remain inputs.  Do not rewrite PCR here: doing so while
+; executing from flash can disturb the selected bank during cold power-up.
+                        ENDIF
 STR8_CON_INIT:
                         LDA             #STR8_CON_PN_CTRL_INIT
                         STA             STR8_CON_VIA_CTRL
@@ -2890,8 +2913,11 @@ STR8_ID_MARKER_BYTES:   DB              STR8_ID_MARKER0,STR8_ID_MARKER1
                         IF              STR8_V1_LAYOUT
                         DB              $0D,$0A
 MSG_BOOT_PROMPT:        DB              "0-2 C W S:",$A0
+                        IF              STR8_IN65_COLD_BOOT
+                        ELSE
 MSG_WAIT:               DB              "WAIT...",$A0
 MSG_LIVE_DOT:           DB              ('.'+$80)
+                        ENDIF
                         ELSE
                         DB              " $F",$0D,$8A
                         ENDIF

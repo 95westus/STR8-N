@@ -1,7 +1,7 @@
 param(
-    [string]$TopBinPath = 'BUILD/v1.23/bin/str8n-v1.23-bank3-f000-ffff.bin',
-    [string]$OutPath = 'BUILD/v1.23/generated/str8n-v1.23-wdcmonv2-install-image.inc',
-    [string]$CandidateBinPath = 'BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin'
+    [string]$TopBinPath = 'BUILD/v1.28/bin/str8n-v1.28-bank3-f000-ffff.bin',
+    [string]$OutPath = 'BUILD/v1.28/generated/str8n-v1.28-wdcmonv2-install-image.inc',
+    [string]$CandidateBinPath = 'BUILD/v1.28/bin/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin'
 )
 
 Set-StrictMode -Version Latest
@@ -21,6 +21,16 @@ for ($offset = 0x0FB0; $offset -le 0x0FEF; $offset++) {
 # seed install.  The migration image begins with both optional roles unassigned.
 $bytes[0x0FF0] = 0xFF
 $bytes[0x0FF1] = 0xFF
+
+# The factory path always preserves the complete stock Bank 3 in Bank 0.
+# Publish that retained monitor as a complete D0 row in the carried Bank-3
+# directory so selector 0 and shell J0 work immediately after migration.
+[byte[]]$wdcDirectory0 = @(
+    0xFF, 0xFF, 0xFF, 0xFF,
+    [byte][char]'W', [byte][char]'D', [byte][char]'C', [byte][char]'M', [byte][char]'2',
+    0xFE, 0xFF, 0xFF, 0xFC, 0xFF, 0xFF, 0xFF
+)
+[Array]::Copy($wdcDirectory0, 0, $bytes, 0x0FB0, $wdcDirectory0.Length)
 
 [uint32]$fnv = 2166136261
 foreach ($byte in $bytes) {
@@ -45,4 +55,4 @@ if ($binParent) { New-Item -ItemType Directory -Force -Path $binParent | Out-Nul
 [System.IO.File]::WriteAllBytes($CandidateBinPath, $bytes)
 $sha = [System.Security.Cryptography.SHA256]::Create()
 try { $candidateHash = ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace('-', '') } finally { $sha.Dispose() }
-Write-Host ('WDCMONV2 INSTALL TOP = {0}; roles=FF/FF; FNV1A={1:X8}; SHA256={2}' -f $CandidateBinPath, $fnv, $candidateHash)
+Write-Host ('WDCMONV2 INSTALL TOP = {0}; D0=WDCM2 COMPLETE; roles=FF/FF; FNV1A={1:X8}; SHA256={2}' -f $CandidateBinPath, $fnv, $candidateHash)

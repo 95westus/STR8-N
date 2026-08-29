@@ -1,11 +1,10 @@
 param(
-    [string]$KitDirectory = 'BUILD/v1.23/wdcmonv2-ryors-migration-kit',
-    [string]$ZipPath = 'BUILD/v1.23/str8n-v1.23-wdcmonv2-ryors-migration-kit.zip',
-    [string]$ArchiveS19Path = 'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.s19',
-    [string]$InstallS19Path = 'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19',
-    [string]$TopBinPath = 'BUILD/v1.23/bin/str8n-v1.23-bank3-f000-ffff.bin',
-    [string]$CandidateBinPath = 'BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin',
-    [string]$RyorsS19Path = '../R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-asm-bank3-8-e.s19',
+    [string]$KitDirectory = 'BUILD/v1.28/wdcmonv2-str8n-migration-kit',
+    [string]$ZipPath = 'BUILD/v1.28/str8n-v1.28-wdcmonv2-str8n-migration-kit.zip',
+    [string]$ArchiveS19Path = 'BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-archive-2000.s19',
+    [string]$InstallS19Path = 'BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-install-2000.s19',
+    [string]$TopBinPath = 'BUILD/v1.28/bin/str8n-v1.28-bank3-f000-ffff.bin',
+    [string]$CandidateBinPath = 'BUILD/v1.28/bin/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin',
     [string]$HostBridgePath = 'tools/wdcmonv2/start_wdcmonv2_ram.ps1',
     [string]$BoardTestPath = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md'
 )
@@ -37,11 +36,10 @@ function Assert-DocumentedHash {
 if (-not (Test-Path -LiteralPath $BoardTestPath -PathType Leaf)) { throw "Board test missing: $BoardTestPath" }
 $boardTest = Get-Content -Raw -LiteralPath $BoardTestPath
 $documentedArtifacts = [ordered]@{
-    'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.s19' = $ArchiveS19Path
-    'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19' = $InstallS19Path
-    'BUILD/v1.23/bin/str8n-v1.23-bank3-f000-ffff.bin' = $TopBinPath
-    'BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin' = $CandidateBinPath
-    '../R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-asm-bank3-8-e.s19' = $RyorsS19Path
+    'BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-archive-2000.s19' = $ArchiveS19Path
+    'BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-install-2000.s19' = $InstallS19Path
+    'BUILD/v1.28/bin/str8n-v1.28-bank3-f000-ffff.bin' = $TopBinPath
+    'BUILD/v1.28/bin/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin' = $CandidateBinPath
     'tools/wdcmonv2/start_wdcmonv2_ram.ps1' = $HostBridgePath
 }
 foreach ($item in $documentedArtifacts.GetEnumerator()) {
@@ -49,17 +47,18 @@ foreach ($item in $documentedArtifacts.GetEnumerator()) {
 }
 
 $expected = @(
-    'ARTIFACTS/ryors-v1.2-himon-asm-bank3-8-e.s19',
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-archive-2000.s19',
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin',
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-install-2000.s19',
+    'MIGRATE-WDC-TO-STR8N.ps1',
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-archive-2000.s19',
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin',
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-install-2000.s19',
+    'DOC/HIMON_ASMF2_AFTER_STR8N.md',
     'DOC/WDCMONV2_MIGRATION.md',
     'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md',
     'DOC/WDCMONV2_MIGRATION_PROVENANCE.md',
     'LICENSE',
     'PACKAGE-MANIFEST.json',
     'PACKAGE-README.txt',
-    'SOURCE/str8n-v1.23-wdcmonv2-install-image.inc',
+    'SOURCE/str8n-v1.28-wdcmonv2-install-image.inc',
     'SOURCE/wdcmonv2str8n-archive-2000.asm',
     'SOURCE/wdcmonv2str8n-install-2000.asm',
     'TOOLS/check_wdcmonv2_archive.ps1',
@@ -84,7 +83,9 @@ $manifest = Get-Content -Raw -LiteralPath $manifestPath | ConvertFrom-Json
 if ($manifest.schema -ne 1) { throw 'Migration package manifest schema is not 1' }
 if ($manifest.stockWdcmonv2FirmwareIncluded -ne $false) { throw 'Manifest must state that stock WDCMONv2 firmware is absent' }
 if ($manifest.localBankArchivesIncluded -ne $false) { throw 'Manifest must state that local bank archives are absent' }
-if ($manifest.hardwareStatus -notmatch 'stock-board transcript pending') { throw 'Manifest must retain the pending hardware status' }
+if ($manifest.ryorsPayloadIncluded -ne $false) { throw 'Manifest must state that no R-YORS payload is included' }
+if ($manifest.hardwareStatus -notmatch 'board-proven') { throw 'Manifest must retain the board-proven STR8-iN/65 status' }
+if ($manifest.firstProcedure -notmatch 'MIGRATE-WDC-TO-STR8N') { throw 'Manifest must publish the one-command factory path first' }
 
 $manifestRows = @($manifest.files)
 if ($manifestRows.Count -ne ($expected.Count - 1)) { throw 'Manifest payload count does not match package allowlist' }
@@ -98,10 +99,9 @@ foreach ($row in $manifestRows) {
 }
 
 $identity = [ordered]@{
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-archive-2000.s19' = $ArchiveS19Path
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-install-2000.s19' = $InstallS19Path
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin' = $CandidateBinPath
-    'ARTIFACTS/ryors-v1.2-himon-asm-bank3-8-e.s19' = $RyorsS19Path
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-archive-2000.s19' = $ArchiveS19Path
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-install-2000.s19' = $InstallS19Path
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin' = $CandidateBinPath
 }
 foreach ($item in $identity.GetEnumerator()) {
     if (-not (Test-Path -LiteralPath $item.Value -PathType Leaf)) { throw "Expected source artifact missing: $($item.Value)" }
@@ -110,12 +110,12 @@ foreach ($item in $identity.GetEnumerator()) {
         throw "Packaged artifact differs from verified build input: $($item.Key)"
     }
 }
-if ((Get-Item -LiteralPath (Join-Path $kitFull 'ARTIFACTS/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin')).Length -ne 4096) {
+if ((Get-Item -LiteralPath (Join-Path $kitFull 'ARTIFACTS/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin')).Length -ne 4096) {
     throw 'The only packaged BIN must be the exact 4K STR8-N migration candidate'
 }
 
 foreach ($name in $actual) {
-    if ($name -eq 'ARTIFACTS/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin') { continue }
+    if ($name -eq 'ARTIFACTS/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin') { continue }
     if ($name -match '(?i)(capture|receipt|stock[-_]?b[0-3]|wdcmonv2-bank[0-3])' -or $name -match '(?i)\.bin$') {
         throw "Package contains a forbidden owner/archive-looking file: $name"
     }
@@ -146,4 +146,4 @@ try {
 Write-Host ('MIGRATION PACKAGE   = PASS; {0} allowlisted files' -f $expected.Count)
 Write-Host ('PACKAGE ZIP SHA256  = {0}' -f (Get-Sha256 -Path $ZipPath))
 Write-Host 'WDC FIRMWARE/ARCHIVE = ABSENT BY ALLOWLIST'
-Write-Host 'BOARD CARD HASHES    = CURRENT FOR ALL SIX PINNED INPUTS'
+Write-Host 'BOARD CARD HASHES    = CURRENT FOR ALL FIVE PINNED STR8-N INPUTS'

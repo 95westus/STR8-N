@@ -68,6 +68,9 @@ START:
                         LDX             #$FF
                         TXS
                         JSR             W2I_CON_INIT
+                        IF              W2I_RESTORE_STOCK
+                        JMP             W2R_START
+                        ELSE
                         LDX             #<W2I_MSG_TITLE
                         LDY             #>W2I_MSG_TITLE
                         JSR             W2I_PUTS
@@ -98,24 +101,19 @@ W2I_ID_OK:
                         JSR             W2I_PUTS
                         JSR             W2I_PRINT_HASH
                         JSR             W2I_CRLF
-                        JSR             W2I_BUILD_ARCHIVE_TOKEN
-                        LDX             #<W2I_MSG_ARCHIVE
-                        LDY             #>W2I_MSG_ARCHIVE
-                        JSR             W2I_PUTS
-                        JSR             W2I_PRINT_HASH
-                        LDX             #<W2I_MSG_PROMPT_END
-                        LDY             #>W2I_MSG_PROMPT_END
+                        LDX             #<W2I_MSG_MIGRATE
+                        LDY             #>W2I_MSG_MIGRATE
                         JSR             W2I_PUTS
                         JSR             W2I_READ_LINE
-                        LDX             #<W2I_ARCHIVE_TOKEN
-                        LDY             #>W2I_ARCHIVE_TOKEN
+                        LDX             #<W2I_TOKEN_MIGRATE
+                        LDY             #>W2I_TOKEN_MIGRATE
                         JSR             W2I_MATCH_INPUT
-                        BCS             W2I_ARCHIVE_OK
-                        LDX             #<W2I_MSG_ARCHIVE_FAIL
-                        LDY             #>W2I_MSG_ARCHIVE_FAIL
+                        BCS             W2I_MIGRATE_OK
+                        LDX             #<W2I_MSG_MIGRATE_FAIL
+                        LDY             #>W2I_MSG_MIGRATE_FAIL
                         JMP             W2I_ABORT_XY
 
-W2I_ARCHIVE_OK:
+W2I_MIGRATE_OK:
                         LDA             #$00
                         JSR             W2I_SELECT_BANK_A
                         JSR             W2I_HASH_BANK
@@ -134,18 +132,6 @@ W2I_B0_NOT_EQUAL:
                         JMP             W2I_ABORT_XY
 
 W2I_B0_EMPTY:
-                        LDX             #<W2I_MSG_COPY_CONFIRM
-                        LDY             #>W2I_MSG_COPY_CONFIRM
-                        JSR             W2I_PUTS
-                        JSR             W2I_READ_LINE
-                        LDX             #<W2I_TOKEN_COPY
-                        LDY             #>W2I_TOKEN_COPY
-                        JSR             W2I_MATCH_INPUT
-                        BCS             W2I_COPY_CONFIRMED
-                        LDX             #<W2I_MSG_CANCEL
-                        LDY             #>W2I_MSG_CANCEL
-                        JMP             W2I_ABORT_XY
-
 W2I_COPY_CONFIRMED:
                         LDX             #<W2I_MSG_COPYING
                         LDY             #>W2I_MSG_COPYING
@@ -194,18 +180,6 @@ W2I_CANDIDATE_BAD:
                         JMP             W2I_ABORT_XY
 
 W2I_CANDIDATE_OK:
-                        LDX             #<W2I_MSG_INSTALL_CONFIRM
-                        LDY             #>W2I_MSG_INSTALL_CONFIRM
-                        JSR             W2I_PUTS
-                        JSR             W2I_READ_LINE
-                        LDX             #<W2I_TOKEN_INSTALL
-                        LDY             #>W2I_TOKEN_INSTALL
-                        JSR             W2I_MATCH_INPUT
-                        BCS             W2I_INSTALL_CONFIRMED
-                        LDX             #<W2I_MSG_CANCEL
-                        LDY             #>W2I_MSG_CANCEL
-                        JMP             W2I_ABORT_XY
-
 W2I_INSTALL_CONFIRMED:
                         LDX             #<W2I_MSG_INSTALLING
                         LDY             #>W2I_MSG_INSTALLING
@@ -259,6 +233,265 @@ W2I_ABORT_XY:
                         LDY             #>W2I_MSG_ABORT
                         JSR             W2I_PUTS
 ?HALT:                  BRA             ?HALT
+                        ENDIF
+
+; Board-test-only inverse path.  It reconstructs the stock board by copying
+; the already-proven complete Bank 0 image over Bank 3.  Sectors 8-E are
+; programmed first; the reset-bearing F sector is deliberately last.  Once a
+; write has begun there is no cancel path: a failed sector remains in a RAM
+; retry loop, with its source restaged from Bank 0 before every attempt.
+                        IF              W2I_RESTORE_STOCK
+W2R_START:
+                        LDX             #<W2R_MSG_TITLE
+                        LDY             #>W2R_MSG_TITLE
+                        JSR             W2I_PUTS
+                        JSR             W2I_FLASH_IDENTIFY
+                        BCS             W2R_ID_OK
+                        LDX             #<W2I_MSG_ID_FAIL
+                        LDY             #>W2I_MSG_ID_FAIL
+                        JMP             W2R_ABORT_XY
+
+W2R_ID_OK:
+                        LDX             #<W2I_MSG_ID_OK
+                        LDY             #>W2I_MSG_ID_OK
+                        JSR             W2I_PUTS
+                        LDA             W2I_ID_MAN
+                        JSR             W2I_HEX
+                        LDA             #'/'
+                        JSR             W2I_OUT
+                        LDA             W2I_ID_DEV
+                        JSR             W2I_HEX
+                        JSR             W2I_CRLF
+
+                        LDA             #$00
+                        JSR             W2I_SELECT_BANK_A
+                        JSR             W2I_HASH_BANK
+                        LDA             W2I_ERASED
+                        BNE             W2R_SOURCE_BAD
+                        JSR             W2I_SAVE_SOURCE_HASH
+                        LDA             $FFFC
+                        STA             W2R_RESET_LO
+                        LDA             $FFFD
+                        STA             W2R_RESET_HI
+                        CMP             #$80
+                        BCC             W2R_SOURCE_BAD
+                        CMP             #$FF
+                        BNE             W2R_SOURCE_OK
+                        LDA             W2R_RESET_LO
+                        CMP             #$FF
+                        BEQ             W2R_SOURCE_BAD
+
+W2R_SOURCE_OK:
+                        LDX             #<W2R_MSG_SOURCE
+                        LDY             #>W2R_MSG_SOURCE
+                        JSR             W2I_PUTS
+                        JSR             W2I_PRINT_HASH
+                        LDX             #<W2R_MSG_RESET
+                        LDY             #>W2R_MSG_RESET
+                        JSR             W2I_PUTS
+                        LDA             W2R_RESET_HI
+                        JSR             W2I_HEX
+                        LDA             W2R_RESET_LO
+                        JSR             W2I_HEX
+                        JSR             W2I_CRLF
+                        LDX             #<W2R_MSG_ORDER
+                        LDY             #>W2R_MSG_ORDER
+                        JSR             W2I_PUTS
+                        LDX             #<W2R_MSG_CONFIRM
+                        LDY             #>W2R_MSG_CONFIRM
+                        JSR             W2I_PUTS
+                        JSR             W2I_READ_LINE
+                        LDX             #<W2R_TOKEN_RESTORE
+                        LDY             #>W2R_TOKEN_RESTORE
+                        JSR             W2I_MATCH_INPUT
+                        BCS             W2R_COPY_ALL
+                        LDX             #<W2I_MSG_CANCEL
+                        LDY             #>W2I_MSG_CANCEL
+                        JMP             W2R_ABORT_XY
+
+W2R_SOURCE_BAD:
+                        LDX             #<W2R_MSG_SOURCE_BAD
+                        LDY             #>W2R_MSG_SOURCE_BAD
+                        JMP             W2R_ABORT_XY
+
+W2R_COPY_ALL:
+                        LDX             #<W2R_MSG_COPY_LOWER
+                        LDY             #>W2R_MSG_COPY_LOWER
+                        JSR             W2I_PUTS
+                        LDA             #$80
+                        STA             W2I_SECTOR_HI
+W2R_COPY_LOWER:
+                        LDA             W2I_SECTOR_HI
+                        CMP             #$F0
+                        BEQ             W2R_COPY_TOP
+                        JSR             W2R_COPY_SECTOR
+                        LDA             #'.'
+                        JSR             W2I_OUT
+                        LDA             W2I_SECTOR_HI
+                        CLC
+                        ADC             #$10
+                        STA             W2I_SECTOR_HI
+                        BRA             W2R_COPY_LOWER
+
+W2R_COPY_TOP:
+                        JSR             W2I_CRLF
+                        LDX             #<W2R_MSG_COPY_TOP
+                        LDY             #>W2R_MSG_COPY_TOP
+                        JSR             W2I_PUTS
+                        JSR             W2R_COPY_SECTOR
+                        LDA             #'.'
+                        JSR             W2I_OUT
+                        JSR             W2I_CRLF
+
+W2R_FINAL_VERIFY:
+                        LDA             #$03
+                        JSR             W2I_SELECT_BANK_A
+                        JSR             W2I_HASH_BANK
+                        JSR             W2I_HASH_EQUALS_SOURCE
+                        BCS             W2R_FINAL_HASH_OK
+                        JMP             W2R_FINAL_FAIL
+W2R_FINAL_HASH_OK:
+                        JSR             W2I_COMPARE_B0_B3_EXACT
+                        BCS             W2R_FINAL_EXACT_OK
+                        JMP             W2R_FINAL_FAIL
+W2R_FINAL_EXACT_OK:
+                        LDX             #<W2R_MSG_VERIFIED
+                        LDY             #>W2R_MSG_VERIFIED
+                        JSR             W2I_PUTS
+                        JMP             W2R_ERASE_B0
+
+; Only after the complete stock image is exact in B3 may the retained source
+; be erased.  This recreates the factory migration precondition instead of
+; merely leaving two stock copies, which would exercise the installer's
+; already-preserved path rather than its first-consumer preservation prompts.
+W2R_ERASE_B0:
+                        LDX             #<W2R_MSG_ERASE_B0
+                        LDY             #>W2R_MSG_ERASE_B0
+                        JSR             W2I_PUTS
+                        LDA             #$80
+                        STA             W2I_SECTOR_HI
+W2R_ERASE_NEXT:
+                        LDA             #$00
+                        JSR             W2I_SELECT_BANK_A
+                        STZ             W2I_PTR_LO
+                        LDA             W2I_SECTOR_HI
+                        STA             W2I_PTR_HI
+                        JSR             W2I_FLASH_ERASE_SECTOR
+                        BCC             W2R_ERASE_FAIL
+                        JSR             W2I_SECTOR_ERASED
+                        BCC             W2R_ERASE_FAIL
+                        LDA             #'.'
+                        JSR             W2I_OUT
+                        LDA             W2I_SECTOR_HI
+                        CLC
+                        ADC             #$10
+                        STA             W2I_SECTOR_HI
+                        BNE             W2R_ERASE_NEXT
+                        JSR             W2I_CRLF
+                        BRA             W2R_FACTORY_VERIFY
+
+W2R_ERASE_FAIL:
+                        LDX             #<W2R_MSG_ERASE_FAIL
+                        LDY             #>W2R_MSG_ERASE_FAIL
+                        JSR             W2I_PUTS
+                        LDA             W2I_SECTOR_HI
+                        JSR             W2I_HEX
+                        LDX             #<W2R_MSG_RETRY
+                        LDY             #>W2R_MSG_RETRY
+                        JSR             W2I_PUTS
+                        JSR             W2I_READ_LINE
+                        LDX             #<W2R_TOKEN_RETRY
+                        LDY             #>W2R_TOKEN_RETRY
+                        JSR             W2I_MATCH_INPUT
+                        BCC             W2R_ERASE_FAIL
+                        BRA             W2R_ERASE_NEXT
+
+W2R_FACTORY_VERIFY:
+                        LDA             #$00
+                        JSR             W2I_SELECT_BANK_A
+                        JSR             W2I_HASH_BANK
+                        LDA             W2I_ERASED
+                        BEQ             W2R_FACTORY_FAIL
+                        LDA             #$03
+                        JSR             W2I_SELECT_BANK_A
+                        JSR             W2I_HASH_BANK
+                        JSR             W2I_HASH_EQUALS_SOURCE
+                        BCC             W2R_B3_CHANGED
+                        LDX             #<W2R_MSG_FACTORY_OK
+                        LDY             #>W2R_MSG_FACTORY_OK
+                        JSR             W2I_PUTS
+                        LDA             #$03
+                        JSR             W2I_SELECT_BANK_A
+                        LDX             #<W2R_MSG_BOOT
+                        LDY             #>W2R_MSG_BOOT
+                        JSR             W2I_PUTS
+                        JMP             ($FFFC)
+
+W2R_FACTORY_FAIL:
+                        LDX             #<W2R_MSG_FACTORY_FAIL
+                        LDY             #>W2R_MSG_FACTORY_FAIL
+                        JSR             W2I_PUTS
+                        JSR             W2I_READ_LINE
+                        LDX             #<W2R_TOKEN_RETRY
+                        LDY             #>W2R_TOKEN_RETRY
+                        JSR             W2I_MATCH_INPUT
+                        BCC             W2R_FACTORY_FAIL
+                        JMP             W2R_ERASE_B0
+
+W2R_B3_CHANGED:
+                        LDX             #<W2R_MSG_B3_CHANGED
+                        LDY             #>W2R_MSG_B3_CHANGED
+                        JMP             W2R_ABORT_XY
+
+W2R_FINAL_FAIL:
+                        LDX             #<W2R_MSG_FINAL_FAIL
+                        LDY             #>W2R_MSG_FINAL_FAIL
+                        JSR             W2I_PUTS
+                        JSR             W2I_READ_LINE
+                        LDX             #<W2R_TOKEN_RETRY
+                        LDY             #>W2R_TOKEN_RETRY
+                        JSR             W2I_MATCH_INPUT
+                        BCC             W2R_FINAL_FAIL
+                        JMP             W2R_COPY_ALL
+
+; Restage B0 on every attempt so a program/verify failure cannot cause stale
+; RAM to be retried.  Return only after this sector is exact in B3.
+W2R_COPY_SECTOR:
+W2R_SECTOR_RETRY:
+                        LDA             #$00
+                        JSR             W2I_SELECT_BANK_A
+                        JSR             W2I_FLASH_TO_STAGE
+                        LDA             #$03
+                        JSR             W2I_SELECT_BANK_A
+                        JSR             W2I_PROGRAM_STAGE
+                        BCS             W2R_SECTOR_OK
+W2R_SECTOR_FAIL:
+                        LDX             #<W2R_MSG_SECTOR_FAIL
+                        LDY             #>W2R_MSG_SECTOR_FAIL
+                        JSR             W2I_PUTS
+                        LDA             W2I_SECTOR_HI
+                        JSR             W2I_HEX
+                        LDX             #<W2R_MSG_RETRY
+                        LDY             #>W2R_MSG_RETRY
+                        JSR             W2I_PUTS
+                        JSR             W2I_READ_LINE
+                        LDX             #<W2R_TOKEN_RETRY
+                        LDY             #>W2R_TOKEN_RETRY
+                        JSR             W2I_MATCH_INPUT
+                        BCC             W2R_SECTOR_FAIL
+                        BRA             W2R_SECTOR_RETRY
+W2R_SECTOR_OK:
+                        RTS
+
+W2R_ABORT_XY:
+                        JSR             W2I_PUTS
+                        LDA             #$03
+                        JSR             W2I_SELECT_BANK_A
+                        LDX             #<W2I_MSG_ABORT
+                        LDY             #>W2I_MSG_ABORT
+                        JSR             W2I_PUTS
+W2R_HALT:              BRA             W2R_HALT
+                        ENDIF
 
 ; Enter software product-identification mode, capture BF/B5, and always issue
 ; the one-cycle F0 exit before deciding whether the device is supported.
@@ -813,34 +1046,60 @@ W2I_CRLF:
 W2I_BANK_BITS:          DB              $CC,$CE,$EC,$EE
 W2I_FNV_OFFSET:         DB              $C5,$9D,$1C,$81
 
-W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N SEED INSTALL 0.1",$0D,$0A
-                        DB              "B0 PRESERVES STOCK; B3:F BECOMES STR8-N",$0D,$0A
+W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.28 MIGRATION",$0D,$0A
+                        DB              "B3 STOCK -> B0; STR8-N 1.28 -> B3:F",$0D,$0A
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE",$0D,$0A,0
 W2I_MSG_ID_OK:          DB              "FLASH ID=",0
 W2I_MSG_ID_FAIL:        DB              "REFUSE: FLASH IS NOT SST39SF010A BF/B5",$0D,$0A,0
 W2I_MSG_B3_HASH:        DB              "STOCK B3 FNV1A=",0
-W2I_MSG_ARCHIVE:        DB              "AFTER LOCAL EXTRACTOR PASS TYPE ARCHIVE ",0
-W2I_MSG_PROMPT_END:     DB              "> ",0
-W2I_MSG_ARCHIVE_FAIL:   DB              "REFUSE: LOCAL ARCHIVE TOKEN MISMATCH",$0D,$0A,0
+W2I_MSG_MIGRATE:        DB              "TYPE MIGRATE WDC TO STR8-N 1.28> ",0
+W2I_MSG_MIGRATE_FAIL:   DB              "CANCELLED: MIGRATION TEXT DID NOT MATCH",$0D,$0A,0
 W2I_MSG_B0_USED:        DB              "REFUSE: B0 USED AND DIFFERENT; NOTHING WRITTEN",$0D,$0A,0
 W2I_MSG_HASH_COLLISION: DB              "REFUSE: B0/B3 HASH MATCH BUT BYTES DIFFER",$0D,$0A,0
-W2I_MSG_COPY_CONFIRM:   DB              "B0 ERASED; TYPE COPY B3 TO B0> ",0
 W2I_MSG_COPYING:        DB              "COPY/VERIFY B3 -> B0 ",0
 W2I_MSG_COPY_FAIL:      DB              "B0 COPY FAILED; B3 UNCHANGED",$0D,$0A,0
 W2I_MSG_COMPARE_FAIL:   DB              "B0 WHOLE-BANK HASH/EXACT VERIFY FAILED",$0D,$0A,0
 W2I_MSG_B0_OK:          DB              "B0 == ORIGINAL B3 VERIFIED",$0D,$0A,0
 W2I_MSG_CANDIDATE_BAD:  DB              "CARRIED STR8-N TOP CHECK FAILED",$0D,$0A,0
-W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 1.23> ",0
 W2I_MSG_INSTALLING:     DB              "ERASING/PROGRAMMING B3:F",$0D,$0A,0
-W2I_MSG_INSTALLED:      DB              "STR8-N VERIFIED; RESET",$0D,$0A,0
+W2I_MSG_INSTALLED:      DB              "MIGRATION VERIFIED; STARTING STR8-N",$0D,$0A
+                        DB              "NEXT: CONNECT ANY 115200 8N1 SERIAL TERMINAL",$0D,$0A,0
 W2I_MSG_RECOVERY:       DB              "B3:F FAIL: R=RETRY STR8 O=RESTORE OLD> ",0
 W2I_MSG_OLD_RESTORED:   DB              "OLD B3:F RESTORED FROM B0:F; RESET",$0D,$0A,0
 W2I_MSG_CANCEL:         DB              "CANCELLED; NOTHING FURTHER WRITTEN",$0D,$0A,0
 W2I_MSG_ABORT:          DB              "HALTED IN RAM; PHYSICAL RESET SELECTS B3",$0D,$0A,0
 
-W2I_TOKEN_COPY:         DB              "COPY B3 TO B0",0
-W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.23",0
+                        IF              W2I_RESTORE_STOCK
+W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.28 STOCK RESTORE",$0D,$0A
+                        DB              "FACTORY BASELINE: B0 -> B3, THEN ERASE B0",$0D,$0A
+                        DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE",$0D,$0A,0
+W2R_MSG_SOURCE:         DB              "SOURCE B0 FNV1A=",0
+W2R_MSG_RESET:          DB              " RESET=$",0
+W2R_MSG_ORDER:          DB              "DEST B3 WILL BE REPLACED",$0D,$0A
+                        DB              "SECTORS 8-E FIRST; RESET SECTOR F LAST",$0D,$0A
+                        DB              "AFTER B3 VERIFIES, B0 WILL BE ERASED",$0D,$0A,0
+W2R_MSG_CONFIRM:        DB              "TYPE RESTORE FACTORY BOARD> ",0
+W2R_MSG_SOURCE_BAD:     DB              "REFUSE: B0 ERASED OR RESET OUTSIDE $8000-$FFFE",$0D,$0A,0
+W2R_MSG_COPY_LOWER:     DB              "COPY/VERIFY B0 -> B3 8-E ",0
+W2R_MSG_COPY_TOP:       DB              "B3:F LAST ",0
+W2R_MSG_SECTOR_FAIL:    DB              $0D,$0A,"B3 SECTOR $",0
+W2R_MSG_RETRY:          DB              " WRITE/VERIFY FAIL; TYPE R TO RETRY> ",0
+W2R_MSG_FINAL_FAIL:     DB              "WHOLE-BANK VERIFY FAIL; TYPE R TO REWRITE ALL> ",0
+W2R_MSG_VERIFIED:       DB              "B0 == B3 WHOLE BANK VERIFIED",$0D,$0A,0
+W2R_MSG_ERASE_B0:       DB              "ERASE/VERIFY FACTORY B0 ",0
+W2R_MSG_ERASE_FAIL:     DB              $0D,$0A,"B0 SECTOR $",0
+W2R_MSG_FACTORY_FAIL:   DB              "B0 NOT FULLY ERASED; TYPE R TO RETRY ALL> ",0
+W2R_MSG_B3_CHANGED:     DB              "REFUSE BOOT: B3 HASH CHANGED AFTER B0 ERASE",$0D,$0A,0
+W2R_MSG_FACTORY_OK:     DB              "FACTORY BASELINE VERIFIED: B0 ERASED; B3 STOCK",$0D,$0A,0
+W2R_MSG_BOOT:           DB              "BOOT STOCK B3",$0D,$0A,0
+                        ENDIF
+
+W2I_TOKEN_MIGRATE:      DB              "MIGRATE WDC TO STR8-N 1.28",0
 W2I_ARCHIVE_TOKEN:      DB              "ARCHIVE ",0,0,0,0,0,0,0,0,0
+                        IF              W2I_RESTORE_STOCK
+W2R_TOKEN_RESTORE:      DB              "RESTORE FACTORY BOARD",0
+W2R_TOKEN_RETRY:        DB              "R",0
+                        ENDIF
 W2I_INPUT:              DS              32
 
 W2I_ID_MAN:             DB              $00
@@ -860,8 +1119,28 @@ W2I_SOURCE_HASH1:       DB              $00
 W2I_SOURCE_HASH2:       DB              $00
 W2I_SOURCE_HASH3:       DB              $00
 
+                        IF              W2I_RESTORE_STOCK
+W2R_RESET_LO:           DB              $00
+W2R_RESET_HI:           DB              $00
+                        ENDIF
+
+                        IF              W2I_RESTORE_STOCK
+                        ELSE
                         ORG             $4000
 W2I_CANDIDATE_IMAGE:
+                        IF              W2I_STR8_IN65_IMAGE
+                        IF              STR8_IN65_VERSION_128
+                        INCLUDE         "str8n-v1.28-str8-in65-test-image.inc"
+                        ELSE
+                        INCLUDE         "str8n-v1.23-str8-in65-test-image.inc"
+                        ENDIF
+                        ELSE
+                        IF              STR8_IN65_VERSION_128
+                        INCLUDE         "str8n-v1.28-wdcmonv2-install-image.inc"
+                        ELSE
                         INCLUDE         "str8n-v1.23-wdcmonv2-install-image.inc"
+                        ENDIF
+                        ENDIF
+                        ENDIF
 
                         END

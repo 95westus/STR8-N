@@ -1,6 +1,7 @@
 param(
-    [string]$BinPath = "BUILD/v1.23/bin/str8n-v1.23-bank3-f000-ffff.bin",
-    [string]$OutPath = "BUILD/v1.23/generated/str8n-v1.23-top-image.inc"
+    [string]$BinPath = "BUILD/v1.28/bin/str8n-v1.28-bank3-f000-ffff.bin",
+    [string]$OutPath = "BUILD/v1.28/generated/str8n-v1.28-top-image.inc",
+    [string]$Identity = 'STR8-N 1.28'
 )
 
 Set-StrictMode -Version Latest
@@ -10,16 +11,16 @@ if (-not (Test-Path -LiteralPath $BinPath)) { throw "Top-sector BIN not found: $
 [byte[]]$bytes = [System.IO.File]::ReadAllBytes((Resolve-Path -LiteralPath $BinPath).Path)
 if ($bytes.Length -ne 4096) { throw "Top-sector BIN is $($bytes.Length) bytes; expected 4096" }
 
-$identity = [System.Text.Encoding]::ASCII.GetBytes('STR8-N 1.23')
+$identityBytes = [System.Text.Encoding]::ASCII.GetBytes($Identity)
 $found = $false
-for ($offset = 0; $offset -le ($bytes.Length - $identity.Length); $offset++) {
+for ($offset = 0; $offset -le ($bytes.Length - $identityBytes.Length); $offset++) {
     $same = $true
-    for ($i = 0; $i -lt $identity.Length; $i++) {
-        if ($bytes[$offset + $i] -ne $identity[$i]) { $same = $false; break }
+    for ($i = 0; $i -lt $identityBytes.Length; $i++) {
+        if ($bytes[$offset + $i] -ne $identityBytes[$i]) { $same = $false; break }
     }
     if ($same) { $found = $true; break }
 }
-if (-not $found) { throw 'Candidate top BIN does not contain STR8-N 1.23 identity' }
+if (-not $found) { throw "Candidate top BIN does not contain $Identity identity" }
 if ($bytes[0] -ne 0x4C) { throw 'Candidate top BIN does not begin with JMP' }
 if ($bytes[0x0FFC] -eq 0xFF -and $bytes[0x0FFD] -eq 0xFF) { throw 'Candidate RESET vector is erased' }
 

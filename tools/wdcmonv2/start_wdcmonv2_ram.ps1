@@ -7,6 +7,9 @@ param(
     [string]$EventLogPath,
     [string]$TransferPath,
     [switch]$NoReset,
+    [switch]$PhysicalResetGate,
+    [int]$PhysicalResetArmSeconds = 0,
+    [switch]$TerminalOnly,
     [switch]$NoTerminal,
     [switch]$Force,
     [switch]$ValidateOnly,
@@ -312,6 +315,61 @@ function Get-WdcBoardInfo {
     return [pscustomobject]@{ Tag = $tag; Hardware = $hardware; Software = $software; Raw = $reply }
 }
 
+function Get-WdcBoardInfoAfterResetArm {
+    param(
+        [Parameter(Mandatory = $true)]$Serial,
+        [Parameter(Mandatory = $true)][int]$Seconds
+    )
+    $deadline = [DateTime]::UtcNow.AddSeconds($Seconds)
+    $oldTimeout = $Serial.ReadTimeout
+    $Serial.ReadTimeout = 100
+    try {
+        $Serial.DiscardInBuffer()
+        while ([DateTime]::UtcNow -lt $deadline) {
+            Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($script:WdcSync0, $script:WdcSync1))
+            try {
+                $value = $Serial.ReadByte()
+                if ($value -eq $script:WdcReady) {
+                    Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($script:WdcBoardInfo))
+                    $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
+                    $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
+                    $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
+                    if ($tag -ne 'SXB2') {
+                        throw ('Unsupported WDCMONv2 board identity {0}; expected SXB2' -f ([BitConverter]::ToString($reply)))
+                    }
+                    return [pscustomobject]@{
+                        Tag = $tag
+                        Hardware = [BitConverter]::ToUInt32($reply, 4)
+                        Software = [BitConverter]::ToUInt32($reply, 8)
+                        Raw = $reply
+                    }
+                }
+                while ($Serial.BytesToRead -gt 0) {
+                    if ($Serial.ReadByte() -eq $script:WdcReady) {
+                        Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($script:WdcBoardInfo))
+                        $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
+                        $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
+                        $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
+                        if ($tag -ne 'SXB2') {
+                            throw ('Unsupported WDCMONv2 board identity {0}; expected SXB2' -f ([BitConverter]::ToString($reply)))
+                        }
+                        return [pscustomobject]@{
+                            Tag = $tag
+                            Hardware = [BitConverter]::ToUInt32($reply, 4)
+                            Software = [BitConverter]::ToUInt32($reply, 8)
+                            Raw = $reply
+                        }
+                    }
+                }
+            } catch [System.TimeoutException] {
+            }
+        }
+    } finally {
+        $Serial.ReadTimeout = $oldTimeout
+    }
+    throw "WDCMONv2 armed reset sync timed out after $Seconds seconds"
+}
+
 function Write-WdcMemory {
     param(
         [Parameter(Mandatory = $true)]$Serial,
@@ -513,7 +571,7 @@ if ($ImagePath) {
     Write-Host ('RAM RANGE  = ${0:X4}-${1:X4} ({2} bytes)' -f $image.First, $image.Last, $image.Bytes.Length)
     Write-Host ('ENTRY      = ${0:X4}' -f $image.Entry)
     Write-Host ('RAM FNV1A  = {0:X8}' -f $image.Fnv1a)
-} elseif (-not $ProbeOnly -and $ListenOnlySeconds -eq 0) {
+} elseif (-not $ProbeOnly -and $ListenOnlySeconds -eq 0 -and -not $TerminalOnly) {
     throw 'Specify -ImagePath, or use -ListPorts/-ProbeOnly/-ListenOnlySeconds/-SelfTest'
 }
 if ($ValidateOnly) {
@@ -525,8 +583,16 @@ if ($ValidateOnly) {
 if (-not $Port) { throw 'Specify the stock-board COM port with -Port (use -ListPorts to enumerate)' }
 if ($ChunkBytes -lt 16 -or $ChunkBytes -gt 4096) { throw '-ChunkBytes must be in the range 16..4096' }
 if ($ListenOnlySeconds -lt 0 -or $ListenOnlySeconds -gt 60) { throw '-ListenOnlySeconds must be in the range 0..60' }
+if ($PhysicalResetArmSeconds -lt 0 -or $PhysicalResetArmSeconds -gt 120) { throw '-PhysicalResetArmSeconds must be in the range 0..120' }
 if ($ProbeOnly -and $ListenOnlySeconds -gt 0) { throw '-ProbeOnly and -ListenOnlySeconds are mutually exclusive' }
 if ($null -ne $image -and ($ProbeOnly -or $ListenOnlySeconds -gt 0)) { throw '-ImagePath cannot be combined with -ProbeOnly or -ListenOnlySeconds' }
+if ($TerminalOnly -and $null -ne $image) { throw '-TerminalOnly cannot be combined with -ImagePath' }
+if ($TerminalOnly -and ($ProbeOnly -or $ListenOnlySeconds -gt 0 -or $PhysicalResetGate -or $PhysicalResetArmSeconds -gt 0)) { throw '-TerminalOnly cannot be combined with a probe, listener, or physical-reset mode' }
+if ($TerminalOnly -and -not $NoReset) { throw '-TerminalOnly requires -NoReset' }
+if ($TerminalOnly -and $NoTerminal) { throw '-TerminalOnly cannot be combined with -NoTerminal' }
+if ($PhysicalResetGate -and -not $NoReset) { throw '-PhysicalResetGate requires -NoReset' }
+if ($PhysicalResetArmSeconds -gt 0 -and -not $NoReset) { throw '-PhysicalResetArmSeconds requires -NoReset' }
+if ($PhysicalResetGate -and $PhysicalResetArmSeconds -gt 0) { throw '-PhysicalResetGate and -PhysicalResetArmSeconds are mutually exclusive' }
 if (-not $ProbeOnly -and $ListenOnlySeconds -eq 0 -and -not $NoTerminal) {
     if ([Console]::IsInputRedirected) { throw 'Interactive terminal input is redirected; use a real console or make -NoTerminal explicit' }
     try { $null = [Console]::KeyAvailable } catch { throw ('Interactive console is unavailable: {0}' -f $_.Exception.Message) }
@@ -606,13 +672,30 @@ try {
     $serial.Open()
     $serial.DiscardInBuffer()
     $serial.DiscardOutBuffer()
+    if ($TerminalOnly) {
+        Start-RawTerminal -Serial $serial -Log $rawLog -TransferBytes $transferBytes -TransferName $transferName -TransferSha256 $transferSha256
+        $sessionOutcome = 'TERMINAL-ONLY SESSION COMPLETE'
+        return
+    }
     if (-not $NoReset) {
         $serial.DtrEnable = $false
         Start-Sleep -Milliseconds 300
         $serial.DtrEnable = $true
         Start-Sleep -Milliseconds 300
         $serial.DtrEnable = $false
-        Start-Sleep -Milliseconds 300
+        Start-Sleep -Milliseconds 1000
+        $startupByteCount = $serial.BytesToRead
+        $serial.DiscardInBuffer()
+        Write-SessionEvent ("RESET SETTLE=1000ms STARTUP_RX_DISCARDED={0}" -f $startupByteCount)
+        Write-Host ("RESET SETTLE = 1000 ms; STARTUP RX DISCARDED = {0}" -f $startupByteCount)
+    }
+    if ($PhysicalResetGate) {
+        Write-Host 'PHYSICAL RESET GATE: reset the board, wait two seconds, then press ENTER here'
+        $null = Read-Host
+        $startupByteCount = $serial.BytesToRead
+        $serial.DiscardInBuffer()
+        Write-SessionEvent ("PHYSICAL RESET GATE STARTUP_RX_DISCARDED={0}" -f $startupByteCount)
+        Write-Host ("PHYSICAL RESET GATE = RELEASED; STARTUP RX DISCARDED = {0}" -f $startupByteCount)
     }
 
     if ($ListenOnlySeconds -gt 0) {
@@ -621,7 +704,14 @@ try {
         return
     }
 
-    $board = Get-WdcBoardInfo -Serial $serial
+    if ($PhysicalResetArmSeconds -gt 0) {
+        Write-Host ("PHYSICAL RESET ARM = ACTIVE FOR {0} SECONDS; PRESS PHYSICAL RESET NOW" -f $PhysicalResetArmSeconds)
+        Write-SessionEvent ("PHYSICAL RESET ARM START SECONDS={0}" -f $PhysicalResetArmSeconds)
+        $board = Get-WdcBoardInfoAfterResetArm -Serial $serial -Seconds $PhysicalResetArmSeconds
+        Write-SessionEvent 'PHYSICAL RESET ARM SYNC=PASS'
+    } else {
+        $board = Get-WdcBoardInfo -Serial $serial
+    }
     Write-SessionEvent ('BOARD TAG={0} HW={1:N2} WDCMON={2:N2}' -f $board.Tag, ($board.Hardware / 100.0), ($board.Software / 100.0))
     Write-Host ('BOARD      = {0}; HW={1:N2}; WDCMON={2:N2}' -f $board.Tag, ($board.Hardware / 100.0), ($board.Software / 100.0))
     if ($ProbeOnly) {

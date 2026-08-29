@@ -6,17 +6,18 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $expected = @(
-    'ARTIFACTS/ryors-v1.2-himon-asm-bank3-8-e.s19',
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-archive-2000.s19',
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin',
-    'ARTIFACTS/str8n-v1.23-wdcmonv2-install-2000.s19',
+    'MIGRATE-WDC-TO-STR8N.ps1',
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-archive-2000.s19',
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin',
+    'ARTIFACTS/str8n-v1.28-wdcmonv2-install-2000.s19',
+    'DOC/HIMON_ASMF2_AFTER_STR8N.md',
     'DOC/WDCMONV2_MIGRATION.md',
     'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md',
     'DOC/WDCMONV2_MIGRATION_PROVENANCE.md',
     'LICENSE',
     'PACKAGE-MANIFEST.json',
     'PACKAGE-README.txt',
-    'SOURCE/str8n-v1.23-wdcmonv2-install-image.inc',
+    'SOURCE/str8n-v1.28-wdcmonv2-install-image.inc',
     'SOURCE/wdcmonv2str8n-archive-2000.asm',
     'SOURCE/wdcmonv2str8n-install-2000.asm',
     'TOOLS/check_wdcmonv2_archive.ps1',
@@ -36,7 +37,8 @@ if (($actual -join "`n") -ne ($expected -join "`n")) { throw 'Migration kit file
 $manifest = Get-Content -Raw -LiteralPath (Join-Path $root 'PACKAGE-MANIFEST.json') | ConvertFrom-Json
 if ($manifest.schema -ne 1 -or
     $manifest.stockWdcmonv2FirmwareIncluded -ne $false -or
-    $manifest.localBankArchivesIncluded -ne $false) {
+    $manifest.localBankArchivesIncluded -ne $false -or
+    $manifest.ryorsPayloadIncluded -ne $false) {
     throw 'Migration kit provenance flags are invalid'
 }
 $rows = @($manifest.files)
@@ -51,11 +53,16 @@ foreach ($row in $rows) {
 }
 
 $loader = Join-Path $root 'TOOLS/start_wdcmonv2_ram.ps1'
+$quick = Get-Content -Raw -LiteralPath (Join-Path $root 'MIGRATE-WDC-TO-STR8N.ps1')
+foreach ($required in @('FACTORY WDCMONV2 -> STR8-N 1.28', '115200 baud', 'selector choose S', 'J0')) {
+    if (-not $quick.Contains($required)) { throw "One-command wrapper lacks required handoff text: $required" }
+}
 & $loader -SelfTest
-& $loader -ImagePath (Join-Path $root 'ARTIFACTS/str8n-v1.23-wdcmonv2-archive-2000.s19') -ValidateOnly
-& $loader -ImagePath (Join-Path $root 'ARTIFACTS/str8n-v1.23-wdcmonv2-install-2000.s19') -ValidateOnly
+& $loader -ImagePath (Join-Path $root 'ARTIFACTS/str8n-v1.28-wdcmonv2-archive-2000.s19') -ValidateOnly
+& $loader -ImagePath (Join-Path $root 'ARTIFACTS/str8n-v1.28-wdcmonv2-install-2000.s19') -ValidateOnly
 
 Write-Host ('MIGRATION KIT       = VERIFIED; {0} allowlisted files' -f $expected.Count)
 Write-Host 'WDCMONV2 FIRMWARE    = NOT INCLUDED'
 Write-Host 'LOCAL BANK ARCHIVES  = NOT INCLUDED'
-Write-Host 'HARDWARE STATUS      = STOCK-BOARD TRANSCRIPT PENDING'
+Write-Host 'R-YORS PAYLOAD        = NOT INCLUDED'
+Write-Host 'HARDWARE STATUS      = STR8-iN/65 BOARD-PROVEN; CANONICAL v1.28 BYTE-CHECKED'

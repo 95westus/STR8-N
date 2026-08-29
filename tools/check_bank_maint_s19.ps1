@@ -1,7 +1,10 @@
 param(
-    [string]$S19Path = "BUILD/v1.23/s19/str8n-v1.23-bank-maint-2000.s19",
+    [string]$S19Path = "BUILD/v1.28/s19/str8n-v1.28-bank-maint-2000.s19",
     [string]$SourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-2000.asm",
     [string]$RenameSourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-rename.inc",
+    [string]$FlagsSourcePath = "tools/bank-maint/str8n-v1.28-str8-in65-bank-maint-flags.inc",
+    [string]$VersionText = "1.28",
+    [switch]$In65,
     [switch]$MenuTop
 )
 
@@ -156,7 +159,7 @@ foreach ($required in @(0x2000, 0x3400, 0x362A)) {
 
 $orderedAddresses = @($data.Keys | Sort-Object)
 [byte[]]$programBytes = $orderedAddresses | ForEach-Object { $data[$_] }
-$banner = [System.Text.Encoding]::ASCII.GetBytes('STR8-N 1.23 BANK MAINT')
+$banner = [System.Text.Encoding]::ASCII.GetBytes("STR8-N $VersionText BANK MAINT")
 $bannerFound = $false
 for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) {
     $match = $true
@@ -171,7 +174,7 @@ for ($offset = 0; $offset -le $programBytes.Length - $banner.Length; $offset++) 
         break
     }
 }
-if (-not $bannerFound) { throw 'Bank Maintenance does not publish its v1.23 banner' }
+if (-not $bannerFound) { throw "Bank Maintenance does not publish its v$VersionText banner" }
 
 $requiredTexts = @('B# 8 9 A B C D E F',
         'ENTRY 8000-FFFE>', 'TYPE ADOPT B',
@@ -181,16 +184,39 @@ $requiredTexts = @('B# 8 9 A B C D E F',
         'NO ERASED SCRATCH', 'RENAME DIR 0-3>', 'DIR NOT COMPLETE',
         'NAME UNCHANGED', 'TYPE RENAME D')
 if ($MenuTop) {
-    $requiredTexts += @('STR8-N 1.23 BANK MAINT + TOP',
+    $requiredTexts += @("STR8-N $VersionText BANK MAINT + TOP",
         'M  MAP+DIR', 'C  COPY+ENROLL', 'D  ADOPT DIR',
         'N  RENAME DIR', 'R  RECLAIM DIR',
         'E  ERASE BANK RANGE', 'P  PUT AP $7000 -> BANK SECTOR',
         'U  UPDATE B3:F (BACKUP B1:F; RESET)', '?  MENU',
         'Q/ENTER  RETURN TO STR8-N', 'BM> ')
 }
-else {
+elseif (-not $In65) {
     $requiredTexts += @('D=ADOPT', 'N=RENAME DIR', 'P=AP $4000->BANK SECTOR',
         'R=RECLAIM DIR')
+}
+if ($In65) {
+    $requiredTexts += @('D=ADOPT N=NAME R=CLEAR', 'E=ERASE M=MAP F=FLAG',
+        'C=COPY P=AP Q=QUIT> ', 'BANK 0-3 [0]>', 'TYPE 00-FF [FF]>',
+        'DESC 5 CHARS [AUTO]>', 'WDCM2',
+        'SEARCH FLAG FF/A0-A7 [A6]>', 'FLAG UNCHANGED', 'TYPE FLAGS ')
+    if (-not (Test-Path -LiteralPath $FlagsSourcePath)) {
+        throw "Missing STR8-iN/65 flag source: $FlagsSourcePath"
+    }
+    $flagsCode = (([System.IO.File]::ReadAllLines((Resolve-Path $FlagsSourcePath))) |
+        ForEach-Object { ($_ -split ';', 2)[0] }) -join "`n"
+    foreach ($requiredCode in @('BM_FLAGS', 'LDA #$A6', 'CMP #$A0', 'CMP #$A8',
+            'JMP BM_RECLAIM_J3', 'BM_FLAGS_CONFIRM',
+            'JMP BM_B3F_REWRITE_CONFIRMED', 'BM_FLAGS_APPLY', 'STA $19F2')) {
+        if (-not $flagsCode.Contains($requiredCode)) {
+            throw "STR8-iN/65 flag editor is missing '$requiredCode'"
+        }
+    }
+    $flagStores = @([regex]::Matches($flagsCode, 'STA\s+\$(19F[0-9A-F])') |
+        ForEach-Object { $_.Groups[1].Value })
+    if (($flagStores -join ',') -ne '19F2') {
+        throw "STR8-iN/65 flag editor writes unexpected config bytes: $($flagStores -join ',')"
+    }
 }
 if ($MenuTop) { $requiredTexts += @('TYPE PUT BnS000 (n=0-2,S=8-F)>') }
 foreach ($requiredText in $requiredTexts) {
