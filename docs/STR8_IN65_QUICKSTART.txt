@@ -1,0 +1,50 @@
+STR8-iN/65 QUICK START
+Factory WDCMONv2 -> STR8-N 1.29
+
+1. Extract the migration ZIP, connect and power the WDC board, then run:
+
+   powershell -NoProfile -ExecutionPolicy Bypass `
+     -File .\STR8-iN65-LOADER.ps1
+
+2. Select the COM port and press the board's physical RESET button when asked.
+
+3. When the board has qualified erased Bank 0, type:
+
+   COPY B3 TO B0
+
+4. Wait for the complete 32K copy and exact comparison to pass.  When the
+   board prints SEND STR8-N TOP BIN, press Ctrl+U once.  After the 4096-byte
+   image passes its board-side check, type:
+
+   INSTALL STR8-N 1.29
+
+5. After STR8-N 1.29 starts, select S.  At STR8-N> enter L, then press Ctrl+D
+   once to send the packaged production Bank Maintenance S19.
+
+6. At BM> enter D.  Press Enter for the displayed Bank 0, FF, and WDCM2
+   defaults.  Require this exact proposed write:
+
+   PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 4D 32 FE FF FF FC FF FF FF
+
+   Then type:
+
+   ADOPT B0
+
+7. Use M and require:
+
+   D0 FF WDCM2 FFFF FCFFFFFF
+
+   Test reset selector 0, shell J0, and physical RESET return to STR8-N 1.29.
+
+SAFETY
+
+Do not press RESET, assert NMI, disconnect USB, or remove power while ERASE
+or PROGRAM is displayed.  Bank 0 remains an opaque byte-for-byte factory
+guest.  Its D0 record is stored only in the Bank-3 directory.
+
+DETAILS
+
+Add -Details to the loader command to show the image SHA-256, T48 offset,
+bank policy, and evidence paths before starting.  Fast and detailed modes both
+retain the complete raw transcript and timestamped host event log in LOCAL.
+The complete procedure and recovery notes are in DOC\WDCMONV2_MIGRATION.md.

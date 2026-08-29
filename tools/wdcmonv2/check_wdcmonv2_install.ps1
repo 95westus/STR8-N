@@ -18,7 +18,7 @@ $source = Get-Content -Raw -LiteralPath $SourcePath
 foreach ($required in @(
     'W2I_FLASH_MAN_EXPECT    EQU             $BF',
     'W2I_FLASH_DEV_EXPECT    EQU             $B5',
-    "MIGRATE WDC TO STR8-N $VersionText", 'COPY/VERIFY B3 -> B0',
+    'COPY B3 TO B0', "INSTALL STR8-N $VersionText", 'COPY/VERIFY B3 -> B0',
     'REFUSE: B0 USED AND DIFFERENT', 'W2I_HASH_EQUALS_SOURCE',
     'W2I_COMPARE_B0_B3_EXACT', 'B0/B3 HASH MATCH BUT BYTES DIFFER',
     'W2I_COPY_B3_TO_B0', 'W2I_RECEIVE_CANDIDATE',
@@ -37,13 +37,15 @@ if ($source -match '(?im)^\s*(JSR|JMP)\s+\$[89A-E][0-9A-F]{3}\b') {
 if ($source.Contains('W2I_BANK1') -or $source.Contains('W2I_BANK2')) {
     throw 'Seed installer must not consume Bank 1 or Bank 2'
 }
-$migrationGate = $source.IndexOf('W2I_MIGRATE_OK:')
+$b0PolicyGate = $source.IndexOf('W2I_B0_NOT_EQUAL:')
+$copyGate = $source.IndexOf('W2I_COPY_CONFIRMED:')
 $b0Gate = $source.IndexOf('W2I_B0_PROVEN:')
 $receiveGate = $source.IndexOf('JSR             W2I_RECEIVE_CANDIDATE', $b0Gate)
 $installGate = $source.IndexOf('W2I_INSTALL_CONFIRMED:')
-if ($migrationGate -lt 0 -or $b0Gate -le $migrationGate -or
+if ($b0PolicyGate -lt 0 -or $copyGate -le $b0PolicyGate -or
+    $b0Gate -le $copyGate -or
     $receiveGate -le $b0Gate -or $installGate -le $receiveGate) {
-    throw 'Installer gate order must be MIGRATE confirmation -> B0 exact -> receive canonical BIN -> INSTALL'
+    throw 'Installer gate order must be B0 policy -> COPY confirmation -> B0 exact -> receive canonical BIN -> INSTALL confirmation'
 }
 
 $map = Get-Content -Raw -LiteralPath $MapPath
@@ -115,4 +117,4 @@ for ($offset = 0x0FB0; $offset -le 0x0FEF; $offset++) {
 
 Write-Host ('WDCMONV2 LOADER S19  = PASS; range=${0:X4}-${1:X4}; S9=$2000; no embedded top' -f $minAddress, $maxAddress)
 Write-Host ('EXTERNAL STR8-N BIN  = PASS; exact canonical 4096-byte top; SHA256={0}' -f (Get-FileHash -Algorithm SHA256 -LiteralPath $CandidateBinPath).Hash)
-Write-Host 'GATE ORDER           = MIGRATE -> B0 EXACT -> RECEIVE BIN -> INSTALL; B1/B2 untouched'
+Write-Host 'GATE ORDER           = B0 POLICY -> COPY -> B0 EXACT -> RECEIVE BIN -> INSTALL; B1/B2 untouched'

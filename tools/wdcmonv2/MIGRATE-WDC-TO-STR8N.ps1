@@ -1,7 +1,8 @@
 param(
     [string]$Port,
     [int]$PhysicalResetArmSeconds = 0,
-    [string]$TranscriptPath
+    [string]$TranscriptPath,
+    [switch]$Details
 )
 
 Set-StrictMode -Version Latest
@@ -47,21 +48,30 @@ if (-not $TranscriptPath) {
 }
 
 Write-Host ''
-Write-Host 'FACTORY WDCMONV2 -> STR8-N 1.29'
-Write-Host '  1. Complete stock Bank 3 is copied and verified in Bank 0.'
-Write-Host '  2. The canonical 4096-byte STR8-N BIN is sent and installed in Bank 3 sector F.'
-Write-Host '  3. STR8-N boots with an empty Bank-3 directory; D0 adoption is a later prompt.'
-Write-Host 'Do not reset, assert NMI, or remove power during active flash writes.'
+Write-Host 'STR8-iN/65 LOADER - FAST PATH'
+Write-Host 'Factory WDCMONv2 -> STR8-N 1.29'
 Write-Host ''
-Write-Host ('PORT                 = {0}' -f $Port)
-Write-Host ('STR8-N TOP BIN       = {0}' -f (Split-Path -Leaf $candidate))
-Write-Host ('BIN SIZE             = {0} bytes' -f $candidateBytes.Length)
-Write-Host ('BIN SHA-256          = {0}' -f $candidateSha256)
-Write-Host 'IMAGE START          = $F000'
-Write-Host 'T48 DEVICE OFFSET    = $1F000'
-Write-Host 'When the board prints SEND STR8-N TOP BIN, press CTRL+U once.'
-Write-Host 'After STR8-N 1.29 boots: select S, enter L, then press CTRL+D to send Bank Maintenance.'
-Write-Host 'At Bank Maintenance enter D, accept defaults, and type ADOPT B0.'
+Write-Host 'Release package .............................. PASS'
+Write-Host ('Port ......................................... {0}' -f $Port)
+Write-Host 'Top image .................................... 4096 bytes; $F000-$FFFF'
+Write-Host 'Evidence ..................................... full raw + event logs'
+Write-Host ''
+Write-Host 'Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.29.'
+Write-Host 'When asked for the top BIN, press CTRL+U once.'
+Write-Host 'After boot: S, L, CTRL+D, D, defaults, then ADOPT B0.'
+Write-Host 'Do not reset, assert NMI, or remove power during active flash writes.'
+if ($Details) {
+    Write-Host ''
+    Write-Host 'DETAILS'
+    Write-Host '  Bank 3 is preserved byte-for-byte as an opaque 32K Bank-0 guest.'
+    Write-Host '  B1 and B2 are not migration destinations.'
+    Write-Host '  D0 is written only in the Bank-3 directory after verified v1.29 boot.'
+    Write-Host ('  STR8-N TOP BIN    = {0}' -f (Split-Path -Leaf $candidate))
+    Write-Host ('  BIN SHA-256       = {0}' -f $candidateSha256)
+    Write-Host '  T48 DEVICE OFFSET = $1F000'
+    Write-Host ('  RAW TRANSCRIPT    = {0}' -f $TranscriptPath)
+    Write-Host ('  HOST EVENT LOG    = {0}.events.txt' -f $TranscriptPath)
+}
 Write-Host ''
 
 $arguments = @{
@@ -86,3 +96,5 @@ Write-Host 'Examples: minicom, Tera Term, PuTTY, or another serial terminal emul
 Write-Host 'Press physical RESET: STR8-N 1.29 must appear.'
 Write-Host 'Require D0 FF WDCM2 FFFF FCFFFFFF before testing selector 0 and J0.'
 Write-Host 'Physical RESET always returns to STR8-N in Bank 3.'
+Write-Host ('Detailed raw transcript: {0}' -f $TranscriptPath)
+Write-Host ('Detailed host event log: {0}.events.txt' -f $TranscriptPath)

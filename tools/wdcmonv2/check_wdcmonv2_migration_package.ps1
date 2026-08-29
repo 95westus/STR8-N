@@ -39,6 +39,7 @@ if (-not (Test-Path -LiteralPath $BoardTestPath -PathType Leaf)) { throw "Board 
 
 $expected = @(
     'STR8-iN65-LOADER.ps1',
+    'QUICKSTART.txt',
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19',
     'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19',
     'ARTIFACTS/STR8-iN65-LOADER-2000.s19',

@@ -7,6 +7,7 @@ $ErrorActionPreference = 'Stop'
 
 $expected = @(
     'STR8-iN65-LOADER.ps1',
+    'QUICKSTART.txt',
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19',
     'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19',
     'ARTIFACTS/STR8-iN65-LOADER-2000.s19',
@@ -57,8 +58,12 @@ foreach ($row in $rows) {
 
 $loader = Join-Path $root 'TOOLS/start_wdcmonv2_ram.ps1'
 $quick = Get-Content -Raw -LiteralPath (Join-Path $root 'STR8-iN65-LOADER.ps1')
-foreach ($required in @('FACTORY WDCMONV2 -> STR8-N 1.29', 'STR8-N-v1-29.bin', 'ADOPT B0', 'J0')) {
+foreach ($required in @('STR8-iN/65 LOADER - FAST PATH', 'STR8-N-v1-29.bin', 'ADOPT B0', 'J0', '[switch]$Details')) {
     if (-not $quick.Contains($required)) { throw "One-command wrapper lacks required handoff text: $required" }
+}
+$quickStart = Get-Content -Raw -LiteralPath (Join-Path $root 'QUICKSTART.txt')
+foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'PROPOSED D0 B3:$FFB0', '-Details')) {
+    if (-not $quickStart.Contains($required)) { throw "Quick-start card lacks required fast-path text: $required" }
 }
 & $loader -SelfTest
 & $loader -ImagePath (Join-Path $root 'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19') -ValidateOnly

@@ -221,7 +221,7 @@ meanings at the `STR8-N>` prompt.
   load/readback/execute bridge, and a host extractor that produce a checked
   local 32K BIN, S19, and receipt. This migration stage is board-accepted on
   the retained transcript.
-- A one-confirmation factory-board RAM loader that accepts only an erased or
+- A two-confirmation factory-board RAM loader that accepts only an erased or
   already-identical B0, preserves and exactly verifies stock B3 there, receives
   the canonical 4096-byte STR8-N 1.29 BIN, installs it in B3:F, and leaves
   B1/B2 untouched. The kit exposes it as `STR8-iN65-LOADER.ps1`; it enumerates
@@ -268,6 +268,10 @@ range to be erased, and uses a target-specific confirmation such as
 `PUT B28000`.
 
 ## Start here
+
+- `QUICKSTART.txt` in the factory migration ZIP is the compact operator card;
+  the loader's default presentation follows it, while `-Details` adds hashes,
+  addresses, bank policy, and evidence paths without changing the transaction.
 
 - [Task List](TASKS.md) - release-staging gates and later Bank-1 example
   backlog.

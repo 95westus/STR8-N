@@ -35,20 +35,26 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\STR8-iN65-LOADER.ps1
 ```
 
+This is the compact default presentation. Add `-Details` to show the BIN hash,
+T48 offset, bank policy, and evidence paths before the port is opened. Both
+modes retain the same complete raw transcript and timestamped host event log.
+The extracted package's `QUICKSTART.txt` is the short operator card.
+
 The wrapper enumerates serial ports and asks for the COM port when `-Port` is
 omitted. It opens and holds that port, then asks for a physical RESET. Reset
 the board and press Enter in PowerShell. After board identity, flash identity,
-B3 hashing, and the B0 policy check, the RAM program requires one exact
+B3 hashing, and the B0 policy check, an erased B0 requires this exact
 confirmation:
 
 ```text
-MIGRATE WDC TO STR8-N 1.29
+COPY B3 TO B0
 ```
 
 It then copies and exactly verifies all eight B3 sectors in B0. When the board
 prints `SEND STR8-N TOP BIN; 4096 BYTES; START $F000`, press Ctrl+U once. The
 host sends the packaged `STR8-N-v1-29.bin`; the RAM loader requires exactly
-4096 bytes and verifies its full build-time FNV before replacing only B3:F.
+4096 bytes and verifies its full build-time FNV. It then requires the separate
+exact confirmation `INSTALL STR8-N 1.29` before replacing only B3:F.
 That same BIN can be programmed by a T48 at device offset `$1F000`, used as a
 logical `$F000` STR8-N top image, or supplied to the guarded top updater.
 
@@ -469,7 +475,7 @@ B3 STOCK -> B0; STR8-N 1.29 -> B3:F
 NO RESET/NMI/POWER DURING ACTIVE WRITE
 FLASH ID=BF/B5
 STOCK B3 FNV1A=xxxxxxxx
-TYPE MIGRATE WDC TO STR8-N 1.29>
+TYPE COPY B3 TO B0>
 ```
 
 The software-product-ID gate accepts only Microchip/SST manufacturer `$BF`
@@ -493,8 +499,9 @@ pre-top-write run safely resumable. Used, different B0 is refused.
 Before the top write, the host validates an exact 4096-byte input and the RAM
 loader receives those bytes into `$4000-$4FFF`. The board checks the complete
 received candidate with 32-bit FNV-1a against its build-time value; a short or
-mismatched transfer cannot authorize B3:F erase. Only then is B3:F erased and
-replaced. If program/verify
+mismatched transfer cannot authorize B3:F erase. The board then requires
+`INSTALL STR8-N 1.29`; only that second exact confirmation permits B3:F erase
+and replacement. If program/verify
 fails while RAM is still executing, `R` retries the verified received candidate
 and `O` restores the old top sector from proven B0:F. A success selects B3 and
 jumps through its new RESET vector.
@@ -527,9 +534,9 @@ factory-board transcript:
 1  identify supported board and flash geometry
 2  load and read back the complete RAM installer byte-exact
 3  require B0 erased or already byte-identical; otherwise refuse
-4  copy and whole-bank-compare stock B3 into B0 when required
+4  require COPY B3 TO B0, then whole-bank-compare the preserved copy
 5  receive exactly 4096 canonical STR8-N bytes and validate full FNV before erase
-6  install and verify Bank-3 sector F, then prove STR8-N 1.29 quiet startup
+6  require INSTALL STR8-N 1.29, install/verify B3:F, and prove quiet startup
 7  load production Bank Maintenance and explicitly adopt D0 WDCM2 in Bank 3
 8  prove selector 0 and J0 enter the preserved stock guest
 9  prove physical RESET from the B0 guest returns to STR8-N 1.29
