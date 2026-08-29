@@ -5,6 +5,27 @@ project. Check an item only when its artifact hashes, host checks, board
 transcript, and final flash readback agree. Keep owner-local WDCMONv2 images
 out of published release artifacts.
 
+## v1.28 release staging
+
+The repository may be committed locally in reviewable pieces, but it is not
+ready to push or publish until the remaining release bundle is assembled and
+verified.
+
+- [x] Promote the board-proven silent cold-start sequence as canonical v1.28.
+- [x] Prove the factory WDCMONv2 path: exact B3-to-B0 preservation, STR8-N in
+  B3:F, COMPLETE D0 `WDCM2`, `J0`, CS0-CS3 chase, and physical RESET recovery.
+- [x] Bring README, maps/graphs, operator/technical guides, and migration
+  boundaries into agreement with the accepted v1.28 behavior.
+- [ ] From the committed tree, rebuild and collect the final migration ZIP,
+  release S19 set, canonical and STR8-iN/65 Bank Maintenance S19 files, and
+  their SHA-256 receipts.
+- [ ] Review the Bank Maintenance, WDC migration, HIMON/ASM-F2 follow-on, and
+  recovery guides beside those exact artifacts.
+- [ ] Run the package allowlist/self-verifier from a clean extracted directory
+  and prove that owner-local WDCMONv2 bytes, raw captures, and R-YORS payloads
+  are absent.
+- [ ] Review the local commit series and final hashes before any push.
+
 ## Task 1: Stock SXB3 to a usable multi-bank system
 
 Goal: preserve the factory system twice, install a clean STR8 system in Bank
