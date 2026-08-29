@@ -25,6 +25,7 @@ function Get-Sha256 {
 
 $inputs = [ordered]@{
     'STR8-iN65-LOADER.ps1' = 'tools/wdcmonv2/MIGRATE-WDC-TO-STR8N.ps1'
+    'QUICKSTART.txt' = 'docs/STR8_IN65_QUICKSTART.txt'
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19' = $ArchiveS19Path
     'ARTIFACTS/STR8-iN65-LOADER-2000.s19' = $InstallS19Path
     'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19' = $BankMaintS19Path
@@ -83,9 +84,12 @@ $readme = @(
     '',
     'Factory-board minimal path:',
     '  powershell -NoProfile -ExecutionPolicy Bypass -File .\STR8-iN65-LOADER.ps1',
+    '  Add -Details for hashes, addresses, bank policy, and evidence paths.',
+    '  See QUICKSTART.txt for the short operator card.',
     '',
-    'The RAM installer requires one exact confirmation, copies/verifies stock B3',
-    'into B0, receives the canonical STR8-N 1.29 BIN, and installs it in B3:F.',
+    'The RAM installer requires separate COPY and INSTALL confirmations.',
+    'It copies/verifies stock B3 into B0, receives the canonical STR8-N 1.29',
+    'BIN, and installs it in B3:F.',
     'After verified v1.29 boot, the included Bank Maintenance image prompts for',
     'D0 WDCM2 adoption; Bank 0 remains an opaque byte-for-byte factory guest.',
     'See DOC/STR8_IN65_BANK_MAINTENANCE.md for the exact adoption transaction.',

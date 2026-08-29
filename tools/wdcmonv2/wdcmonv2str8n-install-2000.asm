@@ -102,19 +102,6 @@ W2I_ID_OK:
                         JSR             W2I_PUTS
                         JSR             W2I_PRINT_HASH
                         JSR             W2I_CRLF
-                        LDX             #<W2I_MSG_MIGRATE
-                        LDY             #>W2I_MSG_MIGRATE
-                        JSR             W2I_PUTS
-                        JSR             W2I_READ_LINE
-                        LDX             #<W2I_TOKEN_MIGRATE
-                        LDY             #>W2I_TOKEN_MIGRATE
-                        JSR             W2I_MATCH_INPUT
-                        BCS             W2I_MIGRATE_OK
-                        LDX             #<W2I_MSG_MIGRATE_FAIL
-                        LDY             #>W2I_MSG_MIGRATE_FAIL
-                        JMP             W2I_ABORT_XY
-
-W2I_MIGRATE_OK:
                         LDA             #$00
                         JSR             W2I_SELECT_BANK_A
                         JSR             W2I_HASH_BANK
@@ -133,6 +120,17 @@ W2I_B0_NOT_EQUAL:
                         JMP             W2I_ABORT_XY
 
 W2I_B0_EMPTY:
+                        LDX             #<W2I_MSG_COPY_CONFIRM
+                        LDY             #>W2I_MSG_COPY_CONFIRM
+                        JSR             W2I_PUTS
+                        JSR             W2I_READ_LINE
+                        LDX             #<W2I_TOKEN_COPY
+                        LDY             #>W2I_TOKEN_COPY
+                        JSR             W2I_MATCH_INPUT
+                        BCS             W2I_COPY_CONFIRMED
+                        LDX             #<W2I_MSG_COPY_CANCEL
+                        LDY             #>W2I_MSG_COPY_CANCEL
+                        JMP             W2I_ABORT_XY
 W2I_COPY_CONFIRMED:
                         LDX             #<W2I_MSG_COPYING
                         LDY             #>W2I_MSG_COPYING
@@ -188,6 +186,17 @@ W2I_CANDIDATE_BAD:
                         JMP             W2I_ABORT_XY
 
 W2I_CANDIDATE_OK:
+                        LDX             #<W2I_MSG_INSTALL_CONFIRM
+                        LDY             #>W2I_MSG_INSTALL_CONFIRM
+                        JSR             W2I_PUTS
+                        JSR             W2I_READ_LINE
+                        LDX             #<W2I_TOKEN_INSTALL
+                        LDY             #>W2I_TOKEN_INSTALL
+                        JSR             W2I_MATCH_INPUT
+                        BCS             W2I_INSTALL_CONFIRMED
+                        LDX             #<W2I_MSG_INSTALL_CANCEL
+                        LDY             #>W2I_MSG_INSTALL_CANCEL
+                        JMP             W2I_ABORT_XY
 W2I_INSTALL_CONFIRMED:
                         LDX             #<W2I_MSG_INSTALLING
                         LDY             #>W2I_MSG_INSTALLING
@@ -1078,10 +1087,10 @@ W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.29 MIGRATI
 W2I_MSG_ID_OK:          DB              "FLASH ID=",0
 W2I_MSG_ID_FAIL:        DB              "REFUSE: FLASH IS NOT SST39SF010A BF/B5",$0D,$0A,0
 W2I_MSG_B3_HASH:        DB              "STOCK B3 FNV1A=",0
-W2I_MSG_MIGRATE:        DB              "TYPE MIGRATE WDC TO STR8-N 1.29> ",0
-W2I_MSG_MIGRATE_FAIL:   DB              "CANCELLED: MIGRATION TEXT DID NOT MATCH",$0D,$0A,0
 W2I_MSG_B0_USED:        DB              "REFUSE: B0 USED AND DIFFERENT; NOTHING WRITTEN",$0D,$0A,0
 W2I_MSG_HASH_COLLISION: DB              "REFUSE: B0/B3 HASH MATCH BUT BYTES DIFFER",$0D,$0A,0
+W2I_MSG_COPY_CONFIRM:   DB              "TYPE COPY B3 TO B0> ",0
+W2I_MSG_COPY_CANCEL:    DB              "CANCELLED: COPY TEXT DID NOT MATCH",$0D,$0A,0
 W2I_MSG_COPYING:        DB              "COPY/VERIFY B3 -> B0 ",0
 W2I_MSG_COPY_FAIL:      DB              "B0 COPY FAILED; B3 UNCHANGED",$0D,$0A,0
 W2I_MSG_COMPARE_FAIL:   DB              "B0 WHOLE-BANK HASH/EXACT VERIFY FAILED",$0D,$0A,0
@@ -1089,6 +1098,8 @@ W2I_MSG_B0_OK:          DB              "B0 == ORIGINAL B3 VERIFIED",$0D,$0A,0
 W2I_MSG_SEND_CANDIDATE: DB              "SEND STR8-N TOP BIN; 4096 BYTES; START $F000",$0D,$0A,0
 W2I_MSG_CANDIDATE_RX:   DB              "STR8-N TOP RECEIVED",$0D,$0A,0
 W2I_MSG_CANDIDATE_BAD:  DB              "RECEIVED STR8-N TOP CHECK FAILED",$0D,$0A,0
+W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 1.29> ",0
+W2I_MSG_INSTALL_CANCEL: DB              "CANCELLED: INSTALL TEXT DID NOT MATCH",$0D,$0A,0
 W2I_MSG_INSTALLING:     DB              "ERASING/PROGRAMMING B3:F",$0D,$0A,0
 W2I_MSG_INSTALLED:      DB              "MIGRATION VERIFIED; STARTING STR8-N",$0D,$0A
                         DB              "NEXT: CONNECT ANY 115200 8N1 SERIAL TERMINAL",$0D,$0A,0
@@ -1122,7 +1133,8 @@ W2R_MSG_FACTORY_OK:     DB              "FACTORY BASELINE VERIFIED: B0 ERASED; B
 W2R_MSG_BOOT:           DB              "BOOT STOCK B3",$0D,$0A,0
                         ENDIF
 
-W2I_TOKEN_MIGRATE:      DB              "MIGRATE WDC TO STR8-N 1.29",0
+W2I_TOKEN_COPY:         DB              "COPY B3 TO B0",0
+W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.29",0
 W2I_ARCHIVE_TOKEN:      DB              "ARCHIVE ",0,0,0,0,0,0,0,0,0
                         IF              W2I_RESTORE_STOCK
 W2R_TOKEN_RESTORE:      DB              "RESTORE FACTORY BOARD",0
