@@ -4,7 +4,7 @@
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.28/s19/str8n-v1.28-bank-maint-2000.s19
+;   send BUILD/v1.29/s19/str8n-v1.29-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -1677,6 +1677,9 @@ BM_ADOPT LDA #'D'
         BCS ?IDENTITY_OK
         JMP BM_ABORT
 ?IDENTITY_OK
+        IF STR8_IN65_BANK_MAINT
+        JSR BM_DIR_PROPOSED
+        ENDIF
         LDX #<BM_MDADOPT
         LDY #>BM_MDADOPT
         JSR BM_PUTS
@@ -2389,8 +2392,8 @@ BM_SUCCESS LDA #$AC
         JMP BM_MAIN
 
 BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' '
-        IF STR8_IN65_VERSION_128
-        DB '1','.','2','8',' '
+        IF STR8_IN65_VERSION_129
+        DB '1','.','2','9',' '
         ELSE
         DB '1','.','2','3',' '
         ENDIF
@@ -2507,6 +2510,78 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' '
         DB $EC,$7F,$68,$0C,$EC,$7F,$60,$CC
         DB $CE,$EC,$EE
 ; END GENERATED STR8 MUTATION WORKER
+        IF STR8_IN65_BANK_MAINT
+; The main command surface ends immediately below the fixed $3400 worker.
+; Place this production-only display in the reserved gap before the standalone
+; rename extension at $3700.
+        ORG $362B
+; Show the exact proposed 16-byte Bank-3 directory write before asking for
+; ADOPT Bn.  The payload bank remains opaque; these bytes live only at
+; B3:$FFB0-$FFEF.
+BM_DIR_PROPOSED
+        LDX #<BM_MDPROPOSED
+        LDY #>BM_MDPROPOSED
+        JSR BM_PUTS
+        LDA $7C03
+        CLC
+        ADC #'0'
+        JSR BM_OUT
+        LDX #<BM_MDPROPOSED_AT
+        LDY #>BM_MDPROPOSED_AT
+        JSR BM_PUTS
+        LDA $7C03
+        ASL A
+        ASL A
+        ASL A
+        ASL A
+        CLC
+        ADC #$B0
+        JSR BM_HEX
+        LDX #<BM_MDPROPOSED_BYTES
+        LDY #>BM_MDPROPOSED_BYTES
+        JSR BM_PUTS
+        LDA $7C18
+        JSR BM_DIR_PROPOSED_BYTE
+        LDX #$03
+?RESERVED
+        LDA #$FF
+        JSR BM_DIR_PROPOSED_BYTE
+        DEX
+        BNE ?RESERVED
+        LDX #$00
+?DESC   LDA $7C19,X
+        JSR BM_DIR_PROPOSED_BYTE
+        INX
+        CPX #$05
+        BNE ?DESC
+        LDA #$FE
+        JSR BM_DIR_PROPOSED_BYTE
+        LDA $7C1E
+        JSR BM_DIR_PROPOSED_BYTE
+        LDA $7C1F
+        JSR BM_DIR_PROPOSED_BYTE
+        LDA #$FC
+        JSR BM_DIR_PROPOSED_BYTE
+        LDX #$03
+?COMPLETE
+        LDA #$FF
+        JSR BM_DIR_PROPOSED_BYTE
+        DEX
+        BNE ?COMPLETE
+        LDA #$0D
+        JSR BM_OUT
+        LDA #$0A
+        JMP BM_OUT
+
+BM_DIR_PROPOSED_BYTE
+        JSR BM_HEX
+        LDA #' '
+        JMP BM_OUT
+
+BM_MDPROPOSED DB $0D,$0A,'P','R','O','P','O','S','E','D',' ','D',0
+BM_MDPROPOSED_AT DB ' ','B','3',':','$','F','F',0
+BM_MDPROPOSED_BYTES DB ':',' ',0
+        ENDIF
         IF STR8_BANK_MAINT_TOP
         INCLUDE "str8n-v1.23-top-update-2000.asm"
         ELSE
