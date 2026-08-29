@@ -2,8 +2,9 @@
 ; WDCMONV2STR8N-INSTALL-2000.ASM
 ;
 ; Conservative stock W65C02SXB (+ optional W65C02EDU) -> STR8-N installer.
-; Load under stock WDCMONv2 at $2000.  The candidate STR8-N Bank-3 top sector
-; is carried at $4000; $0A00-$19FF is the one-sector staging buffer.
+; Load under stock WDCMONv2 at $2000.  After the complete stock Bank 3 is
+; preserved in Bank 0, receive the canonical 4096-byte STR8-N top BIN at
+; $4000-$4FFF.  $0A00-$19FF is the one-sector staging buffer.
 ;
 ; This installer deliberately supports only two safe Bank-0 states:
 ;   - B0 is completely erased: copy and verify the complete stock B3 into B0.
@@ -160,6 +161,13 @@ W2I_B0_PROVEN:
                         JSR             W2I_SELECT_BANK_A
                         LDX             #<W2I_MSG_B0_OK
                         LDY             #>W2I_MSG_B0_OK
+                        JSR             W2I_PUTS
+                        LDX             #<W2I_MSG_SEND_CANDIDATE
+                        LDY             #>W2I_MSG_SEND_CANDIDATE
+                        JSR             W2I_PUTS
+                        JSR             W2I_RECEIVE_CANDIDATE
+                        LDX             #<W2I_MSG_CANDIDATE_RX
+                        LDY             #>W2I_MSG_CANDIDATE_RX
                         JSR             W2I_PUTS
                         JSR             W2I_HASH_CANDIDATE
                         LDA             W2I_HASH0
@@ -614,6 +622,24 @@ W2I_CANDIDATE_TO_STAGE:
                         BNE             ?PAGE
                         RTS
 
+; Receive one exact raw top-sector image.  The host owns file selection, size,
+; and SHA-256 validation before sending.  The board independently checks the
+; complete 32-bit FNV below before any Bank-3 erase begins.
+W2I_RECEIVE_CANDIDATE:
+                        STZ             W2I_PTR_LO
+                        LDA             #W2I_CANDIDATE_HI
+                        STA             W2I_PTR_HI
+?BYTE:                 JSR             W2I_IN
+                        LDY             #$00
+                        STA             (W2I_PTR_LO),Y
+                        INC             W2I_PTR_LO
+                        BNE             ?BYTE
+                        INC             W2I_PTR_HI
+                        LDA             W2I_PTR_HI
+                        CMP             #(W2I_CANDIDATE_HI+$10)
+                        BNE             ?BYTE
+                        RTS
+
 W2I_PROGRAM_STAGE:
                         STZ             W2I_PTR_LO
                         LDA             W2I_SECTOR_HI
@@ -1046,13 +1072,13 @@ W2I_CRLF:
 W2I_BANK_BITS:          DB              $CC,$CE,$EC,$EE
 W2I_FNV_OFFSET:         DB              $C5,$9D,$1C,$81
 
-W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.28 MIGRATION",$0D,$0A
-                        DB              "B3 STOCK -> B0; STR8-N 1.28 -> B3:F",$0D,$0A
+W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.29 MIGRATION",$0D,$0A
+                        DB              "B3 STOCK -> B0; STR8-N 1.29 -> B3:F",$0D,$0A
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE",$0D,$0A,0
 W2I_MSG_ID_OK:          DB              "FLASH ID=",0
 W2I_MSG_ID_FAIL:        DB              "REFUSE: FLASH IS NOT SST39SF010A BF/B5",$0D,$0A,0
 W2I_MSG_B3_HASH:        DB              "STOCK B3 FNV1A=",0
-W2I_MSG_MIGRATE:        DB              "TYPE MIGRATE WDC TO STR8-N 1.28> ",0
+W2I_MSG_MIGRATE:        DB              "TYPE MIGRATE WDC TO STR8-N 1.29> ",0
 W2I_MSG_MIGRATE_FAIL:   DB              "CANCELLED: MIGRATION TEXT DID NOT MATCH",$0D,$0A,0
 W2I_MSG_B0_USED:        DB              "REFUSE: B0 USED AND DIFFERENT; NOTHING WRITTEN",$0D,$0A,0
 W2I_MSG_HASH_COLLISION: DB              "REFUSE: B0/B3 HASH MATCH BUT BYTES DIFFER",$0D,$0A,0
@@ -1060,7 +1086,9 @@ W2I_MSG_COPYING:        DB              "COPY/VERIFY B3 -> B0 ",0
 W2I_MSG_COPY_FAIL:      DB              "B0 COPY FAILED; B3 UNCHANGED",$0D,$0A,0
 W2I_MSG_COMPARE_FAIL:   DB              "B0 WHOLE-BANK HASH/EXACT VERIFY FAILED",$0D,$0A,0
 W2I_MSG_B0_OK:          DB              "B0 == ORIGINAL B3 VERIFIED",$0D,$0A,0
-W2I_MSG_CANDIDATE_BAD:  DB              "CARRIED STR8-N TOP CHECK FAILED",$0D,$0A,0
+W2I_MSG_SEND_CANDIDATE: DB              "SEND STR8-N TOP BIN; 4096 BYTES; START $F000",$0D,$0A,0
+W2I_MSG_CANDIDATE_RX:   DB              "STR8-N TOP RECEIVED",$0D,$0A,0
+W2I_MSG_CANDIDATE_BAD:  DB              "RECEIVED STR8-N TOP CHECK FAILED",$0D,$0A,0
 W2I_MSG_INSTALLING:     DB              "ERASING/PROGRAMMING B3:F",$0D,$0A,0
 W2I_MSG_INSTALLED:      DB              "MIGRATION VERIFIED; STARTING STR8-N",$0D,$0A
                         DB              "NEXT: CONNECT ANY 115200 8N1 SERIAL TERMINAL",$0D,$0A,0
@@ -1070,7 +1098,7 @@ W2I_MSG_CANCEL:         DB              "CANCELLED; NOTHING FURTHER WRITTEN",$0D
 W2I_MSG_ABORT:          DB              "HALTED IN RAM; PHYSICAL RESET SELECTS B3",$0D,$0A,0
 
                         IF              W2I_RESTORE_STOCK
-W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.28 STOCK RESTORE",$0D,$0A
+W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.29 STOCK RESTORE",$0D,$0A
                         DB              "FACTORY BASELINE: B0 -> B3, THEN ERASE B0",$0D,$0A
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE",$0D,$0A,0
 W2R_MSG_SOURCE:         DB              "SOURCE B0 FNV1A=",0
@@ -1094,7 +1122,7 @@ W2R_MSG_FACTORY_OK:     DB              "FACTORY BASELINE VERIFIED: B0 ERASED; B
 W2R_MSG_BOOT:           DB              "BOOT STOCK B3",$0D,$0A,0
                         ENDIF
 
-W2I_TOKEN_MIGRATE:      DB              "MIGRATE WDC TO STR8-N 1.28",0
+W2I_TOKEN_MIGRATE:      DB              "MIGRATE WDC TO STR8-N 1.29",0
 W2I_ARCHIVE_TOKEN:      DB              "ARCHIVE ",0,0,0,0,0,0,0,0,0
                         IF              W2I_RESTORE_STOCK
 W2R_TOKEN_RESTORE:      DB              "RESTORE FACTORY BOARD",0
@@ -1126,17 +1154,15 @@ W2R_RESET_HI:           DB              $00
 
                         IF              W2I_RESTORE_STOCK
                         ELSE
-                        ORG             $4000
-W2I_CANDIDATE_IMAGE:
                         IF              W2I_STR8_IN65_IMAGE
-                        IF              STR8_IN65_VERSION_128
-                        INCLUDE         "str8n-v1.28-str8-in65-test-image.inc"
+                        IF              STR8_IN65_VERSION_129
+                        INCLUDE         "str8n-v1.29-str8-in65-test-image.inc"
                         ELSE
                         INCLUDE         "str8n-v1.23-str8-in65-test-image.inc"
                         ENDIF
                         ELSE
-                        IF              STR8_IN65_VERSION_128
-                        INCLUDE         "str8n-v1.28-wdcmonv2-install-image.inc"
+                        IF              STR8_IN65_VERSION_129
+                        INCLUDE         "str8n-v1.29-wdcmonv2-install-image.inc"
                         ELSE
                         INCLUDE         "str8n-v1.23-wdcmonv2-install-image.inc"
                         ENDIF

@@ -1,28 +1,24 @@
-# STR8-iN/65 v1.28 RAM Bank Maintenance
+# STR8-iN/65 v1.29 RAM Bank Maintenance
 
-This guide applies only to the isolated STR8-iN/65 v1.28 RAM image:
+This guide applies to the production STR8-iN/65 v1.29 RAM image:
 
 ```text
-BUILD/v1.28/s19/str8n-v1.28-str8-in65-bank-maint-2000.s19
+BUILD/v1.29/s19/str8n-v1.29-str8-in65-bank-maint-2000.s19
 ```
 
-It remains a migration-specific RAM tool outside the canonical STR8-N v1.28
-manifest and migration ZIP. The resident cold-start sequence it was built to
-support is now canonical v1.28; the tool's WDC-specific defaults and `F`
-command remain isolated. Load it with the running STR8 `L` command. Its S9
-record starts the menu at `$2000` automatically.
+It is part of the v1.29 factory migration ZIP under the consumer-facing name
+`ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19`. The resident cold-start and EDU
+quiet-start sequence it supports is canonical v1.29; the tool's WDC-specific
+defaults and `F` command remain isolated in RAM. Load it with the running STR8
+`L` command. Its S9 record starts the menu at `$2000` automatically.
 
 ## D0 in the current migration image
 
-The current one-command migration installer preserves the original WDCMONv2
-image in B0 and installs a migration-configured STR8-N top that already
-contains COMPLETE `D0 FF WDCM2 FFFF FCFFFFFF`. Selector `0` and `J0` therefore
-work immediately after migration; this RAM maintenance image is not a required
-consumer step.
-
-Use the adoption path below only when working with an older test image, a
-deliberately refreshed/erased directory, or another retained B0 whose D0 row
-is genuinely all `$FF`. `J0` correctly fails closed while D0 is absent.
+The current factory loader preserves the original WDCMONv2 image in opaque B0
+and installs the exact canonical STR8-N v1.29 top with an erased Bank-3
+directory. This RAM maintenance image is therefore a required consumer step:
+it explicitly publishes D0 only after the first verified v1.29 boot. `J0`
+correctly fails closed while D0 is absent.
 
 ## Enroll a retained WDCMONv2 Bank 0 when D0 is absent
 
@@ -32,8 +28,13 @@ At `BM>` enter `D`. The STR8-iN/65 defaults are:
 BANK 0-3 [0]>             Enter        -> Bank 0
 TYPE 00-FF [FF]>          Enter        -> opaque/foreign type $FF
 DESC 5 CHARS [AUTO]>      Enter        -> WDCM2 for Bank 0
+PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 4D 32 FE FF FF FC FF FF FF
 TYPE ADOPT B0>            ADOPT B0     -> exact commit confirmation
 ```
+
+The proposed line is emitted before the confirmation. It identifies the
+physical Bank-3 directory address and every byte that will be programmed; no
+Bank-0 payload byte is part of the write.
 
 The automatic descriptions are `WDCM2`, `BANK1`, `BANK2`, and `STR8N` for
 Banks 0 through 3. A typed two-digit TYPE or typed five-character description
@@ -121,9 +122,8 @@ provisions the accepted byte contract for the later HIMON scoped-search slice.
 
 ## Deliberately not written by this image
 
-- B3:`$FFF0` WORK and `$FFF1` top-backup role assignment remain a separate
-  first-role transaction because that operation must create and retain its
-  recovery copy before publishing the locators.
+- B3:`$FFF0` WORK and `$FFF1` top-backup role bytes are preserved exactly by
+  D0 adoption; the canonical v1.29 image initializes them to B1:E and B1:F.
 - No VTOC byte layout is implemented or frozen in STR8-N or R-YORS. Current
   planning treats a future VTOC as a projection/locator over a managed catalog,
   not bytes that this migration tool may invent. Therefore this RAM image has
@@ -131,11 +131,13 @@ provisions the accepted byte contract for the later HIMON scoped-search slice.
 
 ## Hardware evidence
 
-The first 2026-08-28 board run accepted prompted default D0 enrollment as
+The first 2026-08-28 v1.28 board run accepted prompted default D0 enrollment as
 `FF WDCM2 FFFF FCFFFFFF`, read it back through `M`, launched B0 twice through
-`J0`, and recovered STR8-N 1.28 through physical RESET. The later factory-path
-run accepted the current embedded-D0 migrator directly, including exact B3-to-
+`J0`, and recovered STR8-N 1.28 through physical RESET. The later v1.28
+factory-path run accepted the embedded-D0 migrator directly, including exact B3-to-
 B0 preservation, `J0`, the visually observed CS0-CS3 chase, complete retained
 EDU application startup, and final physical RESET. The complete retained
 transcripts, including a rejected pre-write menu-overlap build, are in
-[WDCMONV2_MIGRATION_BOARD_TEST.md](WDCMONV2_MIGRATION_BOARD_TEST.md).
+[WDCMONV2_MIGRATION_BOARD_TEST.md](WDCMONV2_MIGRATION_BOARD_TEST.md). These
+runs are historical evidence; the v1.29 external-BIN and postboot-adoption
+combination still requires its own factory-board transcript.

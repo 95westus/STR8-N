@@ -6,6 +6,7 @@ param(
     [string]$TranscriptPath,
     [string]$EventLogPath,
     [string]$TransferPath,
+    [string]$Transfer2Path,
     [switch]$NoReset,
     [switch]$PhysicalResetGate,
     [int]$PhysicalResetArmSeconds = 0,
@@ -330,6 +331,11 @@ function Get-WdcBoardInfoAfterResetArm {
             try {
                 $value = $Serial.ReadByte()
                 if ($value -eq $script:WdcReady) {
+                    # Sync pairs can accumulate in the USB transmit queue while
+                    # the board is held in reset.  Let WDCMON consume them and
+                    # discard only their $CC acknowledgements before BOARD_INFO.
+                    Start-Sleep -Milliseconds 100
+                    $Serial.DiscardInBuffer()
                     Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($script:WdcBoardInfo))
                     $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
                     $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
@@ -346,6 +352,8 @@ function Get-WdcBoardInfoAfterResetArm {
                 }
                 while ($Serial.BytesToRead -gt 0) {
                     if ($Serial.ReadByte() -eq $script:WdcReady) {
+                        Start-Sleep -Milliseconds 100
+                        $Serial.DiscardInBuffer()
                         Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($script:WdcBoardInfo))
                         $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
                         $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
@@ -411,14 +419,19 @@ function Start-RawTerminal {
         [System.IO.Stream]$Log,
         [byte[]]$TransferBytes,
         [string]$TransferName,
-        [string]$TransferSha256
+        [string]$TransferSha256,
+        [byte[]]$Transfer2Bytes,
+        [string]$Transfer2Name,
+        [string]$Transfer2Sha256
     )
     $stdout = [Console]::OpenStandardOutput()
     $oldControlC = [Console]::TreatControlCAsInput
     [Console]::TreatControlCAsInput = $true
     $txLine = [System.Text.StringBuilder]::new()
     Write-SessionEvent 'TERMINAL START'
-    if ($null -ne $TransferBytes) {
+    if ($null -ne $Transfer2Bytes) {
+        Write-Host ("TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; CTRL+U SENDS {0}; CTRL+D SENDS {1}; ENTER SENDS CR" -f $TransferName, $Transfer2Name)
+    } elseif ($null -ne $TransferBytes) {
         Write-Host ("TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; CTRL+U SENDS {0}; ENTER SENDS CR" -f $TransferName)
     } else {
         Write-Host 'TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; ENTER SENDS CR'
@@ -460,6 +473,17 @@ function Start-RawTerminal {
                     for ($offset = 0; $offset -lt $TransferBytes.Length; $offset += 64) {
                         $count = [Math]::Min(64, $TransferBytes.Length - $offset)
                         $Serial.Write($TransferBytes, $offset, $count)
+                        Start-Sleep -Milliseconds 2
+                    }
+                    Write-Host 'FILE SENT'
+                    continue
+                }
+                if ($value -eq 0x04 -and $null -ne $Transfer2Bytes) {
+                    Write-SessionEvent ("CTRL+D FILE SEND NAME={0} BYTES={1} SHA256={2}" -f $Transfer2Name, $Transfer2Bytes.Length, $Transfer2Sha256)
+                    Write-Host ("`nSENDING {0} ({1} bytes)" -f $Transfer2Name, $Transfer2Bytes.Length)
+                    for ($offset = 0; $offset -lt $Transfer2Bytes.Length; $offset += 64) {
+                        $count = [Math]::Min(64, $Transfer2Bytes.Length - $offset)
+                        $Serial.Write($Transfer2Bytes, $offset, $count)
                         Start-Sleep -Milliseconds 2
                     }
                     Write-Host 'FILE SENT'
@@ -637,6 +661,16 @@ if (-not $ProbeOnly -and $ListenOnlySeconds -eq 0 -and -not $NoTerminal -and $Tr
     $transferName = Split-Path -Leaf $transferFull
     $transferSha256 = Get-ByteSha256 -Bytes $transferBytes
 }
+$transfer2Bytes = $null
+$transfer2Name = $null
+$transfer2Sha256 = $null
+if (-not $ProbeOnly -and $ListenOnlySeconds -eq 0 -and -not $NoTerminal -and $Transfer2Path) {
+    if (-not (Test-Path -LiteralPath $Transfer2Path -PathType Leaf)) { throw "Second transfer file not found: $Transfer2Path" }
+    $transfer2Full = (Resolve-Path -LiteralPath $Transfer2Path).Path
+    $transfer2Bytes = [System.IO.File]::ReadAllBytes($transfer2Full)
+    $transfer2Name = Split-Path -Leaf $transfer2Full
+    $transfer2Sha256 = Get-ByteSha256 -Bytes $transfer2Bytes
+}
 
 $serial = [System.IO.Ports.SerialPort]::new($Port, $BaudRate, [System.IO.Ports.Parity]::None, 8, [System.IO.Ports.StopBits]::One)
 $serial.Handshake = [System.IO.Ports.Handshake]::RequestToSend
@@ -661,6 +695,9 @@ try {
         if ($null -ne $transferBytes) {
             Write-SessionEvent ("TRANSFER READY NAME={0} BYTES={1} SHA256={2}" -f $transferName, $transferBytes.Length, $transferSha256)
         }
+        if ($null -ne $transfer2Bytes) {
+            Write-SessionEvent ("TRANSFER2 READY NAME={0} BYTES={1} SHA256={2}" -f $transfer2Name, $transfer2Bytes.Length, $transfer2Sha256)
+        }
     }
     if ($null -ne $transcriptFull) {
         $rawMode = [System.IO.FileMode]::CreateNew
@@ -673,7 +710,7 @@ try {
     $serial.DiscardInBuffer()
     $serial.DiscardOutBuffer()
     if ($TerminalOnly) {
-        Start-RawTerminal -Serial $serial -Log $rawLog -TransferBytes $transferBytes -TransferName $transferName -TransferSha256 $transferSha256
+        Start-RawTerminal -Serial $serial -Log $rawLog -TransferBytes $transferBytes -TransferName $transferName -TransferSha256 $transferSha256 -Transfer2Bytes $transfer2Bytes -Transfer2Name $transfer2Name -Transfer2Sha256 $transfer2Sha256
         $sessionOutcome = 'TERMINAL-ONLY SESSION COMPLETE'
         return
     }
@@ -744,7 +781,7 @@ try {
         $sessionOutcome = 'RAM APPLICATION STARTED; PORT CLOSED BY REQUEST'
         Write-Warning 'RAM application is running, but this process will close the port. Reopening a terminal may toggle DTR and reset the board.'
     } else {
-        Start-RawTerminal -Serial $serial -Log $rawLog -TransferBytes $transferBytes -TransferName $transferName -TransferSha256 $transferSha256
+        Start-RawTerminal -Serial $serial -Log $rawLog -TransferBytes $transferBytes -TransferName $transferName -TransferSha256 $transferSha256 -Transfer2Bytes $transfer2Bytes -Transfer2Name $transfer2Name -Transfer2Sha256 $transfer2Sha256
         $sessionOutcome = 'TERMINAL CLOSED BY OPERATOR'
     }
 } catch {

@@ -1,9 +1,9 @@
 param(
-    [string]$S19Path = "BUILD/v1.28/s19/str8n-v1.28-bank-maint-2000.s19",
+    [string]$S19Path = "BUILD/v1.29/s19/str8n-v1.29-bank-maint-2000.s19",
     [string]$SourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-2000.asm",
     [string]$RenameSourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-rename.inc",
     [string]$FlagsSourcePath = "tools/bank-maint/str8n-v1.28-str8-in65-bank-maint-flags.inc",
-    [string]$VersionText = "1.28",
+    [string]$VersionText = "1.29",
     [switch]$In65,
     [switch]$MenuTop
 )
@@ -196,9 +196,12 @@ elseif (-not $In65) {
         'R=RECLAIM DIR')
 }
 if ($In65) {
+    if (-not $codeText.Contains('BM_DIR_PROPOSED') -or -not $codeText.Contains("'P','R','O','P','O','S','E','D'")) {
+        throw 'STR8-iN/65 adoption must display the exact proposed Bank-3 directory bytes before confirmation'
+    }
     $requiredTexts += @('D=ADOPT N=NAME R=CLEAR', 'E=ERASE M=MAP F=FLAG',
         'C=COPY P=AP Q=QUIT> ', 'BANK 0-3 [0]>', 'TYPE 00-FF [FF]>',
-        'DESC 5 CHARS [AUTO]>', 'WDCM2',
+        'DESC 5 CHARS [AUTO]>', 'WDCM2', 'PROPOSED D', ' B3:$FF',
         'SEARCH FLAG FF/A0-A7 [A6]>', 'FLAG UNCHANGED', 'TYPE FLAGS ')
     if (-not (Test-Path -LiteralPath $FlagsSourcePath)) {
         throw "Missing STR8-iN/65 flag source: $FlagsSourcePath"

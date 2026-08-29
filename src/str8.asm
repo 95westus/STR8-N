@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable v1.28 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.29 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
@@ -177,6 +177,12 @@ STR8_CON_PN_WR          EQU             $04
 STR8_CON_PN_RD          EQU             $08
 STR8_CON_PN_CTRL_INIT   EQU             $0C
 STR8_CON_FLUSH_RX_MAX   EQU             $FF
+                        IF              STR8_IN65_EDU_QUIET_START
+STR8_IN65_PIA_PORTA     EQU             $7FA0
+STR8_IN65_PIA_CRA       EQU             $7FA1
+STR8_IN65_PIA_CA2_LOW   EQU             $30
+STR8_IN65_PIA_PORTA_OUT EQU             $34
+                        ENDIF
 
                         CODE
 ; 2026-05-07T19:14-05:00        WLP2        Timeout enters HIMON warm; S/s takes STR8.
@@ -263,7 +269,11 @@ STR8_BOOT_START:
                         CLD
                         LDX             #$FF
                         TXS
+                        IF              STR8_IN65_EDU_QUIET_START
+                        JSR             STR8_IN65_EDU_QUIET
+                        ELSE
                         JSR             STR8_IVY_INIT
+                        ENDIF
                         IF              STR8_IN65_COLD_BOOT
                         JSR             STR8_IN65_COLD_CON_INIT
                         ELSE
@@ -2847,6 +2857,24 @@ STR8_PRINT_XY:
                         BRA             ?LOOP
 ?LAST:                  AND             #$7F
                         JMP             STR8_CON_WRITE_BYTE_BLOCK
+
+                        IF              STR8_IN65_EDU_QUIET_START
+STR8_IN65_EDU_QUIET:
+; The EDU buzzer is enabled by its switch and sounds while PIA CA2 is high.
+; Force CA2 to its low output mode before the cold-start delay or console I/O.
+                        LDA             #STR8_IN65_PIA_CA2_LOW
+                        STA             STR8_IN65_PIA_CRA
+; EDU LEDs are active high on PIA Port A.  Select DDRA, make all eight pins
+; outputs, select the peripheral register without releasing CA2, then clear it.
+                        LDA             #$FF
+                        STA             STR8_IN65_PIA_PORTA
+                        LDA             #STR8_IN65_PIA_PORTA_OUT
+                        STA             STR8_IN65_PIA_CRA
+                        STZ             STR8_IN65_PIA_PORTA
+; Tail-call IVY so its RTS returns to STR8_BOOT_START without growing the
+; fixed pre-vector boot sequence.
+                        JMP             STR8_IVY_INIT
+                        ENDIF
 
                         IF              STR8_IN65_COLD_BOOT
 STR8_IN65_COLD_CON_INIT:

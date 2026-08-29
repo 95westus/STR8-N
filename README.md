@@ -1,7 +1,21 @@
-# STR8-N v1.28
+# STR8-N v1.29
 
 > [!IMPORTANT]
-> **Hardware validation baseline — 2026-08-28:** The one-command factory
+> **Current release candidate — 2026-08-29:** STR8-N 1.29 promotes the
+> STR8-iN/65 resident as the production image, including the EDU quiet-start
+> initialization that holds the buzzer inactive and clears the LEDs before
+> normal console initialization. The factory loader copies and exactly proves
+> stock Bank 3 in opaque Bank 0, receives the canonical 4096-byte
+> `STR8-N-v1-29.bin`, installs it at B3:`$F000-$FFFF`, and leaves the Bank-3
+> directory empty. The separate production Bank Maintenance image owns the
+> explicit D0 `WDCM2` adoption after the first verified boot.
+>
+> The complete v1.29 path is host-qualified and still requires its factory-board
+> transcript. The accepted v1.28 run below remains the hardware baseline; it
+> must not be read as proof of the changed v1.29 transfer and startup path.
+
+> [!IMPORTANT]
+> **Historical hardware validation baseline — 2026-08-28:** The v1.28 factory
 > WDCMONv2 migration is accepted on a physical W65C02SXB/EDU. It copied and
 > exactly verified all of stock B3 in B0, installed STR8-N 1.28 in B3:F,
 > published retained WDCMONv2 as COMPLETE D0 `WDCM2`, launched it through
@@ -125,22 +139,23 @@ The letters also loosely evoke **S**oftware or **S**ystem **T**o **R**eset,
 
 ## Feature card
 
-| Capability | What STR8-N v1.28 can do | Safety boundary |
+| Capability | What STR8-N v1.29 can do | Safety boundary |
 | --- | --- | --- |
 | Reset supervision | Take physical RESET in Bank 3, run the board-proven pre-I/O settling interval, print `RESET`, and enter STR8-N or compatible HIMON | Quarantine/live-key timing is retained, but the former `WAIT...`/dot chatter is intentionally silent |
 | Multi-bank boot | Start enrolled systems in Banks 0-2 with `J0`-`J2`, or hand off through the Bank-3 RESET vector with `J3` | Banks 0-2 must have a COMPLETE directory journal and a valid RESET vector |
 | HIMON entry | Enter compatible Bank-3 HIMON warm with `W`, preserving RAM, or explicitly cold with `C` | Refuses an incompatible or missing HIMON marker |
 | Flash installation | Install dense S19 payloads with `I` into any legal contiguous 4K sector range | Bank 3 `$F000-$FFFF` is never writable through `I`; final sector and COMPLETE state commit last |
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
-| Factory migration | Preserve stock WDCMONv2 from B3 into B0, publish D0 `WDCM2`, and install STR8-N 1.28 in B3:F through the RAM migrator | Requires `SXB2`, supported `$BF/$B5` flash, and B0 erased or already byte-identical; B1/B2 remain untouched |
+| Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.29 BIN, and install it in B3:F through the RAM loader | Requires `SXB2`, supported `$BF/$B5` flash, and B0 erased or already byte-identical; B1/B2 remain untouched; v1.29 board proof is pending |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
-| Protected top upgrade | Load the supplied v1.28 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.28 sector, and verify all 4 KiB | The promoted resident bytes are board-accepted; each write still requires the guarded updater confirmations and recovery copy |
-| Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The v1.28 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |
+| Protected top upgrade | Load the supplied v1.29 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.29 sector, and verify all 4 KiB | Each write requires the guarded updater confirmations and recovery copy; v1.29 board proof is pending |
+| Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The canonical v1.29 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and no overlap with the fixed worker |
 
-The v1.28 host verification suite covers the relocated RAM ABI, artifact
-layout, and byte-exact promotion from the accepted STR8-iN/65 image. Retained
+The v1.29 host verification suite covers the relocated RAM ABI, artifact
+layout, quiet-start build configuration, and byte-exact promotion of the
+production STR8-iN/65 image. Retained
 v1.1/v1.2 board sessions remain historical evidence; the
 original migration sequence is tracked in the
 [v1.2 Implementation Plan](docs/STR8N_V1_2_IMPLEMENTATION_PLAN.md).
@@ -198,7 +213,7 @@ meanings at the `STR8-N>` prompt.
 - A deterministic raw console ABI hardware probe covering blocking input,
   blocking output, non-consuming input readiness, initialization, and ABI
   discovery, loaded and started with `L`.
-- A guarded v1.28 top-sector updater S19 loaded and started with `L`.
+- A guarded v1.29 top-sector updater S19 loaded and started with `L`.
 - A guarded onboard directory-pocket refresh S19 with backup, retry, and
   restore.
 - A composed 32K ASM + HIMON + STR8-N image for Bank 0, 1, or 2.
@@ -206,10 +221,12 @@ meanings at the `STR8-N>` prompt.
   load/readback/execute bridge, and a host extractor that produce a checked
   local 32K BIN, S19, and receipt. This migration stage is board-accepted on
   the retained transcript.
-- A one-confirmation factory-board RAM migrator that accepts only an erased or
-  already-identical B0, preserves and exactly verifies stock B3 there, installs
-  STR8-N 1.28 in B3:F, publishes retained WDCMONv2 as D0 `WDCM2`, and leaves
-  B1/B2 untouched. The kit exposes it as `MIGRATE-WDC-TO-STR8N.ps1 -Port COMx`.
+- A one-confirmation factory-board RAM loader that accepts only an erased or
+  already-identical B0, preserves and exactly verifies stock B3 there, receives
+  the canonical 4096-byte STR8-N 1.29 BIN, installs it in B3:F, and leaves
+  B1/B2 untouched. The kit exposes it as `STR8-iN65-LOADER.ps1`; it enumerates
+  ports when `-Port` is omitted. D0 adoption is a separate, explicit production
+  Bank Maintenance step after the first verified boot.
 - An explicit `make wdcmonv2-package` publication kit containing the verified
   STR8-N artifacts, source, binary-monitor/terminal host bridge, procedures,
   license, manifest, and self-verifier. Its allowlist excludes WDCMONv2
@@ -222,7 +239,7 @@ Build the combined tool with `make bank-maint-menu`. Its terminal
 card is deliberately one command per line:
 
 ```text
-STR8-N 1.28 BANK MAINT + TOP
+STR8-N 1.29 BANK MAINT + TOP
  M  MAP+DIR
  C  COPY+ENROLL
  D  ADOPT DIR
@@ -252,7 +269,7 @@ range to be erased, and uses a target-specific confirmation such as
 
 ## Start here
 
-- [Task List](TASKS.md) - v1.28 release-staging gates and later Bank-1 example
+- [Task List](TASKS.md) - release-staging gates and later Bank-1 example
   backlog.
 
 - [Operator's Guide](docs/OPERATORS_GUIDE.md) — board operation, prompts,
@@ -292,7 +309,7 @@ range to be erased, and uses a target-specific confirmation such as
 
 ## Deliberate scope
 
-STR8-N v1.28 is a recovery and installation layer, not a general-purpose flash
+STR8-N v1.29 is a recovery and installation layer, not a general-purpose flash
 filesystem. Bank 3 publishes two packed sector roles: `$FFF0=$1E` assigns
 B1:E as application WORK, and `$FFF1=$1F` protects B1:F as the raw B3:F
 recovery backup. `$FFF2-$FFF9` remain erased for later configuration,

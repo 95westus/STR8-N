@@ -1,10 +1,12 @@
 param(
-    [string]$ArchiveS19Path = 'BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-archive-2000.s19',
-    [string]$InstallS19Path = 'BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-install-2000.s19',
-    [string]$CandidateBinPath = 'BUILD/v1.28/bin/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin',
-    [string]$InstallIncludePath = 'BUILD/v1.28/generated/str8n-v1.28-wdcmonv2-install-image.inc',
-    [string]$KitDirectory = 'BUILD/v1.28/wdcmonv2-str8n-migration-kit',
-    [string]$ZipPath = 'BUILD/v1.28/str8n-v1.28-wdcmonv2-str8n-migration-kit.zip'
+    [string]$ArchiveS19Path = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-archive-2000.s19',
+    [string]$InstallS19Path = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.s19',
+    [string]$CandidateBinPath = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin',
+    [string]$CanonicalS19Path = 'BUILD/v1.29/s19/str8n-v1.29-f000.s19',
+    [string]$BankMaintS19Path = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-bank-maint-2000.s19',
+    [string]$InstallIncludePath = 'BUILD/v1.29/generated/str8n-v1.29-wdcmonv2-install-image.inc',
+    [string]$KitDirectory = 'BUILD/v1.29/wdcmonv2-str8n-migration-kit',
+    [string]$ZipPath = 'BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip'
 )
 
 Set-StrictMode -Version Latest
@@ -22,13 +24,15 @@ function Get-Sha256 {
 }
 
 $inputs = [ordered]@{
-    'MIGRATE-WDC-TO-STR8N.ps1' = 'tools/wdcmonv2/MIGRATE-WDC-TO-STR8N.ps1'
-    'ARTIFACTS/str8n-v1.28-wdcmonv2-archive-2000.s19' = $ArchiveS19Path
-    'ARTIFACTS/str8n-v1.28-wdcmonv2-install-2000.s19' = $InstallS19Path
-    'ARTIFACTS/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin' = $CandidateBinPath
+    'STR8-iN65-LOADER.ps1' = 'tools/wdcmonv2/MIGRATE-WDC-TO-STR8N.ps1'
+    'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19' = $ArchiveS19Path
+    'ARTIFACTS/STR8-iN65-LOADER-2000.s19' = $InstallS19Path
+    'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19' = $BankMaintS19Path
+    'ARTIFACTS/STR8-N-v1-29.bin' = $CandidateBinPath
+    'ARTIFACTS/STR8-N-v1-29.s19' = $CanonicalS19Path
     'SOURCE/wdcmonv2str8n-archive-2000.asm' = 'tools/wdcmonv2/wdcmonv2str8n-archive-2000.asm'
     'SOURCE/wdcmonv2str8n-install-2000.asm' = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm'
-    'SOURCE/str8n-v1.28-wdcmonv2-install-image.inc' = $InstallIncludePath
+    'SOURCE/str8n-v1.29-wdcmonv2-install-image.inc' = $InstallIncludePath
     'TOOLS/extract_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/extract_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/check_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_install.ps1' = 'tools/wdcmonv2/check_wdcmonv2_install.ps1'
@@ -38,6 +42,7 @@ $inputs = [ordered]@{
     'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md' = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md'
     'DOC/WDCMONV2_MIGRATION_PROVENANCE.md' = 'docs/WDCMONV2_MIGRATION_PROVENANCE.md'
     'DOC/HIMON_ASMF2_AFTER_STR8N.md' = 'docs/HIMON_ASMF2_AFTER_STR8N.md'
+    'DOC/STR8_IN65_BANK_MAINTENANCE.md' = 'docs/STR8_IN65_BANK_MAINTENANCE.md'
     'LICENSE' = 'LICENSE'
 }
 
@@ -74,13 +79,16 @@ $readmePath = Join-Path $kitFull 'PACKAGE-README.txt'
 $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
-    'STATUS: STR8-iN/65 BOARD-PROVEN; CANONICAL v1.28 PROMOTION BYTE-CHECKED',
+    'STATUS: v1.29 HOST-QUALIFIED; FACTORY MIGRATION BOARD PROOF REQUIRED',
     '',
     'Factory-board minimal path:',
-    '  powershell -NoProfile -ExecutionPolicy Bypass -File .\MIGRATE-WDC-TO-STR8N.ps1 -Port COM4',
+    '  powershell -NoProfile -ExecutionPolicy Bypass -File .\STR8-iN65-LOADER.ps1',
     '',
     'The RAM installer requires one exact confirmation, copies/verifies stock B3',
-    'into B0, installs STR8-N 1.28 in B3:F, and publishes B0 as D0 WDCM2.',
+    'into B0, receives the canonical STR8-N 1.29 BIN, and installs it in B3:F.',
+    'After verified v1.29 boot, the included Bank Maintenance image prompts for',
+    'D0 WDCM2 adoption; Bank 0 remains an opaque byte-for-byte factory guest.',
+    'See DOC/STR8_IN65_BANK_MAINTENANCE.md for the exact adoption transaction.',
     'The read-only map/dump/archive procedure remains available in the DOC and TOOLS',
     'directories but is not a gate for the factory-board minimal path.',
     '',
@@ -113,12 +121,12 @@ $fileRows = foreach ($file in $payloadFiles) {
 }
 $manifest = [ordered]@{
     schema = 1
-    package = 'str8n-v1.28-wdcmonv2-str8n-migration-kit'
-    hardwareStatus = 'STR8-iN/65 board-proven; canonical v1.28 promotion byte-checked'
+    package = 'str8n-v1.29-wdcmonv2-str8n-migration-kit'
+    hardwareStatus = 'v1.29 host-qualified; factory migration board proof required'
     stockWdcmonv2FirmwareIncluded = $false
     localBankArchivesIncluded = $false
     ryorsPayloadIncluded = $false
-    firstProcedure = 'MIGRATE-WDC-TO-STR8N.ps1 -Port COMx'
+    firstProcedure = 'STR8-iN65-LOADER.ps1'
     files = @($fileRows)
 }
 $manifestPath = Join-Path $kitFull 'PACKAGE-MANIFEST.json'
