@@ -137,6 +137,45 @@ setting, while `STR` reverses `RTS`, the 6502 return-from-subroutine mnemonic.
 The letters also loosely evoke **S**oftware or **S**ystem **T**o **R**eset,
 **R**estore, **R**ecover, or **R**eturn to **N**ormal.
 
+## Why this project exists
+
+Every microcontroller, FPGA, and single-board-computer project I have worked
+with has eventually required another computer. The host builds the software,
+programs the board, stores the files, opens the terminal, and often remains
+involved whenever the system is used or changed.
+
+I also kept finding 6502 systems in which a supporting microcontroller, FPGA,
+or host computer did more of the work than I wanted. Those are useful and
+successful designs, but they are pursuing a different balance.
+
+STR8-N/65 is my attempt to let the W65C02 board become the center of its own
+system.
+
+The host is not being rejected. It remains the practical place to build a
+release, transfer files, preserve backups, and recover damaged flash. The goal
+is simply to make that interaction as small and well-defined as possible.
+
+After the initial setup, the W65C02 should increasingly know what it contains
+and what it can do. It should take RESET itself, choose what to start, keep
+track of installed systems, load its own tools, and provide understandable
+ways to install software or recover from mistakes.
+
+This is why the project is becoming more than a boot menu. STR8-N, HIMON, ASM,
+applications, banked storage, installation, and recovery are being brought
+together as parts of one understandable computer rather than remaining
+separate experiments that happen to use the same board.
+
+The aim is not necessarily to eliminate the host. It is to keep the host from
+being the permanent operator of the machine.
+
+This may be ambitious, and parts of it may prove impractical. The boundary
+between useful independence and needless reinvention will have to be tested
+honestly.
+
+But the vision is clear: turn a W65C02 SBC from a target attached to a
+development computer into a persistent, understandable, self-directed computer
+in its own right.
+
 ## Feature card
 
 | Capability | What STR8-N v1.29 can do | Safety boundary |
