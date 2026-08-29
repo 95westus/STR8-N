@@ -379,7 +379,7 @@ $(STR8_IN65_INSTALL_S19): $(STR8_IN65_INSTALL_OBJ) $(WDCMONV2_INSTALL_CHECK) $(S
 $(STR8_IN65_STOCK_RESTORE_S19): $(STR8_IN65_STOCK_RESTORE_OBJ) $(STR8_IN65_STOCK_RESTORE_CHECK) $(WDCMONV2_HOST_LOADER) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(STR8_IN65_STOCK_RESTORE_CHECK) -SourcePath "$(WDCMONV2_INSTALL_SRC)" -S19Path "$@" -MapPath "$(STR8_IN65_STOCK_RESTORE_MAP)"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(STR8_IN65_STOCK_RESTORE_CHECK) -SourcePath "$(WDCMONV2_INSTALL_SRC)" -S19Path "$@" -MapPath "$(STR8_IN65_STOCK_RESTORE_MAP)" -VersionText "$(STR8_IN65_VERSION_TEXT)"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$@" -ValidateOnly
 
 $(WDCMONV2_INSTALL_TOP_BIN): $(WDCMONV2_INSTALL_INC)

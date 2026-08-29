@@ -1,7 +1,8 @@
 param(
     [string]$SourcePath = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm',
-    [string]$S19Path = 'BUILD/v1.28/s19/str8n-v1.28-str8-in65-factory-restore-2000.s19',
-    [string]$MapPath = 'BUILD/v1.28/s19/str8n-v1.28-str8-in65-factory-restore-2000.map'
+    [string]$S19Path = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-factory-restore-2000.s19',
+    [string]$MapPath = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-factory-restore-2000.map',
+    [string]$VersionText = '1.29'
 )
 
 Set-StrictMode -Version Latest
@@ -78,7 +79,7 @@ if ($minAddress -ne 0x2000 -or $maxAddress -ge 0x4000 -or $entry -ne 0x2000) {
 
 $ascii = [System.Text.Encoding]::ASCII.GetString($payload.ToArray())
 foreach ($prompt in @(
-    'STR8-N 1.28 STOCK RESTORE',
+    "STR8-N $VersionText STOCK RESTORE",
     'SOURCE B0 FNV1A=',
     'FACTORY BASELINE: B0 -> B3, THEN ERASE B0',
     'DEST B3 WILL BE REPLACED',
