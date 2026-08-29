@@ -42,6 +42,7 @@ W2I_FTDI_DATA           EQU             $7FE1
 W2I_FTDI_DDRB           EQU             $7FE2
 W2I_FTDI_DDRA           EQU             $7FE3
 W2I_BANK_PCR            EQU             $7FEC
+W2I_EDU_PIA_CRA         EQU             $7FA1
 
 W2I_FTDI_TXE            EQU             $01
 W2I_FTDI_RXF            EQU             $02
@@ -49,6 +50,7 @@ W2I_FTDI_WR             EQU             $04
 W2I_FTDI_RD             EQU             $08
 W2I_FTDI_INIT           EQU             $0C
 W2I_BANK_MASK           EQU             $EE
+W2I_EDU_PIA_CA2_LOW     EQU             $30
 
 W2I_FLASH_UNLOCK1       EQU             $D555
 W2I_FLASH_UNLOCK2       EQU             $AAAA
@@ -65,6 +67,10 @@ W2I_CANDIDATE_HI        EQU             $40
 
 START:
                         SEI
+; The EDU buzzer sounds while PIA CA2 is high.  Silence it at the first safe
+; instruction boundary, before stack setup, console initialization, or output.
+                        LDA             #W2I_EDU_PIA_CA2_LOW
+                        STA             W2I_EDU_PIA_CRA
                         CLD
                         LDX             #$FF
                         TXS
