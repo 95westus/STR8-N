@@ -1,6 +1,202 @@
 # WDCMONv2 Migration Board Test
 
-Status: pending physical W65C02SXB acceptance; W65C02EDU may be installed.
+Status: the operator-authorized Phase A programmer-hash waiver remains
+recorded below. The STR8-iN/65 v1.28 cold-start image, physical RESET,
+cold-power start, retained-stock B0 enrollment, and repeated `J0` launch are
+board-accepted. The one-command factory WDCMONv2-to-STR8-N 1.28 consumer
+migration is also board-accepted from an erased-B0 factory baseline, including
+the operator-observed CS0-CS3 chase, retained WDCMONv2 launch, and final
+physical-RESET return to STR8-N. Canonical v1.28 is byte-identical to the
+accepted top except for the documented migration-role policy. W65C02EDU may
+be installed.
+
+## 2026-08-28 first stock-board run: cold-reset failure retained
+
+The first physical W65C02SXB/EDU run used board identity
+`SXB2; HW=3.00; WDCMON=2.00`.  The original complete-device readback was
+`131072` bytes with SHA-256
+`E22F0D0279797EB6DEC175CA634E692A8EAA61974E93DC3C7EA2E4F6E51C86C7`.
+The operator explicitly waived Phase A's final same-hash programmer readback;
+that waiver prevents full Phase A acceptance but does not change the captured
+read-only results below.
+
+The archive application loaded and read back byte-exact, inventoried B0-B2 as
+erased, and inventoried B3 as `FNV1A=1249E1F3 RESET=F818`.  Bank 0 and Bank 3
+exports both passed the host extractor.  The wrong-token Phase B run returned
+`REFUSE: LOCAL ARCHIVE TOKEN MISMATCH`; the correct-token/cancel run returned
+`CANCELLED; NOTHING FURTHER WRITTEN`.
+
+The host/FTDI reset path was not reliable on this board.  The bridge therefore
+gained a same-open-handle `-NoReset -PhysicalResetGate` path.  That path passed
+strict board identity and byte-exact installer RAM loading before Phase C.
+Phase C printed:
+
+```text
+COPY/VERIFY B3 -> B0 ........
+B0 == ORIGINAL B3 VERIFIED
+ERASING/PROGRAMMING B3:F
+STR8-N VERIFIED; RESET
+RESET
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.23
+0-2 C W S: ......
+NO
+I L C W J
+STR8-N>
+```
+
+The first face above followed the installer's software `JMP ($FFFC)`, not a
+hardware reset.  Subsequent physical RESET and power-cycle attempts produced
+no STR8-N bytes, including with COM4 already open and DTR disabled.
+
+The complete post-install programmer readback was
+`06A8B688A01B18A8C50EAB868AA10B94B782C7A2C71DA897DC11C3F6309191F5`.
+Byte comparison proved B0 equal to the original stock B3, B1/B2 erased,
+B3:8-E unchanged, and B3:F equal to the carried STR8-N candidate.  B3 config
+was `FF FF FF`; vectors were `D2 F0 00 F0 E6 F0`, including RESET `$F000`.
+
+For the control, XGpro write/readback file `X.bin` was byte-exact with the
+original complete-device backup and the same SHA-256.  Physical RESET then
+printed the complete `W65C02SXB + EDU Kit Rev 1.0` startup face and reported
+OLED, RTC, SPI SRAM, ADC, and CardKB `OK`.  This proves the board, flash socket,
+physical reset, clock/power, and ASCII console path on the restored stock
+image.  The migration remains unaccepted: the failure is isolated to true
+cold-reset entry of the STR8-N candidate, before its first visible `RESET`.
+The software-jump pass must not be cited as physical-reset proof.
+
+## 2026-08-28 STR8-iN/65 cold-reset candidates
+
+The W65C22S reset contract makes its peripheral pins inputs; their initial
+bus-held level is not initialized by the chip.  Board pull-ups expose Bank 3
+while the second VIA remains in that reset/input state.  A reset path must not
+rewrite PCR `$7FEC` merely to make the selected bank explicit while it is
+executing from the selected flash window.
+
+The first separately gated STR8-iN/65 candidate wrote Bank-3 PCR value `$EE`
+before IVY or console initialization.  Its top SHA-256 was
+`E52D7AF7AF40272A5F6E0B57AAD599D52F70FEE1100F3B098EA879D4978B6979`.
+The guarded RAM installer loaded/read back byte-exact, copied stock B3 to B0
+and verified it, programmed/verified B3:F, and produced the complete v1.23
+face after its software jump.  A subsequent physical reset emitted only byte
+`$FF`; no later bytes arrived.  A separate receive-only power-cycle window
+captured zero bytes.  That candidate is rejected.
+
+Comparison with the known-good stock B3 reset path at `$F818` showed that
+stock performs a long PIA/peripheral sweep before its first VIA/FT245 access.
+The second candidate added a calibrated delay after IVY RAM initialization
+and before any I/O, then wrote PCR `$EE` and initialized the FT245-facing VIA.
+Its carried top SHA-256 was
+`ACE1465280066DE93B35A11E7022CC7068DE94E17464CCC454F5CF5A263F28A5`.
+It passed installation, software-jump boot, and a true physical RESET:
+
+```text
+RESET
+WAIT... WAIT... WAIT... WAIT... WAIT... WAIT...
+STR8-N 1.23
+0-2 C W S: ......
+NO
+I L C W J
+STR8-N>
+```
+
+Its cold power-up nevertheless emitted zero bytes while COM4 remained open.
+A physical RESET after that silent cold start immediately printed the same
+complete face.  This isolates the failure to first-power PCR/bank-latch state,
+not the ROM body, FT245 console, or reset switch.  Candidate 2 is rejected.
+
+Candidate 3 retains the calibrated pre-I/O delay but removes every reset-time
+PCR write.  Software bank selection remains unchanged.  Host checks retain
+all fixed resident ABI addresses and vectors.  The special resident occupies
+`$F000-$FD55`, leaving six bytes before the fixed worker at `$FD5C`; RESET
+remains `$F000`.  The canonical v1.23 image remains byte-identical at SHA-256
+`0BB457D7BD17E3AC084B19C0F23DCE546F0A49CDB8E44842F0FB3F832C660DF1`.
+
+```text
+BUILD/v1.23/bin/str8n-v1.23-str8-in65-wdcmonv2-bank3-f000-ffff.bin
+SHA-256 F22AF53374F2D92F832C44DFC27B223FD824F1714F9BCEB0077FB8EB88B89DBF
+roles FF/FF; FNV1A F46D7581; RESET $F000; host layout check PASS
+
+BUILD/v1.23/s19/str8n-v1.23-str8-in65-wdcmonv2-install-2000.s19
+SHA-256 1B44E32A447CF8FA8334085A6CB1502897F1533A4A4110587E73A05B3B88CCE2
+RAM $2000-$4FFF; S9 $2000; carries candidate 3 only
+
+BUILD/v1.23/s19/str8n-v1.23-str8-in65-top-update-2000.s19
+SHA-256 EE6FC15B5C23F4E116D1D646E09BFE441AC25EDA2D4596E48D51DFEC9429768C
+RAM $2000-$4FFF; S9 $2000; candidate-3 B3:F updater only
+
+BUILD/v1.23/local/str8n-v1.23-str8-in65-cold-reset-test-128k.bin
+SHA-256 E511ECF25608EDDB047696D608BE920563ECD549AD1382C44351C30B4F0579A0
+base X.bin SHA-256 E22F0D0279797EB6DEC175CA634E692A8EAA61974E93DC3C7EA2E4F6E51C86C7
+only file offsets $1F000-$1FFFF replaced; owner-local, never package/publish
+```
+
+The candidate-3 seed installer was first loaded through the running STR8 `L`
+service.  It saw the already-installed candidate in B3 rather than stock and
+was deliberately stopped by its archive-token gate before any flash write.
+The variant-only top updater was then loaded instead.  It verified the current
+B3:F rollback copy in B1:F (`SUM=$14B1`), erased/programmed only B3:F, verified
+candidate 3, and printed the full face after its own reset.
+
+An independent physical RESET printed the complete face.  A subsequent
+receive-only cold-power test used automatic COM4 reconnection with TX=0,
+DTR=0, and RTS=0 and captured the same complete face.  The exact 111-byte raw
+power-cycle capture has SHA-256
+`2F4F9308CFF491047A3C797860A71DA6044E2758ECDE75EAEC6B92BB3A27DB3B`.
+Candidate 3 therefore passes both required hardware gates.
+
+Candidate 4 changes presentation only.  In the STR8-iN/65 build, the first
+six quarantine ticks and six live-key ticks retain their exact delays and key
+policy, but the `WAIT...` and dot pulse messages and their dispatch code are
+omitted.  Canonical v1.23 remains unchanged.  The special resident shrank by
+21 bytes to `$F000-$FD40`, increasing the fixed-worker margin to 27 bytes.
+
+```text
+BUILD/v1.23/bin/str8n-v1.23-str8-in65-wdcmonv2-bank3-f000-ffff.bin
+SHA-256 8A2F12DB6CB53B95F07BB5DDA0BB2FA8E227456DDFF92532D921521D1E40611F
+roles FF/FF; FNV1A A212288B; RESET $F000; host layout check PASS
+
+BUILD/v1.23/s19/str8n-v1.23-str8-in65-wdcmonv2-install-2000.s19
+SHA-256 4AE8ED686D4CACB6AC104FD9B9E139218D2ACE1665C1DC564AF093C7B7EA9F42
+RAM $2000-$4FFF; S9 $2000; carries candidate 4 only
+
+BUILD/v1.23/s19/str8n-v1.23-str8-in65-top-update-2000.s19
+SHA-256 565CCCE644B5184098E40982D99ECAD2A44B7595AF3EDC97299CFB8C67A1CBA1
+RAM $2000-$4FFF; S9 $2000; candidate-4 B3:F updater only
+
+BUILD/v1.23/local/str8n-v1.23-str8-in65-cold-reset-test-128k.bin
+SHA-256 72ABF24A90525851737429D0094F71F901757964BE6F218C880E99C0B03CA44F
+base X.bin SHA-256 E22F0D0279797EB6DEC175CA634E692A8EAA61974E93DC3C7EA2E4F6E51C86C7
+only file offsets $1F000-$1FFFF replaced; owner-local, never package/publish
+```
+
+The variant-only updater replaced B1:F with a verified candidate-3 rollback
+copy (`SUM=$1746`), programmed/verified candidate 4 in B3:F, and automatically
+booted this expected shortened face:
+
+```text
+RESET
+
+STR8-N 1.23
+0-2 C W S:
+NO
+I L C W J
+STR8-N>
+```
+
+An independent physical RESET reproduced that face.  A receive-only cold
+power-up then reproduced it with TX=0, DTR=0, and RTS=0.  The exact 58-byte
+raw capture begins with one transient `$FF` byte followed by `RESET`; its
+SHA-256 is
+`F1DE5368B8A804F21FC1AC6E1956D494BFDDB370BC297F522823EB30D5F9DE39`.
+Candidate 4 passes both hardware gates and supersedes candidate 3 as the
+active STR8-iN/65 test image.
+
+The operator also reports that a third board of the same stated revisions,
+but with no date-code information, did not show the early `WAIT...` text.
+Retain that as cross-board timing evidence until that board receives this
+accepted candidate.  The active console path is FT245R through a W65C22, not
+the W65C51, and no W65C21/W65C22/W65C51 erratum is required to explain the
+tested failure.
 
 This card proves the stock-monitor-to-STR8-N path one hazard at a time. Do not
 combine the read-only acceptance and first destructive run merely to save a
@@ -9,28 +205,24 @@ reset.
 ## Exact host-built candidates
 
 ```text
-BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.s19
+BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-archive-2000.s19
 SHA-256 5E0811701830821022EDE13B7B8E5FA26392F0CAF42D3FB8993C7CDFA5698F5C
 RAM $2000-$250E; S9 $2000; read-only
 
-BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19
-SHA-256 FF3F95DF40D87146384BDAB54DC61E07A09DFF30BEA95A07D47BA0888DF81206
+BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-install-2000.s19
+SHA-256 21B1E39EA57F4C2DC1D20ACDC9ADECEC1CEE3FF150D10E87200A9D843D15B758
 RAM $2000-$4FFF; S9 $2000; flash-writing
 
-BUILD/v1.23/bin/str8n-v1.23-bank3-f000-ffff.bin
-SHA-256 0BB457D7BD17E3AC084B19C0F23DCE546F0A49CDB8E44842F0FB3F832C660DF1
-canonical top source
+BUILD/v1.28/bin/str8n-v1.28-bank3-f000-ffff.bin
+SHA-256 9B6720DABCDDB4373FB19A7CEA26D34218F466784C5E54DB687AE2BBFF160058
+canonical top; roles 1E/1F; byte-identical to accepted STR8-iN/65 top
 
-BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin
-SHA-256 3C162EDA001FB9EC6C4E5E1FCD1E1C5238DC4D5A36715B1876BD96728265139A
-exact carried migration top; roles patched to FF/FF
-
-../R-YORS/SRC/BUILD/s19/ryors-v1.2-himon-asm-bank3-8-e.s19
-SHA-256 3212469D695EFC7228EB2DBABAF05E09234AB58B2925AA7D6DA8896323E8278A
-Bank 3 $8000-$EFFF; S9 $C000
+BUILD/v1.28/bin/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin
+SHA-256 BDE8414B4BF76E69E33422662D6BD228ADF6775553B50A2955CD813A8CAC922A
+exact carried migration top; D0 WDCM2 COMPLETE; roles FF/FF
 
 tools/wdcmonv2/start_wdcmonv2_ram.ps1
-SHA-256 676FAA446C0AC63AF726C5966A42167E6C13CA1D89FE6971F05CDDDB3D3E8799
+SHA-256 4B20AE116D0E3E9A818B9D11D1718C7DC98F553B6C3E82D13EBC03B2ECC1A458
 binary WDCMONv2 load/readback/execute plus retained terminal handle
 ```
 
@@ -103,7 +295,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\TOOLS\start_wdcmonv2_ram.ps1 `
   -Port COM5 `
-  -ImagePath .\ARTIFACTS\str8n-v1.23-wdcmonv2-archive-2000.s19 `
+  -ImagePath .\ARTIFACTS\str8n-v1.28-wdcmonv2-archive-2000.s19 `
   -TranscriptPath .\LOCAL\stock-b0-b3-capture.log
 ```
 
@@ -159,7 +351,7 @@ physical RESET returns to WDCMONv2
 complete device readback is byte-identical before/after
 ```
 
-## Phase B: installer refusal gates
+## Phase B: minimal installer refusal gate
 
 Keep the external programmer image ready. These tests must not reach an active
 flash operation.
@@ -170,8 +362,7 @@ flash operation.
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\TOOLS\start_wdcmonv2_ram.ps1 `
   -Port COM5 `
-  -ImagePath .\ARTIFACTS\str8n-v1.23-wdcmonv2-install-2000.s19 `
-  -TransferPath .\ARTIFACTS\ryors-v1.2-himon-asm-bank3-8-e.s19 `
+  -ImagePath .\ARTIFACTS\str8n-v1.28-wdcmonv2-install-2000.s19 `
   -TranscriptPath .\LOCAL\refusal-capture.log
 ```
 
@@ -179,45 +370,44 @@ powershell -NoProfile -ExecutionPolicy Bypass `
    accepting any installer output.
 2. Require `FLASH ID=BF/B5`. Any other ID is an accepted refusal, not a reason
    to bypass the gate.
-3. At the archive prompt, enter one wrong hexadecimal digit.
-4. Require `REFUSE: LOCAL ARCHIVE TOKEN MISMATCH` and a RAM halt.
+3. At the migration prompt, enter anything except the exact
+   `MIGRATE WDC TO STR8-N 1.28` text.
+4. Require `CANCELLED: MIGRATION TEXT DID NOT MATCH` and a RAM halt.
 5. Enter `Ctrl+]` to close the terminal, then press physical RESET and prove
    stock WDCMONv2 returns.
-6. Reload/start the installer with a new transcript filename and enter the
-   exact archive token. Never use `-Force` to overwrite an earlier refusal
-   transcript merely to reuse the example command.
+6. Never use `-Force` to overwrite the refusal transcript merely to reuse the
+   example command.
 7. If B0 is used and different, require
    `REFUSE: B0 USED AND DIFFERENT; NOTHING WRITTEN`, then stop this board test.
-8. If B0 is erased, enter anything other than `COPY B3 TO B0`; require cancel
-   and reset back to WDCMONv2.
-9. If B0 already equals B3, enter anything other than
-   `INSTALL STR8-N 1.23`; require cancel and reset back to WDCMONv2.
-10. Programmer-read the device again and require `PRE_DEVICE_SHA256`.
+8. Programmer-read the device again and require `PRE_DEVICE_SHA256`.
 
 ## Phase C: stock preservation and STR8-N seed
 
-Run only if Phase A passed and B0 is erased or already identical to B3.
+Run when B0 is erased or already identical to B3. Phase A remains the optional
+extended map/dump/archive evidence path; it is not a factory-minimal gate.
 
-1. Load/start the seed installer with the Phase-B command, changing the
-   transcript name to `seed-install-capture.log`. Require byte-exact RAM
-   readback again; no earlier RAM load is carried across RESET.
+1. From an extracted kit, run
+   `MIGRATE-WDC-TO-STR8N.ps1 -Port COMx`. Require byte-exact RAM readback; no
+   earlier RAM load is carried across RESET.
 2. Require flash ID `BF/B5` and the same B3 FNV as the verified local receipt.
-3. Type the exact `ARCHIVE xxxxxxxx` token.
-4. If prompted, type exact `COPY B3 TO B0`.
-5. For an erased B0, require eight progress dots followed by
+3. Type exact `MIGRATE WDC TO STR8-N 1.28` once.
+4. For an erased B0, require eight progress dots followed by
    `B0 == ORIGINAL B3 VERIFIED`.
-6. For an already-identical B0, require the same verified line with no copy
+5. For an already-identical B0, require the same verified line with no copy
    prompt and no copy dots. In both paths this line means both the FNV prefilter
    and the complete byte-for-byte B0/B3 comparison passed.
-7. Type exact `INSTALL STR8-N 1.23`.
-8. Do not touch RESET, NMI, or power while B3:F is active.
-9. Require `STR8-N VERIFIED; RESET`, followed by the STR8-N reset banner and
+6. Do not touch RESET, NMI, or power while B3:F is active.
+7. Require `MIGRATION VERIFIED; STARTING STR8-N`, followed by the STR8-N reset banner and
    selector. This first banner follows the installer's software jump through
    the newly written B3 RESET vector; it is not yet the physical-reset proof.
-10. Select `S` and remain at `STR8-N>`.
-11. Press physical RESET. Require the STR8-N banner and selector again, select
-    `S`, and return to `STR8-N>`. Do not accept a DTR transition or software
-    jump as this proof.
+8. Enter Ctrl+] and connect minicom, Tera Term, PuTTY, or another 115200-8N1
+   serial terminal.
+9. Press physical RESET. Require the STR8-N banner and selector, then choose
+   `0`; require the CS0-CS3 chase and working WDCMONv2. Reset again, select `S`,
+   enter `J0`, and require the same retained-monitor behavior.
+10. Press physical RESET. Require the STR8-N banner and selector again, select
+   `S`, and return to `STR8-N>`. Do not accept a DTR transition or software
+   jump as this proof.
 
 If the active top write reports failure, retain the complete transcript. Use
 `R` to retry the carried candidate or `O` to restore B0:F while the RAM
@@ -228,7 +418,7 @@ Phase C seed acceptance:
 ```text
 B0 full-bank FNV equals the original stock B3 receipt
 B1 and B2 have not been written
-B3:F reads as STR8-N v1.23
+B3:F reads as STR8-N v1.28
 B3 $FFF0/$FFF1 read FF/FF
 physical RESET enters STR8-N
 ```
@@ -251,77 +441,198 @@ would be application input.
 If the identity probe fails, record whether B0 remained selected and whether
 the CPU halted or remapped. A byte-exact stock copy can still fail as an
 in-place guest if WDCMONv2 reselects its factory bank during startup. Keep B0
-reserved and keep the local archive; Phase D and final migration acceptance
-remain pending even though preservation and the R-YORS install may be intact.
+reserved and keep the local archive; final migration acceptance remains
+pending.
 
 Press physical RESET. Require STR8-N again, then select `S`.
 
-## Phase E: install R-YORS through STR8-N
+## Migration endpoint and optional component loading
 
-At `STR8-N>`:
+Migration ends after Phase D and the persistent D0/`J0` proof below. No
+R-YORS payload is an input, acceptance gate, or packaged artifact.
 
-```text
-I
-B0-3: 3
-RANGE: 8-E
-TYPE: 5A
-DESC: RYORS
-I B3 8-E WRITE? Y: Y
-S19
-```
+HIMON and ASM-F2 may be added afterward as separate Bank-3 component loads.
+Use [HIMON_ASMF2_AFTER_STR8N.md](HIMON_ASMF2_AFTER_STR8N.md); do not merge that
+optional procedure into this migration transcript.
 
-Press `Ctrl+U` once to send the exact predeclared R-YORS S19 listed above.
-Require:
+## 2026-08-28 Phase G: enroll retained B0 and prove J0 persistence
 
-```text
-......COMMIT? Y: Y.
-OK
-```
+Phase G used the isolated STR8-iN/65 v1.28 RAM Bank Maintenance image. It did
+not assign `$FFF0/$FFF1`, write `$FFF2`, initialize a VTOC, erase a payload
+sector, or alter B1/B2.
 
-Press physical RESET, select `C`, and require the R-YORS/HIMON banner and
-prompt. Reset once more and use `J0` to prove the stock guest remains intact.
+The first RAM build, SHA-256
+`12EFF250F5840EDC8AEB717363534B697FEF1143A1B3726868980C180EFCCD47`,
+exposed a host layout defect before any flash command: expanded menu text had
+crossed the fixed `$3400` worker origin, so worker bytes followed `Q=QUI` on
+the console. The operator entered `Q`; the program returned to STR8-N and no
+mutation command had run. This rejected build is retained as failure evidence.
 
-## Phase F: first use without inventing configuration
-
-Phase F proves that the migrated board is useful in its deliberately
-unconfigured state. It does not assign WORK/top-backup sectors, initialize a
-VTOC, enroll B0-B2 in FNV/AP search, or start backup rotation.
-
-1. Press physical RESET and select `C`.
-2. Record the exact R-YORS and HIMON version banners.
-3. At HIMON, enter `?` and retain the complete help line. This is a read-only
-   command-surface check, not proof of every advertised command.
-4. Enter `D FFF0 FFF2`. Require three `$FF` configuration bytes:
+The corrected build shortened only the STR8-iN/65 menu, added a host check for
+the complete `Q=QUIT>` terminator, and measured 42 free bytes before `$3400`.
+Its identity was:
 
 ```text
-$FFF0=$FF  no WORK sector assigned
-$FFF1=$FF  no protected B3:F backup sector assigned
-$FFF2=$FF  automatic external FNV/AP bank search disabled
+file     BUILD/v1.28/s19/str8n-v1.28-str8-in65-bank-maint-2000.s19
+SHA-256 EE7715238646CDA1BDC4EF943986C1B2AED1A36EB22A7E5D682CE3061DFD5963
+range    $2000-$3B15; 6934 bytes; S9 $2000
+worker   FFCDB4201C913FC9B3E3F3D438A98940F76967C5E62F843A2DC32CFF1D1AD1B2
 ```
 
-5. Enter `STR8` and require return to the standalone `STR8-N>` prompt.
-6. Press physical RESET, select `C` again, and require the same R-YORS/HIMON
-   identity. This proves first use survives a cold restart.
-7. Use `J0` and `Ctrl+B` once more to prove the retained stock guest after the
-   first-use checks, then press physical RESET back to STR8-N.
-
-Do not use a monitor memory command to try to change `$FFF0-$FFF2`; they are
-flash bytes in protected B3:F. The proposed post-migration Bank Maintenance
-role-assignment transaction is not implemented or accepted yet. Until it is,
-features requiring WORK, protected top backup, or automatic external-bank
-search remain intentionally unavailable. Ordinary HIMON operation and the
-already-installed R-YORS payload do not require those roles.
-
-Phase F acceptance:
+The complete corrected menu rendered and stopped normally:
 
 ```text
-R-YORS/HIMON banner and help captured
-FFF0-FFF2 read FF FF FF
-STR8 command returns to standalone STR8-N
-cold C launch repeats the same identity
-J0 still produces the stock WDCMON binary identity
-no flash mutation occurs during Phase F
+STR8-N 1.28 BANK MAINT
+D=ADOPT N=NAME R=CLEAR E=ERASE M=MAP F=FLAG C=COPY P=AP Q=QUIT>
 ```
+
+The operator selected `D` and accepted all migration defaults before typing
+the exact commit confirmation:
+
+```text
+BANK 0-3 [0]> <Enter>
+TYPE 00-FF [FF]> <Enter>
+DESC 5 CHARS [AUTO]> <Enter>
+TYPE ADOPT B0> ADOPT B0
+ OK
+```
+
+The immediate `M` readback proved the retained payload and COMPLETE D0 row:
+
+```text
+B0 U U U U U U U U
+B1 E E E E E E E U
+B2 E E E E E E E E
+B3 U U U U U U U P
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF WDCM2 FFFF FCFFFFFF
+D1 FF ..... FFFF FFFFFFFF
+D2 FF ..... FFFF FFFFFFFF
+D3 FF ..... FFFF FFFFFFFF
+ OK
+```
+
+After `Q`, resident STR8 accepted `J0`, printed `J B0` without `J FAIL`, and
+B0 produced the complete W65C02SXB + EDU initialization and ASCII menu. A
+physical RESET then returned through Bank-3 pull-ups to `STR8-N 1.28`. A
+second `J0` after that reset again printed `J B0` without `J FAIL`, proving the
+directory record persisted independently of the RAM program.
+
+Raw RX and host-action evidence is retained at:
+
+```text
+BUILD/v1.28/str8-in65-bank-maint-board-test.raw
+BUILD/v1.28/str8-in65-bank-maint-board-test.events.log
+BUILD/v1.28/str8-in65-bank-maint-board-test-retry.raw
+BUILD/v1.28/str8-in65-bank-maint-board-test-retry.events.log
+```
+
+## 2026-08-28 canonical v1.28 promotion
+
+Canonical STR8-N now builds the accepted silent-pulse cold-start sequence as
+v1.28. `make str8-in65-promotion-check` proves the canonical and accepted
+configured top sectors are byte-identical:
+
+```text
+canonical/accepted SHA-256  9B6720DABCDDB4373FB19A7CEA26D34218F466784C5E54DB687AE2BBFF160058
+migration top SHA-256       BDE8414B4BF76E69E33422662D6BD228ADF6775553B50A2955CD813A8CAC922A
+allowed difference          D0 WDCM2 COMPLETE plus $FFF0/$FFF1
+canonical policy            1E/1F (B1:E WORK, B1:F top backup)
+migration policy            D0=WDCM2; FF/FF roles (unassigned)
+resident                    $F000-$FD40; 3393 bytes; 27-byte worker margin
+```
+
+The board transcript proves the promoted resident behavior and the migration
+policy image. The host comparison proves canonical uses those same resident
+bytes while retaining canonical role defaults. No additional board flash write
+was performed for the repository promotion.
+
+## 2026-08-28 factory-baseline reconstruction and consumer migration
+
+To exercise the same preservation prompts as a first-time consumer, merely
+copying retained stock B0 back over B3 is insufficient: that leaves B0 used and
+byte-identical, so the installer follows its already-preserved path. The
+board-lab-only factory restore instead performs this guarded sequence entirely
+from RAM:
+
+```text
+B0 whole-bank hash/reset validation
+B0 -> B3 sectors 8-E, with erase/program/exact readback per sector
+B0 -> B3 reset-bearing sector F last
+B0 == B3 whole-bank hash and byte-exact verification
+erase/verify all eight B0 sectors
+re-hash B3 against the retained source hash
+boot stock B3
+```
+
+The host-proven artifact is deliberately excluded from `all`, the manifest,
+and the consumer migration package:
+
+```text
+file     BUILD/v1.28/s19/str8n-v1.28-str8-in65-factory-restore-2000.s19
+SHA-256 A933ECAF454E7C74133B5560553A77EF9EECB70C2DE6CCE16067F5EE5CF3F7C7
+range    $2000-$2C18; 3097 bytes; S9 $2000
+source   observed B0 FNV1A 1249E1F3; RESET $F818
+```
+
+The board-lab restore was used to recreate stock WDCMONv2 in B3 with B0
+erased. From that factory baseline, the operator ran the extracted kit's
+single consumer command from Windows PowerShell:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass `
+  -File "C:\SRC\STR8-N\BUILD\v1.28\wdcmonv2-str8n-migration-kit\MIGRATE-WDC-TO-STR8N.ps1" `
+  -Port COM4
+```
+
+The manual physical-reset gate avoided the previously captured DTR/reset-arm
+transport pollution. The bridge identified `SXB2; HW=3.00; WDCMON=2.00`,
+loaded `$2000-$4FFF` byte-exact, and executed the installer at `$2000`. The
+accepted serial evidence is:
+
+```text
+FLASH ID=BF/B5
+STOCK B3 FNV1A=1249E1F3
+TYPE MIGRATE WDC TO STR8-N 1.28> MIGRATE WDC TO STR8-N 1.28
+COPY/VERIFY B3 -> B0 ........
+B0 == ORIGINAL B3 VERIFIED
+ERASING/PROGRAMMING B3:F
+MIGRATION VERIFIED; STARTING STR8-N
+RESET
+
+STR8-N 1.28
+0-2 C W S: S
+I L C W J
+STR8-N>J0
+J B0
+```
+
+Retained B0 then printed the complete W65C02SXB + EDU startup, detected OLED,
+RTC, SPI SRAM, ADC, and CardKB as `OK`, and reached its application prompt.
+The operator visually verified the expected CS0-CS3 chase. A final physical
+RESET at that prompt was captured returning to:
+
+```text
+RESET
+
+STR8-N 1.28
+0-2 C W S:
+NO
+I L C W J
+STR8-N>
+```
+
+The raw RX transcript and companion event log were copied byte-exact from the
+kit's `LOCAL` directory into retained evidence at
+`BUILD/v1.28/hardware-evidence/factory-migration-20260828-211427/`. Their
+SHA-256 values are `ED20AD34B7786C9DAC82EE65503577F1CFB16F4A63C3294DA1FED6582A9AC67D`
+and `FF0DF0A0F6C3C45418A0EE984515F021D563A4A1B9F368CC7503393F12C3713B`,
+respectively. The event log records the physical reset gate, board identity,
+byte-exact RAM readback, `$2000` execution, and transmitted confirmation
+input. This accepts the minimal erased-B0 factory migration, complete
+B3-to-B0 preservation, D0 `WDCM2` publication, `J0` guest launch, visual bank
+chase, and physical-RESET recovery to STR8-N 1.28.
 
 ## Final readback and retained evidence
 
@@ -331,7 +642,7 @@ Use the external programmer to save a post-migration 128K readback. Verify:
 physical $00000-$07FFF   equals the original stock B3 BIN
 physical $10000-$17FFF   equals PRE device Bank 2
 physical $08000-$0FFFF   equals PRE device Bank 1
-physical $18000-$1EFFF   equals the accepted R-YORS 8-E payload
+physical $18000-$1EFFF   equals PRE device Bank 3 sectors 8-E
 physical $1F000-$1FFFF   equals migration-configured STR8-N top candidate
 ```
 
@@ -344,7 +655,7 @@ raw RX transcripts and companion `.events.txt` host-action logs
 exact artifact hashes
 complete Phase A-F terminal transcript
 observed bank inventory and FNV values
-stock J0 WDCMON binary identity proof and R-YORS C banner
+stock J0 WDCMON binary identity proof
 any failure/retry/restore transcript
 operator acceptance statement
 ```

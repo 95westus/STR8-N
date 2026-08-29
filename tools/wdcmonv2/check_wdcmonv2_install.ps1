@@ -1,9 +1,10 @@
 param(
     [string]$SourcePath = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm',
-    [string]$S19Path = 'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19',
-    [string]$MapPath = 'BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.map',
-    [string]$TopBinPath = 'BUILD/v1.23/bin/str8n-v1.23-bank3-f000-ffff.bin',
-    [string]$CandidateBinPath = 'BUILD/v1.23/bin/str8n-v1.23-wdcmonv2-bank3-f000-ffff.bin'
+    [string]$S19Path = 'BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-install-2000.s19',
+    [string]$MapPath = 'BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-install-2000.map',
+    [string]$TopBinPath = 'BUILD/v1.28/bin/str8n-v1.28-bank3-f000-ffff.bin',
+    [string]$CandidateBinPath = 'BUILD/v1.28/bin/str8n-v1.28-wdcmonv2-bank3-f000-ffff.bin',
+    [string]$VersionText = '1.28'
 )
 
 Set-StrictMode -Version Latest
@@ -17,7 +18,7 @@ $source = Get-Content -Raw -LiteralPath $SourcePath
 foreach ($required in @(
     'W2I_FLASH_MAN_EXPECT    EQU             $BF',
     'W2I_FLASH_DEV_EXPECT    EQU             $B5',
-    'ARCHIVE ', 'COPY B3 TO B0', 'INSTALL STR8-N 1.23',
+    "MIGRATE WDC TO STR8-N $VersionText", 'COPY/VERIFY B3 -> B0',
     'REFUSE: B0 USED AND DIFFERENT', 'W2I_HASH_EQUALS_SOURCE',
     'W2I_COMPARE_B0_B3_EXACT', 'B0/B3 HASH MATCH BUT BYTES DIFFER',
     'W2I_COPY_B3_TO_B0', 'W2I_HASH_CANDIDATE', 'W2I_CANDIDATE_TO_STAGE',
@@ -34,11 +35,11 @@ if ($source -match '(?im)^\s*(JSR|JMP)\s+\$[89A-E][0-9A-F]{3}\b') {
 if ($source.Contains('W2I_BANK1') -or $source.Contains('W2I_BANK2')) {
     throw 'Seed installer must not consume Bank 1 or Bank 2'
 }
-$archiveGate = $source.IndexOf('W2I_ARCHIVE_OK:')
+$migrationGate = $source.IndexOf('W2I_MIGRATE_OK:')
 $b0Gate = $source.IndexOf('W2I_B0_PROVEN:')
 $installGate = $source.IndexOf('W2I_INSTALL_CONFIRMED:')
-if ($archiveGate -lt 0 -or $b0Gate -le $archiveGate -or $installGate -le $b0Gate) {
-    throw 'Installer gate order must be ARCHIVE -> B0 PROVEN -> INSTALL'
+if ($migrationGate -lt 0 -or $b0Gate -le $migrationGate -or $installGate -le $b0Gate) {
+    throw 'Installer gate order must be MIGRATE confirmation -> B0 exact -> INSTALL'
 }
 
 $map = Get-Content -Raw -LiteralPath $MapPath
@@ -94,6 +95,12 @@ for ($address = 0x2000; $address -le 0x4FFF; $address++) {
 if ($top.Length -ne 4096) { throw "Top BIN must be 4096 bytes; got $($top.Length)" }
 $top[0x0FF0] = 0xFF
 $top[0x0FF1] = 0xFF
+[byte[]]$wdcDirectory0 = @(
+    0xFF, 0xFF, 0xFF, 0xFF,
+    [byte][char]'W', [byte][char]'D', [byte][char]'C', [byte][char]'M', [byte][char]'2',
+    0xFE, 0xFF, 0xFF, 0xFC, 0xFF, 0xFF, 0xFF
+)
+[Array]::Copy($wdcDirectory0, 0, $top, 0x0FB0, $wdcDirectory0.Length)
 [byte[]]$candidate = [System.IO.File]::ReadAllBytes((Resolve-Path -LiteralPath $CandidateBinPath).Path)
 if ($candidate.Length -ne 4096) { throw "Migration candidate BIN must be 4096 bytes; got $($candidate.Length)" }
 for ($i = 0; $i -lt $top.Length; $i++) {
@@ -110,7 +117,12 @@ if ($top[0] -ne 0x4C -or ($top[0x0FFC] -eq 0xFF -and $top[0x0FFD] -eq 0xFF)) {
 if ($memory[0x4FF0] -ne 0xFF -or $memory[0x4FF1] -ne 0xFF) {
     throw 'Migration candidate must leave WORK and top-backup roles unassigned'
 }
+for ($i = 0; $i -lt $wdcDirectory0.Length; $i++) {
+    if ($memory[0x4FB0 + $i] -ne $wdcDirectory0[$i]) {
+        throw ('Migration candidate lacks complete D0 WDCM2 row at ${0:X4}' -f (0xFFB0 + $i))
+    }
+}
 
 Write-Host ('WDCMONV2 INSTALL S19 = PASS; range=${0:X4}-${1:X4}; S9=$2000' -f $minAddress, $maxAddress)
-Write-Host ('CARRIED STR8-N TOP   = PASS; roles FF/FF; SHA256={0}' -f (Get-FileHash -Algorithm SHA256 -LiteralPath $CandidateBinPath).Hash)
-Write-Host 'GATE ORDER           = ARCHIVE -> B0 EXACT -> INSTALL; B1/B2 untouched'
+Write-Host ('CARRIED STR8-N TOP   = PASS; D0 WDCM2 COMPLETE; roles FF/FF; SHA256={0}' -f (Get-FileHash -Algorithm SHA256 -LiteralPath $CandidateBinPath).Hash)
+Write-Host 'GATE ORDER           = MIGRATE -> B0 EXACT -> INSTALL; B1/B2 untouched'

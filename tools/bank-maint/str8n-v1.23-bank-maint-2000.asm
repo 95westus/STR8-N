@@ -4,7 +4,7 @@
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.23/s19/str8n-v1.23-bank-maint-2000.s19
+;   send BUILD/v1.28/s19/str8n-v1.28-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -163,6 +163,10 @@ BM_MAIN LDX #$00
         BEQ ?ADOPT
         CMP #'E'
         BEQ ?ERASE
+        IF STR8_IN65_BANK_MAINT
+        CMP #'F'
+        BEQ ?FLAGS
+        ENDIF
         CMP #'M'
         BEQ ?MAP
         CMP #'N'
@@ -189,6 +193,9 @@ BM_MAIN LDX #$00
         STA $7C00
         JMP $F000
 ?MAP   JMP BM_MAP
+        IF STR8_IN65_BANK_MAINT
+?FLAGS JMP BM_FLAGS
+        ENDIF
 ?RENAME JMP BM_RENAME
 ?PUT   JMP BM_PUT
 ?RECLAIM JMP BM_RECLAIM
@@ -1421,6 +1428,14 @@ BM_DIR_READ_IDENTITY
         JSR BM_PUTS
         JSR BM_READ
         BCC ?FAIL
+        IF STR8_IN65_BANK_MAINT
+        LDA $7C20
+        BNE ?TYPE_TYPED
+        LDA #$FF
+        STA $7C18
+        BRA ?DESC
+?TYPE_TYPED
+        ENDIF
         LDA $7C22
         BNE ?TYPE
         LDA $7C20
@@ -1441,6 +1456,13 @@ BM_DIR_READ_IDENTITY
         JSR BM_PUTS
         JSR BM_READ
         BCC ?FAIL
+        IF STR8_IN65_BANK_MAINT
+        LDA $7C20
+        BNE ?DESC_TYPED
+        JSR BM_DIR_DEFAULT_DESC
+        BRA ?IDENTITY_OK
+?DESC_TYPED
+        ENDIF
         LDA $7C25
         BNE ?DESC
         LDX #$00
@@ -1451,6 +1473,9 @@ BM_DIR_READ_IDENTITY
         INX
         CPX #$05
         BNE ?BYTE
+        IF STR8_IN65_BANK_MAINT
+?IDENTITY_OK
+        ENDIF
         SEC
         RTS
 ?FAIL   CLC
@@ -1478,24 +1503,71 @@ BM_DESC_BYTE CMP #'A'
 
 BM_MCDIRUSED DB $0D,$0A,'D','I','R',' ','N','O','T',' ','E','M','P','T','Y'
         DB $0D,$0A,0
-BM_MCTYPE2 DB $0D,$0A,'T','Y','P','E',' ','0','0','-','F','F','>',' ',0
-BM_MCDESC DB 'D','E','S','C',' ','5',' ','C','H','A','R','S','>',' ',0
+BM_MCTYPE2 DB $0D,$0A,'T','Y','P','E',' ','0','0','-','F','F'
+        IF STR8_IN65_BANK_MAINT
+        DB ' ','[','F','F',']'
+        ENDIF
+        DB '>',' ',0
+BM_MCDESC DB 'D','E','S','C',' ','5',' ','C','H','A','R','S'
+        IF STR8_IN65_BANK_MAINT
+        DB ' ','[','A','U','T','O',']'
+        ENDIF
+        DB '>',' ',0
 BM_MCENROLL DB 'E','N','R','O','L','L','?',' ','Y',':',' ',0
+
+        IF STR8_IN65_BANK_MAINT
+; Empty DESC selects the bank-specific five-character migration default.
+BM_DIR_DEFAULT_DESC
+        LDA $7C03
+        ASL A
+        ASL A
+        CLC
+        ADC $7C03
+        TAX
+        LDY #$00
+?BYTE   LDA BM_DIR_DEFAULT_DESCS,X
+        STA $7C19,Y
+        INX
+        INY
+        CPY #$05
+        BNE ?BYTE
+        RTS
+BM_DIR_DEFAULT_DESCS DB 'W','D','C','M','2'
+        DB 'B','A','N','K','1'
+        DB 'B','A','N','K','2'
+        DB 'S','T','R','8','N'
+        ENDIF
 
 ; Adopt already-present payload into an erased directory row. This is the
 ; metadata-only recovery path after a directory refresh; no payload sector is
 ; erased or programmed. Bank 3 additionally publishes an explicit S9 identity.
 BM_ADOPT LDA #'D'
         STA $7C01
-?BANK   LDX #<BM_MBANK
+?BANK
+        IF STR8_IN65_BANK_MAINT
+        LDX #<BM_MDBANK
+        LDY #>BM_MDBANK
+        ELSE
+        LDX #<BM_MBANK
         LDY #>BM_MBANK
+        ENDIF
         JSR BM_PUTS
         JSR BM_READ
         BCC ?ABORT
         LDA $7C20
+        IF STR8_IN65_BANK_MAINT
+        BNE ?BANK_TYPED
+        LDA #$00
+        BRA ?BANK_OK
+?BANK_TYPED
+        ELSE
         BEQ ?ABORT
+        ENDIF
         JSR BM_PARSE_BANK
         BCC ?BANK
+        IF STR8_IN65_BANK_MAINT
+?BANK_OK
+        ENDIF
         STA $7C02
         STA $7C03
         JSR BM_COPY_DIR_EMPTY
@@ -1653,6 +1725,9 @@ BM_ADOPT LDA #'D'
 
 BM_MDENTRY DB $0D,$0A,'E','N','T','R','Y',' ','8','0','0','0','-','F','F','F','E','>',' ',0
 BM_MDADOPT DB 'T','Y','P','E',' ','A','D','O','P','T',' ','B',0
+        IF STR8_IN65_BANK_MAINT
+BM_MDBANK DB 'B','A','N','K',' ','0','-','3',' ','[','0',']','>',' ',0
+        ENDIF
 
 ; Reclaim one stale D0-D2 row after proving the corresponding payload bank is
 ; completely erased, or compact a full D3 journal while preserving its sealed
@@ -1818,6 +1893,10 @@ BM_RECLAIM_J3
         LDA $7C01
         CMP #'N'
         BEQ ?SCRATCH_BEGIN
+        IF STR8_IN65_BANK_MAINT
+        CMP #'F'
+        BEQ ?SCRATCH_BEGIN
+        ENDIF
         LDY #$0C
 ?FULL   LDA ($CA),Y
         BNE ?NOT_FULL
@@ -1896,8 +1975,17 @@ BM_RECLAIM_J3
         JSR BM_NIBBLE
         LDA $7C01
         CMP #'N'
+        IF STR8_IN65_BANK_MAINT
+        BEQ ?RENAME_CONFIRM
+        CMP #'F'
+        BNE ?J3_CONFIRM
+        JMP BM_FLAGS_CONFIRM
+?RENAME_CONFIRM
+        JMP BM_RENAME_CONFIRM
+        ELSE
         BNE ?J3_CONFIRM
         JMP BM_RENAME_CONFIRM
+        ENDIF
 ?J3_CONFIRM
         LDX #<BM_MRJ3_CONFIRM
         LDY #>BM_MRJ3_CONFIRM
@@ -1945,9 +2033,20 @@ BM_B3F_REWRITE_CONFIRMED
 ; only D3's four journal bytes to one COMPLETE pair and fifteen unused pairs.
         LDA $7C01
         CMP #'N'
+        IF STR8_IN65_BANK_MAINT
+        BEQ ?RENAME_APPLY
+        CMP #'F'
+        BNE ?RESET_J3
+        JSR BM_FLAGS_APPLY
+        BRA ?STAGE_CHANGED
+?RENAME_APPLY
+        JSR BM_RENAME_APPLY
+        BRA ?STAGE_CHANGED
+        ELSE
         BNE ?RESET_J3
         JSR BM_RENAME_APPLY
         BRA ?STAGE_CHANGED
+        ENDIF
 ?RESET_J3
         LDA #$FC
         STA $19EC
@@ -2289,7 +2388,12 @@ BM_SUCCESS LDA #$AC
         JSR BM_OUT
         JMP BM_MAIN
 
-BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','3',' '
+BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' '
+        IF STR8_IN65_VERSION_128
+        DB '1','.','2','8',' '
+        ELSE
+        DB '1','.','2','3',' '
+        ENDIF
         IF STR8_BANK_MAINT_TOP
         DB 'B','A','N','K',' ','M','A','I','N','T',' ','+',' ','T','O','P'
         DB $0D,$0A
@@ -2306,6 +2410,13 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','3',' '
         DB ' ','Q','/','E','N','T','E','R',' ',' ','R','E','T','U','R','N',' ','T','O',' ','S','T','R','8','-','N',$0D,$0A
         DB 'B','M','>',' ',0
         ELSE
+        IF STR8_IN65_BANK_MAINT
+        DB 'B','A','N','K',' ','M','A','I','N','T',$0D,$0A
+        DB 'D','=','A','D','O','P','T',' ','N','=','N','A','M','E',' ','R','=','C','L','E','A','R',' '
+        DB 'E','=','E','R','A','S','E',' ','M','=','M','A','P',' ','F','=','F','L','A','G',' '
+        DB 'C','=','C','O','P','Y',' ','P','=','A','P',' '
+        DB 'Q','=','Q','U','I','T','>',' ',0
+        ELSE
         DB 'B','A','N','K',' ','M','A','I','N','T',$0D,$0A
         DB 'B','3',' ','E','R','A','S','E',' ','R','E','T','U'
         DB 'R','N','S',' ','T','O',' ','S','T','R','8',';',' '
@@ -2321,6 +2432,7 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','3',' '
         DB ' ','R','=','R','E','C','L','A','I','M',' ','D','I','R'
         DB ' ','Q','/','E','N','T','E','R','=','Q','U','I','T'
         DB '>',' ',0
+        ENDIF
         ENDIF
 ; BEGIN GENERATED STR8 MUTATION WORKER
         ORG $3400
@@ -2399,5 +2511,8 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' ','1','.','2','3',' '
         INCLUDE "str8n-v1.23-top-update-2000.asm"
         ELSE
         INCLUDE "str8n-v1.23-bank-maint-rename.inc"
+        IF STR8_IN65_BANK_MAINT
+        INCLUDE "str8n-v1.28-str8-in65-bank-maint-flags.inc"
+        ENDIF
         ENDIF
         END

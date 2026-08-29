@@ -2,27 +2,55 @@
 
 This is the short onboarding rail for a stock WDC W65C02SXB, either alone or
 with the W65C02EDU expansion board installed. W65C02EDU is an add-on for the
-SXB, not a standalone CPU board. The first implemented stage preserves flash
-through the terminal before any erase or program operation is introduced.
+SXB, not a standalone CPU board. The minimal factory path is board-accepted;
+the longer archive path remains available as optional owner-local evidence.
 
 Current status:
 
 ```text
-implemented and host-checked   read-only four-bank inventory
-implemented and host-checked   selected-bank dense S19 export
-implemented and host-checked   local BIN/S19/receipt extraction and validation
-implemented and host-checked   binary WDCMONv2 load/readback/execute host bridge
-awaiting board transcript      stock WDCMONv2 load, inventory, and Bank-0/3 dump
-implemented, host-checked      guarded B3 -> erased B0 copy and exact verify
-implemented, host-checked      guarded STR8-N seed install into Bank-3 sector F
-awaiting board transcript      copy, recovery, RESET into STR8-N, and J0 stock
-existing STR8-N path           install R-YORS Bank-3 sectors 8-E with I
-awaiting board transcript      first-use C/?/config/STR8/cold/J0 sequence
+board-accepted                read-only four-bank inventory and selected-bank export
+board-accepted                local BIN/S19/receipt extraction and validation
+board-accepted                binary WDCMONv2 load/readback/execute host bridge
+board-accepted                guarded B3 -> erased B0 copy and exact verify
+board-accepted                STR8-N v1.28 seed install into Bank-3 sector F
+board-accepted                physical RESET into STR8-N and retained-stock J0
+separate optional procedure   load HIMON C-E and ASM-F2 8-B component slices
 ```
 
-The archive artifact is intentionally not an installer. It has no flash
-unlock, erase, or byte-program sequence. The separate seed installer is
-write-capable and must not be used until the archive stage has passed.
+The archive artifact remains an optional read-only map/dump tool. It has no
+flash unlock, erase, or byte-program sequence. A factory board does not have
+to run that extended evidence path before using the minimal migrator: the
+write-capable RAM program itself requires erased B0, copies all of B3 into B0,
+and proves the complete copy before changing B3:F.
+
+## Factory-board minimal path
+
+Extract and optionally verify the migration kit, then run one command with the
+actual port:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\MIGRATE-WDC-TO-STR8N.ps1 -Port COM4
+```
+
+The wrapper opens and holds the port, then asks for a physical RESET. Reset the
+board, wait two seconds, and press Enter in PowerShell. After board identity,
+flash identity, B3 hashing, and the B0 policy check, the RAM program requires
+one exact confirmation:
+
+```text
+MIGRATE WDC TO STR8-N 1.28
+```
+
+It then copies and exactly verifies all eight B3 sectors in B0, verifies the
+carried STR8-N top, and replaces only B3:F. The carried top contains a COMPLETE
+`D0 FF WDCM2` record, so reset-selector `0` and shell `J0` immediately start
+the retained monitor. B1 and B2 are never selected as destinations.
+
+When the migration banner appears, enter Ctrl+] to leave PowerShell and connect
+minicom, Tera Term, PuTTY, or any other serial terminal at 115200 8N1. Physical
+RESET enters STR8-N in B3. Choose `S` for `STR8-N>`, choose `0` for WDCMONv2,
+or enter `J0` from the shell. Physical RESET from WDCMONv2 returns to STR8-N.
 
 ## Supported first-stage profile
 
@@ -64,7 +92,7 @@ make wdcmonv2-archive
 The board artifact is:
 
 ```text
-BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-archive-2000.s19
+BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-archive-2000.s19
 ```
 
 It occupies `$2000-$250E` in the current build and has S9 entry `$2000`.
@@ -82,14 +110,14 @@ make wdcmonv2-install
 Its artifact is:
 
 ```text
-BUILD/v1.23/s19/str8n-v1.23-wdcmonv2-install-2000.s19
+BUILD/v1.28/s19/str8n-v1.28-wdcmonv2-install-2000.s19
 ```
 
 It is a dense `$2000-$4FFF` RAM image with S9 `$2000`. The code and state are
 below `$2900`, `$0A00-$19FF` is its sector staging area, and the migration-
 configured STR8-N top candidate is carried at `$4000-$4FFF`.
 
-For publication from adjacent STR8-N and R-YORS checkouts, build the explicit
+For publication from the standalone STR8-N checkout, build the explicit
 allowlisted kit:
 
 ```text
@@ -97,12 +125,12 @@ make wdcmonv2-package
 ```
 
 This produces
-`BUILD/v1.23/str8n-v1.23-wdcmonv2-ryors-migration-kit.zip`. It contains the
-two bootstrap S19 files, the exact 4K STR8-N candidate, the R-YORS `8-E`
-payload, source, binary-monitor host bridge, extractor, operator documents,
-license, and a self-verifier.
+`BUILD/v1.28/str8n-v1.28-wdcmonv2-str8n-migration-kit.zip`. It contains the
+two bootstrap S19 files, the exact 4K STR8-N candidate, source, binary-monitor
+host bridge, extractor, operator documents, license, and a self-verifier.
+It contains no R-YORS, HIMON, or ASM-F2 payload.
 It contains neither WDCMONv2 firmware nor locally extracted bank archives.
-After extracting it, run `VERIFY-PACKAGE.ps1` before using any artifact. The
+After extracting it, `VERIFY-PACKAGE.ps1` is available for package verification. The
 outer ZIP hash is printed by the build and should be published beside the ZIP;
 it is intentionally not embedded in a document inside that same ZIP.
 
@@ -131,7 +159,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\TOOLS\start_wdcmonv2_ram.ps1 `
   -Port COM5 `
-  -ImagePath .\ARTIFACTS\str8n-v1.23-wdcmonv2-archive-2000.s19 `
+  -ImagePath .\ARTIFACTS\str8n-v1.28-wdcmonv2-archive-2000.s19 `
   -TranscriptPath .\LOCAL\stock-b0-b3-capture.log
 ```
 
@@ -143,6 +171,7 @@ then performs this fixed sequence:
 ```text
 validate every S-record checksum, density, $2000-$7AFF range, and S9 entry
 pulse DTR using the stock WDC reset sequence unless -NoReset is explicit
+settle for 1000 ms and discard reset-startup RX before binary synchronization
 $55 $AA -> require $CC before every WDCMONv2 command
 $0C       require the 12-byte board identity to begin SXB2
 $02       write 256-byte RAM chunks; require status $00 for every chunk
@@ -165,6 +194,31 @@ The transcript contains raw received bytes, including a successful probe's
 `-NoTerminal` is diagnostic because closing/reopening the COM port may toggle
 DTR and reset the board. `-NoReset` is for a deliberately synchronized
 already-running monitor, not the normal first attempt.
+
+If the host/FTDI path changes reset state when the COM handle opens or closes,
+use `-NoReset -PhysicalResetGate`. The bridge opens and holds the port, asks
+the operator to perform physical RESET, waits for ENTER, discards startup RX,
+and only then begins binary synchronization on the same open handle.
+
+Some stock images expose their binary synchronization window too briefly for
+that manual gate. In that case use `-NoReset -PhysicalResetArmSeconds 30` (up
+to 120 seconds). The already-open bridge repeatedly attempts `$55 $AA` in
+short bounded windows while the operator presses physical RESET, stops at the
+first `$CC`, and then requires the exact `$0C` board identity. The arm mode and
+manual gate are mutually exclusive; neither toggles DTR.
+
+`-NoReset -TerminalOnly` opens the same raw terminal without a WDCMON probe,
+RAM image, or reset operation. It is intended for an already-running ASCII
+STR8 session. `-TransferPath` and `Ctrl+U` remain available, so an installed
+STR8 `L` command can receive a host-verified S19 without reopening the port.
+The mode cannot be combined with probe, listener, physical-reset, or
+`-NoTerminal` options.
+
+For a power-cycle transcript when Windows may remove and recreate the COM
+device, `capture_wdc_serial_reconnect.ps1` is receive-only. It retries the
+named port until its deadline, keeps TX/DTR/RTS disabled, writes an optional
+raw capture, and reopens after a disconnect. It does not identify the board or
+alter RAM/flash; use it only as the final boot-output evidence rail.
 
 When `-TranscriptPath` is present, the bridge keeps two evidence streams:
 
@@ -198,21 +252,18 @@ but reports `TX=0 BYTES` and cannot query, load, execute, or alter flash. Zero
 received bytes still does not identify the target; the operator must check the
 physical board, power, cable, reset behavior, and COM assignment.
 
-For the write-capable installer, name the R-YORS payload as the optional
-terminal transfer file:
+For the write-capable installer, load only the STR8-N migration program:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\TOOLS\start_wdcmonv2_ram.ps1 `
   -Port COM5 `
-  -ImagePath .\ARTIFACTS\str8n-v1.23-wdcmonv2-install-2000.s19 `
-  -TransferPath .\ARTIFACTS\ryors-v1.2-himon-asm-bank3-8-e.s19 `
+  -ImagePath .\ARTIFACTS\str8n-v1.28-wdcmonv2-install-2000.s19 `
   -TranscriptPath .\LOCAL\install-capture.log
 ```
 
-`Ctrl+U` sends that file only when the operator requests it. Use it later at
-STR8-N's `S19` prompt; it is not sent automatically. A C terminal/front end
-may implement the same state machine: binary sync/identity/write/read/execute,
+No guest payload is declared or transferred during migration. A C terminal/
+front end may implement the same state machine: binary sync/identity/write/read/execute,
 then change its parser to terminal/screen-scrape/file-transfer mode without
 closing the device. The PowerShell bridge is the publishable reference and
 immediate path, not a requirement that the future host remain PowerShell.
@@ -299,12 +350,12 @@ extractor selects the last complete transaction for compatibility.
 
 ## Which bank should be archived?
 
-Do not encode one answer before inventory. For this migration, always export
-and retain B0 and B3 before running the installer:
+When taking the optional extended archive evidence, do not encode one answer
+before inventory. Export and retain the banks relevant to the observed board:
 
 - On an untouched stock board, the executing WDCMONv2/SPI image is expected
   in Bank 3. Export Bank 3 before any migration work.
-- On an established R-YORS layout, WDCMONv2 may already be retained in Bank
+- On an established multiboot layout, WDCMONv2 may already be retained in Bank
   0. Export Bank 0 before releasing or repurposing it.
 - If B0 and B3 have equal full-bank hashes, report the fact but do not treat a
   hash comparison as erase authorization.
@@ -323,7 +374,11 @@ archive, and use the external programmer to restore B3 if stock operation is
 needed; do not relabel the copy as a working guest merely because its bytes
 and FNV match.
 
-## Seed STR8-N after the archive passes
+## Seed STR8-N from the factory board
+
+The minimal path reaches this step directly through
+`MIGRATE-WDC-TO-STR8N.ps1`; an optional archive run may precede it without
+changing the installer policy.
 
 The seed installer makes one deliberately narrow bank-policy decision:
 
@@ -338,7 +393,7 @@ This is intentionally stricter than a general bank manager. A later tool may
 support replacing a locally archived, explicitly released B0, but the stock
 onboarding installer does not.
 
-The carried top sector is derived from the verified STR8-N v1.23 top BIN, but
+The carried top sector is derived from the verified STR8-N v1.28 top BIN, but
 its optional configuration bytes begin as:
 
 ```text
@@ -367,11 +422,17 @@ The first-assignment transaction is deliberately separate from installation:
 8  offer directory/VTOC initialization as a later, separate command
 ```
 
-Assigning a role does not enroll a bank, create a directory record, initialize
-a VTOC, or authorize backup rotation. Those are opt-in transitions after the
-operator sees the inventory. This preserves the installer's B1/B2 promise:
-B1/B2 remain byte-for-byte untouched until an explicit post-migration Bank
+Assigning a role does not initialize a VTOC or authorize backup rotation. The
+factory migrator makes one narrow enrollment exception: because it has just
+proved the complete B3-to-B0 stock copy, its carried top publishes D0 as
+`FF WDCM2`. B1/B2 remain byte-for-byte untouched until an explicit later Bank
 Maintenance command names a destination.
+
+The isolated STR8-iN/65 v1.28 RAM menu, its B0 adoption defaults, and the exact
+Bank Main `E` then `R` procedure for erasing B0 and clearing D0 are documented
+in [STR8_IN65_BANK_MAINTENANCE.md](STR8_IN65_BANK_MAINTENANCE.md). That image
+does not invent the still-undefined VTOC or combine role assignment with
+directory enrollment.
 
 The later `$FFF2=$A6` proposal is another separate policy transaction. It
 enrolls B1/B2 for automatic FNV/AP search while continuing to exclude retained
@@ -385,39 +446,33 @@ Maintenance completes and verifies their assignments.
 After loading and starting the installer at `$2000`, expect:
 
 ```text
-WDCMONV2 -> STR8-N SEED INSTALL 0.1
-B0 PRESERVES STOCK; B3:F BECOMES STR8-N
+WDCMONV2 -> STR8-N 1.28 MIGRATION
+B3 STOCK -> B0; STR8-N 1.28 -> B3:F
 NO RESET/NMI/POWER DURING ACTIVE WRITE
 FLASH ID=BF/B5
 STOCK B3 FNV1A=xxxxxxxx
-AFTER LOCAL EXTRACTOR PASS TYPE ARCHIVE xxxxxxxx>
+TYPE MIGRATE WDC TO STR8-N 1.28>
 ```
 
 The software-product-ID gate accepts only Microchip/SST manufacturer `$BF`
 and SST39SF010A device `$B5`. The installer exits product-ID mode before
 continuing. An unknown device halts without erase/program activity.
 
-Enter the exact displayed archive token only after the extractor has written
-and verified the local BIN/S19/receipt. If B0 is erased, the next destructive
-gate is exact:
+Enter the exact migration text once. If B0 is erased, the copy begins
+automatically:
 
 ```text
-COPY B3 TO B0
+COPY/VERIFY B3 -> B0 ........
 ```
 
 Eight dots mean eight B0 sectors were erased, programmed, and compared. The
 installer then recomputes B0's whole-bank FNV and requires it to equal the
 original B3 hash, followed by an independent byte-for-byte comparison of all
 32K. A matching FNV is only a prefilter; it never proves identity by itself.
-If B0 was already byte-identical, the copy and its confirmation are skipped.
+If B0 was already byte-identical, the copy is skipped, making an interrupted
+pre-top-write run safely resumable. Used, different B0 is refused.
 
-The final top-sector gate is exact:
-
-```text
-INSTALL STR8-N 1.23
-```
-
-Before offering that gate, the RAM installer checks the complete carried
+Before the top write, the RAM installer checks the complete carried
 4K candidate with 32-bit FNV-1a against its build-time value. Only then is
 B3:F erased and replaced. If program/verify fails while RAM is
 still executing, `R` retries the carried STR8-N candidate and `O` restores the
@@ -433,56 +488,51 @@ board-profile decision about which VIA/PIA bit is free and must not disturb
 the FT245 or bank latch. For now, the terminal's active-write message and the
 test-card power exclusion are the authoritative do-not-power-off indication.
 
-At the STR8-N reset selector, choose `S`. Install the ordinary R-YORS payload:
+At the STR8-N reset selector, choose `S`, or choose `0` to launch WDCMONv2.
+The migration is complete after physical-reset proof and the retained-stock
+selector-0/`J0` test.
+Do not install a combined R-YORS payload as part of this transaction.
 
-If the selector times out before `S`, STR8-N first checks the complete HIMON
-image marker. The still-stock lower B3 does not qualify, so control returns to
-the STR8-N menu instead of jumping into it.
-
-```text
-STR8-N> I
-B0-3: 3
-RANGE: 8-E
-TYPE: 5A
-DESC: RYORS
-I B3 8-E WRITE? Y: Y
-S19
-```
-
-Send `ryors-v1.2-himon-asm-bank3-8-e.s19`. After six programmed-sector dots
-and S9, accept `COMMIT? Y` to complete the new B3 directory row. Physical
-RESET should then enter STR8-N; `C` enters R-YORS/HIMON. `J0` enters the
-preserved stock image as an opaque guest; because WDCMONv2 is a binary monitor,
-prove that handoff with the host terminal's `Ctrl+B` identity probe rather
-than by waiting for an ASCII banner.
+If the user later wants HIMON and ASM-F2, follow
+[HIMON_ASMF2_AFTER_STR8N.md](HIMON_ASMF2_AFTER_STR8N.md). That procedure loads
+the two component slices separately and begins only after migration acceptance.
 
 ## Migration transaction and acceptance state
 
-The implemented and remaining migration gates are:
+The implemented, board-accepted minimal gates are:
 
 ```text
 1  identify supported board and flash geometry
-2  inventory B0-B3 without writing
-3  export the stock image and validate the local BIN/S19/receipt
-4  require B0 erased or already byte-identical; otherwise refuse
-5  copy and whole-bank-compare stock B3 into B0 when required
-6  validate the carried STR8-N top candidate with full 32-bit FNV before erase
-7  install and verify Bank-3 sector F from RAM
-8  physical RESET into STR8-N and remain with S
-9  let STR8-N I install and verify R-YORS Bank-3 sectors 8-E
-10 prove C enters R-YORS and J0 enters the preserved stock guest
-11 prove first use with help, FF/FF/FF config, STR8 return, cold C, and J0
+2  load and read back the complete RAM installer byte-exact
+3  require B0 erased or already byte-identical; otherwise refuse
+4  copy and whole-bank-compare stock B3 into B0 when required
+5  validate the carried STR8-N top candidate with full 32-bit FNV before erase
+6  install and verify Bank-3 sector F, including COMPLETE D0 WDCM2
+7  prove selector 0 or J0 enters the preserved stock guest and shows the bank chase
+8  prove physical RESET from the B0 guest returns to STR8-N 1.28
 ```
 
-Archive, onboard copy, erase, installation, directory enrollment, backup
-rotation, and FNV/AP search enrollment are separate state transitions. No
-successful earlier transition silently authorizes the next one.
+Optional extended evidence inventories B0-B3 without writing and exports the
+stock image to checked owner-local BIN/S19/receipt files. Those archive steps
+remain board-accepted but are not prerequisites for the erased-B0 factory
+path.
 
-Stages 4-11 are host-built or procedurally specified but not yet accepted on a
-stock board. Keep an
-external programmer and a known-good full-device image available. A failed
-Bank-3 top sector has no onboard software recovery path after RESET or power
-loss.
+The carried migration top already contains COMPLETE D0 `WDCM2`; the current
+factory path does not require a later Bank Maintenance adoption. The isolated
+STR8-iN/65 maintenance image remains useful for an older test image or a
+deliberately erased directory, and for its separately gated rename, reclaim,
+erase, and search-flag operations.
+
+Archive, onboard copy, erase, installation, later directory maintenance,
+backup rotation, and FNV/AP search enrollment are separate state transitions.
+No successful earlier transition silently authorizes another destructive
+operation.
+
+All eight minimal STR8-N migration stages above are accepted on the recorded
+board.
+Keep an external programmer and a known-good full-device image available. A
+failed Bank-3 top sector still has no onboard software recovery path after
+RESET or power loss.
 
 ## Hardware references
 
