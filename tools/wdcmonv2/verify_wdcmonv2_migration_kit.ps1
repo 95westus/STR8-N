@@ -63,7 +63,7 @@ foreach ($required in @('STR8-iN/65 LOADER - FAST PATH', 'STR8-N-v1-29.bin', 'AD
 }
 $quickStart = Get-Content -Raw -LiteralPath (Join-Path $root 'QUICKSTART.txt')
 foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'PROPOSED D0 B3:$FFB0',
-        'D0 65 WDCV2 FFFF FCFFFFFF', '-Details')) {
+        'D0 FF WDCV2 FFFF FCFFFFFF', '-Details')) {
     if (-not $quickStart.Contains($required)) { throw "Quick-start card lacks required fast-path text: $required" }
 }
 & $loader -SelfTest
@@ -74,4 +74,4 @@ Write-Host ('MIGRATION KIT       = VERIFIED; {0} allowlisted files' -f $expected
 Write-Host 'WDCMONV2 FIRMWARE    = NOT INCLUDED'
 Write-Host 'LOCAL BANK ARCHIVES  = NOT INCLUDED'
 Write-Host 'R-YORS PAYLOAD        = NOT INCLUDED'
-Write-Host 'HARDWARE STATUS      = V1.29 PRESERVED-B0 PATH ACCEPTED; ERASED-B0 COPY PENDING'
+Write-Host 'HARDWARE STATUS      = V1.29 MECHANICS ACCEPTED; COPY + FF/WDCV2 RERUN PENDING'

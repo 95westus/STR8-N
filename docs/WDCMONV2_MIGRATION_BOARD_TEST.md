@@ -8,10 +8,11 @@ migration is also board-accepted from an erased-B0 factory baseline, including
 the operator-observed CS0-CS3 chase, retained WDCMONv2 launch, and final
 physical-RESET return to STR8-N. Canonical v1.28 is byte-identical to the
 accepted top except for the documented migration-role policy. W65C02EDU may
-be installed. The 2026-08-29 v1.29 already-preserved-B0 continuation is also
-board-accepted below, including explicit D0 `65 WDCV2`, reset selector `0`,
-shell `J0`, and physical-RESET return after both retained-guest launches. Its
-erased-B0 `COPY B3 TO B0` branch remains pending.
+be installed. The 2026-08-29 v1.29 already-preserved-B0 run below accepts the
+install, directory-transaction mechanics, reset selector `0`, shell `J0`, and
+physical-RESET return after both retained-guest launches. It entered type `65`;
+the intended D0 is `FF WDCV2`. That identity and the erased-B0
+`COPY B3 TO B0` branch remain pending together.
 
 ## 2026-08-28 first stock-board run: cold-reset failure retained
 
@@ -693,9 +694,10 @@ It received the external 4096-byte canonical top, required the exact
 `INSTALL STR8-N 1.29` confirmation, programmed and verified B3:F, and started
 STR8-N 1.29. Before D0 existed, `J0` failed closed as required.
 
-The operator deliberately selected type `65` and description `WDCV2`. The
-production Bank Maintenance image displayed the exact Bank-3 directory bytes
-before approval:
+The operator entered type `65` and description `WDCV2`; the intended consumer
+type was subsequently corrected to `FF`. The production Bank Maintenance image
+displayed the exact bytes it actually wrote, retained here as evidence rather
+than rewritten as the desired result:
 
 ```text
 PROPOSED D0 B3:$FFB0: 65 FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
@@ -767,7 +769,8 @@ STR8-N>
 ```
 
 This accepts the v1.29 external-BIN install from an already-preserved B0,
-explicit Bank-3 D0 adoption, reset selector `0`, shell `J0`, and physical-RESET
-persistence. It does not accept the skipped erased-B0 copy branch. The serial
-transcript cannot establish an audible property, so EDU buzzer silence remains
-an operator-observation item rather than a transcript-derived claim.
+directory rewrite mechanics, reset selector `0`, shell `J0`, and physical-RESET
+persistence. It does not accept the skipped erased-B0 copy branch or the
+intended `D0 FF WDCV2` identity. The serial transcript cannot establish an
+audible property, so EDU buzzer silence remains an operator-observation item
+rather than a transcript-derived claim.

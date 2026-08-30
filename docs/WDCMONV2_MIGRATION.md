@@ -16,7 +16,7 @@ board-accepted                binary WDCMONv2 load/readback/execute host bridge
 v1.28 accepted; v1.29 pending guarded B3 -> erased B0 copy and exact verify
 board-accepted                external 4096-byte v1.29 BIN receive and B3:F install
 board-accepted                v1.29 first boot and RESET return
-board-accepted                explicit D0 65/WDCV2 adoption, selector 0, J0, and RESET return
+mechanics accepted; rerun pending D0 FF/WDCV2, selector 0, J0, and RESET return
 separate optional procedure   load HIMON C-E and ASM-F2 8-B component slices
 ```
 
@@ -61,12 +61,12 @@ logical `$F000` STR8-N top image, or supplied to the guarded top updater.
 The canonical image deliberately starts with an empty Bank-3 directory. After
 the first verified STR8-N 1.29 boot, select `S`, enter `L`, and press Ctrl+D to
 send `STR8-iN65-BANK-MAINT-2000.s19`. In Bank Maintenance enter `D`, then enter
-Bank `0`, type `65`, and description `WDCV2`. Inspect the exact proposed D0
+Bank `0`, type `FF`, and description `WDCV2`. Inspect the exact proposed D0
 record and type `ADOPT B0`.
 The resulting Bank-3 directory record must read:
 
 ```text
-D0 65 WDCV2 FFFF FCFFFFFF
+D0 FF WDCV2 FFFF FCFFFFFF
 ```
 
 Only then test reset selector `0`, shell `J0`, and physical RESET return to
@@ -445,7 +445,7 @@ Bank Maintenance owns the separate D0 enrollment transaction:
 1  boot and verify STR8-N 1.29 from Bank 3
 2  load the packaged production Bank Maintenance S19 through `L`
 3  enter `D` and inspect the proposed Bank-3 directory record for opaque B0
-4  require `D0 65 WDCV2 FFFF FCFFFFFF`
+4  require `D0 FF WDCV2 FFFF FCFFFFFF`
 5  type the exact `ADOPT B0` confirmation
 6  verify D0, selector `0`, shell `J0`, and physical RESET return
 ```
@@ -538,7 +538,7 @@ these minimal gates:
 4  require COPY B3 TO B0, then whole-bank-compare the preserved copy
 5  receive exactly 4096 canonical STR8-N bytes and validate full FNV before erase
 6  require INSTALL STR8-N 1.29, install/verify B3:F, and start v1.29
-7  load production Bank Maintenance and explicitly adopt D0 65/WDCV2 in Bank 3
+7  load production Bank Maintenance and explicitly adopt D0 FF/WDCV2 in Bank 3
 8  prove selector 0 and J0 enter the preserved stock guest
 9  prove physical RESET from the B0 guest returns to STR8-N 1.29
 ```
