@@ -15,7 +15,7 @@ board-accepted                local BIN/S19/receipt extraction and validation
 board-accepted                binary WDCMONv2 load/readback/execute host bridge
 board-accepted                guarded B3 -> erased B0 copy and exact verify
 board-accepted                external 4096-byte v1.29 BIN receive and B3:F install
-board-accepted                v1.29 first boot and RESET return
+board-accepted                v1.29 EDU quiet-start, first boot, and RESET return
 board-accepted                D0 FF/WDCV2, selector 0, J0, and RESET return
 separate optional procedure   load HIMON C-E and ASM-F2 8-B component slices
 ```
@@ -561,9 +561,10 @@ backup rotation, and FNV/AP search enrollment are separate state transitions.
 No successful earlier transition silently authorizes another destructive
 operation.
 
-The earlier v1.28 migration stages are accepted on the recorded board. The
-changed v1.29 external-BIN receive, quiet-start, and postboot D0-adoption path
-must not be called board-accepted until its new transcript is captured.
+The earlier v1.28 migration stages remain accepted historical evidence. The
+v1.29 external-BIN receive, erased-B0 copy, quiet-start, postboot D0 adoption,
+guest launches, and RESET returns are accepted by the 2026-08-29 run. Buzzer
+silence is an explicit operator observation paired with the serial evidence.
 Keep an external programmer and a known-good full-device image available. A
 failed Bank-3 top sector still has no onboard software recovery path after
 RESET or power loss.

@@ -80,8 +80,8 @@ if ($manifest.stockWdcmonv2FirmwareIncluded -ne $false) { throw 'Manifest must s
 if ($manifest.localBankArchivesIncluded -ne $false) { throw 'Manifest must state that local bank archives are absent' }
 if ($manifest.ryorsPayloadIncluded -ne $false) { throw 'Manifest must state that no R-YORS payload is included' }
 if ($manifest.hardwareStatus -notmatch 'board-accepted' -or
-        $manifest.hardwareStatus -notmatch 'buzzer observation pending') {
-    throw 'Manifest must publish migration acceptance without claiming an unheard buzzer result'
+        $manifest.hardwareStatus -notmatch 'EDU quiet-start') {
+    throw 'Manifest must publish accepted v1.29 migration and EDU quiet-start status'
 }
 if ($manifest.firstProcedure -notmatch 'STR8-iN65-LOADER') { throw 'Manifest must publish the one-command factory path first' }
 
@@ -146,4 +146,4 @@ try {
 Write-Host ('MIGRATION PACKAGE   = PASS; {0} allowlisted files' -f $expected.Count)
 Write-Host ('PACKAGE ZIP SHA256  = {0}' -f (Get-Sha256 -Path $ZipPath))
 Write-Host 'WDC FIRMWARE/ARCHIVE = ABSENT BY ALLOWLIST'
-Write-Host 'V1.29 BOARD PROOF     = FACTORY MIGRATION ACCEPTED; BUZZER OBSERVATION PENDING'
+Write-Host 'V1.29 BOARD PROOF     = FACTORY MIGRATION + EDU QUIET-START ACCEPTED'

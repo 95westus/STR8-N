@@ -772,8 +772,9 @@ This accepts the v1.29 external-BIN install from an already-preserved B0,
 directory rewrite mechanics, reset selector `0`, shell `J0`, and physical-RESET
 persistence. It does not accept the skipped erased-B0 copy branch or the
 intended `D0 FF WDCV2` identity. The serial transcript cannot establish an
-audible property, so EDU buzzer silence remains an operator-observation item
-rather than a transcript-derived claim.
+audible property. After the run, the operator explicitly confirmed that the
+EDU buzzer was silent when the RAM adapter began; that observation is retained
+separately from transcript-derived claims.
 
 ## 2026-08-29 v1.29 complete erased-B0 consumer acceptance
 
@@ -833,5 +834,6 @@ bank maint SHA-256 642ABDF643E8726BDEE0634B9227192223F9231F2DDE3B4F759636841A89E
 ```
 
 This accepts the complete v1.29 factory migration transaction. Serial evidence
-cannot prove an audible property; record EDU buzzer silence separately when
-the operator confirms it.
+cannot prove an audible property, but the operator separately confirmed that
+the EDU buzzer became silent immediately when the RAM adapter started. The
+complete migration and quiet-start behavior are therefore board-accepted.
