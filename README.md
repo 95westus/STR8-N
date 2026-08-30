@@ -327,6 +327,11 @@ range to be erased, and uses a target-specific confirmation such as
   COM port; the release package lists an exact preflight. The kit also includes
   an experimental Python/pySerial Ubuntu loader with offline protocol tests,
   explicitly marked untested on hardware until a Linux board run is accepted.
+  During migration, read the screen before entering commands or pressing
+  control keys: `Ctrl+U` and `Ctrl+D` send different packaged files and should
+  be pressed once, only when requested. After `J0` starts the preserved factory
+  system, physical RESET is the intentional, designed return path to STR8-N;
+  this is not a flaw.
 
 - [Task List](TASKS.md) - release-staging gates and later Bank-1 example
   backlog.

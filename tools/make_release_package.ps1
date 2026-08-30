@@ -60,6 +60,9 @@ Maintenance and recovery:
   ARTIFACTS/str8n-v1.29-directory-refresh-2000.s19
 
 Factory WDCMONv2 onboarding is the separately verified nested ZIP in PACKAGES.
+Read its QUICKSTART.txt and follow the screen. CTRL+U and CTRL+D send different
+packaged files; press each once and only when requested. After J0, physical
+RESET is the designed return from the preserved factory system to STR8-N.
 Run VERIFY-PACKAGE.ps1 after extracting this archive.
 '@
 [IO.File]::WriteAllText((Join-Path $packageFull 'PACKAGE-README.txt'), $readme, [Text.UTF8Encoding]::new($false))

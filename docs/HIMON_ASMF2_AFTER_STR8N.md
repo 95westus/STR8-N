@@ -1,8 +1,13 @@
 # Load HIMON And ASM-F2 After STR8-N
 
-The WDCMONv2 migration is complete when physical RESET reaches `STR8-N 1.28`
+The WDCMONv2 migration is complete when physical RESET reaches `STR8-N 1.29`
 and the retained stock monitor can be launched with `J0`. It does not install
 R-YORS, HIMON, or ASM-F2.
+
+`J0` hands the computer completely to the retained factory system. Physical
+RESET is the designed way back to STR8-N; the absence of a software-return
+command in that guest is intentional and is not a flaw in STR8-N or the
+migration.
 
 HIMON and ASM-F2 are optional, separate Bank-3 component loads. Obtain or
 build only these component S19 files from the adjacent R-YORS repository:
@@ -72,7 +77,7 @@ load window. Neither component touches protected Bank-3 sector F.
 1. Press physical RESET and select `C`; require the installed HIMON identity.
 2. Enter ASM-F2 from HIMON and require the installed ASM identity.
 3. Return to STR8-N, run `J0`, and require the retained WDCMONv2 board identity.
-4. Press physical RESET again and require `STR8-N 1.28`.
+4. Press physical RESET again and require `STR8-N 1.29`.
 
 This optional component procedure begins after, and is not part of, the
 WDCMONv2-to-STR8-N migration transaction.

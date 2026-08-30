@@ -57,8 +57,10 @@ After `D` reports `OK`, use `M` and require a row equivalent to:
 D0 FF WDCV2 FFFF FCFFFFFF
 ```
 
-Then return with `Q`, reset if desired, and test `J0`. Directory enrollment
-does not alter any B0 payload byte.
+Then return with `Q` and test `J0`. `J0` hands control completely to the
+preserved factory system in Bank 0. Press physical RESET to return to STR8-N;
+that reset-only return is intentional and by design, not a flaw. Directory
+enrollment does not alter any B0 payload byte.
 
 ## Update or remove a directory record
 

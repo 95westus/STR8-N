@@ -75,9 +75,10 @@ def main() -> int:
         print("Top image .................................... 4096 bytes; $F000-$FFFF")
         print("Evidence ..................................... full raw + event logs")
         print()
+        print("READ THE SCREEN: enter commands and press control keys only when requested.")
         print("Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.29.")
-        print("When asked for the top BIN, press CTRL+U once.")
-        print("After boot: S, L, CTRL+D, D, then enter 0, FF, WDCV2, and ADOPT B0.")
+        print("When the screen asks for the top BIN, press CTRL+U once.")
+        print("After boot, follow the screen: S, L, CTRL+D once, D, then 0, FF, WDCV2, ADOPT B0.")
         print("Do not reset, assert NMI, or remove power during active flash writes.")
         if args.details:
             print()
@@ -95,6 +96,8 @@ def main() -> int:
         print()
         print("NEXT: connect a serial terminal at 115200-8N1 and press physical RESET.")
         print("STR8-N 1.29 must appear; require D0 FF WDCV2 FFFF FCFFFFFF.")
+        print("J0 is a complete handoff to the preserved factory system.")
+        print("Physical RESET is the designed return to STR8-N; this is not a flaw.")
         return 0
     except (LoaderError, OSError, KeyboardInterrupt) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
