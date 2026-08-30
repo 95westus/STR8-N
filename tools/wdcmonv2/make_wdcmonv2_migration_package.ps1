@@ -80,7 +80,7 @@ $readmePath = Join-Path $kitFull 'PACKAGE-README.txt'
 $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
-    'STATUS: v1.29 FACTORY MIGRATION BOARD-ACCEPTED; BUZZER OBSERVATION PENDING',
+    'STATUS: v1.29 FACTORY MIGRATION AND EDU QUIET-START BOARD-ACCEPTED',
     '',
     'Factory-board minimal path:',
     '  powershell -NoProfile -ExecutionPolicy Bypass -File .\STR8-iN65-LOADER.ps1',
@@ -126,7 +126,7 @@ $fileRows = foreach ($file in $payloadFiles) {
 $manifest = [ordered]@{
     schema = 1
     package = 'str8n-v1.29-wdcmonv2-str8n-migration-kit'
-    hardwareStatus = 'v1.29 factory migration board-accepted; EDU buzzer observation pending'
+    hardwareStatus = 'v1.29 factory migration and EDU quiet-start board-accepted'
     stockWdcmonv2FirmwareIncluded = $false
     localBankArchivesIncluded = $false
     ryorsPayloadIncluded = $false

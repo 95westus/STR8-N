@@ -14,8 +14,8 @@
 > W65C02SXB/EDU. It exercised erased-B0 `COPY B3 TO B0`, installed the external
 > canonical top, committed `D0 FF WDCV2 FFFF FCFFFFFF`, launched retained
 > WDCMONv2 through shell `J0` and reset selector `0`, and returned through
-> physical RESET after both launches. Audible buzzer silence remains an
-> operator-observation item outside the serial transcript.
+> physical RESET after both launches. The operator separately confirmed that
+> the EDU buzzer became silent as soon as the RAM adapter started.
 
 > [!IMPORTANT]
 > **Historical hardware validation baseline — 2026-08-28:** The v1.28 factory
@@ -197,7 +197,8 @@ in its own right.
 
 The v1.29 host verification suite covers the relocated RAM ABI, artifact
 layout, quiet-start build configuration, and byte-exact promotion of the
-production STR8-iN/65 image. Retained
+production STR8-iN/65 image. The factory migration and EDU quiet-start are
+board-accepted. Retained
 v1.1/v1.2 board sessions remain historical evidence; the
 original migration sequence is tracked in the
 [v1.2 Implementation Plan](docs/STR8N_V1_2_IMPLEMENTATION_PLAN.md).
