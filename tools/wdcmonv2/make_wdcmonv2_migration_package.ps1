@@ -80,7 +80,7 @@ $readmePath = Join-Path $kitFull 'PACKAGE-README.txt'
 $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
-    'STATUS: v1.29 HOST-QUALIFIED; FACTORY MIGRATION BOARD PROOF REQUIRED',
+    'STATUS: v1.29 PRESERVED-B0 PATH BOARD-ACCEPTED; ERASED-B0 COPY PENDING',
     '',
     'Factory-board minimal path:',
     '  powershell -NoProfile -ExecutionPolicy Bypass -File .\STR8-iN65-LOADER.ps1',
@@ -91,7 +91,7 @@ $readme = @(
     'It copies/verifies stock B3 into B0, receives the canonical STR8-N 1.29',
     'BIN, and installs it in B3:F.',
     'After verified v1.29 boot, the included Bank Maintenance image prompts for',
-    'D0 WDCM2 adoption; Bank 0 remains an opaque byte-for-byte factory guest.',
+    'D0 65 WDCV2 adoption; Bank 0 remains an opaque byte-for-byte factory guest.',
     'See DOC/STR8_IN65_BANK_MAINTENANCE.md for the exact adoption transaction.',
     'The read-only map/dump/archive procedure remains available in the DOC and TOOLS',
     'directories but is not a gate for the factory-board minimal path.',
@@ -126,7 +126,7 @@ $fileRows = foreach ($file in $payloadFiles) {
 $manifest = [ordered]@{
     schema = 1
     package = 'str8n-v1.29-wdcmonv2-str8n-migration-kit'
-    hardwareStatus = 'v1.29 host-qualified; factory migration board proof required'
+    hardwareStatus = 'v1.29 preserved-B0 path board-accepted; erased-B0 COPY branch pending'
     stockWdcmonv2FirmwareIncluded = $false
     localBankArchivesIncluded = $false
     ryorsPayloadIncluded = $false

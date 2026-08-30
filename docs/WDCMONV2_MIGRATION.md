@@ -2,10 +2,10 @@
 
 This is the short onboarding rail for a stock WDC W65C02SXB, either alone or
 with the W65C02EDU expansion board installed. W65C02EDU is an add-on for the
-SXB, not a standalone CPU board. The v1.29 factory path is host-qualified and
-awaits its factory-board transcript. The accepted v1.28 run remains historical
-hardware evidence; the longer archive path remains available as optional
-owner-local evidence.
+SXB, not a standalone CPU board. The v1.29 already-preserved-B0 path is
+accepted on a physical W65C02SXB/EDU. The erased-B0 copy branch remains
+pending for v1.29. The accepted v1.28 run remains historical hardware evidence;
+the longer archive path remains available as optional owner-local evidence.
 
 Current status:
 
@@ -13,10 +13,10 @@ Current status:
 board-accepted                read-only four-bank inventory and selected-bank export
 board-accepted                local BIN/S19/receipt extraction and validation
 board-accepted                binary WDCMONv2 load/readback/execute host bridge
-board-accepted                guarded B3 -> erased B0 copy and exact verify
-host-qualified, board pending external 4096-byte v1.29 BIN receive and B3:F install
-host-qualified, board pending v1.29 EDU quiet-start and first RESET
-host-qualified, board pending explicit D0 adoption, selector 0, J0, and RESET return
+v1.28 accepted; v1.29 pending guarded B3 -> erased B0 copy and exact verify
+board-accepted                external 4096-byte v1.29 BIN receive and B3:F install
+board-accepted                v1.29 first boot and RESET return
+board-accepted                explicit D0 65/WDCV2 adoption, selector 0, J0, and RESET return
 separate optional procedure   load HIMON C-E and ASM-F2 8-B component slices
 ```
 
@@ -60,12 +60,13 @@ logical `$F000` STR8-N top image, or supplied to the guarded top updater.
 
 The canonical image deliberately starts with an empty Bank-3 directory. After
 the first verified STR8-N 1.29 boot, select `S`, enter `L`, and press Ctrl+D to
-send `STR8-iN65-BANK-MAINT-2000.s19`. In Bank Maintenance enter `D`, accept the
-displayed defaults, inspect the exact proposed D0 record, and type `ADOPT B0`.
+send `STR8-iN65-BANK-MAINT-2000.s19`. In Bank Maintenance enter `D`, then enter
+Bank `0`, type `65`, and description `WDCV2`. Inspect the exact proposed D0
+record and type `ADOPT B0`.
 The resulting Bank-3 directory record must read:
 
 ```text
-D0 FF WDCM2 FFFF FCFFFFFF
+D0 65 WDCV2 FFFF FCFFFFFF
 ```
 
 Only then test reset selector `0`, shell `J0`, and physical RESET return to
@@ -444,7 +445,7 @@ Bank Maintenance owns the separate D0 enrollment transaction:
 1  boot and verify STR8-N 1.29 from Bank 3
 2  load the packaged production Bank Maintenance S19 through `L`
 3  enter `D` and inspect the proposed Bank-3 directory record for opaque B0
-4  require `D0 FF WDCM2 FFFF FCFFFFFF`
+4  require `D0 65 WDCV2 FFFF FCFFFFFF`
 5  type the exact `ADOPT B0` confirmation
 6  verify D0, selector `0`, shell `J0`, and physical RESET return
 ```
@@ -527,8 +528,8 @@ the two component slices separately and begins only after migration acceptance.
 
 ## Migration transaction and acceptance state
 
-The implemented v1.29 minimal gates are host-qualified and require one complete
-factory-board transcript:
+The retained v1.29 transcript accepts the already-preserved-B0 continuation of
+these minimal gates:
 
 ```text
 1  identify supported board and flash geometry
@@ -536,11 +537,16 @@ factory-board transcript:
 3  require B0 erased or already byte-identical; otherwise refuse
 4  require COPY B3 TO B0, then whole-bank-compare the preserved copy
 5  receive exactly 4096 canonical STR8-N bytes and validate full FNV before erase
-6  require INSTALL STR8-N 1.29, install/verify B3:F, and prove quiet startup
-7  load production Bank Maintenance and explicitly adopt D0 WDCM2 in Bank 3
+6  require INSTALL STR8-N 1.29, install/verify B3:F, and start v1.29
+7  load production Bank Maintenance and explicitly adopt D0 65/WDCV2 in Bank 3
 8  prove selector 0 and J0 enter the preserved stock guest
 9  prove physical RESET from the B0 guest returns to STR8-N 1.29
 ```
+
+The run entered step 4 with B0 already byte-identical to B3, so it proved the
+exact comparison and safe skip but did not execute the erased-B0 copy. A final
+v1.29 factory-board transcript must still exercise `COPY B3 TO B0` before the
+whole consumer path is called complete.
 
 Optional extended evidence inventories B0-B3 without writing and exports the
 stock image to checked owner-local BIN/S19/receipt files. Those archive steps
