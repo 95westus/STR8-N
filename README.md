@@ -10,12 +10,12 @@
 > directory empty. The separate production Bank Maintenance image owns the
 > explicit D0 `FF WDCV2` adoption after the first verified boot.
 >
-> The v1.29 already-preserved-B0 path is accepted on a physical
-> W65C02SXB/EDU. The retained WDCMONv2 image launched through reset selector
-> `0` and shell `J0`; both returned through physical RESET to STR8-N 1.29.
-> Because B0 was already byte-identical to stock B3, the v1.29 erased-B0
-> `COPY B3 TO B0` branch still requires its factory-board run. The first D0
-> exercise used type `65`; the intended type `FF` also requires the rerun.
+> The complete v1.29 factory migration is accepted on a physical
+> W65C02SXB/EDU. It exercised erased-B0 `COPY B3 TO B0`, installed the external
+> canonical top, committed `D0 FF WDCV2 FFFF FCFFFFFF`, launched retained
+> WDCMONv2 through shell `J0` and reset selector `0`, and returned through
+> physical RESET after both launches. Audible buzzer silence remains an
+> operator-observation item outside the serial transcript.
 
 > [!IMPORTANT]
 > **Historical hardware validation baseline — 2026-08-28:** The v1.28 factory
@@ -188,7 +188,7 @@ in its own right.
 | HIMON entry | Enter compatible Bank-3 HIMON warm with `W`, preserving RAM, or explicitly cold with `C` | Refuses an incompatible or missing HIMON marker |
 | Flash installation | Install dense S19 payloads with `I` into any legal contiguous 4K sector range | Bank 3 `$F000-$FFFF` is never writable through `I`; final sector and COMPLETE state commit last |
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
-| Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.29 BIN, and install it in B3:F through the RAM loader | Requires `SXB2`, supported `$BF/$B5` flash, and B0 erased or already byte-identical; B1/B2 remain untouched; v1.29 board proof is pending |
+| Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.29 BIN, and install it in B3:F through the RAM loader | Board-accepted with `SXB2` and `$BF/$B5` flash from erased B0; B1/B2 remain untouched |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
 | Protected top upgrade | Load the supplied v1.29 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.29 sector, and verify all 4 KiB | Each write requires the guarded updater confirmations and recovery copy; v1.29 board proof is pending |
 | Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The canonical v1.29 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |

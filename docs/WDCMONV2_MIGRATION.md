@@ -2,9 +2,9 @@
 
 This is the short onboarding rail for a stock WDC W65C02SXB, either alone or
 with the W65C02EDU expansion board installed. W65C02EDU is an add-on for the
-SXB, not a standalone CPU board. The v1.29 already-preserved-B0 path is
-accepted on a physical W65C02SXB/EDU. The erased-B0 copy branch remains
-pending for v1.29. The accepted v1.28 run remains historical hardware evidence;
+SXB, not a standalone CPU board. The complete v1.29 factory path is accepted
+on a physical W65C02SXB/EDU, including erased-B0 preservation and exact
+`D0 FF WDCV2`. The accepted v1.28 run remains historical hardware evidence;
 the longer archive path remains available as optional owner-local evidence.
 
 Current status:
@@ -13,10 +13,10 @@ Current status:
 board-accepted                read-only four-bank inventory and selected-bank export
 board-accepted                local BIN/S19/receipt extraction and validation
 board-accepted                binary WDCMONv2 load/readback/execute host bridge
-v1.28 accepted; v1.29 pending guarded B3 -> erased B0 copy and exact verify
+board-accepted                guarded B3 -> erased B0 copy and exact verify
 board-accepted                external 4096-byte v1.29 BIN receive and B3:F install
 board-accepted                v1.29 first boot and RESET return
-mechanics accepted; rerun pending D0 FF/WDCV2, selector 0, J0, and RESET return
+board-accepted                D0 FF/WDCV2, selector 0, J0, and RESET return
 separate optional procedure   load HIMON C-E and ASM-F2 8-B component slices
 ```
 
@@ -528,8 +528,7 @@ the two component slices separately and begins only after migration acceptance.
 
 ## Migration transaction and acceptance state
 
-The retained v1.29 transcript accepts the already-preserved-B0 continuation of
-these minimal gates:
+The retained v1.29 transcript accepts all of these minimal gates:
 
 ```text
 1  identify supported board and flash geometry
@@ -543,10 +542,9 @@ these minimal gates:
 9  prove physical RESET from the B0 guest returns to STR8-N 1.29
 ```
 
-The run entered step 4 with B0 already byte-identical to B3, so it proved the
-exact comparison and safe skip but did not execute the erased-B0 copy. A final
-v1.29 factory-board transcript must still exercise `COPY B3 TO B0` before the
-whole consumer path is called complete.
+The final run entered step 4 with B0 erased, executed the exact
+`COPY B3 TO B0` confirmation, verified all eight sectors, and continued through
+the remaining gates without bypassing a required mutation.
 
 Optional extended evidence inventories B0-B3 without writing and exports the
 stock image to checked owner-local BIN/S19/receipt files. Those archive steps

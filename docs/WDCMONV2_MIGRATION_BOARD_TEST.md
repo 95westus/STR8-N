@@ -8,11 +8,11 @@ migration is also board-accepted from an erased-B0 factory baseline, including
 the operator-observed CS0-CS3 chase, retained WDCMONv2 launch, and final
 physical-RESET return to STR8-N. Canonical v1.28 is byte-identical to the
 accepted top except for the documented migration-role policy. W65C02EDU may
-be installed. The 2026-08-29 v1.29 already-preserved-B0 run below accepts the
-install, directory-transaction mechanics, reset selector `0`, shell `J0`, and
-physical-RESET return after both retained-guest launches. It entered type `65`;
-the intended D0 is `FF WDCV2`. That identity and the erased-B0
-`COPY B3 TO B0` branch remain pending together.
+be installed. The first 2026-08-29 v1.29 already-preserved-B0 run below accepts
+the install and launch mechanics while retaining its entered type `65` as
+historical evidence. The following factory-baseline rerun accepts the complete
+v1.29 path with erased-B0 `COPY B3 TO B0`, exact D0 `FF WDCV2`, reset selector
+`0`, shell `J0`, and physical-RESET return after both launches.
 
 ## 2026-08-28 first stock-board run: cold-reset failure retained
 
@@ -774,3 +774,64 @@ persistence. It does not accept the skipped erased-B0 copy branch or the
 intended `D0 FF WDCV2` identity. The serial transcript cannot establish an
 audible property, so EDU buzzer silence remains an operator-observation item
 rather than a transcript-derived claim.
+
+## 2026-08-29 v1.29 complete erased-B0 consumer acceptance
+
+The canonical package rerun began with stock WDCMONv2 in B3 and erased B0.
+The host identified `SXB2; HW=3.00; WDCMON=2.00`, read back the 2416-byte RAM
+adapter byte-exact, and executed it at `$2000`. Unlike the preceding
+already-preserved run, this one reached and completed the intended copy branch:
+
+```text
+FLASH ID=BF/B5
+STOCK B3 FNV1A=1249E1F3
+TYPE COPY B3 TO B0> COPY B3 TO B0
+COPY/VERIFY B3 -> B0 ........
+B0 == ORIGINAL B3 VERIFIED
+SEND STR8-N TOP BIN; 4096 BYTES; START $F000
+
+STR8-N TOP RECEIVED
+TYPE INSTALL STR8-N 1.29> INSTALL STR8-N 1.29
+ERASING/PROGRAMMING B3:F
+MIGRATION VERIFIED; STARTING STR8-N
+```
+
+The production Bank Maintenance image then displayed and committed the exact
+intended directory record:
+
+```text
+TYPE 00-FF [FF]> FF
+DESC 5 CHARS [AUTO]> WDCV2
+
+PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
+TYPE ADOPT B0> ADOPT B0
+ OK
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF WDCV2 FFFF FCFFFFFF
+D1 FF ..... FFFF FFFFFFFF
+D2 FF ..... FFFF FFFFFFFF
+D3 FF ..... FFFF FFFFFFFF
+```
+
+Shell `J0` launched retained WDCMONv2 and the complete EDU application; a
+physical RESET returned to STR8-N 1.29. Reset selector `0` launched the same
+guest; the second physical RESET again returned to STR8-N 1.29. The final
+extra `C`, `W`, and `S` keystrokes merely exercised missing optional component
+paths at the STR8-N prompt and made no flash change.
+
+The retained host evidence is:
+
+```text
+raw RX path       BUILD/v1.29/wdcmonv2-str8n-migration-kit/LOCAL/factory-migration-20260829-201332.raw
+raw RX SHA-256    23F3650BDCBF7FDBB278B5954187C0C3DB12552FB89B89E4D282DD4C37782E67
+event log path    BUILD/v1.29/wdcmonv2-str8n-migration-kit/LOCAL/factory-migration-20260829-201332.raw.events.txt
+event SHA-256     1CB79649D27C69AC849D4B3F3AC23D9218DB53ECF30BF26578DD65CFB494BCA6
+adapter SHA-256   16D18D44970704D7BF16F0C572264584C43DBBE4B0654B87587B1327CE72AF0B
+top BIN SHA-256   C52CBE162B23147657406AC4709D8908639351FBEF97FDCD016EE77FF32B0682
+bank maint SHA-256 642ABDF643E8726BDEE0634B9227192223F9231F2DDE3B4F759636841A89EF9B
+```
+
+This accepts the complete v1.29 factory migration transaction. Serial evidence
+cannot prove an audible property; record EDU buzzer silence separately when
+the operator confirms it.

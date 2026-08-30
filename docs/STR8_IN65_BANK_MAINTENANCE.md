@@ -132,12 +132,14 @@ provisions the accepted byte contract for the later HIMON scoped-search slice.
 
 ## Hardware evidence
 
-The 2026-08-29 v1.29 consumer run exercised explicit D0 enrollment as
+The first 2026-08-29 v1.29 consumer run exercised explicit D0 enrollment as
 `65 WDCV2 FFFF FCFFFFFF`, read it back through `M`, launched retained
 WDCMONv2 through reset selector `0` and shell `J0`, and captured physical
 RESET returning to STR8-N 1.29 after each launch. That proves the transaction
 mechanics, external 4096-byte BIN, and final RESET path, but the intended
-`FF WDCV2` identity still requires the rerun.
+`FF WDCV2` identity still required a rerun. The immediately following complete
+factory-baseline run exercised erased-B0 preservation and accepted the exact
+`FF WDCV2 FFFF FCFFFFFF` row, selector `0`, `J0`, and both RESET returns.
 
 The first 2026-08-28 v1.28 board run accepted prompted default D0 enrollment as
 `FF WDCM2 FFFF FCFFFFFF`, read it back through `M`, launched B0 twice through
