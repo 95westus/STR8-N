@@ -315,6 +315,9 @@ range to be erased, and uses a target-specific confirmation such as
 - `QUICKSTART.txt` in the factory migration ZIP is the compact operator card;
   the loader's default presentation follows it, while `-Details` adds hashes,
   addresses, bank policy, and evidence paths without changing the transaction.
+  Normal Windows onboarding needs only Windows PowerShell 5.1, the board's USB
+  COM-port driver, an extracted writable folder, and exclusive access to that
+  COM port; the release package lists an exact preflight.
 
 - [Task List](TASKS.md) - release-staging gates and later Bank-1 example
   backlog.
