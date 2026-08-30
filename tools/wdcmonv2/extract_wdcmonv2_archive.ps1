@@ -148,6 +148,7 @@ $receipt = @(
     "SHA256=$sha256"
     "SOURCE_TRANSCRIPT=$([System.IO.Path]::GetFullPath($TranscriptPath))"
     'STATUS=VERIFIED'
+    'REDISTRIBUTION=OWNER-LOCAL; DO NOT PUBLISH WITHOUT EXPRESS PERMISSION'
 )
 [System.IO.File]::WriteAllLines($receiptPath, $receipt, [System.Text.Encoding]::ASCII)
 
@@ -159,3 +160,4 @@ Write-Host ("SHA256           = {0}" -f $sha256)
 Write-Host ("BIN              = {0}" -f $binPath)
 Write-Host ("S19              = {0}" -f $s19Path)
 Write-Host ("RECEIPT          = {0}" -f $receiptPath)
+Write-Warning 'OWNER-LOCAL ARCHIVE: do not publish or redistribute without express permission.'

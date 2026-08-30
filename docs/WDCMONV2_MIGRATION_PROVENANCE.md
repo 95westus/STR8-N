@@ -6,6 +6,26 @@ advice. Copyright exceptions and the effect of a board or tool license depend
 on jurisdiction and on the terms under which a particular owner received the
 software.
 
+## Independent-Implementation Review
+
+On 2026-08-30, the original privately supplied WDCMONv2 assembly source was
+compared with the tracked STR8-N `src`, R-YORS `SRC/HIMON`, and R-YORS
+`SRC/ASM` implementation sources. Release artifacts, generated files,
+archives, historical copies, and unrelated experimental trees were excluded.
+
+The review found no matching WDC comments, no exact matching assembly run
+longer than four instructions, and no source-level evidence that WDCMONv2 code
+was duplicated into STR8-N, HIMON, or ASM-F2. The few four-instruction matches
+were ordinary W65C02 idioms such as stack initialization and carry-return
+helpers. Shared WDC signatures, entry points, addresses, and protocol constants
+are compatibility facts rather than copied implementation text.
+
+The same review compared the assembly programs in `tools/wdcmonv2` with the
+WDCMONv2 assembly and compared the Python host bridge with WDC's supplied
+uploader. It found no exact assembly run of five or more instructions and no
+identical non-comment Python line of 30 or more characters. This is a technical
+provenance check, not a legal conclusion or a substitute for release review.
+
 ## What The Project Authored
 
 The two W65C02 RAM applications are STR8-N project code:

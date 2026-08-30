@@ -121,6 +121,11 @@ try {
     for ($i = 0; $i -lt $image.Length; $i++) {
         if ($roundTrip[$i] -ne $image[$i]) { throw "Extractor fixture mismatch at offset $i" }
     }
+    $receiptText = Get-Content -Raw -LiteralPath (Join-Path $outDir 'fixture.receipt.txt')
+    if (-not $receiptText.Contains(
+            'REDISTRIBUTION=OWNER-LOCAL; DO NOT PUBLISH WITHOUT EXPRESS PERMISSION')) {
+        throw 'Extractor receipt lacks the owner-local redistribution warning'
+    }
 
     $bad = [System.Collections.Generic.List[string]]::new()
     foreach ($line in $records) { $bad.Add($line) }

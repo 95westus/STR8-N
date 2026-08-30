@@ -124,6 +124,13 @@ evidence of the general multibank handoff path.
 > learning, licensing, or supporting that toolchain is outside this project's
 > scope. Contact WDC for W65C02SXB/EDU hardware and WDC toolchain information
 > and support.
+>
+> The STR8-N, HIMON, and ASM-F2 implementations are independently authored.
+> They use WDC names, documented interfaces, memory maps, and protocol values
+> only for compatibility. They do not include or redistribute the privately
+> supplied WDCMONv2 source or firmware. The source-comparison record and the
+> stricter migration-tool boundary are documented in
+> [WDCMONv2 Migration Provenance](docs/WDCMONV2_MIGRATION_PROVENANCE.md).
 
 STR8-N is the reset supervisor, recovery console, and guarded flash installer
 for a W65C02SXB/EDU with four 32K flash banks. It lives in the protected Bank-3
