@@ -12,7 +12,10 @@ be installed. The first 2026-08-29 v1.29 already-preserved-B0 run below accepts
 the install and launch mechanics while retaining its entered type `65` as
 historical evidence. The following factory-baseline rerun accepts the complete
 v1.29 path with erased-B0 `COPY B3 TO B0`, exact D0 `FF WDCV2`, reset selector
-`0`, shell `J0`, and physical-RESET return after both launches.
+`0`, shell `J0`, and physical-RESET return after both launches. A 2026-08-30
+board #3 run repeats the factory WDCMONv2-to-STR8-N 1.29 path on COM3 with the
+operator-left default D0 `FF WDCM2`; it is retained as cross-board migration
+success evidence without replacing the exact `FF WDCV2` consumer acceptance.
 
 ## 2026-08-28 first stock-board run: cold-reset failure retained
 
@@ -837,3 +840,138 @@ This accepts the complete v1.29 factory migration transaction. Serial evidence
 cannot prove an audible property, but the operator separately confirmed that
 the EDU buzzer became silent immediately when the RAM adapter started. The
 complete migration and quiet-start behavior are therefore board-accepted.
+
+## 2026-08-30 board #3 v1.29 factory replication
+
+The operator repeated the v1.29 factory WDCMONv2-to-STR8-N path on board #3.
+This board is recorded as having no visible date stamp, in contrast with
+operator board #1 marked `202205` and board #2 marked `202512`. The board used
+COM3 and reported the same supported monitor identity:
+
+```text
+BOARD      = SXB2; HW=3.00; WDCMON=2.00
+```
+
+The run used the extracted v1.29 migration kit from Windows PowerShell 5.1.
+The wrapper enumerated only COM3, loaded the RAM adapter byte-exact, and
+executed it at `$2000`:
+
+```text
+S19 SHA256 = 16D18D44970704D7BF16F0C572264584C43DBBE4B0654B87587B1327CE72AF0B
+RAM RANGE  = $2000-$296F (2416 bytes)
+ENTRY      = $2000
+RAM FNV1A  = 4BAD81BA
+RAM READBACK = BYTE-EXACT
+EXECUTE      = $2000
+```
+
+The migration followed the erased-B0 factory branch and completed the
+destructive gates:
+
+```text
+FLASH ID=BF/B5
+STOCK B3 FNV1A=1249E1F3
+TYPE COPY B3 TO B0> COPY B3 TO B0
+COPY/VERIFY B3 -> B0 ........
+B0 == ORIGINAL B3 VERIFIED
+SEND STR8-N TOP BIN; 4096 BYTES; START $F000
+
+SENDING STR8-N-v1-29.bin (4096 bytes)
+FILE SENT
+STR8-N TOP RECEIVED
+TYPE INSTALL STR8-N 1.29> INSTALL STR8-N 1.29
+ERASING/PROGRAMMING B3:F
+MIGRATION VERIFIED; STARTING STR8-N
+```
+
+After the first STR8-N 1.29 boot, the operator loaded the production Bank
+Maintenance S19 and intentionally left the D0 description as the tool default
+instead of renaming it. The observed and retained directory state is:
+
+```text
+PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 4D 32 FE FF FF FC FF FF FF
+TYPE ADOPT B0> ADOPT B0
+ OK
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF WDCM2 FFFF FCFFFFFF
+D1 FF ..... FFFF FFFFFFFF
+D2 FF ..... FFFF FFFFFFFF
+D3 FF ..... FFFF FFFFFFFF
+```
+
+This preserves the functioning board state exactly as tested. It differs only
+from the published v1.29 consumer label target `D0 FF WDCV2 FFFF FCFFFFFF`;
+the Bank-0 payload remains the byte-exact retained factory guest.
+
+Two exploratory maintenance commands did not change the migration result. The
+first Bank-2 erase confirmation used the spaced text `ERASE 2 ALL` and aborted
+without mutation. The subsequent exact `ERASE 2ALL` did erase Bank 2. A later
+`COPY 0 2` attempt used `COPY 0 2` instead of the required compact
+confirmation and aborted without copying B0 into B2.
+
+Reset selector `0` launched retained WDCMONv2 and the EDU application from B0.
+Physical RESET returned to STR8-N 1.29. Shell `J0` launched the same retained
+application, and the final physical RESET again returned to STR8-N 1.29:
+
+```text
+STR8-N 1.29
+0-2 C W S: 0
+J B0
+3S
+
+================================
+  W65C02SXB + EDU Kit  Rev 1.0
+  W65C02S @ 8 MHz  |  5V System
+  I2C/SPI bit-banged via W65C22
+================================
+Initializing...
+Scanning devices...
+  OLED (SSD1306)     $3C  OK
+  RTC  (MCP79411)    $6F  OK
+  SPI SRAM           OK
+  ADC  (ADS1015)     $48  not found
+  CardKB             $5F  not found
+Init complete.
+
+> RESET
+
+STR8-N 1.29
+0-2 C W S: S
+I L C W J
+STR8-N>J0
+J B0
+
+================================
+  W65C02SXB + EDU Kit  Rev 1.0
+  W65C02S @ 8 MHz  |  5V System
+  I2C/SPI bit-banged via W65C22
+================================
+Initializing...
+Scanning devices...
+  OLED (SSD1306)     $3C  OK
+  RTC  (MCP79411)    $6F  OK
+  SPI SRAM           OK
+  ADC  (ADS1015)     $48  not found
+  CardKB             $5F  not found
+Init complete.
+
+> RESET
+
+STR8-N 1.29
+0-2 C W S: S
+I L C W J
+STR8-N>
+```
+
+The local evidence files named by the wrapper were:
+
+```text
+C:\Users\walte\Music\str8n-v1.29-wdcmonv2-str8n-migration-kit\STR8-N-v1.29-Migration-Kit\LOCAL\factory-migration-20260830-103922.raw
+C:\Users\walte\Music\str8n-v1.29-wdcmonv2-str8n-migration-kit\STR8-N-v1.29-Migration-Kit\LOCAL\factory-migration-20260830-103922.raw.events.txt
+```
+
+This board #3 transcript accepts factory migration, erased-B0 preservation,
+external v1.29 top install, retained WDCMONv2 launch through selector `0` and
+shell `J0`, and physical-RESET return to STR8-N 1.29 on a no-date-stamp board.
+It deliberately records the operator-left D0 `WDCM2` description as observed.

@@ -141,6 +141,16 @@ mechanics, external 4096-byte BIN, and final RESET path, but the intended
 factory-baseline run exercised erased-B0 preservation and accepted the exact
 `FF WDCV2 FFFF FCFFFFFF` row, selector `0`, `J0`, and both RESET returns.
 
+The 2026-08-30 board #3 run repeated the v1.29 erased-B0 factory path on COM3
+with a W65C02SXB/EDU board that had no visible date stamp; operator boards #1
+and #2 are recorded as date-stamped `202205` and `202512`. Board #3 accepted
+the factory WDCMONv2-to-STR8-N 1.29 migration, copied and verified B3 into B0,
+installed the external 4096-byte v1.29 top, launched retained WDCMONv2 through
+reset selector `0` and shell `J0`, and returned to STR8-N 1.29 by physical
+RESET after each launch. Its D0 row was intentionally left as the prompted
+default `FF WDCM2 FFFF FCFFFFFF`; that is retained as observed cross-board
+success evidence rather than rewritten into the consumer-target `WDCV2` label.
+
 The first 2026-08-28 v1.28 board run accepted prompted default D0 enrollment as
 `FF WDCM2 FFFF FCFFFFFF`, read it back through `M`, launched B0 twice through
 `J0`, and recovered STR8-N 1.28 through physical RESET. The later v1.28
