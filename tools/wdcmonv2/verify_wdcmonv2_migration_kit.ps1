@@ -63,8 +63,14 @@ foreach ($required in @('STR8-iN/65 LOADER - FAST PATH', 'STR8-N-v1-29.bin', 'AD
 }
 $quickStart = Get-Content -Raw -LiteralPath (Join-Path $root 'QUICKSTART.txt')
 foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'PROPOSED D0 B3:$FFB0',
-        'D0 FF WDCV2 FFFF FCFFFFFF', '-Details')) {
+        'D0 FF WDCV2 FFFF FCFFFFFF', '-Details', 'Windows PowerShell 5.1',
+        '[System.IO.Ports.SerialPort]::GetPortNames()', 'No Git, Python')) {
     if (-not $quickStart.Contains($required)) { throw "Quick-start card lacks required fast-path text: $required" }
+}
+$packageReadme = Get-Content -Raw -LiteralPath (Join-Path $root 'PACKAGE-README.txt')
+foreach ($required in @('Windows PowerShell 5.1', 'USB virtual COM-port driver',
+        'writable local folder', 'No Git, Python', 'powershell.exe')) {
+    if (-not $packageReadme.Contains($required)) { throw "Package README lacks Windows requirement: $required" }
 }
 & $loader -SelfTest
 & $loader -ImagePath (Join-Path $root 'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19') -ValidateOnly
