@@ -8,13 +8,14 @@
 > stock Bank 3 in opaque Bank 0, receives the canonical 4096-byte
 > `STR8-N-v1-29.bin`, installs it at B3:`$F000-$FFFF`, and leaves the Bank-3
 > directory empty. The separate production Bank Maintenance image owns the
-> explicit D0 `65 WDCV2` adoption after the first verified boot.
+> explicit D0 `FF WDCV2` adoption after the first verified boot.
 >
 > The v1.29 already-preserved-B0 path is accepted on a physical
 > W65C02SXB/EDU. The retained WDCMONv2 image launched through reset selector
 > `0` and shell `J0`; both returned through physical RESET to STR8-N 1.29.
 > Because B0 was already byte-identical to stock B3, the v1.29 erased-B0
-> `COPY B3 TO B0` branch still requires its factory-board run.
+> `COPY B3 TO B0` branch still requires its factory-board run. The first D0
+> exercise used type `65`; the intended type `FF` also requires the rerun.
 
 > [!IMPORTANT]
 > **Historical hardware validation baseline — 2026-08-28:** The v1.28 factory

@@ -21,10 +21,10 @@ Factory WDCMONv2 -> STR8-N 1.29
 5. After STR8-N 1.29 starts, select S.  At STR8-N> enter L, then press Ctrl+D
    once to send the packaged production Bank Maintenance S19.
 
-6. At BM> enter D.  Enter Bank 0, type 65, and description WDCV2.  Require
+6. At BM> enter D.  Enter Bank 0, type FF, and description WDCV2.  Require
    this exact proposed write:
 
-   PROPOSED D0 B3:$FFB0: 65 FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
+   PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
 
    Then type:
 
@@ -32,7 +32,7 @@ Factory WDCMONv2 -> STR8-N 1.29
 
 7. Use M and require:
 
-   D0 65 WDCV2 FFFF FCFFFFFF
+   D0 FF WDCV2 FFFF FCFFFFFF
 
    Test reset selector 0, shell J0, and physical RESET return to STR8-N 1.29.
 

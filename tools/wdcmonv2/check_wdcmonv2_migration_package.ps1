@@ -79,8 +79,9 @@ if ($manifest.schema -ne 1) { throw 'Migration package manifest schema is not 1'
 if ($manifest.stockWdcmonv2FirmwareIncluded -ne $false) { throw 'Manifest must state that stock WDCMONv2 firmware is absent' }
 if ($manifest.localBankArchivesIncluded -ne $false) { throw 'Manifest must state that local bank archives are absent' }
 if ($manifest.ryorsPayloadIncluded -ne $false) { throw 'Manifest must state that no R-YORS payload is included' }
-if ($manifest.hardwareStatus -notmatch 'board-accepted' -or $manifest.hardwareStatus -notmatch 'COPY branch pending') {
-    throw 'Manifest must distinguish the accepted v1.29 continuation from the pending copy branch'
+if ($manifest.hardwareStatus -notmatch 'mechanics accepted' -or
+        $manifest.hardwareStatus -notmatch 'COPY' -or $manifest.hardwareStatus -notmatch 'FF/WDCV2') {
+    throw 'Manifest must distinguish accepted mechanics from the pending copy and D0 rerun'
 }
 if ($manifest.firstProcedure -notmatch 'STR8-iN65-LOADER') { throw 'Manifest must publish the one-command factory path first' }
 
@@ -145,4 +146,4 @@ try {
 Write-Host ('MIGRATION PACKAGE   = PASS; {0} allowlisted files' -f $expected.Count)
 Write-Host ('PACKAGE ZIP SHA256  = {0}' -f (Get-Sha256 -Path $ZipPath))
 Write-Host 'WDC FIRMWARE/ARCHIVE = ABSENT BY ALLOWLIST'
-Write-Host 'V1.29 BOARD PROOF     = PRESERVED-B0 PATH ACCEPTED; ERASED-B0 COPY PENDING'
+Write-Host 'V1.29 BOARD PROOF     = MECHANICS ACCEPTED; ERASED-B0 COPY + FF/WDCV2 PENDING'

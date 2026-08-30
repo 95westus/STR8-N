@@ -26,9 +26,9 @@ At `BM>` enter `D`. For the retained WDCMONv2 consumer identity, enter:
 
 ```text
 BANK 0-3 [0]>             0
-TYPE 00-FF [FF]>          65
+TYPE 00-FF [FF]>          FF
 DESC 5 CHARS [AUTO]>      WDCV2
-PROPOSED D0 B3:$FFB0: 65 FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
+PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
 TYPE ADOPT B0>            ADOPT B0     -> exact commit confirmation
 ```
 
@@ -37,8 +37,8 @@ physical Bank-3 directory address and every byte that will be programmed; no
 Bank-0 payload byte is part of the write.
 
 The generic RAM tool retains `FF` and `WDCM2` as its empty-input Bank-0
-defaults, but the v1.29 consumer procedure deliberately overrides them with
-type `65` and description `WDCV2`. Automatic descriptions for the other banks
+defaults. The v1.29 consumer procedure keeps type `FF` and deliberately
+overrides the description with `WDCV2`. Automatic descriptions for the other banks
 remain `BANK1`, `BANK2`, and `STR8N`. Descriptions accept uppercase letters,
 digits, `-`, `_`, and `.`.
 
@@ -54,7 +54,7 @@ journal COMPLETE   FCFFFFFF
 After `D` reports `OK`, use `M` and require a row equivalent to:
 
 ```text
-D0 65 WDCV2 FFFF FCFFFFFF
+D0 FF WDCV2 FFFF FCFFFFFF
 ```
 
 Then return with `Q`, reset if desired, and test `J0`. Directory enrollment
@@ -132,12 +132,12 @@ provisions the accepted byte contract for the later HIMON scoped-search slice.
 
 ## Hardware evidence
 
-The 2026-08-29 v1.29 consumer run accepted explicit D0 enrollment as
+The 2026-08-29 v1.29 consumer run exercised explicit D0 enrollment as
 `65 WDCV2 FFFF FCFFFFFF`, read it back through `M`, launched retained
 WDCMONv2 through reset selector `0` and shell `J0`, and captured physical
-RESET returning to STR8-N 1.29 after each launch. The external 4096-byte BIN,
-postboot Bank Maintenance load, and final RESET path are therefore
-board-accepted.
+RESET returning to STR8-N 1.29 after each launch. That proves the transaction
+mechanics, external 4096-byte BIN, and final RESET path, but the intended
+`FF WDCV2` identity still requires the rerun.
 
 The first 2026-08-28 v1.28 board run accepted prompted default D0 enrollment as
 `FF WDCM2 FFFF FCFFFFFF`, read it back through `M`, launched B0 twice through
