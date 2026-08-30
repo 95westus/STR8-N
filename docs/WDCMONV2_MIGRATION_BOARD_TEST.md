@@ -13,9 +13,8 @@ the install and launch mechanics while retaining its entered type `65` as
 historical evidence. The following factory-baseline rerun accepts the complete
 v1.29 path with erased-B0 `COPY B3 TO B0`, exact D0 `FF WDCV2`, reset selector
 `0`, shell `J0`, and physical-RESET return after both launches. A 2026-08-30
-board #3 run repeats the factory WDCMONv2-to-STR8-N 1.29 path on COM3 with the
-operator-left default D0 `FF WDCM2`; it is retained as cross-board migration
-success evidence without replacing the exact `FF WDCV2` consumer acceptance.
+board #3 run repeats the factory WDCMONv2-to-STR8-N 1.29 path on COM3 with D0
+`FF WDCV2`; it is retained as cross-board migration success evidence.
 
 ## 2026-08-28 first stock-board run: cold-reset failure retained
 
@@ -885,24 +884,24 @@ MIGRATION VERIFIED; STARTING STR8-N
 ```
 
 After the first STR8-N 1.29 boot, the operator loaded the production Bank
-Maintenance S19 and intentionally left the D0 description as the tool default
-instead of renaming it. The observed and retained directory state is:
+Maintenance S19 and recorded the D0 description as `WDCV2`. The observed and
+retained directory state is:
 
 ```text
-PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 4D 32 FE FF FF FC FF FF FF
+PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
 TYPE ADOPT B0> ADOPT B0
  OK
 
 DIR B T DESC ENTRY JOURNAL
-D0 FF WDCM2 FFFF FCFFFFFF
+D0 FF WDCV2 FFFF FCFFFFFF
 D1 FF ..... FFFF FFFFFFFF
 D2 FF ..... FFFF FFFFFFFF
 D3 FF ..... FFFF FFFFFFFF
 ```
 
-This preserves the functioning board state exactly as tested. It differs only
-from the published v1.29 consumer label target `D0 FF WDCV2 FFFF FCFFFFFF`;
-the Bank-0 payload remains the byte-exact retained factory guest.
+This preserves the functioning board state exactly as tested and matches the
+published v1.29 consumer label target `D0 FF WDCV2 FFFF FCFFFFFF`; the Bank-0
+payload remains the byte-exact retained factory guest.
 
 Two exploratory maintenance commands did not change the migration result. The
 first Bank-2 erase confirmation used the spaced text `ERASE 2 ALL` and aborted
@@ -974,4 +973,4 @@ C:\Users\walte\Music\str8n-v1.29-wdcmonv2-str8n-migration-kit\STR8-N-v1.29-Migra
 This board #3 transcript accepts factory migration, erased-B0 preservation,
 external v1.29 top install, retained WDCMONv2 launch through selector `0` and
 shell `J0`, and physical-RESET return to STR8-N 1.29 on a no-date-stamp board.
-It deliberately records the operator-left D0 `WDCM2` description as observed.
+It records the D0 `WDCV2` description.

@@ -244,6 +244,13 @@ meanings at the `STR8-N>` prompt.
 
 ## Ready-made artifacts
 
+Run `make release-package` to build and verify the complete STR8-N v1.29-only
+bundle at `BUILD/v1.29/str8n-v1.29-release.zip`. It gathers the canonical
+resident, maintenance and recovery tools, public contract, manifest,
+checksums, essential guides, and the separately verified WDCMONv2 migration
+kit. It contains no WDCMONv2 firmware, owner bank archive, HIMON, ASM-F2, or
+R-YORS payload.
+
 - The exact 4096-byte Bank-3 top-sector BIN for an external programmer.
 - A payload S19 for the resident and an evidence S19 for its relocated worker.
 - A self-contained Bank Maintenance S19 loaded and started with `L`, including
