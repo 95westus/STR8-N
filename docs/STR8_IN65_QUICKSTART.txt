@@ -6,8 +6,9 @@ WINDOWS 11 HOST - BOARD-PROVEN REFERENCE
 NEEDED
 - Windows 11 with Windows PowerShell 5.1 (powershell.exe).
 - The board's USB COM-port driver; the powered board must appear as COMx.
-- This ZIP extracted to a writable folder, a free COM port, stable power, and
-  access to the board's physical RESET button.
+- This ZIP extracted to a writable location.  It creates the surrounding folder
+  STR8-N-v1.29-Migration-Kit; work inside that folder.
+- A free COM port, stable power, and access to the board's physical RESET button.
 
 NOT NEEDED
 - Git, Python, make, WDC tools/WDCDB, internet access, or a T48 programmer.

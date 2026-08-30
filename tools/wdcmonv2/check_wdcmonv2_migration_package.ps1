@@ -8,7 +8,8 @@ param(
     [string]$CanonicalS19Path = 'BUILD/v1.29/s19/str8n-v1.29-f000.s19',
     [string]$BankMaintS19Path = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-bank-maint-2000.s19',
     [string]$HostBridgePath = 'tools/wdcmonv2/start_wdcmonv2_ram.ps1',
-    [string]$BoardTestPath = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md'
+    [string]$BoardTestPath = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md',
+    [string]$ArchiveRootName = 'STR8-N-v1.29-Migration-Kit'
 )
 
 Set-StrictMode -Version Latest
@@ -83,6 +84,7 @@ if ($manifest.localBankArchivesIncluded -ne $false) { throw 'Manifest must state
 if ($manifest.ryorsPayloadIncluded -ne $false) { throw 'Manifest must state that no R-YORS payload is included' }
 if ($manifest.windowsHostStatus -notmatch 'board-proven') { throw 'Manifest must retain Windows host proof status' }
 if ($manifest.ubuntuPythonHostStatus -notmatch 'no board proof') { throw 'Manifest must mark Ubuntu Python as lacking board proof' }
+if ($manifest.archiveRoot -ne $ArchiveRootName) { throw 'Manifest archive root does not match the required surrounding folder' }
 if ($manifest.hardwareStatus -notmatch 'board-accepted' -or
         $manifest.hardwareStatus -notmatch 'EDU quiet-start') {
     throw 'Manifest must publish accepted v1.29 migration and EDU quiet-start status'
@@ -130,14 +132,20 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $ZipPath).Path)
 try {
     $zipNames = @($zip.Entries | Where-Object { $_.Name } | ForEach-Object { $_.FullName.Replace('\', '/') } | Sort-Object)
-    if (($zipNames -join "`n") -ne ($expected -join "`n")) { throw 'ZIP entry allowlist differs from staged package' }
+    $expectedZipNames = @($expected | ForEach-Object { $ArchiveRootName + '/' + $_ } | Sort-Object)
+    if (($zipNames -join "`n") -ne ($expectedZipNames -join "`n")) { throw 'ZIP entry allowlist or surrounding folder differs from staged package' }
     $sha = [System.Security.Cryptography.SHA256]::Create()
     try {
         foreach ($entry in $zip.Entries) {
             if (-not $entry.Name) { continue }
             $input = $entry.Open()
             try { $zipHash = ([BitConverter]::ToString($sha.ComputeHash($input))).Replace('-', '') } finally { $input.Dispose() }
-            $diskPath = Join-Path $kitFull ($entry.FullName.Replace('/', [System.IO.Path]::DirectorySeparatorChar))
+            $prefix = $ArchiveRootName + '/'
+            if (-not $entry.FullName.StartsWith($prefix, [System.StringComparison]::Ordinal)) {
+                throw "ZIP entry escaped required archive root: $($entry.FullName)"
+            }
+            $relative = $entry.FullName.Substring($prefix.Length)
+            $diskPath = Join-Path $kitFull ($relative.Replace('/', [System.IO.Path]::DirectorySeparatorChar))
             if ($zipHash -ne (Get-Sha256 -Path $diskPath)) { throw "ZIP payload mismatch: $($entry.FullName)" }
         }
     } finally {
