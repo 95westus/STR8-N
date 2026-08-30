@@ -22,13 +22,13 @@ correctly fails closed while D0 is absent.
 
 ## Enroll a retained WDCMONv2 Bank 0 when D0 is absent
 
-At `BM>` enter `D`. The STR8-iN/65 defaults are:
+At `BM>` enter `D`. For the retained WDCMONv2 consumer identity, enter:
 
 ```text
-BANK 0-3 [0]>             Enter        -> Bank 0
-TYPE 00-FF [FF]>          Enter        -> opaque/foreign type $FF
-DESC 5 CHARS [AUTO]>      Enter        -> WDCM2 for Bank 0
-PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 4D 32 FE FF FF FC FF FF FF
+BANK 0-3 [0]>             0
+TYPE 00-FF [FF]>          65
+DESC 5 CHARS [AUTO]>      WDCV2
+PROPOSED D0 B3:$FFB0: 65 FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
 TYPE ADOPT B0>            ADOPT B0     -> exact commit confirmation
 ```
 
@@ -36,10 +36,11 @@ The proposed line is emitted before the confirmation. It identifies the
 physical Bank-3 directory address and every byte that will be programmed; no
 Bank-0 payload byte is part of the write.
 
-The automatic descriptions are `WDCM2`, `BANK1`, `BANK2`, and `STR8N` for
-Banks 0 through 3. A typed two-digit TYPE or typed five-character description
-overrides its default. Descriptions accept uppercase letters, digits, `-`,
-`_`, and `.`.
+The generic RAM tool retains `FF` and `WDCM2` as its empty-input Bank-0
+defaults, but the v1.29 consumer procedure deliberately overrides them with
+type `65` and description `WDCV2`. Automatic descriptions for the other banks
+remain `BANK1`, `BANK2`, and `STR8N`. Descriptions accept uppercase letters,
+digits, `-`, `_`, and `.`.
 
 For B0-B2, adoption stores ENTRY=`FFFF`; `Jn` reads the selected bank's real
 RESET vector during handoff. D0 is committed in this order:
@@ -53,7 +54,7 @@ journal COMPLETE   FCFFFFFF
 After `D` reports `OK`, use `M` and require a row equivalent to:
 
 ```text
-D0 FF WDCM2 FFFF FCFFFFFF
+D0 65 WDCV2 FFFF FCFFFFFF
 ```
 
 Then return with `Q`, reset if desired, and test `J0`. Directory enrollment
@@ -131,6 +132,13 @@ provisions the accepted byte contract for the later HIMON scoped-search slice.
 
 ## Hardware evidence
 
+The 2026-08-29 v1.29 consumer run accepted explicit D0 enrollment as
+`65 WDCV2 FFFF FCFFFFFF`, read it back through `M`, launched retained
+WDCMONv2 through reset selector `0` and shell `J0`, and captured physical
+RESET returning to STR8-N 1.29 after each launch. The external 4096-byte BIN,
+postboot Bank Maintenance load, and final RESET path are therefore
+board-accepted.
+
 The first 2026-08-28 v1.28 board run accepted prompted default D0 enrollment as
 `FF WDCM2 FFFF FCFFFFFF`, read it back through `M`, launched B0 twice through
 `J0`, and recovered STR8-N 1.28 through physical RESET. The later v1.28
@@ -139,5 +147,4 @@ B0 preservation, `J0`, the visually observed CS0-CS3 chase, complete retained
 EDU application startup, and final physical RESET. The complete retained
 transcripts, including a rejected pre-write menu-overlap build, are in
 [WDCMONV2_MIGRATION_BOARD_TEST.md](WDCMONV2_MIGRATION_BOARD_TEST.md). These
-runs are historical evidence; the v1.29 external-BIN and postboot-adoption
-combination still requires its own factory-board transcript.
+runs are historical evidence for the earlier embedded-D0 design.

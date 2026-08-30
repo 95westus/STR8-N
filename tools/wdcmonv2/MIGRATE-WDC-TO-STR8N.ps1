@@ -58,7 +58,7 @@ Write-Host 'Evidence ..................................... full raw + event logs
 Write-Host ''
 Write-Host 'Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.29.'
 Write-Host 'When asked for the top BIN, press CTRL+U once.'
-Write-Host 'After boot: S, L, CTRL+D, D, defaults, then ADOPT B0.'
+Write-Host 'After boot: S, L, CTRL+D, D, then enter 0, 65, WDCV2, and ADOPT B0.'
 Write-Host 'Do not reset, assert NMI, or remove power during active flash writes.'
 if ($Details) {
     Write-Host ''
@@ -94,7 +94,7 @@ Write-Host ''
 Write-Host 'NEXT: connect any serial terminal at 115200 baud, 8 data bits, no parity, 1 stop bit.'
 Write-Host 'Examples: minicom, Tera Term, PuTTY, or another serial terminal emulator.'
 Write-Host 'Press physical RESET: STR8-N 1.29 must appear.'
-Write-Host 'Require D0 FF WDCM2 FFFF FCFFFFFF before testing selector 0 and J0.'
+Write-Host 'Require D0 65 WDCV2 FFFF FCFFFFFF before testing selector 0 and J0.'
 Write-Host 'Physical RESET always returns to STR8-N in Bank 3.'
 Write-Host ('Detailed raw transcript: {0}' -f $TranscriptPath)
 Write-Host ('Detailed host event log: {0}.events.txt' -f $TranscriptPath)

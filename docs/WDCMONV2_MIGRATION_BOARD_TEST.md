@@ -8,7 +8,10 @@ migration is also board-accepted from an erased-B0 factory baseline, including
 the operator-observed CS0-CS3 chase, retained WDCMONv2 launch, and final
 physical-RESET return to STR8-N. Canonical v1.28 is byte-identical to the
 accepted top except for the documented migration-role policy. W65C02EDU may
-be installed.
+be installed. The 2026-08-29 v1.29 already-preserved-B0 continuation is also
+board-accepted below, including explicit D0 `65 WDCV2`, reset selector `0`,
+shell `J0`, and physical-RESET return after both retained-guest launches. Its
+erased-B0 `COPY B3 TO B0` branch remains pending.
 
 ## 2026-08-28 first stock-board run: cold-reset failure retained
 
@@ -662,3 +665,109 @@ operator acceptance statement
 
 Do not mark the migration path hardware-accepted until every applicable row
 above has direct evidence.
+
+## 2026-08-29 v1.29 external-BIN factory migration acceptance
+
+The production v1.29 consumer path is accepted on the same physical
+W65C02SXB/EDU. The first connection attempt discarded 553 startup bytes and
+timed out while synchronizing command `$0C`; it obtained no board identity,
+did not execute the RAM adapter, and made no flash write. A clean retry
+identified `SXB2; HW=3.00; WDCMON=2.00`, loaded and read back the muted-entry
+RAM adapter byte-exact, and executed it at `$2000`.
+
+The retry used these exact transferred artifacts:
+
+```text
+RAM adapter SHA-256  16D18D44970704D7BF16F0C572264584C43DBBE4B0654B87587B1327CE72AF0B
+RAM adapter range    $2000-$296F; 2416 bytes; S9 $2000
+RAM adapter FNV1A    4BAD81BA
+STR8-N top SHA-256   C52CBE162B23147657406AC4709D8908639351FBEF97FDCD016EE77FF32B0682
+Bank Maint SHA-256   642ABDF643E8726BDEE0634B9227192223F9231F2DDE3B4F759636841A89EF9B
+raw RX SHA-256       146B70213CD95B87892157F16D0BE28410210AC4ADAD5073F6AABBDFFAEA5B1B
+event log SHA-256    F7F40F1DF4AFD49E146650BEF780BB6E11E225DE985F292FE2840F78E1C665D4
+```
+
+Bank 0 was already byte-identical to original stock Bank 3, so the adapter
+correctly skipped a redundant copy while retaining the whole-bank exact gate.
+It received the external 4096-byte canonical top, required the exact
+`INSTALL STR8-N 1.29` confirmation, programmed and verified B3:F, and started
+STR8-N 1.29. Before D0 existed, `J0` failed closed as required.
+
+The operator deliberately selected type `65` and description `WDCV2`. The
+production Bank Maintenance image displayed the exact Bank-3 directory bytes
+before approval:
+
+```text
+PROPOSED D0 B3:$FFB0: 65 FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
+TYPE ADOPT B0> ADOPT B0
+ OK
+
+DIR B T DESC ENTRY JOURNAL
+D0 65 WDCV2 FFFF FCFFFFFF
+D1 FF ..... FFFF FFFFFFFF
+D2 FF ..... FFFF FFFFFFFF
+D3 FF ..... FFFF FFFFFFFF
+```
+
+The optional `P` and `F` explorations both aborted before confirmation and
+made no change. Reset selector `0` then launched retained WDCMONv2 and its EDU
+application from B0. Physical RESET returned to STR8-N 1.29. Shell `J0`
+launched the same retained application, and a final physical RESET again
+returned to STR8-N 1.29:
+
+```text
+STR8-N 1.29
+0-2 C W S: 0
+J B0
+3S
+
+================================
+  W65C02SXB + EDU Kit  Rev 1.0
+  W65C02S @ 8 MHz  |  5V System
+  I2C/SPI bit-banged via W65C22
+================================
+Initializing...
+Scanning devices...
+  OLED (SSD1306)     $3C  OK
+  RTC  (MCP79411)    $6F  OK
+  SPI SRAM           OK
+  ADC  (ADS1015)     $48  not found
+  CardKB             $5F  not found
+Init complete.
+
+> RESET
+
+STR8-N 1.29
+0-2 C W S: S
+I L C W J
+STR8-N>J0
+J B0
+
+================================
+  W65C02SXB + EDU Kit  Rev 1.0
+  W65C02S @ 8 MHz  |  5V System
+  I2C/SPI bit-banged via W65C22
+================================
+Initializing...
+Scanning devices...
+  OLED (SSD1306)     $3C  OK
+  RTC  (MCP79411)    $6F  OK
+  SPI SRAM           OK
+  ADC  (ADS1015)     $48  not found
+  CardKB             $5F  not found
+Init complete.
+
+> RESET
+
+STR8-N 1.29
+0-2 C W S:
+NO
+I L C W J
+STR8-N>
+```
+
+This accepts the v1.29 external-BIN install from an already-preserved B0,
+explicit Bank-3 D0 adoption, reset selector `0`, shell `J0`, and physical-RESET
+persistence. It does not accept the skipped erased-B0 copy branch. The serial
+transcript cannot establish an audible property, so EDU buzzer silence remains
+an operator-observation item rather than a transcript-derived claim.
