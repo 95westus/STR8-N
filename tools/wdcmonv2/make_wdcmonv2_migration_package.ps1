@@ -6,7 +6,8 @@ param(
     [string]$BankMaintS19Path = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-bank-maint-2000.s19',
     [string]$InstallIncludePath = 'BUILD/v1.29/generated/str8n-v1.29-wdcmonv2-install-image.inc',
     [string]$KitDirectory = 'BUILD/v1.29/wdcmonv2-str8n-migration-kit',
-    [string]$ZipPath = 'BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip'
+    [string]$ZipPath = 'BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip',
+    [string]$ArchiveRootName = 'STR8-N-v1.29-Migration-Kit'
 )
 
 Set-StrictMode -Version Latest
@@ -65,6 +66,12 @@ if (-not $kitFull.StartsWith($buildPrefix, [System.StringComparison]::OrdinalIgn
 if (-not $zipFull.StartsWith($buildPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
     throw "ZIP path must remain below BUILD: $zipFull"
 }
+if ([string]::IsNullOrWhiteSpace($ArchiveRootName) -or
+        $ArchiveRootName -in @('.', '..') -or
+        $ArchiveRootName.IndexOfAny([System.IO.Path]::GetInvalidFileNameChars()) -ge 0 -or
+        $ArchiveRootName.Contains('/') -or $ArchiveRootName.Contains('\')) {
+    throw "Archive root must be one safe folder name: $ArchiveRootName"
+}
 
 if (Test-Path -LiteralPath $kitFull) {
     Remove-Item -LiteralPath $kitFull -Recurse -Force
@@ -84,6 +91,7 @@ $readme = @(
     '',
     'STATUS: v1.29 FACTORY MIGRATION AND EDU QUIET-START BOARD-ACCEPTED',
     'HOST STATUS: WINDOWS 11 POWERSHELL BOARD-PROVEN; UBUNTU PYTHON UNTESTED',
+    ('ARCHIVE ROOT: {0}' -f $ArchiveRootName),
     '',
     'BEFORE YOU START',
     '  NEEDED: Windows 10/11, Windows PowerShell 5.1 (powershell.exe), the',
@@ -145,6 +153,7 @@ $manifest = [ordered]@{
     hardwareStatus = 'v1.29 factory migration and EDU quiet-start board-accepted'
     windowsHostStatus = 'Windows 11 PowerShell board-proven'
     ubuntuPythonHostStatus = 'experimental; offline-tested only; no board proof'
+    archiveRoot = $ArchiveRootName
     stockWdcmonv2FirmwareIncluded = $false
     localBankArchivesIncluded = $false
     ryorsPayloadIncluded = $false
@@ -166,7 +175,8 @@ try {
     try {
         foreach ($file in (Get-ChildItem -LiteralPath $kitFull -Recurse -File | Sort-Object FullName)) {
             $relative = $file.FullName.Substring($kitFull.Length + 1).Replace([System.IO.Path]::DirectorySeparatorChar, '/')
-            $entry = $zip.CreateEntry($relative, [System.IO.Compression.CompressionLevel]::Optimal)
+            $entryName = $ArchiveRootName + '/' + $relative
+            $entry = $zip.CreateEntry($entryName, [System.IO.Compression.CompressionLevel]::Optimal)
             $entry.LastWriteTime = [System.DateTimeOffset]::new(1980, 1, 1, 0, 0, 0, [System.TimeSpan]::Zero)
             $input = [System.IO.File]::OpenRead($file.FullName)
             $output = $entry.Open()

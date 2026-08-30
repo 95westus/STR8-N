@@ -46,7 +46,8 @@ if ($manifest.schema -ne 1 -or
     $manifest.localBankArchivesIncluded -ne $false -or
     $manifest.ryorsPayloadIncluded -ne $false -or
     $manifest.windowsHostStatus -notmatch 'board-proven' -or
-    $manifest.ubuntuPythonHostStatus -notmatch 'no board proof') {
+    $manifest.ubuntuPythonHostStatus -notmatch 'no board proof' -or
+    $manifest.archiveRoot -ne 'STR8-N-v1.29-Migration-Kit') {
     throw 'Migration kit provenance flags are invalid'
 }
 $rows = @($manifest.files)
@@ -80,7 +81,8 @@ foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'PROPOSED D0 B3:
 }
 $packageReadme = Get-Content -Raw -LiteralPath (Join-Path $root 'PACKAGE-README.txt')
 foreach ($required in @('Windows PowerShell 5.1', 'USB COM-port driver',
-        'writable folder', 'NOT NEEDED', 'powershell.exe', 'UBUNTU PYTHON UNTESTED')) {
+        'writable folder', 'NOT NEEDED', 'powershell.exe', 'UBUNTU PYTHON UNTESTED',
+        'ARCHIVE ROOT: STR8-N-v1.29-Migration-Kit')) {
     if (-not $packageReadme.Contains($required)) { throw "Package README lacks Windows requirement: $required" }
 }
 & $loader -SelfTest
