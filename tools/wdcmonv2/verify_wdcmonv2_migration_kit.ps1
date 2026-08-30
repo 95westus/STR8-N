@@ -7,6 +7,7 @@ $ErrorActionPreference = 'Stop'
 
 $expected = @(
     'STR8-iN65-LOADER.ps1',
+    'STR8-iN65-LOADER.py',
     'QUICKSTART.txt',
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19',
     'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19',
@@ -28,6 +29,7 @@ $expected = @(
     'TOOLS/check_wdcmonv2_install.ps1',
     'TOOLS/extract_wdcmonv2_archive.ps1',
     'TOOLS/start_wdcmonv2_ram.ps1',
+    'TOOLS/start_wdcmonv2_ram.py',
     'VERIFY-PACKAGE.ps1'
 ) | Sort-Object
 
@@ -42,7 +44,9 @@ $manifest = Get-Content -Raw -LiteralPath (Join-Path $root 'PACKAGE-MANIFEST.jso
 if ($manifest.schema -ne 1 -or
     $manifest.stockWdcmonv2FirmwareIncluded -ne $false -or
     $manifest.localBankArchivesIncluded -ne $false -or
-    $manifest.ryorsPayloadIncluded -ne $false) {
+    $manifest.ryorsPayloadIncluded -ne $false -or
+    $manifest.windowsHostStatus -notmatch 'board-proven' -or
+    $manifest.ubuntuPythonHostStatus -notmatch 'no board proof') {
     throw 'Migration kit provenance flags are invalid'
 }
 $rows = @($manifest.files)
@@ -61,20 +65,38 @@ $quick = Get-Content -Raw -LiteralPath (Join-Path $root 'STR8-iN65-LOADER.ps1')
 foreach ($required in @('STR8-iN/65 LOADER - FAST PATH', 'STR8-N-v1-29.bin', 'ADOPT B0', 'J0', '[switch]$Details')) {
     if (-not $quick.Contains($required)) { throw "One-command wrapper lacks required handoff text: $required" }
 }
+$pythonQuick = Get-Content -Raw -LiteralPath (Join-Path $root 'STR8-iN65-LOADER.py')
+foreach ($required in @('UNTESTED ON LINUX HARDWARE', 'Windows 11 PowerShell remains the board-proven reference',
+        'COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'CTRL+U', 'CTRL+D', 'ADOPT B0')) {
+    if (-not $pythonQuick.Contains($required)) { throw "Experimental Python wrapper lacks required safety text: $required" }
+}
 $quickStart = Get-Content -Raw -LiteralPath (Join-Path $root 'QUICKSTART.txt')
 foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'PROPOSED D0 B3:$FFB0',
         'D0 FF WDCV2 FFFF FCFFFFFF', '-Details', 'Windows PowerShell 5.1',
-        '[System.IO.Ports.SerialPort]::GetPortNames()', 'NOT NEEDED')) {
+        '[System.IO.Ports.SerialPort]::GetPortNames()', 'UBUNTU LINUX HOST',
+        'NOT BOARD-TESTED', 'STR8-iN65-LOADER.py', 'Python 3 + pySerial',
+        'PowerShell 7', 'Self-contained Linux executable')) {
     if (-not $quickStart.Contains($required)) { throw "Quick-start card lacks required fast-path text: $required" }
 }
 $packageReadme = Get-Content -Raw -LiteralPath (Join-Path $root 'PACKAGE-README.txt')
 foreach ($required in @('Windows PowerShell 5.1', 'USB COM-port driver',
-        'writable folder', 'NOT NEEDED', 'powershell.exe')) {
+        'writable folder', 'NOT NEEDED', 'powershell.exe', 'UBUNTU PYTHON UNTESTED')) {
     if (-not $packageReadme.Contains($required)) { throw "Package README lacks Windows requirement: $required" }
 }
 & $loader -SelfTest
 & $loader -ImagePath (Join-Path $root 'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19') -ValidateOnly
 & $loader -ImagePath (Join-Path $root 'ARTIFACTS/STR8-iN65-LOADER-2000.s19') -ValidateOnly
+
+$python = Get-Command python -ErrorAction SilentlyContinue
+if ($null -eq $python) { throw 'Python is required to run the packaged experimental-loader offline checks' }
+& $python.Source (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --self-test
+if ($LASTEXITCODE -ne 0) { throw 'Python WDCMONv2 protocol self-test failed' }
+& $python.Source (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --validate-image (Join-Path $root 'ARTIFACTS/STR8-iN65-LOADER-2000.s19')
+if ($LASTEXITCODE -ne 0) { throw 'Python WDCMONv2 S19 validation failed' }
+& $python.Source (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --validate-image (Join-Path $root 'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19')
+if ($LASTEXITCODE -ne 0) { throw 'Python WDCMONv2 archive S19 validation failed' }
+& $python.Source (Join-Path $root 'STR8-iN65-LOADER.py') --self-test
+if ($LASTEXITCODE -ne 0) { throw 'Python consumer-wrapper self-test failed' }
 
 Write-Host ('MIGRATION KIT       = VERIFIED; {0} allowlisted files' -f $expected.Count)
 Write-Host 'WDCMONV2 FIRMWARE    = NOT INCLUDED'

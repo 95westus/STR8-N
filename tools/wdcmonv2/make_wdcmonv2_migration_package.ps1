@@ -25,6 +25,7 @@ function Get-Sha256 {
 
 $inputs = [ordered]@{
     'STR8-iN65-LOADER.ps1' = 'tools/wdcmonv2/MIGRATE-WDC-TO-STR8N.ps1'
+    'STR8-iN65-LOADER.py' = 'tools/wdcmonv2/MIGRATE-WDC-TO-STR8N.py'
     'QUICKSTART.txt' = 'docs/STR8_IN65_QUICKSTART.txt'
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19' = $ArchiveS19Path
     'ARTIFACTS/STR8-iN65-LOADER-2000.s19' = $InstallS19Path
@@ -38,6 +39,7 @@ $inputs = [ordered]@{
     'TOOLS/check_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/check_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_install.ps1' = 'tools/wdcmonv2/check_wdcmonv2_install.ps1'
     'TOOLS/start_wdcmonv2_ram.ps1' = 'tools/wdcmonv2/start_wdcmonv2_ram.ps1'
+    'TOOLS/start_wdcmonv2_ram.py' = 'tools/wdcmonv2/start_wdcmonv2_ram.py'
     'VERIFY-PACKAGE.ps1' = 'tools/wdcmonv2/verify_wdcmonv2_migration_kit.ps1'
     'DOC/WDCMONV2_MIGRATION.md' = 'docs/WDCMONV2_MIGRATION.md'
     'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md' = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md'
@@ -81,6 +83,7 @@ $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
     'STATUS: v1.29 FACTORY MIGRATION AND EDU QUIET-START BOARD-ACCEPTED',
+    'HOST STATUS: WINDOWS 11 POWERSHELL BOARD-PROVEN; UBUNTU PYTHON UNTESTED',
     '',
     'BEFORE YOU START',
     '  NEEDED: Windows 10/11, Windows PowerShell 5.1 (powershell.exe), the',
@@ -88,6 +91,8 @@ $readme = @(
     '  free COM port, stable board power, and access to physical RESET.',
     '  NOT NEEDED: Git, Python, make, WDC tools/WDCDB, internet, a T48, or',
     '  administrator rights after the COM-port driver is installed.',
+    '  Ubuntu choices and the experimental included Python loader are described',
+    '  in QUICKSTART.txt. Linux host operation is not yet board-tested.',
     '',
     'Optional preflight:',
     '  $PSVersionTable.PSVersion',
@@ -138,6 +143,8 @@ $manifest = [ordered]@{
     schema = 1
     package = 'str8n-v1.29-wdcmonv2-str8n-migration-kit'
     hardwareStatus = 'v1.29 factory migration and EDU quiet-start board-accepted'
+    windowsHostStatus = 'Windows 11 PowerShell board-proven'
+    ubuntuPythonHostStatus = 'experimental; offline-tested only; no board proof'
     stockWdcmonv2FirmwareIncluded = $false
     localBankArchivesIncluded = $false
     ryorsPayloadIncluded = $false

@@ -1,10 +1,10 @@
 STR8-iN/65 QUICK START
 Factory WDCMONv2 -> STR8-N 1.29
 
-BEFORE YOU START
+WINDOWS 11 HOST - BOARD-PROVEN REFERENCE
 
 NEEDED
-- Windows 10/11 with Windows PowerShell 5.1 (powershell.exe).
+- Windows 11 with Windows PowerShell 5.1 (powershell.exe).
 - The board's USB COM-port driver; the powered board must appear as COMx.
 - This ZIP extracted to a writable folder, a free COM port, stable power, and
   access to the board's physical RESET button.
@@ -18,27 +18,65 @@ Optional preflight (the second command should list the board's COM port):
    $PSVersionTable.PSVersion
    [System.IO.Ports.SerialPort]::GetPortNames()
 
-1. Extract the migration ZIP, connect and power the WDC board, then run:
+Extract the migration ZIP, connect and power the WDC board, then run:
 
    powershell.exe -NoProfile -ExecutionPolicy Bypass `
      -File .\STR8-iN65-LOADER.ps1
 
-2. Select the COM port and press the board's physical RESET button when asked.
+UBUNTU LINUX HOST - EXPERIMENTAL AND NOT BOARD-TESTED
 
-3. When the board has qualified erased Bank 0, type:
+Windows 11 remains the production reference and the home of the WDC toolchain.
+Linux host operation has offline protocol tests only.  Use it at your own risk
+until a complete Linux board transcript is accepted.
+
+COMMON LINUX NEEDS
+- Ubuntu Desktop 22.04/24.04 with a reader-selected host option below.
+- Extracted writable kit, free serial device, stable power, and RESET access.
+- Board visible as /dev/ttyUSB0, /dev/ttyACM0, or /dev/serial/by-id/...
+- Serial permission.  Add the user to dialout, then log out and back in:
+
+   sudo usermod -aG dialout "$USER"
+   ls -l /dev/serial/by-id/
+
+CHOOSE ONE HOST OPTION; SETUP IS LEFT TO THE READER
+
+A. Python 3 + pySerial (experimental loader included):
+
+   sudo apt update
+   sudo apt install python3 python3-serial
+   python3 ./STR8-iN65-LOADER.py --port /dev/ttyUSB0
+
+B. PowerShell 7 (included PS1, Linux behavior untested):
+
+   pwsh -NoProfile -File ./STR8-iN65-LOADER.ps1 -Port /dev/ttyUSB0
+
+C. Self-contained Linux executable:
+
+   No executable is included.  A reader-provided compatible build must preserve
+   the same WDCMONv2 protocol, byte-exact checks, transfers, and evidence logs.
+
+Python, PowerShell, and a self-contained executable are alternatives; Linux
+does not require all three.  Git, make, the WDC toolchain/WDCDB, internet after
+host setup, and a T48 are not required for packaged onboarding.
+
+BOARD UPDATE STEPS (SAME FOR WINDOWS OR AN EXPERIMENTAL LINUX HOST)
+
+1. Select or supply the serial port and press physical RESET when asked.
+
+2. When the board has qualified erased Bank 0, type:
 
    COPY B3 TO B0
 
-4. Wait for the complete 32K copy and exact comparison to pass.  When the
+3. Wait for the complete 32K copy and exact comparison to pass.  When the
    board prints SEND STR8-N TOP BIN, press Ctrl+U once.  After the 4096-byte
    image passes its board-side check, type:
 
    INSTALL STR8-N 1.29
 
-5. After STR8-N 1.29 starts, select S.  At STR8-N> enter L, then press Ctrl+D
+4. After STR8-N 1.29 starts, select S.  At STR8-N> enter L, then press Ctrl+D
    once to send the packaged production Bank Maintenance S19.
 
-6. At BM> enter D.  Enter Bank 0, type FF, and description WDCV2.  Require
+5. At BM> enter D.  Enter Bank 0, type FF, and description WDCV2.  Require
    this exact proposed write:
 
    PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
@@ -47,7 +85,7 @@ Optional preflight (the second command should list the board's COM port):
 
    ADOPT B0
 
-7. Use M and require:
+6. Use M and require:
 
    D0 FF WDCV2 FFFF FCFFFFFF
 
@@ -61,9 +99,10 @@ guest.  Its D0 record is stored only in the Bank-3 directory.
 
 DETAILS
 
-Add -Details to the loader command to show the image SHA-256, T48 offset,
-bank policy, and evidence paths before starting.  Fast and detailed modes both
-retain the complete raw transcript and timestamped host event log in LOCAL.
+Add -Details to the Windows command or --details to the experimental Python
+command to show the image SHA-256, T48 offset, bank policy, and evidence paths
+before starting.  Fast and detailed modes both retain the complete raw
+transcript and timestamped host event log in LOCAL.
 Execution Policy Bypass applies only to the launched PowerShell process and
 does not change the machine's permanent PowerShell policy.
 The complete procedure and recovery notes are in DOC\WDCMONV2_MIGRATION.md.

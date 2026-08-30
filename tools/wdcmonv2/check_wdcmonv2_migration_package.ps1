@@ -39,6 +39,7 @@ if (-not (Test-Path -LiteralPath $BoardTestPath -PathType Leaf)) { throw "Board 
 
 $expected = @(
     'STR8-iN65-LOADER.ps1',
+    'STR8-iN65-LOADER.py',
     'QUICKSTART.txt',
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19',
     'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19',
@@ -60,6 +61,7 @@ $expected = @(
     'TOOLS/check_wdcmonv2_install.ps1',
     'TOOLS/extract_wdcmonv2_archive.ps1',
     'TOOLS/start_wdcmonv2_ram.ps1',
+    'TOOLS/start_wdcmonv2_ram.py',
     'VERIFY-PACKAGE.ps1'
 ) | Sort-Object
 
@@ -79,6 +81,8 @@ if ($manifest.schema -ne 1) { throw 'Migration package manifest schema is not 1'
 if ($manifest.stockWdcmonv2FirmwareIncluded -ne $false) { throw 'Manifest must state that stock WDCMONv2 firmware is absent' }
 if ($manifest.localBankArchivesIncluded -ne $false) { throw 'Manifest must state that local bank archives are absent' }
 if ($manifest.ryorsPayloadIncluded -ne $false) { throw 'Manifest must state that no R-YORS payload is included' }
+if ($manifest.windowsHostStatus -notmatch 'board-proven') { throw 'Manifest must retain Windows host proof status' }
+if ($manifest.ubuntuPythonHostStatus -notmatch 'no board proof') { throw 'Manifest must mark Ubuntu Python as lacking board proof' }
 if ($manifest.hardwareStatus -notmatch 'board-accepted' -or
         $manifest.hardwareStatus -notmatch 'EDU quiet-start') {
     throw 'Manifest must publish accepted v1.29 migration and EDU quiet-start status'
