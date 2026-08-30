@@ -317,7 +317,9 @@ range to be erased, and uses a target-specific confirmation such as
   addresses, bank policy, and evidence paths without changing the transaction.
   Normal Windows onboarding needs only Windows PowerShell 5.1, the board's USB
   COM-port driver, an extracted writable folder, and exclusive access to that
-  COM port; the release package lists an exact preflight.
+  COM port; the release package lists an exact preflight. The kit also includes
+  an experimental Python/pySerial Ubuntu loader with offline protocol tests,
+  explicitly marked untested on hardware until a Linux board run is accepted.
 
 - [Task List](TASKS.md) - release-staging gates and later Bank-1 example
   backlog.
