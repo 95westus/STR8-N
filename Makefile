@@ -132,14 +132,22 @@ WDCMONV2_PACKAGE_CHECK := tools/wdcmonv2/check_wdcmonv2_migration_package.ps1
 WDCMONV2_PACKAGE_VERIFY := tools/wdcmonv2/verify_wdcmonv2_migration_kit.ps1
 WDCMONV2_PACKAGE_DIR := $(RELEASE_DIR)/wdcmonv2-str8n-migration-kit
 WDCMONV2_PACKAGE_ZIP := $(RELEASE_DIR)/str8n-$(VERSION)-wdcmonv2-str8n-migration-kit.zip
+RELEASE_PACKAGE_TOOL := tools/make_release_package.ps1
+RELEASE_PACKAGE_VERIFY := tools/verify_release_package.ps1
+RELEASE_PACKAGE_DIR := $(RELEASE_DIR)/str8n-$(VERSION)-release
+RELEASE_PACKAGE_ZIP := $(RELEASE_DIR)/str8n-$(VERSION)-release.zip
 TOP_BIN := $(BIN_DIR)/str8n-$(VERSION)-bank3-f000-ffff.bin
 MANIFEST := $(BUILD_DIR)/str8n-manifest.json
 PUBLIC_CONTRACT := $(INCLUDE_DIR)/str8n-public.inc
 
 .NOTPARALLEL:
-.PHONY: all resident workers programmer-bin str8-in65-test-top str8-in65-test-image str8-in65-ram-installer str8-in65-stock-restore str8-in65-factory-restore str8-in65-top-update str8-in65-bank-maint str8-in65-promotion-check manifest bank-maint bank-maint-menu console-abi-test top-update onboard-directory-refresh ryors-full-bank wdcmonv2-archive wdcmonv2-install wdcmonv2-host-check wdcmonv2-package layout-check embedded-layout-check range-matrix-check ram-load-contract-check ram-abi-check clean help dirs FORCE
+.PHONY: all release-package resident workers programmer-bin str8-in65-test-top str8-in65-test-image str8-in65-ram-installer str8-in65-stock-restore str8-in65-factory-restore str8-in65-top-update str8-in65-bank-maint str8-in65-promotion-check manifest bank-maint bank-maint-menu console-abi-test top-update onboard-directory-refresh ryors-full-bank wdcmonv2-archive wdcmonv2-install wdcmonv2-host-check wdcmonv2-package layout-check embedded-layout-check range-matrix-check ram-load-contract-check ram-abi-check clean help dirs FORCE
 
 all: manifest range-matrix-check ram-load-contract-check ram-abi-check console-abi-test top-update onboard-directory-refresh wdcmonv2-archive wdcmonv2-install wdcmonv2-host-check str8-in65-promotion-check
+
+release-package: all bank-maint-menu wdcmonv2-package $(RELEASE_PACKAGE_TOOL) $(RELEASE_PACKAGE_VERIFY)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RELEASE_PACKAGE_TOOL) -PackageDir "$(RELEASE_PACKAGE_DIR)" -ZipPath "$(RELEASE_PACKAGE_ZIP)"
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RELEASE_PACKAGE_VERIFY) -Root "$(RELEASE_PACKAGE_DIR)"
 
 resident: $(STR8_S19)
 
@@ -443,6 +451,7 @@ help:
 	@echo make wdcmonv2-package - package only the WDCMONv2-to-STR8-N migration; HIMON/ASM-F2 are separate loads
 	@echo make wdcmonv2-host-check - self-test the binary monitor bridge and validate both migration S19 files
 	@echo make wdcmonv2-package - build an allowlisted publishable migration ZIP with no WDC firmware or local archives
+	@echo make release-package - build and verify the STR8-N v1.29-only release ZIP
 	@echo make layout-check - require the resident to end at or before the fixed worker
 	@echo make embedded-layout-check - alias for layout-check
 	@echo make range-matrix-check - validate every documented 4K-aligned install size

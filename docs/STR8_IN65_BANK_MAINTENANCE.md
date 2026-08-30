@@ -147,9 +147,8 @@ and #2 are recorded as date-stamped `202205` and `202512`. Board #3 accepted
 the factory WDCMONv2-to-STR8-N 1.29 migration, copied and verified B3 into B0,
 installed the external 4096-byte v1.29 top, launched retained WDCMONv2 through
 reset selector `0` and shell `J0`, and returned to STR8-N 1.29 by physical
-RESET after each launch. Its D0 row was intentionally left as the prompted
-default `FF WDCM2 FFFF FCFFFFFF`; that is retained as observed cross-board
-success evidence rather than rewritten into the consumer-target `WDCV2` label.
+RESET after each launch. Its D0 row was recorded as the consumer-target
+`FF WDCV2 FFFF FCFFFFFF`, providing cross-board success evidence.
 
 The first 2026-08-28 v1.28 board run accepted prompted default D0 enrollment as
 `FF WDCM2 FFFF FCFFFFFF`, read it back through `M`, launched B0 twice through
