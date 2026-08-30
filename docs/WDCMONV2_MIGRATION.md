@@ -26,12 +26,28 @@ to run that extended evidence path before using the minimal migrator: the
 write-capable RAM program itself requires erased B0, copies all of B3 into B0,
 and proves the complete copy before changing B3:F.
 
+## Windows prerequisites
+
+Needed: Windows 10/11 with Windows PowerShell 5.1 (`powershell.exe`), the
+board's USB COM-port driver, the extracted kit in a writable folder, a free COM
+port, stable board power, and access to physical RESET.
+
+Not needed: Git, Python, `make`, WDC tools/WDCDB, internet access, a T48
+programmer, or administrator rights after the COM-port driver is installed.
+
+Optional check:
+
+```powershell
+$PSVersionTable.PSVersion
+[System.IO.Ports.SerialPort]::GetPortNames()
+```
+
 ## Factory-board minimal path
 
 Extract and optionally verify the migration kit, connect the board, and run:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
+powershell.exe -NoProfile -ExecutionPolicy Bypass `
   -File .\STR8-iN65-LOADER.ps1
 ```
 

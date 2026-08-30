@@ -1,24 +1,17 @@
 STR8-iN/65 QUICK START
 Factory WDCMONv2 -> STR8-N 1.29
 
-WINDOWS REQUIREMENTS
+BEFORE YOU START
 
-- Windows 10 or 11 with Windows PowerShell 5.1 (powershell.exe), run in an
-  interactive PowerShell console or Windows Terminal window.
-- The USB virtual COM-port driver for the board/interface.  The powered board
-  must appear as a COM port in Windows.
-- Extract this ZIP to a writable local folder before running it.  The loader
-  records its transcript and host event log in the LOCAL folder.
-- Close WDCDB, PuTTY, Tera Term, serial monitors, and anything else using the
-  board's COM port.  Only one program can own the port during onboarding.
-- Keep the board on stable USB power and have access to its physical RESET
-  button.
+NEEDED
+- Windows 10/11 with Windows PowerShell 5.1 (powershell.exe).
+- The board's USB COM-port driver; the powered board must appear as COMx.
+- This ZIP extracted to a writable folder, a free COM port, stable power, and
+  access to the board's physical RESET button.
 
-No Git, Python, make, WDC assembler/linker, WDCDB, internet connection, or T48
-programmer is required.  Administrator rights are normally needed only if the
-USB COM-port driver must be installed.  The command below applies Execution
-Policy Bypass only to this PowerShell process; it does not change the machine's
-permanent PowerShell policy.
+NOT NEEDED
+- Git, Python, make, WDC tools/WDCDB, internet access, or a T48 programmer.
+- Administrator rights, except possibly to install the USB COM-port driver.
 
 Optional preflight (the second command should list the board's COM port):
 
@@ -71,4 +64,6 @@ DETAILS
 Add -Details to the loader command to show the image SHA-256, T48 offset,
 bank policy, and evidence paths before starting.  Fast and detailed modes both
 retain the complete raw transcript and timestamped host event log in LOCAL.
+Execution Policy Bypass applies only to the launched PowerShell process and
+does not change the machine's permanent PowerShell policy.
 The complete procedure and recovery notes are in DOC\WDCMONV2_MIGRATION.md.
