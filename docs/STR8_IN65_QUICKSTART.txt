@@ -62,6 +62,10 @@ host setup, and a T48 are not required for packaged onboarding.
 
 BOARD UPDATE STEPS (SAME FOR WINDOWS OR AN EXPERIMENTAL LINUX HOST)
 
+READ THE SCREEN AS YOU GO.  The loader tells you when to type a command and
+when to press a control key.  Ctrl+U and Ctrl+D send different packaged files;
+press each key only when the screen asks for it, and press it only once.
+
 1. Select or supply the serial port and press physical RESET when asked.
 
 2. When the board has qualified erased Bank 0, type:
@@ -90,7 +94,11 @@ BOARD UPDATE STEPS (SAME FOR WINDOWS OR AN EXPERIMENTAL LINUX HOST)
 
    D0 FF WDCV2 FFFF FCFFFFFF
 
-   Test reset selector 0, shell J0, and physical RESET return to STR8-N 1.29.
+   Test reset selector 0 and shell J0.  J0 hands the computer completely to
+   the preserved factory system in Bank 0.  To leave that system and return to
+   STR8-N 1.29, press the board's physical RESET button.  Requiring physical
+   RESET after J0 is intentional and by design; it is not a flaw or a failed
+   migration.
 
 SAFETY
 

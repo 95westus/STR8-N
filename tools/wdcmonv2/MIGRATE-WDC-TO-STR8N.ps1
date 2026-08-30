@@ -56,9 +56,10 @@ Write-Host ('Port ......................................... {0}' -f $Port)
 Write-Host 'Top image .................................... 4096 bytes; $F000-$FFFF'
 Write-Host 'Evidence ..................................... full raw + event logs'
 Write-Host ''
+Write-Host 'READ THE SCREEN: enter commands and press control keys only when requested.'
 Write-Host 'Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.29.'
-Write-Host 'When asked for the top BIN, press CTRL+U once.'
-Write-Host 'After boot: S, L, CTRL+D, D, then enter 0, FF, WDCV2, and ADOPT B0.'
+Write-Host 'When the screen asks for the top BIN, press CTRL+U once.'
+Write-Host 'After boot, follow the screen: S, L, CTRL+D once, D, then 0, FF, WDCV2, ADOPT B0.'
 Write-Host 'Do not reset, assert NMI, or remove power during active flash writes.'
 if ($Details) {
     Write-Host ''
@@ -95,6 +96,7 @@ Write-Host 'NEXT: connect any serial terminal at 115200 baud, 8 data bits, no pa
 Write-Host 'Examples: minicom, Tera Term, PuTTY, or another serial terminal emulator.'
 Write-Host 'Press physical RESET: STR8-N 1.29 must appear.'
 Write-Host 'Require D0 FF WDCV2 FFFF FCFFFFFF before testing selector 0 and J0.'
-Write-Host 'Physical RESET always returns to STR8-N in Bank 3.'
+Write-Host 'J0 is a complete handoff to the preserved factory system.'
+Write-Host 'Physical RESET is the designed return to STR8-N; this is not a flaw.'
 Write-Host ('Detailed raw transcript: {0}' -f $TranscriptPath)
 Write-Host ('Detailed host event log: {0}.events.txt' -f $TranscriptPath)

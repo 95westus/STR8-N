@@ -435,6 +435,11 @@ At `STR8-N>`, enter `J0`. WDCMONv2 is a binary host monitor, not an ASCII
 command prompt, so an absent banner is not a failure. Press `Ctrl+B` once in
 the still-open reference terminal. Require:
 
+`J0` is a complete handoff to the preserved Bank-0 system. The expected return
+path is the board's physical RESET button, which selects Bank 3 and starts
+STR8-N again. Requiring physical RESET here is intentional and by design; it
+is not a product defect or migration failure.
+
 ```text
 WDCMON PROBE = SXB2; HW=...; WDCMON=...
 ```

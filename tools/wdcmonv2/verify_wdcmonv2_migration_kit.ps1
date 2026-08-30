@@ -63,12 +63,16 @@ foreach ($row in $rows) {
 
 $loader = Join-Path $root 'TOOLS/start_wdcmonv2_ram.ps1'
 $quick = Get-Content -Raw -LiteralPath (Join-Path $root 'STR8-iN65-LOADER.ps1')
-foreach ($required in @('STR8-iN/65 LOADER - FAST PATH', 'STR8-N-v1-29.bin', 'ADOPT B0', 'J0', '[switch]$Details')) {
+foreach ($required in @('STR8-iN/65 LOADER - FAST PATH', 'STR8-N-v1-29.bin',
+        'READ THE SCREEN', 'CTRL+U once', 'CTRL+D once', 'J0 is a complete handoff',
+        'Physical RESET is the designed return', 'not a flaw', 'ADOPT B0', 'J0', '[switch]$Details')) {
     if (-not $quick.Contains($required)) { throw "One-command wrapper lacks required handoff text: $required" }
 }
 $pythonQuick = Get-Content -Raw -LiteralPath (Join-Path $root 'STR8-iN65-LOADER.py')
 foreach ($required in @('UNTESTED ON LINUX HARDWARE', 'Windows 11 PowerShell remains the board-proven reference',
-        'COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'CTRL+U', 'CTRL+D', 'ADOPT B0')) {
+        'COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'READ THE SCREEN', 'CTRL+U once',
+        'CTRL+D once', 'J0 is a complete handoff', 'Physical RESET is the designed return',
+        'not a flaw', 'ADOPT B0')) {
     if (-not $pythonQuick.Contains($required)) { throw "Experimental Python wrapper lacks required safety text: $required" }
 }
 $quickStart = Get-Content -Raw -LiteralPath (Join-Path $root 'QUICKSTART.txt')
@@ -76,13 +80,17 @@ foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.29', 'PROPOSED D0 B3:
         'D0 FF WDCV2 FFFF FCFFFFFF', '-Details', 'Windows PowerShell 5.1',
         '[System.IO.Ports.SerialPort]::GetPortNames()', 'UBUNTU LINUX HOST',
         'NOT BOARD-TESTED', 'STR8-iN65-LOADER.py', 'Python 3 + pySerial',
-        'PowerShell 7', 'Self-contained Linux executable')) {
+        'PowerShell 7', 'Self-contained Linux executable', 'READ THE SCREEN AS YOU GO',
+        'Ctrl+U and Ctrl+D send different packaged files', 'physical RESET button',
+        'intentional and by design', 'not a flaw')) {
     if (-not $quickStart.Contains($required)) { throw "Quick-start card lacks required fast-path text: $required" }
 }
 $packageReadme = Get-Content -Raw -LiteralPath (Join-Path $root 'PACKAGE-README.txt')
 foreach ($required in @('Windows PowerShell 5.1', 'USB COM-port driver',
         'writable folder', 'NOT NEEDED', 'powershell.exe', 'UBUNTU PYTHON UNTESTED',
-        'ARCHIVE ROOT: STR8-N-v1.29-Migration-Kit')) {
+        'ARCHIVE ROOT: STR8-N-v1.29-Migration-Kit', 'READ THE SCREEN',
+        'CTRL+U and CTRL+D send different packaged files',
+        'physical RESET is the designed return', 'intentional, not a flaw')) {
     if (-not $packageReadme.Contains($required)) { throw "Package README lacks Windows requirement: $required" }
 }
 & $loader -SelfTest

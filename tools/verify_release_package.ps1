@@ -35,6 +35,12 @@ foreach ($line in Get-Content -LiteralPath $sumsPath) {
 if ((Get-Item -LiteralPath (Join-Path $rootFull 'ARTIFACTS/str8n-v1.29-bank3-f000-ffff.bin')).Length -ne 4096) {
     throw 'Canonical top BIN is not exactly 4096 bytes'
 }
+$packageReadme = Get-Content -Raw -LiteralPath (Join-Path $rootFull 'PACKAGE-README.txt')
+foreach ($text in @('follow the screen', 'CTRL+U and CTRL+D send different',
+        'press each once and only when requested', 'After J0, physical',
+        'RESET is the designed return')) {
+    if (-not $packageReadme.Contains($text)) { throw "Package README lacks operator guidance: $text" }
+}
 $forbidden = Get-ChildItem -LiteralPath $rootFull -Recurse -File |
     Where-Object { $_.FullName -match '(?i)[\\/](LOCAL|R-YORS|HIMON|ASM-F2)[\\/]' -or $_.Name -match '(?i)bank[0-2].*\.(bin|s19)$' }
 if ($forbidden) { throw "Forbidden payload or local evidence found: $($forbidden.FullName -join ', ')" }

@@ -56,6 +56,12 @@ T48 offset, bank policy, and evidence paths before the port is opened. Both
 modes retain the same complete raw transcript and timestamped host event log.
 The extracted package's `QUICKSTART.txt` is the short operator card.
 
+Read the screen throughout the migration. The loader tells the operator when
+to enter each confirmation and when to press a control key. `Ctrl+U` and
+`Ctrl+D` send different packaged files; use each only when its corresponding
+on-screen request appears, and press it only once. Do not send either file in
+advance.
+
 The wrapper enumerates serial ports and asks for the COM port when `-Port` is
 omitted. It opens and holds that port, then asks for a physical RESET. Reset
 the board and press Enter in PowerShell. After board identity, flash identity,
@@ -86,9 +92,12 @@ D0 FF WDCV2 FFFF FCFFFFFF
 ```
 
 Only then test reset selector `0`, shell `J0`, and physical RESET return to
-STR8-N. Bank 0 remains an opaque 32K guest; its directory entry is physically
-in Bank 3 at `$FFB0-$FFBF`. B1 and B2 are never selected as migration
-destinations.
+STR8-N. `J0` is a complete handoff to the preserved factory system in Bank 0;
+STR8-N is no longer running after that handoff. Press the board's physical
+RESET button to select Bank 3 and return to STR8-N. This required physical
+RESET is intentional and by design, not a flaw, hang, or failed migration.
+Bank 0 remains an opaque 32K guest; its directory entry is physically in Bank
+3 at `$FFB0-$FFBF`. B1 and B2 are never selected as migration destinations.
 
 The PowerShell bridge remains the terminal while the two Ctrl-key transfers
 run. After the adoption proof, enter Ctrl+] to leave it and connect minicom,
