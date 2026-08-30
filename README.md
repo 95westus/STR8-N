@@ -1,35 +1,35 @@
 # STR8-N v1.29
 
-> [!IMPORTANT]
-> **Current release candidate — 2026-08-29:** STR8-N 1.29 promotes the
-> STR8-iN/65 resident as the production image, including the EDU quiet-start
-> initialization that holds the buzzer inactive and clears the LEDs before
-> normal console initialization. The factory loader copies and exactly proves
-> stock Bank 3 in opaque Bank 0, receives the canonical 4096-byte
-> `STR8-N-v1-29.bin`, installs it at B3:`$F000-$FFFF`, and leaves the Bank-3
-> directory empty. The separate production Bank Maintenance image owns the
-> explicit D0 `FF WDCV2` adoption after the first verified boot.
->
-> The complete v1.29 factory migration is accepted on a physical
-> W65C02SXB/EDU. It exercised erased-B0 `COPY B3 TO B0`, installed the external
-> canonical top, committed `D0 FF WDCV2 FFFF FCFFFFFF`, launched retained
-> WDCMONv2 through shell `J0` and reset selector `0`, and returned through
-> physical RESET after both launches. The operator separately confirmed that
-> the EDU buzzer became silent as soon as the RAM adapter started.
+## Current release candidate — 2026-08-29
 
-> [!IMPORTANT]
-> **Historical hardware validation baseline — 2026-08-28:** The v1.28 factory
-> WDCMONv2 migration is accepted on a physical W65C02SXB/EDU. It copied and
-> exactly verified all of stock B3 in B0, installed STR8-N 1.28 in B3:F,
-> published retained WDCMONv2 as COMPLETE D0 `WDCM2`, launched it through
-> `J0`, and captured physical RESET returning to STR8-N 1.28. The retained
-> EDU application reached its full menu with OLED, RTC, SPI SRAM, ADC, and
-> CardKB all `OK`; the operator visually verified the CS0-CS3 chase. B1/B2
-> remained untouched, and no HIMON, ASM-F2, or R-YORS payload was installed by
-> the migration.
->
-> The earlier v1.22 Bank-2 recovery/guest proof remains below as historical
-> evidence of the general multibank handoff path.
+STR8-N 1.29 promotes the STR8-iN/65 resident as the production image,
+including the EDU quiet-start initialization that holds the buzzer inactive
+and clears the LEDs before normal console initialization. The factory loader
+copies and exactly proves stock Bank 3 in opaque Bank 0, receives the canonical
+4096-byte `STR8-N-v1-29.bin`, installs it at B3:`$F000-$FFFF`, and leaves the
+Bank-3 directory empty. The separate production Bank Maintenance image owns
+the explicit D0 `FF WDCV2` adoption after the first verified boot.
+
+The complete v1.29 factory migration is accepted on a physical W65C02SXB/EDU.
+It exercised erased-B0 `COPY B3 TO B0`, installed the external canonical top,
+committed `D0 FF WDCV2 FFFF FCFFFFFF`, launched retained WDCMONv2 through shell
+`J0` and reset selector `0`, and returned through physical RESET after both
+launches. The operator separately confirmed that the EDU buzzer became silent
+as soon as the RAM adapter started.
+
+## Historical hardware validation baseline — 2026-08-28
+
+The v1.28 factory WDCMONv2 migration is accepted on a physical W65C02SXB/EDU.
+It copied and exactly verified all of stock B3 in B0, installed STR8-N 1.28 in
+B3:F, published retained WDCMONv2 as COMPLETE D0 `WDCM2`, launched it through
+`J0`, and captured physical RESET returning to STR8-N 1.28. The retained EDU
+application reached its full menu with OLED, RTC, SPI SRAM, ADC, and CardKB all
+`OK`; the operator visually verified the CS0-CS3 chase. B1/B2 remained
+untouched, and no HIMON, ASM-F2, or R-YORS payload was installed by the
+migration.
+
+The earlier v1.22 Bank-2 recovery/guest proof remains below as historical
+evidence of the general multibank handoff path.
 >
 > <details>
 > <summary>Earlier 2026-08-21 v1.22 board transcript</summary>
@@ -130,9 +130,9 @@ for a W65C02SXB/EDU with four 32K flash banks. It lives in the protected Bank-3
 top sector at CPU `$F000-$FFFF`; HIMON, ASM, and guest systems remain separate
 payloads.
 
-STR8-N is part of R-YORS, but is deliberately R-YORS-agnostic: it does not
-depend on HIMON, ASM-F2, OIL, or AP, and can supervise compatible non-R-YORS
-guest systems.
+STR8-N is a standalone product. It does not depend on R-YORS, HIMON, ASM-F2,
+OIL, or AP. It can supervise compatible R-YORS payloads or unrelated guest
+systems without adopting either as part of its product boundary.
 
 **The name:** STR8-N is pronounced *straighten*, reflecting its role in
 restoring a machine to a known, bootable state. `8` identifies its 8-bit
