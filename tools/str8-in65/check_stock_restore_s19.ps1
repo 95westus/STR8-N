@@ -1,7 +1,7 @@
 param(
     [string]$SourcePath = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm',
     [string]$S19Path = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-factory-restore-2000.s19',
-    [string]$MapPath = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-factory-restore-2000.map',
+    [string]$MapPath = 'BUILD/v1.29/map/str8n-v1.29-str8-in65-factory-restore-2000.map',
     [string]$VersionText = '1.29'
 )
 

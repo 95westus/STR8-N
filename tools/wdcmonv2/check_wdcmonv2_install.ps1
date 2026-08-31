@@ -1,7 +1,7 @@
 param(
     [string]$SourcePath = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm',
     [string]$S19Path = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.s19',
-    [string]$MapPath = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.map',
+    [string]$MapPath = 'BUILD/v1.29/map/str8n-v1.29-wdcmonv2-install-2000.map',
     [string]$TopBinPath = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin',
     [string]$CandidateBinPath = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin',
     [string]$VersionText = '1.29'
