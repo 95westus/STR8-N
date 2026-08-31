@@ -15,6 +15,8 @@ OBJ_DIR := $(BUILD_DIR)/obj
 LST_DIR := $(BUILD_DIR)/lst
 SYM_DIR := $(BUILD_DIR)/sym
 S19_DIR := $(RELEASE_DIR)/s19
+MAP_DIR := $(RELEASE_DIR)/map
+LINK_SYM_DIR := $(RELEASE_DIR)/sym
 BIN_DIR := $(RELEASE_DIR)/bin
 TEST_DIR := $(RELEASE_DIR)/test
 INCLUDE_DIR := $(RELEASE_DIR)/include
@@ -52,11 +54,15 @@ DELAY_OBJ := $(OBJ_DIR)/util-delay.obj
 WORKER_OBJ := $(OBJ_DIR)/str8n-worker.obj
 
 STR8_S19 := $(S19_DIR)/str8n-$(VERSION)-f000.s19
-STR8_MAP := $(STR8_S19:.s19=.map)
+STR8_MAP := $(MAP_DIR)/str8n-$(VERSION)-f000.map
 STR8_IN65_S19 := $(STR8_IN65_S19_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-f000.s19
-STR8_IN65_MAP := $(STR8_IN65_S19:.s19=.map)
+STR8_IN65_MAP := $(MAP_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-f000.map
 WORKER_S19 := $(S19_DIR)/str8n-$(VERSION)-worker-0200.s19
-WORKER_MAP := $(WORKER_S19:.s19=.map)
+WORKER_MAP := $(MAP_DIR)/str8n-$(VERSION)-worker-0200.map
+LINK_SIDECAR_TOOL := tools/move_link_sidecars.ps1
+define MOVE_LINK_SIDECARS
+	@powershell -NoProfile -ExecutionPolicy Bypass -File $(LINK_SIDECAR_TOOL) -S19Path "$@" -MapDir "$(MAP_DIR)" -SymDir "$(LINK_SYM_DIR)"
+endef
 TOP_BIN_TOOL := tools/build_str8n_top_bin.ps1
 LAYOUT_CHECK_TOOL := tools/check_str8n_layout.ps1
 MANIFEST_TOOL := tools/write_str8n_manifest.ps1
@@ -81,7 +87,7 @@ STR8_IN65_BANK_MAINT_S19 := $(STR8_IN65_S19_DIR)/str8n-$(STR8_IN65_VERSION)-str8
 CONSOLE_ABI_TEST_SRC := tools/console-abi-test/str8n-v1.23-console-abi-test-2000.asm
 CONSOLE_ABI_TEST_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-console-abi-test-2000.obj
 CONSOLE_ABI_TEST_S19 := $(S19_DIR)/str8n-$(VERSION)-console-abi-test-2000.s19
-CONSOLE_ABI_TEST_MAP := $(CONSOLE_ABI_TEST_S19:.s19=.map)
+CONSOLE_ABI_TEST_MAP := $(MAP_DIR)/str8n-$(VERSION)-console-abi-test-2000.map
 TOP_UPDATE_SRC := tools/top-update/str8n-v1.23-top-update-2000.asm
 TOP_UPDATE_INC_TOOL := tools/make_top_update_image_inc.ps1
 TOP_UPDATE_INC := $(RELEASE_DIR)/generated/str8n-$(VERSION)-top-image.inc
@@ -96,13 +102,13 @@ RYORS_FULL_BANK_S19 := $(S19_DIR)/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 WDCMONV2_ARCHIVE_SRC := tools/wdcmonv2/wdcmonv2str8n-archive-2000.asm
 WDCMONV2_ARCHIVE_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-wdcmonv2-archive-2000.obj
 WDCMONV2_ARCHIVE_S19 := $(S19_DIR)/str8n-$(VERSION)-wdcmonv2-archive-2000.s19
-WDCMONV2_ARCHIVE_MAP := $(WDCMONV2_ARCHIVE_S19:.s19=.map)
+WDCMONV2_ARCHIVE_MAP := $(MAP_DIR)/str8n-$(VERSION)-wdcmonv2-archive-2000.map
 WDCMONV2_ARCHIVE_CHECK := tools/wdcmonv2/check_wdcmonv2_archive.ps1
 WDCMONV2_ARCHIVE_EXTRACT := tools/wdcmonv2/extract_wdcmonv2_archive.ps1
 WDCMONV2_INSTALL_SRC := tools/wdcmonv2/wdcmonv2str8n-install-2000.asm
 WDCMONV2_INSTALL_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.obj
 WDCMONV2_INSTALL_S19 := $(S19_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.s19
-WDCMONV2_INSTALL_MAP := $(WDCMONV2_INSTALL_S19:.s19=.map)
+WDCMONV2_INSTALL_MAP := $(MAP_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.map
 WDCMONV2_INSTALL_CHECK := tools/wdcmonv2/check_wdcmonv2_install.ps1
 WDCMONV2_INSTALL_INC_TOOL := tools/wdcmonv2/make_wdcmonv2_install_image_inc.ps1
 WDCMONV2_INSTALL_INC := $(RELEASE_DIR)/generated/str8n-$(VERSION)-wdcmonv2-install-image.inc
@@ -112,10 +118,10 @@ STR8_IN65_GENERATED_INC := $(STR8_IN65_RELEASE_DIR)/generated/str8n-$(STR8_IN65_
 STR8_IN65_CANDIDATE_BIN := $(STR8_IN65_BIN_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-wdcmonv2-bank3-f000-ffff.bin
 STR8_IN65_INSTALL_OBJ := $(OBJ_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-wdcmonv2-install-2000.obj
 STR8_IN65_INSTALL_S19 := $(STR8_IN65_S19_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-wdcmonv2-install-2000.s19
-STR8_IN65_INSTALL_MAP := $(STR8_IN65_INSTALL_S19:.s19=.map)
+STR8_IN65_INSTALL_MAP := $(MAP_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-wdcmonv2-install-2000.map
 STR8_IN65_STOCK_RESTORE_OBJ := $(OBJ_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-factory-restore-2000.obj
 STR8_IN65_STOCK_RESTORE_S19 := $(STR8_IN65_S19_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-factory-restore-2000.s19
-STR8_IN65_STOCK_RESTORE_MAP := $(STR8_IN65_STOCK_RESTORE_S19:.s19=.map)
+STR8_IN65_STOCK_RESTORE_MAP := $(MAP_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-factory-restore-2000.map
 STR8_IN65_STOCK_RESTORE_CHECK := tools/str8-in65/check_stock_restore_s19.ps1
 STR8_IN65_TOP_UPDATE_INC := $(STR8_IN65_RELEASE_DIR)/generated/str8n-$(STR8_IN65_VERSION)-str8-in65-top-image.inc
 STR8_IN65_TOP_UPDATE_OBJ := $(OBJ_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-top-update-2000.obj
@@ -218,7 +224,7 @@ ram-abi-check: $(RAM_ABI_CHECK_TOOL)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RAM_ABI_CHECK_TOOL)
 
 dirs:
-	@powershell -NoProfile -ExecutionPolicy Bypass -Command "@('$(OBJ_DIR)','$(LST_DIR)','$(SYM_DIR)','$(S19_DIR)','$(BIN_DIR)','$(STR8_IN65_S19_DIR)','$(STR8_IN65_BIN_DIR)') | ForEach-Object { New-Item -ItemType Directory -Force -Path $$_ | Out-Null }"
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "@('$(OBJ_DIR)','$(LST_DIR)','$(SYM_DIR)','$(S19_DIR)','$(MAP_DIR)','$(LINK_SYM_DIR)','$(BIN_DIR)','$(STR8_IN65_S19_DIR)','$(STR8_IN65_BIN_DIR)') | ForEach-Object { New-Item -ItemType Directory -Force -Path $$_ | Out-Null }"
 
 $(STR8_OBJ): $(STR8_SRC) $(STR8_INCLUDES) | dirs
 	$(ASM) $(ASFLAGS) $(RELEASE_DEFINES) $<
@@ -321,29 +327,35 @@ $(STR8_IN65_STOCK_RESTORE_OBJ): $(WDCMONV2_INSTALL_SRC) | dirs
 
 $(STR8_S19): $(STR8_OBJ) $(DELAY_OBJ) | dirs
 	$(LINKER) $(STR8_LINKFLAGS) $@ $(STR8_OBJ) $(DELAY_OBJ)
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S903F0000C'; Set-Content -LiteralPath $$p -Value $$lines"
 
 $(STR8_IN65_S19): $(STR8_IN65_OBJ) $(DELAY_OBJ) | dirs
 	$(LINKER) $(STR8_LINKFLAGS) $@ $(STR8_IN65_OBJ) $(DELAY_OBJ)
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S903F0000C'; Set-Content -LiteralPath $$p -Value $$lines"
 
 $(WORKER_S19): $(WORKER_OBJ) | dirs
 	$(LINKER) $(WORKER_LINKFLAGS) $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9030200FA'; Set-Content -LiteralPath $$p -Value $$lines"
 
 $(BANK_MAINT_S19): $(BANK_MAINT_OBJ) $(BANK_MAINT_CHECK_TOOL) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(BANK_MAINT_CHECK_TOOL) -S19Path "$@" -VersionText "$(VERSION_TEXT)"
 
 $(BANK_MAINT_MENU_S19): $(BANK_MAINT_MENU_OBJ) $(BANK_MAINT_CHECK_TOOL) $(TOP_UPDATE_CHECK_TOOL) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(BANK_MAINT_CHECK_TOOL) -S19Path "$@" -SourcePath "$(BANK_MAINT_SRC)" -VersionText "$(VERSION_TEXT)" -MenuTop
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_CHECK_TOOL) -S19Path "$@" -TopBinPath "$(TOP_BIN)" -VersionText "$(VERSION_TEXT)"
 
 $(STR8_IN65_BANK_MAINT_S19): $(STR8_IN65_BANK_MAINT_OBJ) $(BANK_MAINT_CHECK_TOOL) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(BANK_MAINT_CHECK_TOOL) -S19Path "$@" -VersionText "$(STR8_IN65_VERSION_TEXT)" -In65 -FlagsSourcePath "$(STR8_IN65_BANK_MAINT_FLAGS_SRC)"
 
@@ -352,40 +364,48 @@ $(BANK_MAINT_MENU_A): $(BANK_MAINT_MENU_S19) $(BANK_MAINT_MENU_A_TOOL)
 
 $(CONSOLE_ABI_TEST_S19): $(CONSOLE_ABI_TEST_OBJ) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 
 $(TOP_UPDATE_S19): $(TOP_UPDATE_OBJ) $(TOP_UPDATE_CHECK_TOOL) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_CHECK_TOOL) -S19Path "$@" -TopBinPath "$(TOP_BIN)" -VersionText "$(VERSION_TEXT)"
 
 $(STR8_IN65_TOP_UPDATE_S19): $(STR8_IN65_TOP_UPDATE_OBJ) $(TOP_UPDATE_CHECK_TOOL) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_CHECK_TOOL) -S19Path "$@" -TopBinPath "$(STR8_IN65_CANDIDATE_BIN)" -VersionText "$(STR8_IN65_VERSION_TEXT)"
 
 $(DIRECTORY_REFRESH_S19): $(DIRECTORY_REFRESH_OBJ) $(TOP_UPDATE_CHECK_TOOL) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_CHECK_TOOL) -S19Path "$@" -TopBinPath "$(TOP_BIN)" -VersionText "$(VERSION_TEXT)" -DirectoryRefresh
 
 $(WDCMONV2_ARCHIVE_S19): $(WDCMONV2_ARCHIVE_OBJ) $(WDCMONV2_ARCHIVE_CHECK) $(WDCMONV2_ARCHIVE_EXTRACT) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_ARCHIVE_CHECK) -SourcePath "$(WDCMONV2_ARCHIVE_SRC)" -S19Path "$@" -MapPath "$(WDCMONV2_ARCHIVE_MAP)" -ExtractorPath "$(WDCMONV2_ARCHIVE_EXTRACT)"
 
 $(WDCMONV2_INSTALL_S19): $(WDCMONV2_INSTALL_OBJ) $(WDCMONV2_INSTALL_CHECK) $(TOP_BIN) $(WDCMONV2_INSTALL_TOP_BIN) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_INSTALL_CHECK) -SourcePath "$(WDCMONV2_INSTALL_SRC)" -S19Path "$@" -MapPath "$(WDCMONV2_INSTALL_MAP)" -TopBinPath "$(TOP_BIN)" -CandidateBinPath "$(WDCMONV2_INSTALL_TOP_BIN)" -VersionText "$(VERSION_TEXT)"
 
 $(STR8_IN65_INSTALL_S19): $(STR8_IN65_INSTALL_OBJ) $(WDCMONV2_INSTALL_CHECK) $(STR8_IN65_TOP_BIN) $(STR8_IN65_CANDIDATE_BIN) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_INSTALL_CHECK) -SourcePath "$(WDCMONV2_INSTALL_SRC)" -S19Path "$@" -MapPath "$(STR8_IN65_INSTALL_MAP)" -TopBinPath "$(STR8_IN65_TOP_BIN)" -CandidateBinPath "$(STR8_IN65_CANDIDATE_BIN)" -VersionText "$(STR8_IN65_VERSION_TEXT)"
 
 $(STR8_IN65_STOCK_RESTORE_S19): $(STR8_IN65_STOCK_RESTORE_OBJ) $(STR8_IN65_STOCK_RESTORE_CHECK) $(WDCMONV2_HOST_LOADER) | dirs
 	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(STR8_IN65_STOCK_RESTORE_CHECK) -SourcePath "$(WDCMONV2_INSTALL_SRC)" -S19Path "$@" -MapPath "$(STR8_IN65_STOCK_RESTORE_MAP)" -VersionText "$(STR8_IN65_VERSION_TEXT)"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$@" -ValidateOnly
