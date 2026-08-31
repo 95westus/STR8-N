@@ -1,6 +1,7 @@
 param(
     [string]$PackageDir = 'BUILD/v1.29/str8n-v1.29-release',
-    [string]$ZipPath = 'BUILD/v1.29/str8n-v1.29-release.zip'
+    [string]$ZipPath = 'BUILD/v1.29/str8n-v1.29-release.zip',
+    [string]$RyorsRelease = '../R-YORS/RELEASE'
 )
 
 Set-StrictMode -Version Latest
@@ -15,7 +16,11 @@ $files = [ordered]@{
     'ARTIFACTS/str8n-v1.29-bank-maint-menu-2000.a' = 'tools/bank-maint/str8n-v1.29-bank-maint-menu-2000.a'
     'ARTIFACTS/str8n-v1.29-top-update-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-top-update-2000.s19'
     'ARTIFACTS/str8n-v1.29-directory-refresh-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-directory-refresh-2000.s19'
-    'ARTIFACTS/str8n-v1.29-console-abi-test-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-console-abi-test-2000.s19'
+    'ARCHIVE/TESTS/str8n-v1.29-console-abi-test-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-console-abi-test-2000.s19'
+    'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-himon-bank3-c-e.s19')
+    'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-asm-bank3-8-b.s19')
+    'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19' = (Join-Path $RyorsRelease 'ryors-v1.2-himon-asm-bank3-8-e.s19')
+    'OPTIONAL/HIMON-ASM/INSTALL.md' = 'docs/HIMON_ASMF2_AFTER_STR8N.md'
     'INCLUDE/str8n-public.inc' = 'BUILD/v1.29/include/str8n-public.inc'
     'MANIFEST/str8n-manifest.json' = 'BUILD/str8n-manifest.json'
     'PACKAGES/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip' = 'BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip'
@@ -46,8 +51,9 @@ foreach ($entry in $files.GetEnumerator()) {
 $readme = @'
 STR8-N v1.29 release package
 
-This package contains only STR8-N v1.29 deliverables and documentation.
-It contains no WDCMONv2 firmware, owner bank archive, HIMON, ASM-F2, or R-YORS payload.
+This package contains STR8-N v1.29 deliverables, documentation, and clearly
+separated optional HIMON/ASM-F2 payloads. It contains no WDCMONv2 firmware or
+owner bank archive.
 
 Primary installation images:
   ARTIFACTS/str8n-v1.29-bank3-f000-ffff.bin  external programmer, B3:F
@@ -58,6 +64,18 @@ Maintenance and recovery:
   ARTIFACTS/str8n-v1.29-bank-maint-menu-2000.s19
   ARTIFACTS/str8n-v1.29-top-update-2000.s19
   ARTIFACTS/str8n-v1.29-directory-refresh-2000.s19
+
+Archived hardware proof:
+  ARCHIVE/TESTS/str8n-v1.29-console-abi-test-2000.s19
+
+Optional HIMON and ASM-F2:
+  OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19
+  OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19
+  OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19
+  OPTIONAL/HIMON-ASM/INSTALL.md
+
+Use the combined 8-E image for the simplest new Bank-3 installation, or use
+the separate C-E and 8-B images when installing/updating one component at a time.
 
 Factory WDCMONv2 onboarding is the separately verified nested ZIP in PACKAGES.
 Read its QUICKSTART.txt and follow the screen. CTRL+U and CTRL+D send different
