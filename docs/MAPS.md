@@ -1,6 +1,6 @@
-# STR8-N v1.28 Maps and Diagrams
+# STR8-N v1.29 Maps and Diagrams
 
-These diagrams describe the host-qualified and board-derived v1.28 release.
+These diagrams describe the host-qualified and board-derived v1.29 release.
 
 ## Ownership
 
@@ -10,7 +10,7 @@ flowchart TB
     S -->|J0| B0[Bank 0 guest]
     S -->|J1| B1[Bank 1 guest]
     S -->|J2| B2[Bank 2 guest]
-    S -->|H| B3[Bank 3 HIMON<br/>$C000]
+    S -->|C/W| B3[Bank 3 HIMON<br/>$C000]
     S -->|J3| R3[Bank 3 RESET vector<br/>normally STR8-N again]
     S -->|I| W[RAM worker<br/>$0200-$0453]
     W --> FLASH[Selected flash range]
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.28/
+|-- v1.29/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -47,7 +47,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.28 top updater S19]
+    TOP --> UPDATE[guarded v1.29 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
@@ -89,7 +89,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[Silent pre-I/O quarantine<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.28]
+    A --> P[Flush input<br/>STR8-N 1.29]
     P --> Q{Silent live selector interval<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -115,7 +115,7 @@ flowchart TD
     C --> E[Whole-bank FNV prefilter<br/>plus byte-exact B0/B3 compare]
     E --> T[Validate carried 4K top<br/>then program/verify B3:F]
     T --> D[Publish COMPLETE D0 WDCM2<br/>roles FFF0/FFF1 remain FF/FF]
-    D --> S[STR8-N 1.28 in B3]
+    D --> S[STR8-N 1.29 in B3]
     S -->|selector 0 or J0| W[Retained WDCMONv2 in B0<br/>CS0-CS3 chase]
     W -->|physical RESET| S
 ```
@@ -182,9 +182,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        596 B   |
 $FD5B  +------------------------------+
-       | available growth      27 B   |
-$FD40  +------------------------------+
-       | resident code/data  3393 B   |
+       | available growth       6 B   |
+$FD55  +------------------------------+
+       | resident code/data  3414 B   |
 $F000  +------------------------------+
 ```
 
@@ -236,7 +236,7 @@ flowchart LR
     RP --> BOUND[check complete S1 span<br/>$2000-$7AFF]
     BOUND --> RM[copy to RAM and jump to S9]
     CHOICE -->|monitor load-only| HL[HIMON L]
-    HL --> HP[HIMON-private S19 parser<br/>$0000-$79FF; explicit G]
+    HL --> HP[STR8-N $F009 SR/02 parser<br/>HIMON policy below $7A00; explicit G]
 ```
 
 ## Recovery RAM load
@@ -255,7 +255,7 @@ flowchart TD
     Q --> F
 ```
 
-## STR8-N v1.28 RAM ownership
+## STR8-N v1.29 RAM ownership
 
 ```text
 $7DFF  +------------------------------+
@@ -271,7 +271,8 @@ $7BFF  +------------------------------+
        | monitor / record service RAM |
        +------------------------------+
 $1FFF  +------------------------------+
-       | USER FREE $1A00-$1FFF        |
+       | standalone STR8 user-low RAM |
+       | $1A00-$1FFF                  |
 $19FF  +------------------------------+
        | 4K sector tray $0A00-$19FF  |
 $09FF  +------------------------------+
@@ -286,8 +287,10 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-`$1A00-$1FFF` is free for user programs in v1.28: STR8-N, HIMON, ASM-F2, and
-the maintained RAM tools do not allocate it. The whole `$0200-$09FF` Worker
+STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.29. In the
+integrated R-YORS payload, APMAN transiently uses `$1A00-$1AFF` as its command
+shadow while `AP`, `APS`, or banked `INSTALL` delegates; `$1B00-$1FFF` remains
+the unconditional user-low slice outside another phase owner. The whole `$0200-$09FF` Worker
 Code Tray (WCT) remains phase-owned and volatile during worker calls, but the
 maintained runtime workers do not extend above `$0453`: the unified STR8-N
 worker ends at `$0453`, the Bank Maintenance private worker ends at `$042A`,
@@ -300,7 +303,7 @@ are not covered by this maintained-runtime high-water guarantee.
 
 Bank Maintenance and the other foreground tools use the single-owner
 `$7C00-$7DBF` overlay. The exact `$7DE9-$7DFF` Recovery State Capsule fields
-are listed in the [Technical Guide](TECHNICAL_GUIDE.md#str8-n-v12-high-ram-abi).
+are listed in the [Technical Guide](TECHNICAL_GUIDE.md#str8-n-v129-high-ram-abi).
 
 ## RAM capacity by operating path
 
@@ -376,12 +379,12 @@ adoption and the scoped-search `F` byte, remains outside the canonical
 manifest and migration ZIP, and is not required by the current migrator
 because that migrator already publishes COMPLETE D0 `WDCM2`.
 
-## Accepted v1.28 factory-board path
+## Accepted v1.29 factory-board path
 
 ```mermaid
 flowchart LR
     STOCK[Factory WDCMONv2<br/>B3] -->|verified eight-sector copy| B0[Retained WDCMONv2<br/>B0 + D0 WDCM2]
-    STOCK -->|replace B3:F only| N[STR8-N 1.28<br/>B3:F]
+    STOCK -->|replace B3:F only| N[STR8-N 1.29<br/>B3:F]
     N -->|S| SHELL[STR8-N prompt]
     SHELL -->|J0| B0
     N -->|selector 0| B0
@@ -393,6 +396,10 @@ launch, full retained EDU application startup, and final physical RESET.
 The operator separately observed the expected CS0-CS3 chase.
 
 ## Accepted v1.21 board path
+
+> [!NOTE]
+> Archived v1.21 acceptance topology. It is retained as hardware evidence, not
+> as a current v1.29 operating procedure or memory map.
 
 ```mermaid
 flowchart LR

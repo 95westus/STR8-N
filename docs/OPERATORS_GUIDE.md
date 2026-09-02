@@ -485,16 +485,18 @@ From the HIMON `>` prompt:
 
 1. Type `L`.
 2. Send the RAM-addressed S19.
-3. HIMON validates S0/S1/S9 with its private resident parser, then copies
-   valid S1 data into RAM. It does not call STR8-N's `$F009` service and it
-   rejects any nonempty span touching `$7A00-$FFFF`.
+3. HIMON submits S0/S1/S9 records to STR8-N's checked `$F009` `SR/02`
+   service, then copies valid S1 data into RAM under its own policy. It rejects
+   any nonempty span touching `$7A00-$FFFF` and fails closed before receive if
+   the STR8-N service is absent or incompatible.
 4. After S9, HIMON reports the byte count and start address without executing
    it. Use `G start` separately when execution is wanted; `L G` and `L F` are
    rejected by the bare-`L` grammar.
 
 Like STR8-N recovery `L`, a HIMON `L` file need not describe a 4K-aligned or
-dense flash range. HIMON's command is RAM-load-only and enforces its own
-destination policy so the running monitor and its workspace remain protected.
+dense flash range. HIMON's command is RAM-load-only; STR8-N owns record
+parsing, while HIMON enforces destination/copy/session policy so the running
+monitor and its workspace remain protected.
 
 ## If an install is interrupted
 
