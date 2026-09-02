@@ -18,6 +18,30 @@ $required = @(
     'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19',
     'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19',
     'OPTIONAL/HIMON-ASM/INSTALL.md',
+    'SOFTWARE/README.md',
+    'SOFTWARE/GAMES/life-2000.s19',
+    'SOFTWARE/DEMOS/pia-led-show-2000.s19',
+    'SOFTWARE/UTILITIES/bank-audit-2000.s19',
+    'SOFTWARE/UTILITIES/bank-dump-2000.s19',
+    'SOFTWARE/ASM-SOURCES/asm-session-report-ap-2000.a',
+    'SOFTWARE/ASM-SOURCES/bank-audit-2000.a',
+    'SOFTWARE/ASM-SOURCES/bank-crc-all-3000.a',
+    'SOFTWARE/ASM-SOURCES/bank-dump-2000.a',
+    'SOFTWARE/ASM-SOURCES/flash-bank-dump-ap-2000.a',
+    'SOFTWARE/ASM-SOURCES/flash-bank-read-ap-2000.a',
+    'SOFTWARE/ASM-SOURCES/pia-led-show-2000.a',
+    'SOFTWARE/ASM-SOURCES/terminal-answerback-vt100-3000.a',
+    'SOFTWARE/ASM-SOURCES/vt102-exerciser-7000.a',
+    'SOFTWARE/ASM-SOURCES/vt525-exerciser-7000.a',
+    'SOFTWARE/ADVANCED/APMAN/apman-7000.s19',
+    'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.s19',
+    'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.bin',
+    'SOFTWARE/ADVANCED/APMAN/apman-v1.ap',
+    'SOFTWARE/ADVANCED/APMAN/APMAN_V1_BOARD_TEST.md',
+    'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-chain-install-tool-package-4000.s19',
+    'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19',
+    'SOFTWARE/UTILITIES/BANK_AUDIT_AP_CARD.md',
+    'SOFTWARE/UTILITIES/BANK_DUMP_AP_CARD.md',
     'MANIFEST/str8n-manifest.json',
     'PACKAGES/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip',
     'PACKAGE-README.txt', 'SHA256SUMS.txt'
@@ -72,6 +96,30 @@ function Assert-S19Contract {
 Assert-S19Contract 'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19' 0xC000 0xEFFF 0xC000
 Assert-S19Contract 'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19' 0x8000 0xBFFF 0x8000
 Assert-S19Contract 'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19' 0x8000 0xEFFF 0xC000
+Assert-S19Contract 'SOFTWARE/GAMES/life-2000.s19' 0x2000 0x2D7A 0x2000
+Assert-S19Contract 'SOFTWARE/DEMOS/pia-led-show-2000.s19' 0x2000 0x2083 0x2000
+Assert-S19Contract 'SOFTWARE/UTILITIES/bank-audit-2000.s19' 0x2000 0x2201 0x2000
+Assert-S19Contract 'SOFTWARE/UTILITIES/bank-dump-2000.s19' 0x2000 0x292B 0x2000
+Assert-S19Contract 'SOFTWARE/ADVANCED/APMAN/apman-7000.s19' 0x7000 0x7B11 0x7000
+Assert-S19Contract 'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.s19' 0x8000 0x8FFF 0x8000
+
+$asmSourceDir = Join-Path $rootFull 'SOFTWARE/ASM-SOURCES'
+$asmSources = @(Get-ChildItem -LiteralPath $asmSourceDir -File -Filter '*.a')
+if ($asmSources.Count -ne 10) {
+    throw "SOFTWARE/ASM-SOURCES must contain exactly 10 maintained .a files; found $($asmSources.Count)"
+}
+foreach ($source in $asmSources) {
+    foreach ($line in Get-Content -LiteralPath $source.FullName) {
+        $code = ($line -split ';', 2)[0]
+        if ($code.Length -gt 63) {
+            throw "ASM-F2 code line exceeds 63 characters in $($source.Name): $code"
+        }
+    }
+}
+$vt100 = Get-Content -Raw -LiteralPath (Join-Path $asmSourceDir 'terminal-answerback-vt100-3000.a')
+if ($vt100 -match 'STR8-N 1\.22' -or $vt100 -notmatch 'STR8-N 1\.29') {
+    throw 'VT100 answerback source does not identify the current STR8-N 1.29 console ABI'
+}
 
 if ((Get-Item -LiteralPath (Join-Path $rootFull 'ARTIFACTS/str8n-v1.29-bank3-f000-ffff.bin')).Length -ne 4096) {
     throw 'Canonical top BIN is not exactly 4096 bytes'
@@ -82,8 +130,15 @@ foreach ($text in @('follow the screen', 'CTRL+U and CTRL+D send different',
         'RESET is the designed return')) {
     if (-not $packageReadme.Contains($text)) { throw "Package README lacks operator guidance: $text" }
 }
+$allowedBankImages = @(
+    [IO.Path]::GetFullPath((Join-Path $rootFull 'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.s19')),
+    [IO.Path]::GetFullPath((Join-Path $rootFull 'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.bin'))
+)
 $forbidden = Get-ChildItem -LiteralPath $rootFull -Recurse -File |
-    Where-Object { $_.FullName -match '(?i)[\\/](LOCAL|R-YORS|HIMON|ASM-F2)[\\/]' -or $_.Name -match '(?i)bank[0-2].*\.(bin|s19)$' }
+    Where-Object {
+        $_.FullName -match '(?i)[\\/](LOCAL|R-YORS|HIMON|ASM-F2)[\\/]' -or
+        ($_.Name -match '(?i)bank[0-2].*\.(bin|s19)$' -and $_.FullName -notin $allowedBankImages)
+    }
 if ($forbidden) { throw "Forbidden payload or local evidence found: $($forbidden.FullName -join ', ')" }
 
 Write-Host 'STR8-N v1.29 release package verification PASS'

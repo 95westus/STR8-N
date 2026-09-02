@@ -21,6 +21,30 @@ $files = [ordered]@{
     'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-asm-bank3-8-b.s19')
     'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19' = (Join-Path $RyorsRelease 'ryors-v1.2-himon-asm-bank3-8-e.s19')
     'OPTIONAL/HIMON-ASM/INSTALL.md' = 'docs/HIMON_ASMF2_AFTER_STR8N.md'
+    'SOFTWARE/README.md' = 'docs/SOFTWARE_CATALOG.md'
+    'SOFTWARE/GAMES/life-2000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/life-2000.s19')
+    'SOFTWARE/DEMOS/pia-led-show-2000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/pia-led-show-2000.s19')
+    'SOFTWARE/UTILITIES/bank-audit-2000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/bank-audit-2000.s19')
+    'SOFTWARE/UTILITIES/bank-dump-2000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/bank-dump-2000.s19')
+    'SOFTWARE/ASM-SOURCES/asm-session-report-ap-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/asm-session-report-v1.2-ap-2000.a')
+    'SOFTWARE/ASM-SOURCES/bank-audit-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/bank-audit-2000.a')
+    'SOFTWARE/ASM-SOURCES/bank-crc-all-3000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/str8n-v1.2-bank-crc-all-3000.a')
+    'SOFTWARE/ASM-SOURCES/bank-dump-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/bank-dump-2000.a')
+    'SOFTWARE/ASM-SOURCES/flash-bank-dump-ap-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/str8n-v1.2-flash-bank-dump-ap-2000.a')
+    'SOFTWARE/ASM-SOURCES/flash-bank-read-ap-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/str8n-v1.2-flash-bank-read-ap-2000.a')
+    'SOFTWARE/ASM-SOURCES/pia-led-show-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/pia-led-show-2000.a')
+    'SOFTWARE/ASM-SOURCES/terminal-answerback-vt100-3000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/terminal-answerback-vt100-3000.a')
+    'SOFTWARE/ASM-SOURCES/vt102-exerciser-7000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/vt102-exerciser-7000.a')
+    'SOFTWARE/ASM-SOURCES/vt525-exerciser-7000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/vt525-exerciser-7000.a')
+    'SOFTWARE/ADVANCED/APMAN/apman-7000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/apman-7000.s19')
+    'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/apman-v1-bank2-8000.s19')
+    'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.bin' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/apman-v1-bank2-8000.bin')
+    'SOFTWARE/ADVANCED/APMAN/apman-v1.ap' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/apman-v1.ap')
+    'SOFTWARE/ADVANCED/APMAN/APMAN_V1_BOARD_TEST.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/APMAN_V1_BOARD_TEST.md')
+    'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-chain-install-tool-package-4000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/AP-STORE/ap-store-v1-chain-install-tool-package-4000.s19')
+    'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19')
+    'SOFTWARE/UTILITIES/BANK_AUDIT_AP_CARD.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/BANK_AUDIT_AP_CARD.md')
+    'SOFTWARE/UTILITIES/BANK_DUMP_AP_CARD.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/BANK_DUMP_AP_CARD.md')
     'INCLUDE/str8n-public.inc' = 'BUILD/v1.29/include/str8n-public.inc'
     'MANIFEST/str8n-manifest.json' = 'BUILD/str8n-manifest.json'
     'PACKAGES/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip' = 'BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip'
@@ -76,6 +100,14 @@ Optional HIMON and ASM-F2:
 
 Use the combined 8-E image for the simplest new Bank-3 installation, or use
 the separate C-E and 8-B images when installing/updating one component at a time.
+
+Current compatible software:
+  SOFTWARE/README.md
+  SOFTWARE/GAMES                 ready-to-load game S19
+  SOFTWARE/DEMOS                 ready-to-load hardware demo S19
+  SOFTWARE/UTILITIES             ready-to-load maintenance S19 and cards
+  SOFTWARE/ASM-SOURCES           maintained onboard ASM-F2 sources
+  SOFTWARE/ADVANCED              APMAN and AP Store packages
 
 Factory WDCMONv2 onboarding is the separately verified nested ZIP in PACKAGES.
 Read its QUICKSTART.txt and follow the screen. CTRL+U and CTRL+D send different
