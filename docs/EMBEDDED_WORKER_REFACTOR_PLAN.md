@@ -1,5 +1,10 @@
 # Embedded Worker and Payload-Only `I` Implementation Record
 
+> [!IMPORTANT]
+> Historical implementation record. The sizes and v1.22 candidate details
+> below are superseded by STR8-N v1.29; use `README.md`, `docs/MAPS.md`, and
+> `docs/TECHNICAL_GUIDE.md` for the current layout and interfaces.
+
 Status: implemented in STR8-N v1.1, host-build verified, and partially proven
 on hardware. This file preserves the refactor decisions and remaining release
 qualification work.

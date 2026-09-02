@@ -195,12 +195,19 @@ evidence of the general multibank handoff path.
 | HIMON entry | Enter compatible Bank-3 HIMON warm with `W`, preserving RAM, or explicitly cold with `C` | Refuses an incompatible or missing HIMON marker |
 | Flash installation | Install dense S19 payloads with `I` into any legal contiguous 4K sector range | Bank 3 `$F000-$FFFF` is never writable through `I`; final sector and COMPLETE state commit last |
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
+| Record parser ABI | Validate one buffered or console S0/S1/S9 record through `SR/02` at `$F009` | Parser-only; callers own destination and execution policy, and the generated public contract exports the complete request/result card |
 | Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.29 BIN, and install it in B3:F through the RAM loader | Board-accepted with `SXB2` and `$BF/$B5` flash from erased B0; B1/B2 remain untouched |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
 | Protected top upgrade | Load the supplied v1.29 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.29 sector, and verify all 4 KiB | Each write requires the guarded updater confirmations and recovery copy; v1.29 board proof is pending |
 | Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The canonical v1.29 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and no overlap with the fixed worker |
+
+Current R-YORS HIMON is a direct client of that record-parser ABI. Its bare
+`L` uses `$F009` for every record, then applies HIMON's load-only RAM policy;
+it has no private S19 parser. Retired HIMON `L G` and `L F` examples belong
+only to historical image records. Persistent payload installation is owned by
+STR8-N `I`.
 
 The v1.29 host verification suite covers the relocated RAM ABI, artifact
 layout, quiet-start build configuration, and byte-exact promotion of the
@@ -227,6 +234,10 @@ The 2026-08-28 WDC board run accepts the v1.28 cold-start sequence: its
 calibrated pre-I/O delay, no reset-time `$7FEC` write, and silent timing pulses
 survive software reset, physical RESET, and cold power-up. The promoted
 resident occupies `$F000-$FD40`, leaving 27 bytes before the fixed worker.
+
+The current v1.29 resident occupies `$F000-$FD55` (3,414 bytes), leaving six
+bytes before the fixed worker at `$FD5C`. The complete v1.29 factory migration
+and EDU quiet-start path is board-accepted.
 
 ## Console commands
 

@@ -1,5 +1,11 @@
 # Bank Maintenance Directory Rename Board Test
 
+> [!NOTE]
+> Superseded pre-v1.29 proof card. The current v1.29 Bank Maintenance image
+> includes `N`; use the current Operator's Guide and versioned artifact. The
+> source path and prompts below are retained only to reproduce this pending
+> historical test.
+
 Status: host-built; board proof pending.
 
 `N` changes only the five-byte description in one COMPLETE D0-D3 directory
@@ -50,4 +56,3 @@ Do not reset, use NMI, remove power, or interrupt the terminal after the exact
 confirmation. Run `M` again. Require only D1's description to change and the
 scratch sector to return to erased. Stop on `DIR NOT COMPLETE`, `NO ERASED
 SCRATCH`, any `ERR=`, or any unexpected map difference.
-

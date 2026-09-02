@@ -26,21 +26,24 @@ STR8-N commits do not require lock churn.
 ## Published STR8-N artifacts
 
 ```text
-BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin
-BUILD/v1.21/s19/str8n-v1.21-f000.s19
-BUILD/v1.21/s19/str8n-v1.21-worker-0200.s19
-BUILD/v1.21/s19/str8n-v1.21-bank-maint-2000.s19
-BUILD/v1.21/s19/str8n-v1.21-console-abi-test-2000.s19
-BUILD/v1.21/s19/str8n-v1.21-top-update-2000.s19
-BUILD/v1.21/s19/str8n-v1.21-directory-refresh-2000.s19
-BUILD/v1.21/include/str8n-public.inc
+BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin
+BUILD/v1.29/s19/str8n-v1.29-f000.s19
+BUILD/v1.29/s19/str8n-v1.29-worker-0200.s19
+BUILD/v1.29/s19/str8n-v1.29-bank-maint-2000.s19
+BUILD/v1.29/s19/str8n-v1.29-console-abi-test-2000.s19
+BUILD/v1.29/s19/str8n-v1.29-top-update-2000.s19
+BUILD/v1.29/s19/str8n-v1.29-directory-refresh-2000.s19
+BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-archive-2000.s19
+BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.s19
+BUILD/v1.29/include/str8n-public.inc
 BUILD/str8n-manifest.json
 ```
 
 The manifest publishes the top-sector and worker layout, hashes, public ABI,
 record service version/capabilities, and hashes for every maintained RAM tool.
-Bank Maintenance loads at `$2000-$362A`, keeps its private worker at
-`$3400-$362A`, and offers map, copy+directory, adopt, erase, and AP operations.
+Bank Maintenance loads at `$2000-$39B2`, keeps its private worker at
+`$3400-$362A`, and offers map, copy+directory, adopt, reclaim, rename, erase,
+AP operations, and protected-top maintenance.
 The directory-refresh image preserves a verified copy in Bank 1 sector F
 before clearing Bank 3 `$FFB0-$FFEF`; it then installs `$FFF0=$1E` for B1:E
 WORK, `$FFF1=$1F` for the protected B1:F B3:F backup, and leaves
@@ -89,7 +92,7 @@ The reverse dependency is limited to the optional full-bank image builder:
 ```text
 R-YORS/RELEASE/ryors-v1.2-himon-asm-bank3-8-e.s19
                          28K dense payload, $8000-$EFFF, S9 $C000
-STR8-N BUILD/v1.21/bin/str8n-v1.21-bank3-f000-ffff.bin
+STR8-N BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin
                           4K current top, $F000-$FFFF
                                       |
                                       v
@@ -111,12 +114,22 @@ STR8-N `L` is an operator recovery command, not a public callable ABI. It
 loads S1 data only in `$2000-$7AFF` and immediately executes an in-range S9.
 The supplied bank-maintenance S19 uses that path and is independent of HIMON.
 
-HIMON bare `L` is a separate R-YORS feature. It uses a HIMON-private S0/S1/S9
-parser, applies HIMON's own RAM destination policy, and reports S9 without
-executing it. HIMON does not call STR8-N `$F009`; `L G` and `L F` are
-rejected.
+HIMON bare `L` is a separate R-YORS user interface over this repository's
+public `$F009` `SR/02` parser. STR8-N validates and decodes S0/S1/S9; HIMON
+applies its own RAM destination/copy/session policy and reports S9 without
+executing it. `L G` and `L F` are rejected. A missing, damaged, or
+incompatible STR8-N service makes HIMON `L` fail closed before receive.
 
 ## Hardware acceptance
+
+The current integrated acceptance is STR8-N `1.29` with HIMON/ASM-F2
+`00.0902(1707)`. On 2026-09-02 the Bank-3 C-E update and the HIMON bare-`L`
+matrix passed on COM4, including the direct `$F009` call-site/provenance gate,
+positive S19 load, protected span, malformed/checksum failure, `L G`/`L F`
+rejection, and physical-reset return through STR8-N.
+
+The following 2026-08-13 record is retained as historical ownership-cutover
+evidence; its versions and loader internals are not current instructions.
 
 On 2026-08-13 the separated build installed the exact R-YORS 28K Bank-3
 `8-E` payload through STR8-N 1.2. One initial transfer failed before any
