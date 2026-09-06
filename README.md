@@ -1,3 +1,7 @@
+> **AI Assistance & Human Validation**
+>
+> This project is developed with AI assistance and is grounded in human ideas, methods, and engineering judgment. Unless explicitly stated otherwise, all code has been tested on physical hardware and approved by a human.
+
 # STR8-N v1.30
 
 The current v1.30 candidate reclaims another 40 resident bytes through a
