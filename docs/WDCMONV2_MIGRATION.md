@@ -1,5 +1,9 @@
 # Stock WDCMONv2 to STR8-N Migration
 
+Current artifacts and commands below target v1.30. Its factory-migration
+hardware proof is operator-deferred until later; acceptance below remains v1.29.
+The v1.30 guarded in-place top upgrade is a separate test.
+
 This is the short onboarding rail for a stock WDC W65C02SXB, either alone or
 with the W65C02EDU expansion board installed. W65C02EDU is an add-on for the
 SXB, not a standalone CPU board. The complete v1.29 factory path is accepted
@@ -74,14 +78,14 @@ COPY B3 TO B0
 
 It then copies and exactly verifies all eight B3 sectors in B0. When the board
 prints `SEND STR8-N TOP BIN; 4096 BYTES; START $F000`, press Ctrl+U once. The
-host sends the packaged `STR8-N-v1-29.bin`; the RAM loader requires exactly
+host sends the packaged `STR8-N-v1-30.bin`; the RAM loader requires exactly
 4096 bytes and verifies its full build-time FNV. It then requires the separate
-exact confirmation `INSTALL STR8-N 1.29` before replacing only B3:F.
+exact confirmation `INSTALL STR8-N 1.30` before replacing only B3:F.
 That same BIN can be programmed by a T48 at device offset `$1F000`, used as a
 logical `$F000` STR8-N top image, or supplied to the guarded top updater.
 
 The canonical image deliberately starts with an empty Bank-3 directory. After
-the first verified STR8-N 1.29 boot, select `S`, enter `L`, and press Ctrl+D to
+the first verified STR8-N 1.30 boot, select `S`, enter `L`, and press Ctrl+D to
 send `STR8-iN65-BANK-MAINT-2000.s19`. In Bank Maintenance enter `D`, then enter
 Bank `0`, type `FF`, and description `WDCV2`. Inspect the exact proposed D0
 record and type `ADOPT B0`.
@@ -143,7 +147,7 @@ make wdcmonv2-archive
 The board artifact is:
 
 ```text
-BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-archive-2000.s19
+BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-archive-2000.s19
 ```
 
 It occupies `$2000-$250E` in the current build and has S9 entry `$2000`.
@@ -161,7 +165,7 @@ make wdcmonv2-install
 Its artifact is:
 
 ```text
-BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.s19
+BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-install-2000.s19
 ```
 
 It is a compact RAM image with S9 `$2000`; the current build ends below
@@ -177,7 +181,7 @@ make wdcmonv2-package
 ```
 
 This produces
-`BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip`. It contains the
+`BUILD/v1.30/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip`. It contains the
 archive and loader S19 files, the production Bank Maintenance S19, the exact
 4K STR8-N BIN and matching S19, source, binary-monitor
 host bridge, extractor, operator documents, license, and a self-verifier.
@@ -312,7 +316,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\TOOLS\start_wdcmonv2_ram.ps1 `
   -Port COM5 `
   -ImagePath .\ARTIFACTS\STR8-iN65-LOADER-2000.s19 `
-  -TransferPath .\ARTIFACTS\STR8-N-v1-29.bin `
+  -TransferPath .\ARTIFACTS\STR8-N-v1-30.bin `
   -Transfer2Path .\ARTIFACTS\STR8-iN65-BANK-MAINT-2000.s19 `
   -TranscriptPath .\LOCAL\install-capture.log
 ```
@@ -451,7 +455,7 @@ support replacing a locally archived, explicitly released B0, but the stock
 onboarding installer does not.
 
 The installer does not carry a modified migration top. It receives the exact
-canonical STR8-N v1.29 BIN supplied in the release package. Its configuration
+canonical STR8-N v1.30 BIN supplied in the release package. Its configuration
 bytes are:
 
 ```text
@@ -467,7 +471,7 @@ at `$FFB0-$FFEF` is erased in the canonical BIN. Banks 0-2 remain opaque, and
 Bank Maintenance owns the separate D0 enrollment transaction:
 
 ```text
-1  boot and verify STR8-N 1.29 from Bank 3
+1  boot and verify STR8-N 1.30 from Bank 3
 2  load the packaged production Bank Maintenance S19 through `L`
 3  enter `D` and inspect the proposed Bank-3 directory record for opaque B0
 4  require `D0 FF WDCV2 FFFF FCFFFFFF`
@@ -478,7 +482,7 @@ Bank Maintenance owns the separate D0 enrollment transaction:
 Adopting D0 writes directory metadata only in protected Bank-3 sector F. It
 does not modify or interpret Bank 0, and it does not authorize any B1/B2 write.
 
-The production STR8-iN/65 v1.29 RAM menu, its B0 adoption defaults, and the exact
+The production STR8-iN/65 v1.30 RAM menu, its B0 adoption defaults, and the exact
 Bank Main `E` then `R` procedure for erasing B0 and clearing D0 are documented
 in [STR8_IN65_BANK_MAINTENANCE.md](STR8_IN65_BANK_MAINTENANCE.md). That image
 does not invent the still-undefined VTOC or combine role assignment with
@@ -496,8 +500,8 @@ Maintenance completes and verifies their assignments.
 After loading and starting the installer at `$2000`, expect:
 
 ```text
-WDCMONV2 -> STR8-N 1.29 MIGRATION
-B3 STOCK -> B0; STR8-N 1.29 -> B3:F
+WDCMONV2 -> STR8-N 1.30 MIGRATION
+B3 STOCK -> B0; STR8-N 1.30 -> B3:F
 NO RESET/NMI/POWER DURING ACTIVE WRITE
 FLASH ID=BF/B5
 STOCK B3 FNV1A=xxxxxxxx
@@ -526,7 +530,7 @@ Before the top write, the host validates an exact 4096-byte input and the RAM
 loader receives those bytes into `$4000-$4FFF`. The board checks the complete
 received candidate with 32-bit FNV-1a against its build-time value; a short or
 mismatched transfer cannot authorize B3:F erase. The board then requires
-`INSTALL STR8-N 1.29`; only that second exact confirmation permits B3:F erase
+`INSTALL STR8-N 1.30`; only that second exact confirmation permits B3:F erase
 and replacement. If program/verify
 fails while RAM is still executing, `R` retries the verified received candidate
 and `O` restores the old top sector from proven B0:F. A success selects B3 and
@@ -536,7 +540,7 @@ Power loss during B3:F erase/program remains an external-programmer recovery
 case. The board has no alternate boot jumper and cannot execute the B0 copy
 after an invalid B3 RESET vector prevents startup.
 
-STR8-N v1.29 production startup includes the EDU quiet-start work: it forces
+STR8-N v1.30 production startup includes the EDU quiet-start work: it forces
 the buzzer control inactive and configures/clears the LED outputs before normal
 console initialization. These startup changes do not turn the LEDs into a
 write-progress indicator; the terminal's active-write message and the test-card

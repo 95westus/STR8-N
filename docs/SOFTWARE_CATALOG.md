@@ -1,5 +1,8 @@
 # STR8-N 1.29 / HIMON / ASM-F2 Software
 
+The v1.30 package retains this software and the identical public console ABI.
+Versioned software acceptance below remains the original v1.29 evidence.
+
 This directory is the current, board-facing software shelf for the packaged
 STR8-N 1.29, HIMON, and ASM-F2 stack. Files here are maintained applications,
 utilities, demonstrations, or advanced tools. Pre-1.29 STR8-N releases and

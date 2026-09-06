@@ -1,15 +1,15 @@
 param(
-    [string]$KitDirectory = 'BUILD/v1.29/wdcmonv2-str8n-migration-kit',
-    [string]$ZipPath = 'BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip',
-    [string]$ArchiveS19Path = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-archive-2000.s19',
-    [string]$InstallS19Path = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.s19',
-    [string]$TopBinPath = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin',
-    [string]$CandidateBinPath = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin',
-    [string]$CanonicalS19Path = 'BUILD/v1.29/s19/str8n-v1.29-f000.s19',
-    [string]$BankMaintS19Path = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-bank-maint-2000.s19',
+    [string]$KitDirectory = 'BUILD/v1.30/wdcmonv2-str8n-migration-kit',
+    [string]$ZipPath = 'BUILD/v1.30/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip',
+    [string]$ArchiveS19Path = 'BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-archive-2000.s19',
+    [string]$InstallS19Path = 'BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-install-2000.s19',
+    [string]$TopBinPath = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin',
+    [string]$CandidateBinPath = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin',
+    [string]$CanonicalS19Path = 'BUILD/v1.30/s19/str8n-v1.30-f000.s19',
+    [string]$BankMaintS19Path = 'BUILD/v1.30/s19/str8n-v1.30-str8-in65-bank-maint-2000.s19',
     [string]$HostBridgePath = 'tools/wdcmonv2/start_wdcmonv2_ram.ps1',
     [string]$BoardTestPath = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md',
-    [string]$ArchiveRootName = 'STR8-N-v1.29-Migration-Kit'
+    [string]$ArchiveRootName = 'STR8-N-v1.30-Migration-Kit'
 )
 
 Set-StrictMode -Version Latest
@@ -45,8 +45,8 @@ $expected = @(
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19',
     'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19',
     'ARTIFACTS/STR8-iN65-LOADER-2000.s19',
-    'ARTIFACTS/STR8-N-v1-29.bin',
-    'ARTIFACTS/STR8-N-v1-29.s19',
+    'ARTIFACTS/STR8-N-v1-30.bin',
+    'ARTIFACTS/STR8-N-v1-30.s19',
     'DOC/HIMON_ASMF2_AFTER_STR8N.md',
     'DOC/STR8_IN65_BANK_MAINTENANCE.md',
     'DOC/WDCMONV2_MIGRATION.md',
@@ -55,7 +55,7 @@ $expected = @(
     'LICENSE',
     'PACKAGE-MANIFEST.json',
     'PACKAGE-README.txt',
-    'SOURCE/str8n-v1.29-wdcmonv2-install-image.inc',
+    'SOURCE/str8n-v1.30-wdcmonv2-install-image.inc',
     'SOURCE/wdcmonv2str8n-archive-2000.asm',
     'SOURCE/wdcmonv2str8n-install-2000.asm',
     'TOOLS/check_wdcmonv2_archive.ps1',
@@ -85,9 +85,8 @@ if ($manifest.ryorsPayloadIncluded -ne $false) { throw 'Manifest must state that
 if ($manifest.windowsHostStatus -notmatch 'board-proven') { throw 'Manifest must retain Windows host proof status' }
 if ($manifest.ubuntuPythonHostStatus -notmatch 'no board proof') { throw 'Manifest must mark Ubuntu Python as lacking board proof' }
 if ($manifest.archiveRoot -ne $ArchiveRootName) { throw 'Manifest archive root does not match the required surrounding folder' }
-if ($manifest.hardwareStatus -notmatch 'board-accepted' -or
-        $manifest.hardwareStatus -notmatch 'EDU quiet-start') {
-    throw 'Manifest must publish accepted v1.29 migration and EDU quiet-start status'
+if ($manifest.hardwareStatus -ne 'v1.30 host-verified; factory migration hardware proof operator-deferred') {
+    throw 'Manifest must distinguish v1.30 host checks from operator-deferred factory-migration board proof'
 }
 if ($manifest.firstProcedure -notmatch 'STR8-iN65-LOADER') { throw 'Manifest must publish the one-command factory path first' }
 
@@ -106,8 +105,8 @@ $identity = [ordered]@{
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19' = $ArchiveS19Path
     'ARTIFACTS/STR8-iN65-LOADER-2000.s19' = $InstallS19Path
     'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19' = $BankMaintS19Path
-    'ARTIFACTS/STR8-N-v1-29.bin' = $CandidateBinPath
-    'ARTIFACTS/STR8-N-v1-29.s19' = $CanonicalS19Path
+    'ARTIFACTS/STR8-N-v1-30.bin' = $CandidateBinPath
+    'ARTIFACTS/STR8-N-v1-30.s19' = $CanonicalS19Path
 }
 foreach ($item in $identity.GetEnumerator()) {
     if (-not (Test-Path -LiteralPath $item.Value -PathType Leaf)) { throw "Expected source artifact missing: $($item.Value)" }
@@ -116,12 +115,12 @@ foreach ($item in $identity.GetEnumerator()) {
         throw "Packaged artifact differs from verified build input: $($item.Key)"
     }
 }
-if ((Get-Item -LiteralPath (Join-Path $kitFull 'ARTIFACTS/STR8-N-v1-29.bin')).Length -ne 4096) {
+if ((Get-Item -LiteralPath (Join-Path $kitFull 'ARTIFACTS/STR8-N-v1-30.bin')).Length -ne 4096) {
     throw 'The only packaged BIN must be the exact canonical 4K STR8-N image'
 }
 
 foreach ($name in $actual) {
-    if ($name -eq 'ARTIFACTS/STR8-N-v1-29.bin') { continue }
+    if ($name -eq 'ARTIFACTS/STR8-N-v1-30.bin') { continue }
     if ($name -match '(?i)(capture|receipt|stock[-_]?b[0-3]|wdcmonv2-bank[0-3])' -or $name -match '(?i)\.bin$') {
         throw "Package contains a forbidden owner/archive-looking file: $name"
     }
@@ -158,4 +157,4 @@ try {
 Write-Host ('MIGRATION PACKAGE   = PASS; {0} allowlisted files' -f $expected.Count)
 Write-Host ('PACKAGE ZIP SHA256  = {0}' -f (Get-Sha256 -Path $ZipPath))
 Write-Host 'WDC FIRMWARE/ARCHIVE = ABSENT BY ALLOWLIST'
-Write-Host 'V1.29 BOARD PROOF     = FACTORY MIGRATION + EDU QUIET-START ACCEPTED'
+Write-Host 'V1.30 FACTORY MIGRATION BOARD PROOF = OPERATOR-DEFERRED'

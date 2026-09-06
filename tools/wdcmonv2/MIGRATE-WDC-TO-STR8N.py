@@ -54,7 +54,7 @@ def main() -> int:
             return 0
         kit_root = Path(__file__).resolve().parent
         installer = kit_root / "ARTIFACTS" / "STR8-iN65-LOADER-2000.s19"
-        candidate = kit_root / "ARTIFACTS" / "STR8-N-v1-29.bin"
+        candidate = kit_root / "ARTIFACTS" / "STR8-N-v1-30.bin"
         bank_maint = kit_root / "ARTIFACTS" / "STR8-iN65-BANK-MAINT-2000.s19"
         for path in (installer, candidate, bank_maint):
             if not path.is_file():
@@ -68,7 +68,7 @@ def main() -> int:
         transcript = Path(args.transcript_path) if args.transcript_path else kit_root / "LOCAL" / f"factory-migration-linux-{stamp}.raw"
         print()
         print("STR8-iN/65 LOADER - PYTHON/UBUNTU EXPERIMENTAL")
-        print("Factory WDCMONv2 -> STR8-N 1.29")
+        print("Factory WDCMONv2 -> STR8-N 1.30")
         print("STATUS ....................................... UNTESTED ON LINUX HARDWARE")
         print("Windows 11 PowerShell remains the board-proven reference.")
         print(f"Port ......................................... {device}")
@@ -76,7 +76,7 @@ def main() -> int:
         print("Evidence ..................................... full raw + event logs")
         print()
         print("READ THE SCREEN: enter commands and press control keys only when requested.")
-        print("Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.29.")
+        print("Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.30.")
         print("When the screen asks for the top BIN, press CTRL+U once.")
         print("After boot, follow the screen: S, L, CTRL+D once, D, then 0, FF, WDCV2, ADOPT B0.")
         print("Do not reset, assert NMI, or remove power during active flash writes.")
@@ -85,7 +85,7 @@ def main() -> int:
             print("DETAILS")
             print("  Bank 3 is preserved byte-for-byte as an opaque 32K Bank-0 guest.")
             print("  B1 and B2 are not migration destinations.")
-            print("  D0 is written only in the Bank-3 directory after verified v1.29 boot.")
+            print("  D0 is written only in the Bank-3 directory after verified v1.30 boot.")
             print(f"  STR8-N TOP BIN    = {candidate.name}")
             print(f"  BIN SHA-256       = {hashlib.sha256(candidate_data).hexdigest().upper()}")
             print("  T48 DEVICE OFFSET = $1F000")
@@ -95,7 +95,7 @@ def main() -> int:
         run_loader(device, image, candidate, bank_maint, transcript, force=args.force)
         print()
         print("NEXT: connect a serial terminal at 115200-8N1 and press physical RESET.")
-        print("STR8-N 1.29 must appear; require D0 FF WDCV2 FFFF FCFFFFFF.")
+        print("STR8-N 1.30 must appear; require D0 FF WDCV2 FFFF FCFFFFFF.")
         print("J0 is a complete handoff to the preserved factory system.")
         print("Physical RESET is the designed return to STR8-N; this is not a flaw.")
         return 0
