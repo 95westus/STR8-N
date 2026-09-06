@@ -1,3 +1,7 @@
+> **AI Assistance & Human Validation**
+>
+> This project is developed with AI assistance and is grounded in human ideas, methods, and engineering judgment. Unless explicitly stated otherwise, all code has been tested on physical hardware and approved by a human.
+
 # STR8-N v1.29
 
 STR8-N is the reset supervisor, recovery console, and guarded flash installer
