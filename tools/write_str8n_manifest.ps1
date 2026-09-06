@@ -1,19 +1,19 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.29/map/str8n-v1.29-f000.map",
-    [string]$WorkerMapPath = "BUILD/v1.29/map/str8n-v1.29-worker-0200.map",
-    [string]$ConsoleAbiTestMapPath = "BUILD/v1.29/map/str8n-v1.29-console-abi-test-2000.map",
-    [string]$TopBinPath = "BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin",
-    [string]$WorkerS19Path = "BUILD/v1.29/s19/str8n-v1.29-worker-0200.s19",
-    [string]$BankMaintS19Path = "BUILD/v1.29/s19/str8n-v1.29-bank-maint-2000.s19",
-    [string]$ConsoleAbiTestS19Path = "BUILD/v1.29/s19/str8n-v1.29-console-abi-test-2000.s19",
-    [string]$TopUpdateS19Path = "BUILD/v1.29/s19/str8n-v1.29-top-update-2000.s19",
-    [string]$DirectoryRefreshS19Path = "BUILD/v1.29/s19/str8n-v1.29-directory-refresh-2000.s19",
-    [string]$Wdcmonv2ArchiveMapPath = "BUILD/v1.29/map/str8n-v1.29-wdcmonv2-archive-2000.map",
-    [string]$Wdcmonv2ArchiveS19Path = "BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-archive-2000.s19",
-    [string]$Wdcmonv2InstallMapPath = "BUILD/v1.29/map/str8n-v1.29-wdcmonv2-install-2000.map",
-    [string]$Wdcmonv2InstallS19Path = "BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.s19",
-    [string]$Wdcmonv2InstallTopBinPath = "BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin",
-    [string]$PublicContractPath = "BUILD/v1.29/include/str8n-public.inc",
+    [string]$Str8MapPath = "BUILD/v1.30/map/str8n-v1.30-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.30/map/str8n-v1.30-worker-0200.map",
+    [string]$ConsoleAbiTestMapPath = "BUILD/v1.30/map/str8n-v1.30-console-abi-test-2000.map",
+    [string]$TopBinPath = "BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin",
+    [string]$WorkerS19Path = "BUILD/v1.30/s19/str8n-v1.30-worker-0200.s19",
+    [string]$BankMaintS19Path = "BUILD/v1.30/s19/str8n-v1.30-bank-maint-2000.s19",
+    [string]$ConsoleAbiTestS19Path = "BUILD/v1.30/s19/str8n-v1.30-console-abi-test-2000.s19",
+    [string]$TopUpdateS19Path = "BUILD/v1.30/s19/str8n-v1.30-top-update-2000.s19",
+    [string]$DirectoryRefreshS19Path = "BUILD/v1.30/s19/str8n-v1.30-directory-refresh-2000.s19",
+    [string]$Wdcmonv2ArchiveMapPath = "BUILD/v1.30/map/str8n-v1.30-wdcmonv2-archive-2000.map",
+    [string]$Wdcmonv2ArchiveS19Path = "BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-archive-2000.s19",
+    [string]$Wdcmonv2InstallMapPath = "BUILD/v1.30/map/str8n-v1.30-wdcmonv2-install-2000.map",
+    [string]$Wdcmonv2InstallS19Path = "BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-install-2000.s19",
+    [string]$Wdcmonv2InstallTopBinPath = "BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin",
+    [string]$PublicContractPath = "BUILD/v1.30/include/str8n-public.inc",
     [string]$ManifestPath = "BUILD/str8n-manifest.json"
 )
 
@@ -58,20 +58,20 @@ $wdcmonv2InstallEnd = Get-MapSymbol $Wdcmonv2InstallMapPath '_END_CODE'
 $manifest = [ordered]@{
     schema = 3
     project = 'STR8-N'
-    version = '1.29'
+    version = '1.30'
     repository = 'https://github.com/95westus/STR8-N.git'
     commit = $commit.ToLowerInvariant()
     dirty = $dirty
     artifacts = [ordered]@{
         topSector = [ordered]@{
-            file = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin'
+            file = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin'
             size = $top.Length
             cpuStart = 'F000'
             cpuEnd = 'FFFF'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopBinPath).Hash
         }
         workerS19 = [ordered]@{
-            file = 'BUILD/v1.29/s19/str8n-v1.29-worker-0200.s19'
+            file = 'BUILD/v1.30/s19/str8n-v1.30-worker-0200.s19'
             size = $workerEnd - $workerRun
             runStart = ('{0:X4}' -f $workerRun)
             runEnd = ('{0:X4}' -f ($workerEnd - 1))
@@ -79,7 +79,7 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $WorkerS19Path).Hash
         }
         bankMaintenanceS19 = [ordered]@{
-            file = 'BUILD/v1.29/s19/str8n-v1.29-bank-maint-2000.s19'
+            file = 'BUILD/v1.30/s19/str8n-v1.30-bank-maint-2000.s19'
             ramStart = '2000'
             ramEnd = '39B2'
             entry = '2000'
@@ -87,24 +87,25 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $BankMaintS19Path).Hash
         }
         consoleAbiTestS19 = [ordered]@{
-            file = 'BUILD/v1.29/s19/str8n-v1.29-console-abi-test-2000.s19'
+            file = 'BUILD/v1.30/s19/str8n-v1.30-console-abi-test-2000.s19'
             ramStart = ('{0:X4}' -f $consoleAbiTestStart)
             ramEnd = ('{0:X4}' -f ($consoleAbiTestEnd - 1))
             entry = '2000'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $ConsoleAbiTestS19Path).Hash
         }
         topUpdateS19 = [ordered]@{
-            file = 'BUILD/v1.29/s19/str8n-v1.29-top-update-2000.s19'
+            file = 'BUILD/v1.30/s19/str8n-v1.30-top-update-2000.s19'
             ramStart = '2000'
             ramEnd = '4FFF'
             candidateStart = '4000'
             candidateEnd = '4FFF'
             entry = '2000'
             backup = 'Bank 1 CPU F000-FFFF / physical 0F000-0FFFF'
+            hardwareEvidence = 'docs/STR8N_V1_30_RECLAIM.md: COM4 guarded update, exact readback, console ABI; 2026-09-05'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopUpdateS19Path).Hash
         }
         directoryRefreshS19 = [ordered]@{
-            file = 'BUILD/v1.29/s19/str8n-v1.29-directory-refresh-2000.s19'
+            file = 'BUILD/v1.30/s19/str8n-v1.30-directory-refresh-2000.s19'
             ramStart = '2000'
             ramEnd = '4FFF'
             candidateStart = '4000'
@@ -116,7 +117,7 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $DirectoryRefreshS19Path).Hash
         }
         wdcmonv2ArchiveS19 = [ordered]@{
-            file = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-archive-2000.s19'
+            file = 'BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-archive-2000.s19'
             ramStart = ('{0:X4}' -f $wdcmonv2ArchiveStart)
             ramEnd = ('{0:X4}' -f ($wdcmonv2ArchiveEnd - 1))
             entry = '2000'
@@ -125,7 +126,7 @@ $manifest = [ordered]@{
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2ArchiveS19Path).Hash
         }
         wdcmonv2InstallS19 = [ordered]@{
-            file = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.s19'
+            file = 'BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-install-2000.s19'
             ramStart = ('{0:X4}' -f $wdcmonv2InstallStart)
             ramEnd = ('{0:X4}' -f ($wdcmonv2InstallEnd - 1))
             entry = '2000'
@@ -133,13 +134,13 @@ $manifest = [ordered]@{
             receiveBufferEnd = '4FFF'
             externalCandidate = 'exact canonical 4096-byte top BIN; directory empty; FFF0=1E WORK; FFF1=1F top backup'
             destinationPolicy = 'B0 erased or byte-identical to B3; B1/B2 untouched; B3:F last'
-            hardwareStatus = 'v1.29 factory migration and EDU quiet-start board-accepted'
-            candidateTopBin = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin'
+            hardwareStatus = 'v1.30 host-verified; factory migration hardware proof operator-deferred'
+            candidateTopBin = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin'
             candidateTopSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2InstallTopBinPath).Hash
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2InstallS19Path).Hash
         }
         publicContract = [ordered]@{
-            file = 'BUILD/v1.29/include/str8n-public.inc'
+            file = 'BUILD/v1.30/include/str8n-public.inc'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $PublicContractPath).Hash
         }
     }

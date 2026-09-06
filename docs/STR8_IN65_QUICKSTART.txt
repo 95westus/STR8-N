@@ -1,5 +1,8 @@
 STR8-iN/65 QUICK START
-Factory WDCMONv2 -> STR8-N 1.29
+Factory WDCMONv2 -> STR8-N 1.30
+
+v1.30 factory-migration hardware proof is operator-deferred. The retained factory-board
+acceptance is v1.29; host qualification does not replace that board procedure.
 
 WINDOWS 11 HOST - BOARD-PROVEN REFERENCE
 
@@ -7,7 +10,7 @@ NEEDED
 - Windows 11 with Windows PowerShell 5.1 (powershell.exe).
 - The board's USB COM-port driver; the powered board must appear as COMx.
 - This ZIP extracted to a writable location.  It creates the surrounding folder
-  STR8-N-v1.29-Migration-Kit; work inside that folder.
+  STR8-N-v1.30-Migration-Kit; work inside that folder.
 - A free COM port, stable power, and access to the board's physical RESET button.
 
 NOT NEEDED
@@ -76,9 +79,9 @@ press each key only when the screen asks for it, and press it only once.
    board prints SEND STR8-N TOP BIN, press Ctrl+U once.  After the 4096-byte
    image passes its board-side check, type:
 
-   INSTALL STR8-N 1.29
+   INSTALL STR8-N 1.30
 
-4. After STR8-N 1.29 starts, select S.  At STR8-N> enter L, then press Ctrl+D
+4. After STR8-N 1.30 starts, select S.  At STR8-N> enter L, then press Ctrl+D
    once to send the packaged production Bank Maintenance S19.
 
 5. At BM> enter D.  Enter Bank 0, type FF, and description WDCV2.  Require
@@ -96,7 +99,7 @@ press each key only when the screen asks for it, and press it only once.
 
    Test reset selector 0 and shell J0.  J0 hands the computer completely to
    the preserved factory system in Bank 0.  To leave that system and return to
-   STR8-N 1.29, press the board's physical RESET button.  Requiring physical
+   STR8-N 1.30, press the board's physical RESET button.  Requiring physical
    RESET after J0 is intentional and by design; it is not a flaw or a failed
    migration.
 

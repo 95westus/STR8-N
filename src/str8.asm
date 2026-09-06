@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable v1.29 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.30 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
@@ -55,7 +55,6 @@
                         XDEF            STR8_IVY_ENTRY_IRQ_MASTER
                         XDEF            STR8_ID_MARKER_BYTES
 
-                        XREF            UTL_DELAY_AXY_8MHZ
                         IF              STR8_RAM_PROOF
                         XREF            FLSH_BANK_SELECT_A
                         XREF            FLSH_BANK_SELECT_3
@@ -113,8 +112,8 @@ STR8_DELAY_TICK_X       EQU             $B6
 STR8_DELAY_TICK_Y       EQU             $F8
 STR8_STARTUP_DOT_COUNT  EQU             $0C
 STR8_STARTUP_LIVE_TICKS EQU             $06
-STR8_STARTUP_DOT_A      EQU             $23    ; 0.993s at 8 MHz
-STR8_BANK_BOOT_DELAY_A  EQU             $6A    ; 3.010s at 8 MHz
+STR8_STARTUP_DOT_A      EQU             $23    ; 0.992s at 8 MHz
+STR8_BANK_BOOT_DELAY_A  EQU             $6A    ; 3.005s at 8 MHz
 STR8_COPY_MODE_PROGRAM_STAGED EQU        $05
 STR8_PTR_LO             EQU             $CD
 STR8_PTR_HI             EQU             $CE
@@ -142,10 +141,9 @@ STR8_INSTALL_SECTOR_HI  EQU             $9F
 ; $A0 is intentionally free; the record service retains its own detailed
 ; parse/program status while the compact installer reports a single failure.
 ; v1.23 selected dense range. The receiver requires this exact start and
-; exclusive limit while retaining a count for summaries/tests.
+; exclusive limit. $A3 is no longer used for an unread sector count.
 STR8_INSTALL_START_HI   EQU             $A1
 STR8_INSTALL_RANGE_LIMIT_HI EQU         $A2
-STR8_INSTALL_SECTOR_COUNT EQU           $A3
 ; L reuses the resident parser and pointer helpers.  Its destination ceiling
 ; stays below the parser's $7B00 data buffer and the higher RTC/IVI cells.
 STR8_RAM_LOAD_HAVE_DATA EQU              $A0
@@ -506,7 +504,7 @@ STR8_ENTER_MENU_NO_BOOT:
                         LDX             #<MSG_NO_TARGET
                         IF              STR8_V1_INSTALLER_TXN
 STR8_ENTER_MENU_NO_TARGET_PRINT:
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_TXN_PAGE0_X
                         ELSE
                         LDY             #>MSG_NO_TARGET
 STR8_ENTER_MENU_NO_TARGET_PRINT:
@@ -591,9 +589,21 @@ STR8_STARTUP_DELAY:
                         RTS
 
 STR8_DELAY_FIXED_A:
+; Private nonzero-A delay. All callers use $23, $49, or $6A; X/Y are fixed.
+; Returns A=X=Y=0, C=1. No fixed RAM. At 8 MHz, excluding caller JSR:
+; cycles = A * (182 * (5 * 248 + 6) + 6) + 7 (no branch page crossings).
+?OUTER:
                         LDX             #STR8_DELAY_TICK_X
+?MIDDLE:
                         LDY             #STR8_DELAY_TICK_Y
-                        JMP             UTL_DELAY_AXY_8MHZ
+?INNER:                 DEY
+                        BNE             ?INNER
+                        DEX
+                        BNE             ?MIDDLE
+                        DEC             A
+                        BNE             ?OUTER
+                        SEC
+                        RTS
 
 STR8_BOOT_KEY_POLL_IF_ENABLED:
                         LDA             STR8_BOOT_KEY_ENABLE
@@ -810,7 +820,7 @@ STR8_DISPATCH_A:
 ; A valid non-empty stream executes its in-range S9 address immediately.
 STR8_CMD_LOAD_RAM:
                         LDX             #<MSG_I_SEND_S19
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_TXN_PAGE0_X
                         STZ             STR8_RAM_LOAD_HAVE_DATA
                         LDA             #STR8_REC_OP_PARSE
                         STA             STR8_REC_OP
@@ -1006,7 +1016,7 @@ STR8_I_READ_TYPE:
                         RTS
 
 ; Read one sector ("C") or an inclusive sector span ("C-E"). Publish the
-; 4K-aligned start high byte, exclusive limit high byte, and sector count.
+; 4K-aligned start high byte and exclusive limit high byte.
 ; $F + 1 deliberately becomes the wrapped exclusive limit high byte $00.
 STR8_I_READ_RANGE:
                         LDX             #<MSG_I_RANGE_PROMPT
@@ -1044,12 +1054,8 @@ STR8_I_READ_RANGE:
                         BNE             ?VALID
                         CMP             #$0F
                         BCS             ?FAIL
-?VALID:                SEC
-                        SBC             STR8_INSTALL_START_HI
-                        INC             A
-                        STA             STR8_INSTALL_SECTOR_COUNT
-                        LDA             STR8_REC_WORK_TMP
-                        INC             A
+; A still holds the validated end-sector nibble. No caller needs a count.
+?VALID:                INC             A
                         ASL             A
                         ASL             A
                         ASL             A
@@ -1113,7 +1119,7 @@ STR8_I_COPY_RECORD_METADATA:
 STR8_I_PRINT_SUMMARY:
                         LDX             #<MSG_I_SUMMARY
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_TXN_PAGE0_X
                         ELSE
                         LDY             #>MSG_I_SUMMARY
                         JSR             STR8_PRINT_XY
@@ -1136,7 +1142,7 @@ STR8_I_PRINT_SUMMARY:
                         BEQ             STR8_I_NO_WRITE
                         IF              STR8_V1_INSTALLER_TXN
                         LDX             #<MSG_I_WRITE_CONFIRM
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_TXN_PAGE0_X
                         ELSE
                         LDX             #<MSG_I_STAGE_CONFIRM
                         LDY             #>MSG_I_STAGE_CONFIRM
@@ -1155,7 +1161,7 @@ STR8_I_PRINT_SUMMARY:
                         BCC             ?INSTALL_FAIL
                         LDX             #<MSG_I_SEND_S19
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_TXN_PAGE0_X
                         ELSE
                         LDY             #>MSG_I_SEND_S19
                         JSR             STR8_PRINT_XY
@@ -1166,7 +1172,7 @@ STR8_I_PRINT_SUMMARY:
                         JSR             STR8_I_FINISH_TRANSACTION
                         BCC             ?INSTALL_FAIL
                         LDX             #<MSG_I_INSTALL_OK
-                        JMP             STR8_PRINT_TXN_PAGE1_X
+                        JMP             STR8_PRINT_TXN_PAGE0_X
                         ELSE
                         LDX             #<MSG_I_STAGE_OK
                         LDY             #>MSG_I_STAGE_OK
@@ -1175,14 +1181,14 @@ STR8_I_PRINT_SUMMARY:
                         ENDIF
 ?INSTALL_FAIL:         LDX             #<MSG_I_FAIL
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE1_X
+                        JMP             STR8_PRINT_TXN_PAGE0_X
                         ELSE
                         LDY             #>MSG_I_S19_FAIL
                         JSR             STR8_PRINT_XY
                         ENDIF
 STR8_I_NO_WRITE:       LDX             #<MSG_I_NO_WRITE
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE1_X
+                        JMP             STR8_PRINT_TXN_PAGE0_X
                         ELSE
                         LDY             #>MSG_I_NO_WRITE
                         JMP             STR8_PRINT_XY
@@ -1527,7 +1533,7 @@ STR8_I_ENTRY_IN_RANGE:
 
 STR8_I_CONFIRM_COMMIT:
                         LDX             #<MSG_I_COMMIT
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_TXN_PAGE0_X
                         JMP             STR8_CONFIRM_Y
 
 STR8_I_RECEIVE_DENSE_FAIL:
@@ -1769,7 +1775,7 @@ STR8_JUMP_BANK_PREP_A:
                         STZ             STR8_JUMP_STATUS
                         LDX             #<MSG_JUMP_B
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_TXN_PAGE0_X
                         ELSE
                         LDY             #>MSG_JUMP_B
                         JSR             STR8_PRINT_XY
@@ -2734,6 +2740,9 @@ STR8_WRITE_DEC_DIGIT_A:
                         JMP             STR8_CON_WRITE_BYTE_BLOCK
                         ENDIF
 
+                        IF              STR8_V1_LAYOUT
+                        ELSE
+; Used only by the historical RAM proof's copy-failure report.
 STR8_WRITE_HEX_BYTE_A:
                         PHA
                         LSR             A
@@ -2743,6 +2752,7 @@ STR8_WRITE_HEX_BYTE_A:
                         JSR             STR8_WRITE_HEX_NIBBLE_A
                         PLA
                         AND             #$0F
+                        ENDIF
 STR8_WRITE_HEX_NIBBLE_A:
                         CMP             #$0A
                         BCC             ?ASCII
@@ -2989,7 +2999,7 @@ MSG_I_TYPE_PROMPT:      DB              $0D,$0A,"TYPE:",$A0
 MSG_I_DESC_PROMPT:      DB              $0D,$0A,"DESC:",$A0
 MSG_I_INVALID:          DB              $0D,$0A,"BAD",$0D,$8A
 MSG_I_SUMMARY:          DB              $0D,$0A,"I ",('B'+$80)
-; Compact prompts finish page $FC; summaries and transaction results use $FD.
+; Message starts span $FC/$FD; compiled page-helper calls are regression-checked.
                         IF              STR8_V1_INSTALLER_TXN
 MSG_I_INSTALL_OK:       DB              $0D,$0A,"OK",$0D,$8A
                         ENDIF

@@ -1,13 +1,13 @@
 param(
-    [string]$ArchiveS19Path = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-archive-2000.s19',
-    [string]$InstallS19Path = 'BUILD/v1.29/s19/str8n-v1.29-wdcmonv2-install-2000.s19',
-    [string]$CandidateBinPath = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin',
-    [string]$CanonicalS19Path = 'BUILD/v1.29/s19/str8n-v1.29-f000.s19',
-    [string]$BankMaintS19Path = 'BUILD/v1.29/s19/str8n-v1.29-str8-in65-bank-maint-2000.s19',
-    [string]$InstallIncludePath = 'BUILD/v1.29/generated/str8n-v1.29-wdcmonv2-install-image.inc',
-    [string]$KitDirectory = 'BUILD/v1.29/wdcmonv2-str8n-migration-kit',
-    [string]$ZipPath = 'BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip',
-    [string]$ArchiveRootName = 'STR8-N-v1.29-Migration-Kit'
+    [string]$ArchiveS19Path = 'BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-archive-2000.s19',
+    [string]$InstallS19Path = 'BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-install-2000.s19',
+    [string]$CandidateBinPath = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin',
+    [string]$CanonicalS19Path = 'BUILD/v1.30/s19/str8n-v1.30-f000.s19',
+    [string]$BankMaintS19Path = 'BUILD/v1.30/s19/str8n-v1.30-str8-in65-bank-maint-2000.s19',
+    [string]$InstallIncludePath = 'BUILD/v1.30/generated/str8n-v1.30-wdcmonv2-install-image.inc',
+    [string]$KitDirectory = 'BUILD/v1.30/wdcmonv2-str8n-migration-kit',
+    [string]$ZipPath = 'BUILD/v1.30/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip',
+    [string]$ArchiveRootName = 'STR8-N-v1.30-Migration-Kit'
 )
 
 Set-StrictMode -Version Latest
@@ -31,11 +31,11 @@ $inputs = [ordered]@{
     'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19' = $ArchiveS19Path
     'ARTIFACTS/STR8-iN65-LOADER-2000.s19' = $InstallS19Path
     'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19' = $BankMaintS19Path
-    'ARTIFACTS/STR8-N-v1-29.bin' = $CandidateBinPath
-    'ARTIFACTS/STR8-N-v1-29.s19' = $CanonicalS19Path
+    'ARTIFACTS/STR8-N-v1-30.bin' = $CandidateBinPath
+    'ARTIFACTS/STR8-N-v1-30.s19' = $CanonicalS19Path
     'SOURCE/wdcmonv2str8n-archive-2000.asm' = 'tools/wdcmonv2/wdcmonv2str8n-archive-2000.asm'
     'SOURCE/wdcmonv2str8n-install-2000.asm' = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm'
-    'SOURCE/str8n-v1.29-wdcmonv2-install-image.inc' = $InstallIncludePath
+    'SOURCE/str8n-v1.30-wdcmonv2-install-image.inc' = $InstallIncludePath
     'TOOLS/extract_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/extract_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/check_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_install.ps1' = 'tools/wdcmonv2/check_wdcmonv2_install.ps1'
@@ -89,7 +89,7 @@ $readmePath = Join-Path $kitFull 'PACKAGE-README.txt'
 $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
-    'STATUS: v1.29 FACTORY MIGRATION AND EDU QUIET-START BOARD-ACCEPTED',
+    'STATUS: v1.30 HOST-VERIFIED; FACTORY MIGRATION HARDWARE PROOF OPERATOR-DEFERRED',
     'HOST STATUS: WINDOWS 11 POWERSHELL BOARD-PROVEN; UBUNTU PYTHON UNTESTED',
     ('ARCHIVE ROOT: {0}' -f $ArchiveRootName),
     '',
@@ -114,9 +114,9 @@ $readme = @(
     '  press each once and only when its corresponding request appears.',
     '',
     'The RAM installer requires separate COPY and INSTALL confirmations.',
-    'It copies/verifies stock B3 into B0, receives the canonical STR8-N 1.29',
+    'It copies/verifies stock B3 into B0, receives the canonical STR8-N 1.30',
     'BIN, and installs it in B3:F.',
-    'After verified v1.29 boot, the included Bank Maintenance image prompts for',
+    'After verified v1.30 boot, the included Bank Maintenance image prompts for',
     'D0 FF WDCV2 adoption; Bank 0 remains an opaque byte-for-byte factory guest.',
     'After J0, physical RESET is the designed return from that factory guest',
     'to STR8-N. This reset-only return is intentional, not a flaw.',
@@ -153,8 +153,8 @@ $fileRows = foreach ($file in $payloadFiles) {
 }
 $manifest = [ordered]@{
     schema = 1
-    package = 'str8n-v1.29-wdcmonv2-str8n-migration-kit'
-    hardwareStatus = 'v1.29 factory migration and EDU quiet-start board-accepted'
+    package = 'str8n-v1.30-wdcmonv2-str8n-migration-kit'
+    hardwareStatus = 'v1.30 host-verified; factory migration hardware proof operator-deferred'
     windowsHostStatus = 'Windows 11 PowerShell board-proven'
     ubuntuPythonHostStatus = 'experimental; offline-tested only; no board proof'
     archiveRoot = $ArchiveRootName

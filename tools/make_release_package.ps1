@@ -1,6 +1,6 @@
 param(
-    [string]$PackageDir = 'BUILD/v1.29/str8n-v1.29-release',
-    [string]$ZipPath = 'BUILD/v1.29/str8n-v1.29-release.zip',
+    [string]$PackageDir = 'BUILD/v1.30/str8n-v1.30-release',
+    [string]$ZipPath = 'BUILD/v1.30/str8n-v1.30-release.zip',
     [string]$RyorsRelease = '../R-YORS/RELEASE'
 )
 
@@ -8,15 +8,15 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $files = [ordered]@{
-    'ARTIFACTS/str8n-v1.29-bank3-f000-ffff.bin' = 'BUILD/v1.29/bin/str8n-v1.29-bank3-f000-ffff.bin'
-    'ARTIFACTS/str8n-v1.29-f000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-f000.s19'
-    'ARTIFACTS/str8n-v1.29-worker-0200.s19' = 'BUILD/v1.29/s19/str8n-v1.29-worker-0200.s19'
-    'ARTIFACTS/str8n-v1.29-bank-maint-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-bank-maint-2000.s19'
-    'ARTIFACTS/str8n-v1.29-bank-maint-menu-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-bank-maint-menu-2000.s19'
-    'ARTIFACTS/str8n-v1.29-bank-maint-menu-2000.a' = 'tools/bank-maint/str8n-v1.29-bank-maint-menu-2000.a'
-    'ARTIFACTS/str8n-v1.29-top-update-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-top-update-2000.s19'
-    'ARTIFACTS/str8n-v1.29-directory-refresh-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-directory-refresh-2000.s19'
-    'ARCHIVE/TESTS/str8n-v1.29-console-abi-test-2000.s19' = 'BUILD/v1.29/s19/str8n-v1.29-console-abi-test-2000.s19'
+    'ARTIFACTS/str8n-v1.30-bank3-f000-ffff.bin' = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin'
+    'ARTIFACTS/str8n-v1.30-f000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-f000.s19'
+    'ARTIFACTS/str8n-v1.30-worker-0200.s19' = 'BUILD/v1.30/s19/str8n-v1.30-worker-0200.s19'
+    'ARTIFACTS/str8n-v1.30-bank-maint-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-bank-maint-2000.s19'
+    'ARTIFACTS/str8n-v1.30-bank-maint-menu-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-bank-maint-menu-2000.s19'
+    'ARTIFACTS/str8n-v1.30-bank-maint-menu-2000.a' = 'tools/bank-maint/str8n-v1.30-bank-maint-menu-2000.a'
+    'ARTIFACTS/str8n-v1.30-top-update-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-top-update-2000.s19'
+    'ARTIFACTS/str8n-v1.30-directory-refresh-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-directory-refresh-2000.s19'
+    'ARCHIVE/TESTS/str8n-v1.30-console-abi-test-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-console-abi-test-2000.s19'
     'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-himon-bank3-c-e.s19')
     'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-asm-bank3-8-b.s19')
     'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19' = (Join-Path $RyorsRelease 'ryors-v1.2-himon-asm-bank3-8-e.s19')
@@ -45,10 +45,12 @@ $files = [ordered]@{
     'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19')
     'SOFTWARE/UTILITIES/BANK_AUDIT_AP_CARD.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/BANK_AUDIT_AP_CARD.md')
     'SOFTWARE/UTILITIES/BANK_DUMP_AP_CARD.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/BANK_DUMP_AP_CARD.md')
-    'INCLUDE/str8n-public.inc' = 'BUILD/v1.29/include/str8n-public.inc'
+    'INCLUDE/str8n-public.inc' = 'BUILD/v1.30/include/str8n-public.inc'
     'MANIFEST/str8n-manifest.json' = 'BUILD/str8n-manifest.json'
-    'PACKAGES/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip' = 'BUILD/v1.29/str8n-v1.29-wdcmonv2-str8n-migration-kit.zip'
+    'PACKAGES/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip' = 'BUILD/v1.30/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip'
     'DOC/README.md' = 'README.md'
+    'DOC/STR8N_V1_30_RECLAIM.md' = 'docs/STR8N_V1_30_RECLAIM.md'
+    'DOC/STR8N_V1_30_BOARD_TRANSCRIPT.txt' = 'docs/STR8N_V1_30_BOARD_TRANSCRIPT.txt'
     'DOC/OPERATORS_GUIDE.md' = 'docs/OPERATORS_GUIDE.md'
     'DOC/TECHNICAL_GUIDE.md' = 'docs/TECHNICAL_GUIDE.md'
     'DOC/STR8_IN65_BANK_MAINTENANCE.md' = 'docs/STR8_IN65_BANK_MAINTENANCE.md'
@@ -73,24 +75,24 @@ foreach ($entry in $files.GetEnumerator()) {
 }
 
 $readme = @'
-STR8-N v1.29 release package
+STR8-N v1.30 release package
 
-This package contains STR8-N v1.29 deliverables, documentation, and clearly
+This package contains STR8-N v1.30 deliverables, documentation, and clearly
 separated optional HIMON/ASM-F2 payloads. It contains no WDCMONv2 firmware or
 owner bank archive.
 
 Primary installation images:
-  ARTIFACTS/str8n-v1.29-bank3-f000-ffff.bin  external programmer, B3:F
-  ARTIFACTS/str8n-v1.29-f000.s19             resident S19
+  ARTIFACTS/str8n-v1.30-bank3-f000-ffff.bin  external programmer, B3:F
+  ARTIFACTS/str8n-v1.30-f000.s19             resident S19
 
 Maintenance and recovery:
-  ARTIFACTS/str8n-v1.29-bank-maint-2000.s19
-  ARTIFACTS/str8n-v1.29-bank-maint-menu-2000.s19
-  ARTIFACTS/str8n-v1.29-top-update-2000.s19
-  ARTIFACTS/str8n-v1.29-directory-refresh-2000.s19
+  ARTIFACTS/str8n-v1.30-bank-maint-2000.s19
+  ARTIFACTS/str8n-v1.30-bank-maint-menu-2000.s19
+  ARTIFACTS/str8n-v1.30-top-update-2000.s19
+  ARTIFACTS/str8n-v1.30-directory-refresh-2000.s19
 
 Archived hardware proof:
-  ARCHIVE/TESTS/str8n-v1.29-console-abi-test-2000.s19
+  ARCHIVE/TESTS/str8n-v1.30-console-abi-test-2000.s19
 
 Optional HIMON and ASM-F2:
   OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19
