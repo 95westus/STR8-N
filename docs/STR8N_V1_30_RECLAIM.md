@@ -1,5 +1,11 @@
 # STR8-N v1.30: resident space reclamation
 
+This report preserves the original board-tested v1.30 at commit `521fd0a`
+and the hashes below. The later [conservative resident pass](STR8N_CONSERVATIVE_RESIDENT_PASS.md)
+saves another 40 bytes and has its own separately recorded board evidence.
+Its different binary does not inherit this board acceptance. The measurements
+below remain historical.
+
 ## Scope and measured result
 
 This is a behavior-preserving size release, not a RAM ABI or worker redesign.

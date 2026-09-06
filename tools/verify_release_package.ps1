@@ -44,6 +44,8 @@ $required = @(
     'SOFTWARE/UTILITIES/BANK_DUMP_AP_CARD.md',
     'MANIFEST/str8n-manifest.json',
     'DOC/STR8N_V1_30_RECLAIM.md',
+    'DOC/STR8N_CONSERVATIVE_RESIDENT_PASS.md',
+    'DOC/STR8N_CONSERVATIVE_BOARD_TRANSCRIPT.txt',
     'DOC/STR8N_V1_30_BOARD_TRANSCRIPT.txt',
     'PACKAGES/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip',
     'PACKAGE-README.txt', 'SHA256SUMS.txt'

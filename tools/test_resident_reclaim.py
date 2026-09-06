@@ -5,6 +5,9 @@ the linked range parser, stubbing only console printing and line acquisition.
 It is not a general CPU emulator or a substitute for board timing evidence.
 """
 from pathlib import Path
+import base64
+import hashlib
+import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,8 +23,25 @@ def main():
     image = (REL / 'bin/str8n-v1.30-bank3-f000-ffff.bin').read_bytes()
     mem = bytearray(65536)
     mem[0xF000:] = image
-    assert sym['_END_DATA'] == 0xFD16
-    assert image[0xD16:0xD5C] == b'\xff' * 70
+    # Frozen canonical host image, never a board dump. Protect the deliberately
+    # unchanged worker, vectors, directory/configuration, and sensitive code.
+    golden = json.loads((ROOT / 'tools/fixtures/resident-521fd0a.json').read_text())
+    old = base64.b64decode(golden['image'])
+    assert hashlib.sha256(old).hexdigest() == golden['sha256']
+    assert image[0xD5C:] == old[0xD5C:]
+    for name, length in [('STR8_DELAY_FIXED_A', 15), ('STR8_IVY_ENTRY_NMI', 20),
+                         ('STR8_IVY_ENTRY_IRQ_MASTER', 46), ('STR8_REC_ADVANCE_APPLY_POINTERS', 13),
+                         ('STR8_CON_INIT', 12), ('STR8_IN65_EDU_QUIET', 21),
+                         ('STR8_CON_READ_BYTE_NONBLOCK', 31), ('STR8_CON_WRITE_BYTE_BLOCK', 37)]:
+        previous, current = golden['symbols'][name] - 0xF000, sym[name] - 0xF000
+        assert old[previous:previous + length] == image[current:current + length], name
+    assert image[sym['_BEG_DATA'] - 0xF000:sym['_END_DATA'] - 0xF000] == old[golden['symbols']['_BEG_DATA'] - 0xF000:golden['symbols']['_END_DATA'] - 0xF000]
+    assert sym['_END_DATA'] == 0xFCEE
+    assert image[0xCEE:0xD5C] == b'\xff' * 110
+    assert sym['STR8_PRINT_TXN_PAGE0_X'] == sym['STR8_PRINT_TXN_PAGE1_X']
+    assert sym['MSG_ID'] >> 8 == (sym['_END_DATA'] - 1) >> 8 == 0xFC
+    assert sym['STR8_REC_OP_PARSE'] == sym['STR8_REC_FORMAT_S19'] == sym['STR8_REC_SOURCE_CONSOLE'] == 1
+    assert sym['STR8_REC_SOURCE_BUFFER'] == sym['STR8_REC_DATA_BUF_LO'] == 0
     assert 'STR8_WRITE_HEX_BYTE_A' not in sym
     assert image[0xFF0:] == bytes.fromhex('1e1fffffffffffffffffd2f000f0e6f0')
 
@@ -170,7 +190,7 @@ def main():
         for text in (b'', b'CC', b'C--E', b'C/E', b'G-F', b'8-G'):
             assert not run_range(bank, text)[0], text
             cases += 1
-    print(f'RESIDENT RECLAIM PASS: {checked} compiled message-page calls, {cases} linked parser cases, 70-byte margin')
+    print(f'RESIDENT RECLAIM PASS: {checked} compiled message-page calls, {cases} linked parser cases, 110-byte margin')
 
 
 if __name__ == '__main__':

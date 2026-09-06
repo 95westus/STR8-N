@@ -1,0 +1,132 @@
+STR8-N v1.30 conservative follow-up board transcript - 2026-09-05
+COM4, 115200 baud. Canonical candidate SHA-256:
+19E284EEF2FF88EFC4F4E4632FB0F200DC75F0E51CAAA44DEF42FA2E9181336A
+
+RX from BUILD/v1.30/local/conservative-board-session.jsonl, starting at the
+updater banner. CR/LF normalized; full memory-dump rows omitted after exact
+host verification. S19 TX records and hashes remain in the owner-local log.
+The reset after the console probe was captured receive-only, no TX command.
+See STR8N_CONSERVATIVE_RESIDENT_PASS.md for checks, hashes, and scope.
+
+Later power-cycle capture (separate from the main session below): the operator
+announced power-off/on. COM4 disconnected on power-off; after reconnection,
+only the following tail was captured. Initial reset/banner were missed.
+
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>
+
+Main board-test session:
+
+STR8-N 1.30 TOP UPDATE
+BACKUP B1:F; TARGET B3:F
+TYPE BACKUP B1F> BACKUP B1F
+BACKUP VERIFIED
+SAFE PHY $0F000-$0FFFF; TARGET PHY $1F000-$1FFFF; SUM=$48C2
+TYPE STR8-N 1.30> STR8-N 1.30
+ERASING B3:F - NO RESET/NMI/POWER
+STR8-N 1.30 VERIFIED; RESET
+RESET
+
+STR8-N 1.30
+0-2 C W S: S
+I L C W J
+STR8-N>C
+BOOT COLD
+RAM ZERO OK
+
+HIMON V 00.0902(1707)
+>D F000 FFFF
+>STR8
+RUN STR8: BOOTLOADER @F000 K=03 ? Y
+RESET
+
+STR8-N 1.30
+0-2 C W S: S
+I L C W J
+STR8-N>I
+B0-3: 3
+RANGE: FSTR8-N>I
+B0-3: 3
+RANGE: C-E
+I B3 C-E WRITE? Y: N
+BAD
+STR8-N>I
+B0-3: 0
+RANGE: F
+I B0 F-F WRITE? Y: N
+BAD
+STR8-N>W
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>STR8
+RUN STR8: BOOTLOADER @F000 K=03 ? Y
+RESET
+
+STR8-N 1.30
+0-2 C W S:
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>STR8
+RUN STR8: BOOTLOADER @F000 K=03 ? Y
+RESET
+
+STR8-N 1.30
+0-2 C W S: S
+I L C W J
+STR8-N>J3
+J B3
+RESET
+
+STR8-N 1.30
+0-2 C W S: S
+I L C W J
+STR8-N>L
+S19
+
+BAD
+STR8-N>L
+S19
+
+BAD
+STR8-N>L
+S19
+
+STR8-N 1.30 CONSOLE ABI TEST
+ABI_QUERY $F006 V1 CAPS $3F/Y/C: PASS
+CONSOLE_INIT $F003 A/X/Y/C: PASS
+CHAROUT $F019 A/X/Y/C: PASS
+TYPE q THEN ENTER> q <- $71 RAW: PASS
+$0D RAW ENTER: PASS
+CHAR_READY $F03E EMPTY/READY/X/Y/C: PASS
+CHARIN $F013 X/Y/C: PASS
+BRK VECTOR $F0E6: PASS
+CONSOLE ABI TEST: PASS
+PRESS PHYSICAL RESET
+RESET
+
+STR8-N 1.30
+0-2 C W S:
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>
+
+Successful cold-power retry (after the main session and partial attempt):
+RX from BUILD/v1.30/local/conservative-cold-power-retry.jsonl.
+Receive-only capture; no TX records. Host connection events are summarized.
+
+[CONNECTED COM4]
+[USB LOST DURING OPERATOR POWER-OFF; AUTOMATIC RECONNECT WAIT]
+[CONNECTED COM4 BEFORE RESET OUTPUT]
+RESET
+
+STR8-N 1.30
+0-2 C W S:
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>

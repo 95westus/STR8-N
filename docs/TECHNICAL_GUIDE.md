@@ -78,8 +78,8 @@ time remains approximately twelve seconds.
 The complete protected sector is exactly 4096 bytes:
 
 ```text
-$F000-$FD15  resident supervisor, installer, loader   3350 bytes
-$FD16-$FD5B  currently unused margin                    70 bytes
+$F000-$FCED  resident supervisor, installer, loader   3310 bytes
+$FCEE-$FD5B  currently unused margin                   110 bytes
 $FD5C-$FFAF  stored unified worker                    596 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
 $FFF0        WORK sector locator (`$1E` = B1:E)          1 byte
@@ -93,7 +93,8 @@ $FFFA-$FFFF  NMI, RESET, IRQ/BRK vectors                 6 bytes
 The bytes between `_END_DATA` and `$FD5C` are available resident growth room.
 The layout checker requires at least 64 bytes of margin before the fixed
 worker boundary and rejects any overlap.
-The v1.30 cold-start build leaves 70 bytes before the stored worker.
+The v1.30 conservative candidate leaves 110 bytes before the stored worker.
+See [host validation and hardware status](STR8N_CONSERVATIVE_RESIDENT_PASS.md).
 `$FF` bytes found inside linked code are not automatically free space.
 
 The stored worker is copied to `$0200-$0453` before an install or bank handoff.

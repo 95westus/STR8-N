@@ -1,3 +1,4 @@
 # BUILD is disposable compiler output. Current release firmware and source
 # snapshots are published to the adjacent R-YORS/RELEASE directory.
 BUILD/**
+__pycache__/

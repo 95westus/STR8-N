@@ -50,6 +50,8 @@ $files = [ordered]@{
     'PACKAGES/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip' = 'BUILD/v1.30/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip'
     'DOC/README.md' = 'README.md'
     'DOC/STR8N_V1_30_RECLAIM.md' = 'docs/STR8N_V1_30_RECLAIM.md'
+    'DOC/STR8N_CONSERVATIVE_RESIDENT_PASS.md' = 'docs/STR8N_CONSERVATIVE_RESIDENT_PASS.md'
+    'DOC/STR8N_CONSERVATIVE_BOARD_TRANSCRIPT.txt' = 'docs/STR8N_CONSERVATIVE_BOARD_TRANSCRIPT.txt'
     'DOC/STR8N_V1_30_BOARD_TRANSCRIPT.txt' = 'docs/STR8N_V1_30_BOARD_TRANSCRIPT.txt'
     'DOC/OPERATORS_GUIDE.md' = 'docs/OPERATORS_GUIDE.md'
     'DOC/TECHNICAL_GUIDE.md' = 'docs/TECHNICAL_GUIDE.md'
@@ -80,6 +82,11 @@ STR8-N v1.30 release package
 This package contains STR8-N v1.30 deliverables, documentation, and clearly
 separated optional HIMON/ASM-F2 payloads. It contains no WDCMONv2 firmware or
 owner bank archive.
+
+The conservative v1.30 candidate passed guarded update/readback, cold-power
+startup, boot-path, and console ABI checks on COM4, 2026-09-05. For scope and deferred tests,
+see DOC/STR8N_CONSERVATIVE_RESIDENT_PASS.md. Earlier v1.30 board evidence
+remains specific to commit 521fd0a and its original binary.
 
 Primary installation images:
   ARTIFACTS/str8n-v1.30-bank3-f000-ffff.bin  external programmer, B3:F
