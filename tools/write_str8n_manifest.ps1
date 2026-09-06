@@ -69,6 +69,8 @@ $manifest = [ordered]@{
             cpuStart = 'F000'
             cpuEnd = 'FFFF'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopBinPath).Hash
+            hardwareStatus = 'conservative v1.30: COM4 guarded update/readback, cold-power startup, boot-path and console ABI checks passed; 2026-09-05; see report for scope'
+            validationReport = 'docs/STR8N_CONSERVATIVE_RESIDENT_PASS.md'
         }
         workerS19 = [ordered]@{
             file = 'BUILD/v1.30/s19/str8n-v1.30-worker-0200.s19'
@@ -101,7 +103,8 @@ $manifest = [ordered]@{
             candidateEnd = '4FFF'
             entry = '2000'
             backup = 'Bank 1 CPU F000-FFFF / physical 0F000-0FFFF'
-            hardwareEvidence = 'docs/STR8N_V1_30_RECLAIM.md: COM4 guarded update, exact readback, console ABI; 2026-09-05'
+            hardwareEvidence = 'docs/STR8N_CONSERVATIVE_RESIDENT_PASS.md: conservative candidate guarded update, exact readback, console ABI; COM4, 2026-09-05'
+            historicalCanonicalTopSha256 = '60B7FE19E42766AACFCDEF8320A35D9D5AB7C5F91F0FE3130041F2CFF4799734'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopUpdateS19Path).Hash
         }
         directoryRefreshS19 = [ordered]@{

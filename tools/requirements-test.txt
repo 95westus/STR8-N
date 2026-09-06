@@ -1,0 +1,2 @@
+# Optional actual-opcode differential tests; basic make all remains stdlib-only.
+py65==1.2.0

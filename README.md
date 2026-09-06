@@ -1,12 +1,16 @@
 # STR8-N v1.30
 
-v1.30 reclaims 64 resident bytes: 45 from specializing the private delay,
-11 from excluding a proof-only hex prologue, and 8 from deleting an unread
-sector-count calculation. The resident is now 3,350 bytes (`$F000-$FD15`),
-with 70 bytes free before the unchanged worker at `$FD5C`. Three private RAM
-bytes are no longer used. Public ABI versions and all prompt text are retained.
+The current v1.30 candidate reclaims another 40 resident bytes through a
+conservative resident-only pass, following the original 64-byte reclamation.
+The resident is now 3,310 bytes (`$F000-$FCED`), with 110 bytes free before
+the unchanged worker at `$FD5C`. Public ABI versions and all prompt text are
+retained; this follow-up changes no RAM allocation or worker storage.
 
-See [v1.30 changes and validation](docs/STR8N_V1_30_RECLAIM.md).
+See [conservative pass and validation](docs/STR8N_CONSERVATIVE_RESIDENT_PASS.md).
+This candidate passed guarded update/readback, cold-power startup, boot-path and console ABI
+checks on COM4, 2026-09-05. The
+[original v1.30 changes and board evidence](docs/STR8N_V1_30_RECLAIM.md)
+apply to the earlier binary, not this follow-up.
 Older hardware acceptance below retains its original version; factory
 migration acceptance is not automatically transferred to the new release.
 
@@ -208,7 +212,7 @@ evidence of the general multibank handoff path.
 | Record parser ABI | Validate one buffered or console S0/S1/S9 record through `SR/02` at `$F009` | Parser-only; callers own destination and execution policy, and the generated public contract exports the complete request/result card |
 | Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.30 BIN, and install it in B3:F through the RAM loader | v1.30 factory-migration hardware proof is operator-deferred until later, not a size-release blocker; v1.29 accepted with `SXB2` and `$BF/$B5` flash from erased B0; B1/B2 remain untouched |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
-| Protected top upgrade | Load the supplied v1.30 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.30 sector, and verify all 4 KiB | Guarded update and exact readback passed on COM4, 2026-09-05; live directory retained |
+| Protected top upgrade | Load the supplied v1.30 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.30 sector, and verify all 4 KiB | Conservative candidate passed guarded update and exact readback on COM4, 2026-09-05; live directory retained; see the follow-up report for test scope |
 | Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The canonical v1.30 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and no overlap with the fixed worker |

@@ -153,6 +153,11 @@ all: manifest range-matrix-check ram-load-contract-check ram-abi-check console-a
 resident-reclaim-check: programmer-bin
 	python tools/test_resident_reclaim.py
 
+# Optional deeper comparison; requires py65==1.2.0 (see conservative-pass notes).
+.PHONY: conservative-differential-check
+conservative-differential-check: programmer-bin
+	python tools/test_conservative_resident.py
+
 release-package: all bank-maint-menu wdcmonv2-package $(RELEASE_PACKAGE_TOOL) $(RELEASE_PACKAGE_VERIFY)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RELEASE_PACKAGE_TOOL) -PackageDir "$(RELEASE_PACKAGE_DIR)" -ZipPath "$(RELEASE_PACKAGE_ZIP)"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RELEASE_PACKAGE_VERIFY) -Root "$(RELEASE_PACKAGE_DIR)"

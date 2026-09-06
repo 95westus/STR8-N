@@ -3,10 +3,14 @@
 The v1.22 `C`/`W` selector and warm timeout were board-accepted by the operator
 on 2026-08-19. The exact test card, retained transcript, and acceptance are in
 [STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md](STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md).
-Version 1.30 is the maintained release. It reclaims 64 resident bytes while
-retaining that interface, guarded directory rename, and the STR8-iN/65
-cold-start sequence. See [changes and validation](STR8N_V1_30_RECLAIM.md);
-older factory-migration acceptance remains version-specific.
+Version 1.30 is the maintained version. Its original 64-byte reclamation
+retains that interface, guarded directory rename, and the STR8-iN/65
+cold-start sequence. The current conservative candidate saves another
+40 bytes and passed guarded update/readback, cold-power startup, boot-path and console ABI checks
+on COM4, 2026-09-05. Factory migration remains operator-deferred.
+See the [follow-up report](STR8N_CONSERVATIVE_RESIDENT_PASS.md) and
+[original board evidence](STR8N_V1_30_RECLAIM.md); hardware acceptance
+remains specific to the tested binary.
 
 This is the board-facing guide. You do not need to know assembly language to
 use it.

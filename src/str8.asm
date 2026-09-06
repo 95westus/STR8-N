@@ -1283,15 +1283,13 @@ STR8_I_WRITE_METADATA:
 STR8_I_WRITE_JOURNAL_START:
                         LDA             STR8_INSTALL_PAIR
                         ASL             A
-                        TAX
                         BRA             STR8_I_WRITE_JOURNAL_MASK_A
 STR8_I_WRITE_JOURNAL_COMPLETE:
                         LDA             STR8_INSTALL_PAIR
                         ASL             A
                         INC             A
-                        TAX
 STR8_I_WRITE_JOURNAL_MASK_A:
-                        TXA
+; Both entries already supply the mask index in A.
                         AND             #$07
                         TAX
                         LDA             STR8_I_JOURNAL_MASK,X
@@ -1302,8 +1300,7 @@ STR8_I_WRITE_JOURNAL_MASK_A:
                         CLC
                         ADC             #STR8_DIR_JOURNAL
                         JSR             STR8_I_SET_DIR_ADDRESS_A
-                        LDY             #$00
-                        LDA             (STR8_PTR_LO),Y
+                        LDA             (STR8_PTR_LO)
                         AND             STR8_REC_DATA_BUF
                         STA             STR8_REC_DATA_BUF
                         LDA             #$01
@@ -1344,13 +1341,11 @@ STR8_I_RECEIVE_DENSE:
                         STZ             STR8_INSTALL_PHASE
                         LDA             STR8_INSTALL_START_HI
                         STA             STR8_INSTALL_EXPECT_HI
-                        LDA             STR8_INSTALL_START_HI
                         STA             STR8_INSTALL_SECTOR_HI
+; OP_PARSE, FORMAT_S19 and SOURCE_CONSOLE are all $01 (host-checked).
                         LDA             #STR8_REC_OP_PARSE
                         STA             STR8_REC_OP
-                        LDA             #STR8_REC_FORMAT_S19
                         STA             STR8_REC_FORMAT
-                        LDA             #STR8_REC_SOURCE_CONSOLE
                         STA             STR8_REC_SOURCE
 ?RECORD:               JSR             STR8_RECORD_SERVICE_BODY
                         BCS             ?PARSED
@@ -1395,9 +1390,8 @@ STR8_I_RECEIVE_DENSE:
                         ADC             #$0A
                         STA             STR8_PTR_HI
                         LDX             #$00
-?COPY:                 LDY             #$00
-                        LDA             STR8_REC_DATA_BUF,X
-                        STA             (STR8_PTR_LO),Y
+?COPY:                 LDA             STR8_REC_DATA_BUF,X
+                        STA             (STR8_PTR_LO)
                         INX
                         INC             STR8_PTR_LO
                         BNE             ?EXPECTED
@@ -1429,9 +1423,7 @@ STR8_I_RECEIVE_DENSE:
                         BNE             ?COPY
 ; Phase 2 records that the first valid S1 has entered the sector tray. Worker
 ; and directory preparation were completed before S19 was printed.
-                        LDA             STR8_INSTALL_PHASE
-                        CMP             #$02
-                        BEQ             ?NEXT_RECORD
+; Every non-final S1 reaches phase 2, including when already in phase 2.
                         LDA             #$02
                         STA             STR8_INSTALL_PHASE
 ?NEXT_RECORD:
@@ -1784,12 +1776,12 @@ STR8_JUMP_BANK_PREP_A:
                         JSR             STR8_WRITE_DEC_DIGIT_A
                         LDX             #<MSG_CRLF
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JMP             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDY             #>MSG_CRLF
                         JSR             STR8_PRINT_XY
-                        ENDIF
                         RTS
+                        ENDIF
 
 STR8_JUMP_BANK_LAUNCH:
                         IF              STR8_V1_INSTALLER_TXN
@@ -2073,10 +2065,9 @@ STR8_DIR_WRITE_BYTES:
                         BCC             ?WORKER_FAIL
 
                         JSR             STR8_REC_LOAD_APPLY_POINTERS
-?VERIFY:               LDY             #$00
-                        LDA             (STR8_PTR_LO),Y
+?VERIFY:               LDA             (STR8_PTR_LO)
                         STA             STR8_REC_WORK_TMP
-                        CMP             (STR8_COPY_PTR_LO),Y
+                        CMP             (STR8_COPY_PTR_LO)
                         BNE             ?VERIFY_FAIL
                         JSR             STR8_REC_ADVANCE_APPLY_POINTERS
                         DEC             STR8_REC_WORK_COUNT
@@ -2148,7 +2139,7 @@ STR8_REC_PARSE:
                         LDA             STR8_REC_SRC_LEN
                         STA             STR8_REC_WORK_REMAIN
                         LDA             STR8_REC_SOURCE
-                        CMP             #STR8_REC_SOURCE_BUFFER
+; SOURCE_BUFFER is zero. Carry is not consumed before being established below.
                         BNE             ?CONSOLE_START
 
                         ; Validate the inclusive end without rejecting a
@@ -2255,7 +2246,6 @@ STR8_REC_PARSE_BODY:
                         BRA             STR8_REC_FAIL_A
 ?CHECKSUM_OK:
                         LDA             STR8_REC_SOURCE
-                        CMP             #STR8_REC_SOURCE_BUFFER
                         BNE             ?CONSOLE_END
                         LDA             STR8_REC_WORK_REMAIN
                         BEQ             ?PUBLISH
@@ -2282,8 +2272,7 @@ STR8_REC_PARSE_BODY:
                         BRA             STR8_REC_FAIL_A
 
 ?PUBLISH:
-                        LDA             #STR8_REC_DATA_BUF_LO
-                        STA             STR8_REC_DATA_LO
+                        STZ             STR8_REC_DATA_LO
                         LDA             #STR8_REC_DATA_BUF_HI
                         STA             STR8_REC_DATA_HI
                         LDA             STR8_REC_WORK_TYPE
@@ -2342,8 +2331,7 @@ STR8_REC_LOAD_APPLY_POINTERS:
                         STA             STR8_PTR_LO
                         LDA             STR8_REC_ADDR_HI
                         STA             STR8_PTR_HI
-                        LDA             #STR8_REC_DATA_BUF_LO
-                        STA             STR8_COPY_PTR_LO
+                        STZ             STR8_COPY_PTR_LO
                         LDA             #STR8_REC_DATA_BUF_HI
                         STA             STR8_COPY_PTR_HI
                         LDA             STR8_REC_DATA_LEN
@@ -2368,8 +2356,7 @@ STR8_REC_CAPTURE_APPLY_FAILURE:
                         STA             STR8_REC_FAIL_HI
                         LDA             STR8_REC_WORK_TMP
                         STA             STR8_REC_OBSERVED
-                        LDY             #$00
-                        LDA             (STR8_COPY_PTR_LO),Y
+                        LDA             (STR8_COPY_PTR_LO)
                         STA             STR8_REC_EXPECTED
                         RTS
 
@@ -2439,7 +2426,6 @@ STR8_REC_HEX_ASCII_TO_NIBBLE:
 
 STR8_REC_READ_CHAR:
                         LDA             STR8_REC_SOURCE
-                        CMP             #STR8_REC_SOURCE_BUFFER
                         BEQ             ?BUFFER
                         IF              STR8_V1_LAYOUT
                         JSR             STR8_READ_TEXT_BYTE_BLOCK
@@ -2455,8 +2441,7 @@ STR8_REC_READ_CHAR:
 ?BUFFER:
                         LDA             STR8_REC_WORK_REMAIN
                         BEQ             ?EMPTY
-                        LDY             #$00
-                        LDA             (STR8_PTR_LO),Y
+                        LDA             (STR8_PTR_LO)
                         INC             STR8_PTR_LO
                         BNE             ?COUNT
                         INC             STR8_PTR_HI
@@ -2846,13 +2831,11 @@ STR8_PRINT_PROMPT:
                         ENDIF
 
                         IF              STR8_V1_INSTALLER_TXN
-; Transaction messages span exactly two pages. Callers load X with the
-; message low byte and enter the helper matching the map-checked message page.
+; All release messages fit one page (host-checked). Retain both private names
+; as aliases so call sites keep their intent without a second helper.
 STR8_PRINT_TXN_PAGE0_X:
-                        LDY             #>MSG_ID
-                        BRA             STR8_PRINT_XY
 STR8_PRINT_TXN_PAGE1_X:
-                        LDY             #>MSG_CRLF
+                        LDY             #>MSG_ID
                         ENDIF
 STR8_PRINT_XY:
                         STX             STR8_PTR_LO
@@ -2999,7 +2982,7 @@ MSG_I_TYPE_PROMPT:      DB              $0D,$0A,"TYPE:",$A0
 MSG_I_DESC_PROMPT:      DB              $0D,$0A,"DESC:",$A0
 MSG_I_INVALID:          DB              $0D,$0A,"BAD",$0D,$8A
 MSG_I_SUMMARY:          DB              $0D,$0A,"I ",('B'+$80)
-; Message starts span $FC/$FD; compiled page-helper calls are regression-checked.
+; Message starts share $FC; compiled page-helper calls are regression-checked.
                         IF              STR8_V1_INSTALLER_TXN
 MSG_I_INSTALL_OK:       DB              $0D,$0A,"OK",$0D,$8A
                         ENDIF
