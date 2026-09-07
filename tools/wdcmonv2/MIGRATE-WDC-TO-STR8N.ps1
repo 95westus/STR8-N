@@ -49,7 +49,7 @@ if (-not $TranscriptPath) {
 
 Write-Host ''
 Write-Host 'STR8-iN/65 LOADER - FAST PATH'
-Write-Host 'Factory WDCMONv2 -> STR8-N 1.30'
+Write-Host 'Factory WDCMONv2 -> STR8-N 1.31'
 Write-Host ''
 Write-Host 'Release package .............................. PASS'
 Write-Host ('Port ......................................... {0}' -f $Port)
@@ -57,7 +57,7 @@ Write-Host 'Top image .................................... 4096 bytes; $F000-$FF
 Write-Host 'Evidence ..................................... full raw + event logs'
 Write-Host ''
 Write-Host 'READ THE SCREEN: enter commands and press control keys only when requested.'
-Write-Host 'Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.30.'
+Write-Host 'Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.31.'
 Write-Host 'When the screen asks for the top BIN, press CTRL+U once.'
 Write-Host 'After boot, follow the screen: S, L, CTRL+D once, D, then 0, FF, WDCV2, ADOPT B0.'
 Write-Host 'Do not reset, assert NMI, or remove power during active flash writes.'
@@ -66,7 +66,7 @@ if ($Details) {
     Write-Host 'DETAILS'
     Write-Host '  Bank 3 is preserved byte-for-byte as an opaque 32K Bank-0 guest.'
     Write-Host '  B1 and B2 are not migration destinations.'
-    Write-Host '  D0 is written only in the Bank-3 directory after verified v1.30 boot.'
+    Write-Host '  D0 is written only in the Bank-3 directory after verified v1.31 boot.'
     Write-Host ('  STR8-N TOP BIN    = {0}' -f (Split-Path -Leaf $candidate))
     Write-Host ('  BIN SHA-256       = {0}' -f $candidateSha256)
     Write-Host '  T48 DEVICE OFFSET = $1F000'
@@ -94,7 +94,7 @@ if ($PhysicalResetArmSeconds -gt 0) {
 Write-Host ''
 Write-Host 'NEXT: connect any serial terminal at 115200 baud, 8 data bits, no parity, 1 stop bit.'
 Write-Host 'Examples: minicom, Tera Term, PuTTY, or another serial terminal emulator.'
-Write-Host 'Press physical RESET: STR8-N 1.30 must appear.'
+Write-Host 'Press physical RESET: STR8-N 1.31 must appear.'
 Write-Host 'Require D0 FF WDCV2 FFFF FCFFFFFF before testing selector 0 and J0.'
 Write-Host 'J0 is a complete handoff to the preserved factory system.'
 Write-Host 'Physical RESET is the designed return to STR8-N; this is not a flaw.'

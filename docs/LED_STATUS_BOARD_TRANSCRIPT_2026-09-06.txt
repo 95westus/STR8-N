@@ -1,0 +1,143 @@
+STR8-N v1.30 minimal LED-status board transcript - 2026-09-06
+COM4, 115200 baud
+
+Canonical top SHA-256:
+51F84BB7E195882F96C684054947FB25986230546967A549C9EE55F8CEF5C248
+
+Console ownership probe:
+
+STR8-N 1.30 CONSOLE ABI TEST
+ABI_QUERY $F006 V1 CAPS $3F/Y/C: PASS
+CONSOLE_INIT $F003 A/X/Y/C: PASS
+L HANDOFF LED $00: PASS
+CHAROUT $F019 A/X/Y/C: PASS
+TYPE q THEN ENTER> q <- $71 RAW: PASS
+$0D RAW ENTER: PASS
+CHAR_READY $F03E EMPTY/READY/X/Y/C: PASS
+CHARIN $F013 X/Y/C: PASS
+BRK VECTOR $F0E6: PASS
+APP LED $A5 THROUGH RAW I/O/BRK: PASS
+CONSOLE ABI TEST: PASS
+PRESS PHYSICAL RESET
+
+Operator observation: static $A5 was displayed. Physical RESET displayed $01,
+then $00 after the delayed warm HIMON handoff.
+
+RESET
+
+STR8-N 1.30
+0-2 C W S:
+
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>
+
+Operator selected S. At the STR8-N> prompt, $41 was displayed.
+
+First worker probe, retained negative/no-op result:
+
+STR8-N LED WORKER TEST
+TARGET B2:8 ERASED SCRATCH
+TYPE Y TO ERASE/VERIFY B2:8> Y
+
+WATCH LED $F0; ERASING B2:8
+B2:8 ERASED; LED WORKER TEST: PASS
+PRESS PHYSICAL RESET
+
+Operator did not see $F0. Review established that B2:8 was already erased and
+the all-$FF stage contained no bytes to program, so the worker correctly never
+called its flash-unlock routine. No flash mutation occurred.
+
+Read-only pretest map:
+
+B# 8 9 A B C D E F
+
+B0 U U U U U U U U
+B1 E E E E E E W B
+B2 E E E E E E E E
+B3 U U U U U U U P
+E=ERASED U=USED A=AP VALID W=WORK B=B3F BKUP P=B3F PROTECTED
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF WDCV2 FFFF FCFFFFFF
+D1 FF ..... FFFF FFFFFFFF
+D2 FF ..... FFFF FFFFFFFF
+D3 48 HIMON C000 C0FFFFFF
+ OK
+
+Accepted dense-pattern worker probe:
+
+STR8-N LED WORKER TEST
+TARGET B2:8 ERASED SCRATCH
+TYPE Y TO PREFLIGHT B2:8> Y
+
+LED $F0 PRE-ARMED; TYPE Y TO PROGRAM B2:8>
+
+Operator observation: $F0 was displayed (four red on, four green off).
+
+Y
+
+PROGRAM/VERIFY $A5; WORKER OWNS $F0
+ERASE/VERIFY B2:8 BACK TO $FF
+FAILED WRITE PREFLIGHT RETURN LED $01: PASS
+B2:8 ERASED; LED WORKER TEST: PASS
+PRESS PHYSICAL RESET
+
+Operator observation: final $01 was displayed.
+
+Final read-only map:
+
+B# 8 9 A B C D E F
+
+B0 U U U U U U U U
+B1 E E E E E E W B
+B2 E E E E E E E E
+B3 U U U U U U U P
+E=ERASED U=USED A=AP VALID W=WORK B=B3F BKUP P=B3F PROTECTED
+
+DIR B T DESC ENTRY JOURNAL
+D0 FF WDCV2 FFFF FCFFFFFF
+D1 FF ..... FFFF FFFFFFFF
+D2 FF ..... FFFF FFFFFFFF
+D3 48 HIMON C000 C0FFFFFF
+ OK
+
+Q
+RESET
+
+STR8-N 1.30
+0-2 C W S:
+
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>
+
+Explicit cold and warm HIMON handoffs:
+
+G F000
+GO F000
+RESET
+
+STR8-N 1.30
+0-2 C W S: C
+
+BOOT COLD
+RAM ZERO OK
+
+HIMON V 00.0902(1707)
+>
+G F000
+GO F000
+RESET
+
+STR8-N 1.30
+0-2 C W S: W
+
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>
+
+Operator observation: final display was $00.

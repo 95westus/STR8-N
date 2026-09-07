@@ -4,7 +4,7 @@
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.30/s19/str8n-v1.30-bank-maint-2000.s19
+;   send BUILD/v1.31/s19/str8n-v1.31-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -2392,8 +2392,8 @@ BM_SUCCESS LDA #$AC
         JMP BM_MAIN
 
 BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' '
-        IF STR8_IN65_VERSION_130
-        DB '1','.','3','0',' '
+        IF STR8_IN65_VERSION_131
+        DB '1','.','3','1',' '
         ELSE
         DB '1','.','2','3',' '
         ENDIF

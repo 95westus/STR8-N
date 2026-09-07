@@ -1,5 +1,5 @@
 param(
-    [string]$WorkDir = "BUILD/v1.30/test/range-matrix"
+    [string]$WorkDir = "BUILD/v1.31/test/range-matrix"
 )
 
 Set-StrictMode -Version Latest

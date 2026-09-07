@@ -26,6 +26,30 @@ verified.
   are absent.
 - [ ] Review the local commit series and final hashes before any push.
 
+## LED status service
+
+The ownership and bit-pattern contract is specified in
+[LED_STATUS_PROPOSAL.md](docs/LED_STATUS_PROPOSAL.md). Keep the public raw
+console ABI free of LED side effects so user applications retain Port A.
+
+- [x] Implement only the minimal `$01`, `$41`, `$F0`, and `$00` slice first.
+- [x] Measure the linked resident and worker: 3,331-byte resident, 608-byte
+  worker, 77-byte erased margin; `make all` passes.
+- [x] Confirm LED order/polarity, flash-mutation coverage, worker-return
+  restoration, handoff release, and application ownership on hardware.
+- [x] Add the measured PWE# input-wait distinction: `$21` without a configured
+  FTDI host and `$43` with one. The current resident is 3,343 bytes, the worker
+  remains 608 bytes, and the erased margin is 65 bytes; host checks and the
+  focused board test pass.
+- [x] Complete board proof for the separately measured STR8-N RX/TX activity
+  slice. The host-qualified implementation adds 25 resident bytes, leaves the
+  worker unchanged, and preserves 40 erased bytes with a 32-byte layout floor.
+  Public character I/O and public record parsing remain LED-neutral; HIMON and
+  ASM activity belongs in their own later slices. Guarded installation and
+  focused `$07`/`$0B` observations passed on COM4 on 2026-09-06.
+- [ ] Carry the shared vocabulary into HIMON and ASM as separate, measured
+  changes; do not claim their states from STR8-N after handoff.
+
 ## Task 1: Stock SXB3 to a usable multi-bank system
 
 Goal: preserve the factory system twice, install a clean STR8 system in Bank

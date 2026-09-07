@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable v1.30 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.31 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
@@ -66,6 +66,7 @@
                         INCLUDE         "str8-ram-abi.inc"
                         INCLUDE         "str8-record-eq.inc"
                         INCLUDE         "str8-jump-eq.inc"
+                        INCLUDE         "str8-led-eq.inc"
                         INCLUDE         "str8-console-eq.inc"
                         INCLUDE         "str8-directory-eq.inc"
                         INCLUDE         "str8-worker-eq.inc"
@@ -75,6 +76,9 @@
 ; 2026-05-21T23:55-05:00        WLP2        Worker now packs down from $FFEF so the free hole is contiguous.
 ; 2026-07-23T13:07-05:00        Codex       Size pass shares resident paths and repacks the smaller worker.
 ; 2026-07-23T17:27-05:00        Codex       B selects one destination; E/enrollment is removed.
+; 2026-09-06T15:38-05:00        Codex       Add minimal owned LED status and release it at handoff.
+; 2026-09-06T18:20-05:00        Codex       Distinguish PWE# low/high command waits as $43/$21.
+; 2026-09-06T18:41-05:00        Codex       Add private RX/TX activity without changing public I/O.
 ; STR8 identity marker. The source phrase is private.
 STR8_ID_MARKER0         EQU             $7A
 STR8_ID_MARKER1         EQU             $0F
@@ -173,10 +177,10 @@ STR8_CON_PN_TXE         EQU             $01
 STR8_CON_PN_RXF         EQU             $02
 STR8_CON_PN_WR          EQU             $04
 STR8_CON_PN_RD          EQU             $08
+STR8_CON_PN_PWE         EQU             $20
 STR8_CON_PN_CTRL_INIT   EQU             $0C
 STR8_CON_FLUSH_RX_MAX   EQU             $FF
                         IF              STR8_IN65_EDU_QUIET_START
-STR8_IN65_PIA_PORTA     EQU             $7FA0
 STR8_IN65_PIA_CRA       EQU             $7FA1
 STR8_IN65_PIA_CA2_LOW   EQU             $30
 STR8_IN65_PIA_PORTA_OUT EQU             $34
@@ -444,6 +448,8 @@ STR8_ENTER_HIMON_WARM:
                         LDA             #$3C
                         STA             STR8_HIMON_RESET_SIG3
                         ENDIF
+; HIMON becomes the display owner only after its availability gate passes.
+                        STZ             STR8_LED_PIA_PORTA
                         JMP             STR8_HIMON_START
 
                         IF              STR8_V1_LAYOUT
@@ -454,6 +460,8 @@ STR8_ENTER_HIMON_COLD:
 ?SIG:                  STZ             STR8_HIMON_RESET_SIG0,X
                         DEX
                         BPL             ?SIG
+; Cold HIMON receives the same released display as the warm entry.
+                        STZ             STR8_LED_PIA_PORTA
                         JMP             STR8_HIMON_START
                         ENDIF
 
@@ -504,7 +512,7 @@ STR8_ENTER_MENU_NO_BOOT:
                         LDX             #<MSG_NO_TARGET
                         IF              STR8_V1_INSTALLER_TXN
 STR8_ENTER_MENU_NO_TARGET_PRINT:
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDY             #>MSG_NO_TARGET
 STR8_ENTER_MENU_NO_TARGET_PRINT:
@@ -573,7 +581,7 @@ STR8_STARTUP_DELAY:
                         IF              STR8_V1_LAYOUT
                         ELSE
                         LDA             #'.'
-                        JSR             STR8_CON_WRITE_BYTE_BLOCK
+                        JSR             STR8_WRITE_ACTIVITY_A
                         ENDIF
                         JSR             STR8_BOOT_KEY_POLL_IF_ENABLED
                         BCS             ?KEY_PRESSED
@@ -635,7 +643,7 @@ STR8_BOOT_KEY_POLL:
                         BEQ             ?YES
 ?NO:                   CLC
                         RTS
-?YES:                  JSR             STR8_CON_WRITE_BYTE_BLOCK
+?YES:                  JSR             STR8_WRITE_ACTIVITY_A
                         SEC
                         RTS
                         ENDIF
@@ -653,6 +661,17 @@ STR8_PRINT_SCREEN:
 
 STR8_CMD_LOOP:
                         JSR             STR8_PRINT_PROMPT
+; STR8-N owns the display here; raw public console entries remain LED-neutral.
+; PWE# is VIA PB5 and active low: configured USB waits at $43; an
+; unconfigured/suspended FTDI interface waits at $21.
+                        LDA             #STR8_CON_PN_PWE
+                        BIT             STR8_CON_VIA_CTRL
+                        BNE             ?NO_HOST
+                        LDA             #STR8_LED_STATUS_HOST_INPUT_WAIT
+                        BRA             ?LED_WAIT
+?NO_HOST:              INC             A
+?LED_WAIT:
+                        STA             STR8_LED_PIA_PORTA
                         IF              STR8_V1_LAYOUT
                         LDX             #$02
                         JSR             STR8_READ_LINE
@@ -682,6 +701,12 @@ STR8_READ_LINE:
                         STX             STR8_LINE_LIMIT
                         LDY             #$00
 ?READ:                 JSR             STR8_READ_TEXT_BYTE_BLOCK
+; A returned byte belongs to STR8-N's line editor. Preserve it while latching
+; RX activity; the raw public CHARIN entry remains LED-neutral.
+                        PHA
+                        LDA             #STR8_LED_STATUS_RX_ACTIVITY
+                        STA             STR8_LED_PIA_PORTA
+                        PLA
                         CMP             #$0D
                         BEQ             ?CR
                         CMP             #$0A
@@ -717,6 +742,9 @@ STR8_READ_LINE:
 ?CR:                   INC             STR8_INPUT_SKIP_LF
 ?DONE:                 LDA             #$00
                         STA             STR8_REC_DATA_BUF,Y
+; Leaving the private blocking input phase returns the display to RUN.
+                        LDA             #STR8_LED_STATUS_RUNNING
+                        STA             STR8_LED_PIA_PORTA
                         TYA
                         RTS
 
@@ -826,7 +854,7 @@ STR8_CMD_LOAD_RAM:
                         STA             STR8_REC_OP
                         STA             STR8_REC_FORMAT
                         STA             STR8_REC_SOURCE
-?RECORD:               JSR             STR8_RECORD_SERVICE_BODY
+?RECORD:               JSR             STR8_READ_RECORD_ACTIVITY
                         BCC             ?FAIL
                         LDA             STR8_REC_KIND
                         CMP             #STR8_REC_KIND_DATA
@@ -845,6 +873,8 @@ STR8_CMD_LOAD_RAM:
                         CLD
                         LDX             #$FF
                         TXS
+; The validated RAM application owns Port A after this non-returning handoff.
+                        STZ             STR8_LED_PIA_PORTA
                         JMP             (STR8_REC_ENTRY_LO)
 
 ?DATA:                 LDA             STR8_REC_ADDR_HI
@@ -960,8 +990,8 @@ STR8_CMD_INSTALL_PREVIEW:
                         BEQ             ?RECOVER_NEEDS_ENTRY
                         JMP             STR8_I_PRINT_SUMMARY
 ?RECOVER_NEEDS_ENTRY:
-                        LDA             #STR8_INSTALL_NEEDS_ENTRY
-                        STA             STR8_INSTALL_STATE
+; STR8_INSTALL_NEEDS_ENTRY is the validated zero state.
+                        STZ             STR8_INSTALL_STATE
                         JMP             STR8_I_PRINT_SUMMARY
 ?CLASSIFY:
                         CMP             #STR8_DIR_RECORD_EMPTY
@@ -1127,11 +1157,11 @@ STR8_I_PRINT_SUMMARY:
                         LDA             STR8_INSTALL_BANK
                         JSR             STR8_WRITE_DEC_DIGIT_A
                         LDA             #' '
-                        JSR             STR8_CON_WRITE_BYTE_BLOCK
+                        JSR             STR8_WRITE_ACTIVITY_A
                         LDA             STR8_INSTALL_START_HI
                         JSR             STR8_WRITE_HEX_HIGH_NIBBLE_A
                         LDA             #'-'
-                        JSR             STR8_CON_WRITE_BYTE_BLOCK
+                        JSR             STR8_WRITE_ACTIVITY_A
                         LDA             STR8_INSTALL_RANGE_LIMIT_HI
                         SEC
                         SBC             #$10
@@ -1188,7 +1218,7 @@ STR8_I_PRINT_SUMMARY:
                         ENDIF
 STR8_I_NO_WRITE:       LDX             #<MSG_I_NO_WRITE
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE0_X
+                        JMP             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDY             #>MSG_I_NO_WRITE
                         JMP             STR8_PRINT_XY
@@ -1347,7 +1377,7 @@ STR8_I_RECEIVE_DENSE:
                         STA             STR8_REC_OP
                         STA             STR8_REC_FORMAT
                         STA             STR8_REC_SOURCE
-?RECORD:               JSR             STR8_RECORD_SERVICE_BODY
+?RECORD:               JSR             STR8_READ_RECORD_ACTIVITY
                         BCS             ?PARSED
                         LDA             STR8_REC_STATUS
                         JMP             STR8_I_RECEIVE_FAIL_A
@@ -1551,7 +1581,7 @@ STR8_I_STAGE_SECTOR_READY:
                         BCC             ?FAIL
                         LDA             #'.'
 ; The blocking writer returns only after its nonblocking write sets carry.
-                        JMP             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_WRITE_ACTIVITY_A
 ; The worker failure branch already carries clear.
 ?FAIL:                 RTS
 
@@ -1573,7 +1603,7 @@ STR8_I_QUENCH_S19:
                         LDA             STR8_REC_STATUS
                         CMP             #STR8_REC_ABORT
                         BEQ             ?DONE
-                        JSR             STR8_RECORD_SERVICE_BODY
+                        JSR             STR8_READ_RECORD_ACTIVITY
                         BRA             ?RECORD
 ?DONE:
                         CLC
@@ -1767,7 +1797,7 @@ STR8_JUMP_BANK_PREP_A:
                         STZ             STR8_JUMP_STATUS
                         LDX             #<MSG_JUMP_B
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDY             #>MSG_JUMP_B
                         JSR             STR8_PRINT_XY
@@ -2575,7 +2605,7 @@ STR8_READ_HIMON_S19:
                         STA             STR8_REC_FORMAT
                         LDA             #STR8_REC_SOURCE_CONSOLE
                         STA             STR8_REC_SOURCE
-                        JSR             STR8_RECORD_SERVICE_BODY
+                        JSR             STR8_READ_RECORD_ACTIVITY
                         BCC             ?FAIL
                         LDA             STR8_REC_KIND
                         CMP             #STR8_REC_KIND_METADATA
@@ -2589,7 +2619,7 @@ STR8_READ_HIMON_S19:
                         JSR             STR8_STAGE_HIMON_RECORD
                         BCC             ?FAIL
                         LDA             #'.'
-                        JSR             STR8_CON_WRITE_BYTE_BLOCK
+                        JSR             STR8_WRITE_ACTIVITY_A
                         BRA             ?RECORD
 ?TERM:
                         SEC
@@ -2677,7 +2707,7 @@ STR8_PROGRAM_HIMON_SECTOR_AX:
                         JSR             STR8_WORKER_RUN
                         BCC             ?FAIL
                         LDA             #'.'
-                        JSR             STR8_CON_WRITE_BYTE_BLOCK
+                        JSR             STR8_WRITE_ACTIVITY_A
                         SEC
                         RTS
 ?FAIL:
@@ -2720,9 +2750,9 @@ STR8_WRITE_DEC_DIGIT_A:
 ; Callers supply a validated binary digit 0-9.
                         ORA             #'0'
                         IF              STR8_RAM_PROOF
-                        JMP             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_WRITE_ACTIVITY_A
                         ELSE
-                        JMP             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_WRITE_ACTIVITY_A
                         ENDIF
 
                         IF              STR8_V1_LAYOUT
@@ -2747,9 +2777,9 @@ STR8_WRITE_HEX_NIBBLE_A:
 ?ASCII:
                         ADC             #'0'
                         IF              STR8_RAM_PROOF
-                        JMP             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_WRITE_ACTIVITY_A
                         ELSE
-                        JMP             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_WRITE_ACTIVITY_A
                         ENDIF
 
                         IF              STR8_V1_LAYOUT
@@ -2816,6 +2846,23 @@ STR8_JUMP_BANK_RAM:
 ; ----------------------------------------------------------------------------
 ; Tiny I/O
 ; ----------------------------------------------------------------------------
+; Private STR8-N record receive path. Public record parsing may be used by an
+; application and therefore enters STR8_RECORD_SERVICE_BODY without this LED
+; side effect.
+STR8_READ_RECORD_ACTIVITY:
+                        LDA             #STR8_LED_STATUS_RX_ACTIVITY
+                        STA             STR8_LED_PIA_PORTA
+                        JMP             STR8_RECORD_SERVICE_BODY
+
+; Private STR8-N output path. Preserve the public CHAROUT contract while
+; publishing TX activity before the potentially blocking FT245R write.
+STR8_WRITE_ACTIVITY_A:
+                        PHA
+                        LDA             #STR8_LED_STATUS_TX_ACTIVITY
+                        STA             STR8_LED_PIA_PORTA
+                        PLA
+                        JMP             STR8_CON_WRITE_BYTE_BLOCK
+
 STR8_PRINT_PROMPT:
                         LDX             #<MSG_PROMPT
                         IF              STR8_V1_INSTALLER_TXN
@@ -2831,11 +2878,13 @@ STR8_PRINT_PROMPT:
                         ENDIF
 
                         IF              STR8_V1_INSTALLER_TXN
-; All release messages fit one page (host-checked). Retain both private names
-; as aliases so call sites keep their intent without a second helper.
+; Packed release messages now span the end of $FC and start of $FD. Calls are
+; host-checked against the page of their referenced message.
 STR8_PRINT_TXN_PAGE0_X:
-STR8_PRINT_TXN_PAGE1_X:
                         LDY             #>MSG_ID
+                        BRA             STR8_PRINT_XY
+STR8_PRINT_TXN_PAGE1_X:
+                        LDY             #>MSG_RESET
                         ENDIF
 STR8_PRINT_XY:
                         STX             STR8_PTR_LO
@@ -2843,13 +2892,13 @@ STR8_PRINT_XY:
                         LDY             #$00
 ?LOOP:                  LDA             (STR8_PTR_LO),Y
                         BMI             ?LAST
-                        JSR             STR8_CON_WRITE_BYTE_BLOCK
+                        JSR             STR8_WRITE_ACTIVITY_A
                         INY
                         BNE             ?LOOP
                         INC             STR8_PTR_HI
                         BRA             ?LOOP
 ?LAST:                  AND             #$7F
-                        JMP             STR8_CON_WRITE_BYTE_BLOCK
+                        JMP             STR8_WRITE_ACTIVITY_A
 
                         IF              STR8_IN65_EDU_QUIET_START
 STR8_IN65_EDU_QUIET:
@@ -2858,12 +2907,14 @@ STR8_IN65_EDU_QUIET:
                         LDA             #STR8_IN65_PIA_CA2_LOW
                         STA             STR8_IN65_PIA_CRA
 ; EDU LEDs are active high on PIA Port A.  Select DDRA, make all eight pins
-; outputs, select the peripheral register without releasing CA2, then clear it.
+; outputs, select the peripheral register without releasing CA2, then publish
+; the initial STR8-N ownership state.
                         LDA             #$FF
-                        STA             STR8_IN65_PIA_PORTA
+                        STA             STR8_LED_PIA_PORTA
                         LDA             #STR8_IN65_PIA_PORTA_OUT
                         STA             STR8_IN65_PIA_CRA
-                        STZ             STR8_IN65_PIA_PORTA
+                        LDA             #STR8_LED_STATUS_RUNNING
+                        STA             STR8_LED_PIA_PORTA
 ; Tail-call IVY so its RTS returns to STR8_BOOT_START without growing the
 ; fixed pre-vector boot sequence.
                         JMP             STR8_IVY_INIT

@@ -1,6 +1,6 @@
 param(
-    [string]$PackageDir = 'BUILD/v1.30/str8n-v1.30-release',
-    [string]$ZipPath = 'BUILD/v1.30/str8n-v1.30-release.zip',
+    [string]$PackageDir = 'BUILD/v1.31/str8n-v1.31-release',
+    [string]$ZipPath = 'BUILD/v1.31/str8n-v1.31-release.zip',
     [string]$RyorsRelease = '../R-YORS/RELEASE'
 )
 
@@ -8,15 +8,15 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $files = [ordered]@{
-    'ARTIFACTS/str8n-v1.30-bank3-f000-ffff.bin' = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin'
-    'ARTIFACTS/str8n-v1.30-f000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-f000.s19'
-    'ARTIFACTS/str8n-v1.30-worker-0200.s19' = 'BUILD/v1.30/s19/str8n-v1.30-worker-0200.s19'
-    'ARTIFACTS/str8n-v1.30-bank-maint-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-bank-maint-2000.s19'
-    'ARTIFACTS/str8n-v1.30-bank-maint-menu-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-bank-maint-menu-2000.s19'
-    'ARTIFACTS/str8n-v1.30-bank-maint-menu-2000.a' = 'tools/bank-maint/str8n-v1.30-bank-maint-menu-2000.a'
-    'ARTIFACTS/str8n-v1.30-top-update-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-top-update-2000.s19'
-    'ARTIFACTS/str8n-v1.30-directory-refresh-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-directory-refresh-2000.s19'
-    'ARCHIVE/TESTS/str8n-v1.30-console-abi-test-2000.s19' = 'BUILD/v1.30/s19/str8n-v1.30-console-abi-test-2000.s19'
+    'ARTIFACTS/str8n-v1.31-bank3-f000-ffff.bin' = 'BUILD/v1.31/bin/str8n-v1.31-bank3-f000-ffff.bin'
+    'ARTIFACTS/str8n-v1.31-f000.s19' = 'BUILD/v1.31/s19/str8n-v1.31-f000.s19'
+    'ARTIFACTS/str8n-v1.31-worker-0200.s19' = 'BUILD/v1.31/s19/str8n-v1.31-worker-0200.s19'
+    'ARTIFACTS/str8n-v1.31-bank-maint-2000.s19' = 'BUILD/v1.31/s19/str8n-v1.31-bank-maint-2000.s19'
+    'ARTIFACTS/str8n-v1.31-bank-maint-menu-2000.s19' = 'BUILD/v1.31/s19/str8n-v1.31-bank-maint-menu-2000.s19'
+    'ARTIFACTS/str8n-v1.31-bank-maint-menu-2000.a' = 'tools/bank-maint/str8n-v1.31-bank-maint-menu-2000.a'
+    'ARTIFACTS/str8n-v1.31-top-update-2000.s19' = 'BUILD/v1.31/s19/str8n-v1.31-top-update-2000.s19'
+    'ARTIFACTS/str8n-v1.31-directory-refresh-2000.s19' = 'BUILD/v1.31/s19/str8n-v1.31-directory-refresh-2000.s19'
+    'ARCHIVE/TESTS/str8n-v1.31-console-abi-test-2000.s19' = 'BUILD/v1.31/s19/str8n-v1.31-console-abi-test-2000.s19'
     'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-himon-bank3-c-e.s19')
     'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-asm-bank3-8-b.s19')
     'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19' = (Join-Path $RyorsRelease 'ryors-v1.2-himon-asm-bank3-8-e.s19')
@@ -45,14 +45,23 @@ $files = [ordered]@{
     'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19')
     'SOFTWARE/UTILITIES/BANK_AUDIT_AP_CARD.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/BANK_AUDIT_AP_CARD.md')
     'SOFTWARE/UTILITIES/BANK_DUMP_AP_CARD.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/BANK_DUMP_AP_CARD.md')
-    'INCLUDE/str8n-public.inc' = 'BUILD/v1.30/include/str8n-public.inc'
+    'INCLUDE/str8n-public.inc' = 'BUILD/v1.31/include/str8n-public.inc'
     'MANIFEST/str8n-manifest.json' = 'BUILD/str8n-manifest.json'
-    'PACKAGES/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip' = 'BUILD/v1.30/str8n-v1.30-wdcmonv2-str8n-migration-kit.zip'
+    'PACKAGES/str8n-v1.31-wdcmonv2-str8n-migration-kit.zip' = 'BUILD/v1.31/str8n-v1.31-wdcmonv2-str8n-migration-kit.zip'
     'DOC/README.md' = 'README.md'
     'DOC/STR8N_V1_30_RECLAIM.md' = 'docs/STR8N_V1_30_RECLAIM.md'
     'DOC/STR8N_CONSERVATIVE_RESIDENT_PASS.md' = 'docs/STR8N_CONSERVATIVE_RESIDENT_PASS.md'
     'DOC/STR8N_CONSERVATIVE_BOARD_TRANSCRIPT.txt' = 'docs/STR8N_CONSERVATIVE_BOARD_TRANSCRIPT.txt'
     'DOC/STR8N_V1_30_BOARD_TRANSCRIPT.txt' = 'docs/STR8N_V1_30_BOARD_TRANSCRIPT.txt'
+    'DOC/LED_STATUS_PROPOSAL.md' = 'docs/LED_STATUS_PROPOSAL.md'
+    'DOC/LED_STATUS_BOARD_TEST_2026-09-06.md' = 'docs/LED_STATUS_BOARD_TEST_2026-09-06.md'
+    'DOC/LED_STATUS_BOARD_TRANSCRIPT_2026-09-06.txt' = 'docs/LED_STATUS_BOARD_TRANSCRIPT_2026-09-06.txt'
+    'DOC/LED_HOST_PRESENCE_BOARD_TEST_2026-09-06.md' = 'docs/LED_HOST_PRESENCE_BOARD_TEST_2026-09-06.md'
+    'DOC/LED_HOST_PRESENCE_BOARD_TRANSCRIPT_2026-09-06.txt' = 'docs/LED_HOST_PRESENCE_BOARD_TRANSCRIPT_2026-09-06.txt'
+    'DOC/LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md' = 'docs/LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md'
+    'DOC/LED_IO_ACTIVITY_BOARD_TRANSCRIPT_2026-09-06.txt' = 'docs/LED_IO_ACTIVITY_BOARD_TRANSCRIPT_2026-09-06.txt'
+    'DOC/STR8N_V1_31_VERSION_BOARD_TEST_2026-09-06.md' = 'docs/STR8N_V1_31_VERSION_BOARD_TEST_2026-09-06.md'
+    'DOC/STR8N_V1_31_VERSION_BOARD_TRANSCRIPT_2026-09-06.txt' = 'docs/STR8N_V1_31_VERSION_BOARD_TRANSCRIPT_2026-09-06.txt'
     'DOC/OPERATORS_GUIDE.md' = 'docs/OPERATORS_GUIDE.md'
     'DOC/TECHNICAL_GUIDE.md' = 'docs/TECHNICAL_GUIDE.md'
     'DOC/STR8_IN65_BANK_MAINTENANCE.md' = 'docs/STR8_IN65_BANK_MAINTENANCE.md'
@@ -77,29 +86,31 @@ foreach ($entry in $files.GetEnumerator()) {
 }
 
 $readme = @'
-STR8-N v1.30 release package
+STR8-N v1.31 release package
 
-This package contains STR8-N v1.30 deliverables, documentation, and clearly
+This package contains STR8-N v1.31 deliverables, documentation, and clearly
 separated optional HIMON/ASM-F2 payloads. It contains no WDCMONv2 firmware or
 owner bank archive.
 
-The conservative v1.30 candidate passed guarded update/readback, cold-power
-startup, boot-path, and console ABI checks on COM4, 2026-09-05. For scope and deferred tests,
-see DOC/STR8N_CONSERVATIVE_RESIDENT_PASS.md. Earlier v1.30 board evidence
-remains specific to commit 521fd0a and its original binary.
+The current v1.31 image passed guarded update/readback and focused private $07
+RX / $0B TX LED checks on COM4, 2026-09-06. Public console and record services
+remain LED-neutral; HIMON and ASM remain separate owners. See
+DOC/LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md for the exact artifact proof and
+DOC/STR8N_V1_31_VERSION_BOARD_TEST_2026-09-06.md for the preceding identity
+promotion. Earlier evidence remains tied to its recorded binaries.
 
 Primary installation images:
-  ARTIFACTS/str8n-v1.30-bank3-f000-ffff.bin  external programmer, B3:F
-  ARTIFACTS/str8n-v1.30-f000.s19             resident S19
+  ARTIFACTS/str8n-v1.31-bank3-f000-ffff.bin  external programmer, B3:F
+  ARTIFACTS/str8n-v1.31-f000.s19             resident S19
 
 Maintenance and recovery:
-  ARTIFACTS/str8n-v1.30-bank-maint-2000.s19
-  ARTIFACTS/str8n-v1.30-bank-maint-menu-2000.s19
-  ARTIFACTS/str8n-v1.30-top-update-2000.s19
-  ARTIFACTS/str8n-v1.30-directory-refresh-2000.s19
+  ARTIFACTS/str8n-v1.31-bank-maint-2000.s19
+  ARTIFACTS/str8n-v1.31-bank-maint-menu-2000.s19
+  ARTIFACTS/str8n-v1.31-top-update-2000.s19
+  ARTIFACTS/str8n-v1.31-directory-refresh-2000.s19
 
 Archived hardware proof:
-  ARCHIVE/TESTS/str8n-v1.30-console-abi-test-2000.s19
+  ARCHIVE/TESTS/str8n-v1.31-console-abi-test-2000.s19
 
 Optional HIMON and ASM-F2:
   OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19

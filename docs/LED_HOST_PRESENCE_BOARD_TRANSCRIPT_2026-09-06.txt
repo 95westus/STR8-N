@@ -1,0 +1,67 @@
+STR8-N v1.30 FTDI host-presence LED board transcript - 2026-09-06
+COM4, 115200 baud
+
+Canonical top SHA-256:
+F69B2C5127B1AD19CBA998BC608A8574A4B6DCA03128FAB40E22A707CB3973B3
+
+Guarded top updater SHA-256:
+5FE565170EEC6B7B06A041624170BD0FE5B1073B305141F0F64418217BFE8E23
+
+First guarded pass, deliberately retained cancellation:
+
+STR8-N 1.30 TOP UPDATE
+BACKUP B1:F; TARGET B3:F
+TYPE BACKUP B1F> BACKUP B1F
+BACKUP VERIFIED
+SAFE PHY $0F000-$0FFFF; TARGET PHY $1F000-$1FFFF; SUM=$55AB
+TYPE STR8-N 1.30>
+ABORT - NO ACTIVE TOP UPDATE
+
+No Bank-3 erase occurred.
+
+Clean guarded retry:
+
+STR8-N 1.30 TOP UPDATE
+BACKUP B1:F; TARGET B3:F
+TYPE BACKUP B1F> BACKUP B1F
+BACKUP VERIFIED
+SAFE PHY $0F000-$0FFFF; TARGET PHY $1F000-$1FFFF; SUM=$55AB
+TYPE STR8-N 1.30> STR8-N 1.30
+ERASING B3:F - NO RESET/NMI/POWER
+STR8-N 1.30 VERIFIED; RESET
+RESET
+
+STR8-N 1.30
+0-2 C W S:
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>
+
+Installed prompt check:
+
+G F000
+GO F000
+RESET
+
+STR8-N 1.30
+0-2 C W S: S
+I L C W J
+STR8-N>
+
+Operator observation: $43 was displayed at the installed STR8-N prompt.
+
+RAM-only PWE# probe SHA-256:
+9893CAE20B5D9339A237850D38576D4CBE0F9A8703CFF122CD0FAFE0A81D65BC
+
+Probe bytes at $2000:
+A9 20 2C E0 7F D0 04 A9 43 80 01 1A 8D A0 7F 80 EF
+
+Operator observation with the RAM probe running:
+
+1. FTDI USB Serial Converter configured: $43.
+2. Windows 11 disabled the USB Serial Converter parent while VBUS remained: $21.
+3. Windows 11 re-enabled the USB Serial Converter: $43.
+
+The probe changed no flash. The installed $21 branch is exact-byte
+host-checked; the installed command loop samples only when entering its wait.

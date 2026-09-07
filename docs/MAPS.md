@@ -1,6 +1,6 @@
-# STR8-N v1.30 Maps and Diagrams
+# STR8-N v1.31 Maps and Diagrams
 
-These diagrams describe the host-qualified and board-derived v1.30 release.
+These diagrams describe the host-qualified and board-derived v1.31 release.
 
 ## Ownership
 
@@ -12,7 +12,7 @@ flowchart TB
     S -->|J2| B2[Bank 2 guest]
     S -->|C/W| B3[Bank 3 HIMON<br/>$C000]
     S -->|J3| R3[Bank 3 RESET vector<br/>normally STR8-N again]
-    S -->|I| W[RAM worker<br/>$0200-$0453]
+    S -->|I| W[RAM worker<br/>$0200-$045F]
     W --> FLASH[Selected flash range]
     S -->|L| RAM[Recovery RAM program<br/>$2000-$7AFF, then S9]
     RAM -->|bank-maint S19| BM[Self-contained Bank Maintenance<br/>map/copy/adopt/reclaim/erase/AP put]
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.30/
+|-- v1.31/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -38,7 +38,7 @@ BUILD/
 ```mermaid
 flowchart LR
     SRC[src/str8.asm] --> TOP[4096-byte Bank-3 top BIN]
-    SRC --> WORKER[596-byte worker evidence S19]
+    SRC --> WORKER[608-byte worker evidence S19]
     BM_SRC[bank-maint ASM] --> BM[RAM bank-maint S19]
     TOP --> MANIFEST[verified manifest]
     WORKER --> MANIFEST
@@ -47,7 +47,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.30 top updater S19]
+    TOP --> UPDATE[guarded v1.31 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
@@ -89,7 +89,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[Silent pre-I/O quarantine<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.30]
+    A --> P[Flush input<br/>STR8-N 1.31]
     P --> Q{Silent live selector interval<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -115,7 +115,7 @@ flowchart TD
     C --> E[Whole-bank FNV prefilter<br/>plus byte-exact B0/B3 compare]
     E --> T[Validate carried 4K top<br/>then program/verify B3:F]
     T --> D[Publish COMPLETE D0 WDCM2<br/>roles FFF0/FFF1 remain FF/FF]
-    D --> S[STR8-N 1.30 in B3]
+    D --> S[STR8-N 1.31 in B3]
     S -->|selector 0 or J0| W[Retained WDCMONv2 in B0<br/>CS0-CS3 chase]
     W -->|physical RESET| S
 ```
@@ -180,11 +180,11 @@ $FFF9  +------------------------------+
 $FFEF  +------------------------------+
        | bank directory        64 B   |
 $FFAF  +------------------------------+
-       | stored worker        596 B   |
-$FD5B  +------------------------------+
-       | available growth     110 B   |
-$FCED  +------------------------------+
-       | resident code/data  3310 B   |
+       | stored worker        608 B   |
+$FD4F  +------------------------------+
+       | available growth      40 B   |
+$FD27  +------------------------------+
+       | resident code/data  3368 B   |
 $F000  +------------------------------+
 ```
 
@@ -255,7 +255,7 @@ flowchart TD
     Q --> F
 ```
 
-## STR8-N v1.30 RAM ownership
+## STR8-N v1.31 RAM ownership
 
 ```text
 $7DFF  +------------------------------+
@@ -276,10 +276,10 @@ $1FFF  +------------------------------+
 $19FF  +------------------------------+
        | 4K sector tray $0A00-$19FF  |
 $09FF  +------------------------------+
-       | free WCT tail $0454-$09FF    |
+       | free WCT tail $0460-$09FF    |
        | allocate down from $09FF     |
-$0453  +------------------------------+
-       | current worker $0200-$0453   |
+$045F  +------------------------------+
+       | current worker $0200-$045F   |
 $01FF  +------------------------------+
        | stack                        |
 $00FF  +------------------------------+
@@ -287,15 +287,15 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.30. In the
+STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.31. In the
 integrated R-YORS payload, APMAN transiently uses `$1A00-$1AFF` as its command
 shadow while `AP`, `APS`, or banked `INSTALL` delegates; `$1B00-$1FFF` remains
 the unconditional user-low slice outside another phase owner. The whole `$0200-$09FF` Worker
 Code Tray (WCT) remains phase-owned and volatile during worker calls, but the
-maintained runtime workers do not extend above `$0453`: the unified STR8-N
-worker ends at `$0453`, the Bank Maintenance private worker ends at `$042A`,
+maintained runtime workers do not extend above `$045F`: the unified STR8-N
+worker ends at `$045F`, the Bank Maintenance private worker ends at `$042A`,
 and HIMON's bank-safe helpers end below both. A phase-local allocator may
-therefore consume the currently free `$0454-$09FF` tail downward from `$09FF`,
+therefore consume the currently free `$0460-$09FF` tail downward from `$09FF`,
 provided it checks its low-water mark against the published exclusive
 `STR8_WORKER_END` and does not expect those bytes to survive a worker call.
 Development and proof programs may still use other addresses in the WCT and
