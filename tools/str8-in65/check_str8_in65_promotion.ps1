@@ -1,7 +1,7 @@
 param(
-    [string]$CanonicalTopPath = 'BUILD/v1.31/bin/str8n-v1.31-bank3-f000-ffff.bin',
-    [string]$AcceptedTopPath = 'BUILD/v1.31/bin/str8n-v1.31-str8-in65-bank3-f000-ffff.bin',
-    [string]$MigrationTopPath = 'BUILD/v1.31/bin/str8n-v1.31-str8-in65-wdcmonv2-bank3-f000-ffff.bin'
+    [string]$CanonicalTopPath = 'BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin',
+    [string]$AcceptedTopPath = 'BUILD/v1.32/bin/str8n-v1.32-str8-in65-bank3-f000-ffff.bin',
+    [string]$MigrationTopPath = 'BUILD/v1.32/bin/str8n-v1.32-str8-in65-wdcmonv2-bank3-f000-ffff.bin'
 )
 
 Set-StrictMode -Version Latest
@@ -37,11 +37,11 @@ for ($offset = 0; $offset -lt 0x1000; $offset++) {
     }
 }
 if ($canonical[0x0FF0] -ne 0x1E -or $canonical[0x0FF1] -ne 0x1F) {
-    throw 'Canonical v1.31 must publish WORK=B1:E and top backup=B1:F'
+    throw 'Canonical v1.32 must publish WORK=B1:E and top backup=B1:F'
 }
 for ($offset = 0x0FB0; $offset -le 0x0FEF; $offset++) {
     if ($migration[$offset] -ne 0xFF) {
-        throw ('Canonical v1.31 directory must be empty at ${0:X3}' -f $offset)
+        throw ('Canonical v1.32 directory must be empty at ${0:X3}' -f $offset)
     }
 }
 

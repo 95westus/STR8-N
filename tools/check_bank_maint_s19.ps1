@@ -1,9 +1,9 @@
 param(
-    [string]$S19Path = "BUILD/v1.31/s19/str8n-v1.31-bank-maint-2000.s19",
+    [string]$S19Path = "BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19",
     [string]$SourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-2000.asm",
     [string]$RenameSourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-rename.inc",
     [string]$FlagsSourcePath = "tools/bank-maint/str8n-v1.28-str8-in65-bank-maint-flags.inc",
-    [string]$VersionText = "1.31",
+    [string]$VersionText = "1.32",
     [switch]$In65,
     [switch]$MenuTop
 )
@@ -187,7 +187,7 @@ if ($MenuTop) {
     $requiredTexts += @("STR8-N $VersionText BANK MAINT + TOP",
         'M  MAP+DIR', 'C  COPY+ENROLL', 'D  ADOPT DIR',
         'N  RENAME DIR', 'R  RECLAIM DIR',
-        'E  ERASE BANK RANGE', 'P  PUT AP $7000 -> BANK SECTOR',
+        'E  ERASE RANGE', 'P  PUT AP $7000',
         'U  UPDATE B3:F (BACKUP B1:F; RESET)', '?  MENU',
         'Q/ENTER  RETURN TO STR8-N', 'BM> ')
 }

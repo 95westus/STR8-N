@@ -7,13 +7,13 @@ $sumsPath = Join-Path $rootFull 'SHA256SUMS.txt'
 if (-not (Test-Path -LiteralPath $sumsPath -PathType Leaf)) { throw 'SHA256SUMS.txt is missing' }
 
 $required = @(
-    'ARTIFACTS/str8n-v1.31-bank3-f000-ffff.bin',
-    'ARTIFACTS/str8n-v1.31-f000.s19',
-    'ARTIFACTS/str8n-v1.31-bank-maint-2000.s19',
-    'ARTIFACTS/str8n-v1.31-bank-maint-menu-2000.s19',
-    'ARTIFACTS/str8n-v1.31-top-update-2000.s19',
-    'ARTIFACTS/str8n-v1.31-directory-refresh-2000.s19',
-    'ARCHIVE/TESTS/str8n-v1.31-console-abi-test-2000.s19',
+    'ARTIFACTS/str8n-v1.32-bank3-f000-ffff.bin',
+    'ARTIFACTS/str8n-v1.32-f000.s19',
+    'ARTIFACTS/str8n-v1.32-bank-maint-2000.s19',
+    'ARTIFACTS/str8n-v1.32-bank-maint-menu-2000.s19',
+    'ARTIFACTS/str8n-v1.32-top-update-2000.s19',
+    'ARTIFACTS/str8n-v1.32-directory-refresh-2000.s19',
+    'ARCHIVE/TESTS/str8n-v1.32-console-abi-test-2000.s19',
     'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19',
     'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19',
     'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19',
@@ -56,7 +56,10 @@ $required = @(
     'DOC/LED_IO_ACTIVITY_BOARD_TRANSCRIPT_2026-09-06.txt',
     'DOC/STR8N_V1_31_VERSION_BOARD_TEST_2026-09-06.md',
     'DOC/STR8N_V1_31_VERSION_BOARD_TRANSCRIPT_2026-09-06.txt',
-    'PACKAGES/str8n-v1.31-wdcmonv2-str8n-migration-kit.zip',
+    'DOC/STR8N_V1_32_RESET_SOURCE_BOARD_TEST_2026-09-07.md',
+    'DOC/STR8N_V1_32_RESET_SOURCE_BOARD_TRANSCRIPT_2026-09-07.txt',
+    'DOC/RESET_SOURCE_CONTRACT.md',
+    'PACKAGES/str8n-v1.32-wdcmonv2-str8n-migration-kit.zip',
     'PACKAGE-README.txt', 'SHA256SUMS.txt'
 )
 foreach ($relative in $required) {
@@ -134,7 +137,7 @@ if ($vt100 -match 'STR8-N 1\.22' -or $vt100 -notmatch 'STR8-N 1\.29') {
     throw 'VT100 answerback source must retain its STR8-N 1.29 compatible-console provenance'
 }
 
-if ((Get-Item -LiteralPath (Join-Path $rootFull 'ARTIFACTS/str8n-v1.31-bank3-f000-ffff.bin')).Length -ne 4096) {
+if ((Get-Item -LiteralPath (Join-Path $rootFull 'ARTIFACTS/str8n-v1.32-bank3-f000-ffff.bin')).Length -ne 4096) {
     throw 'Canonical top BIN is not exactly 4096 bytes'
 }
 $packageReadme = Get-Content -Raw -LiteralPath (Join-Path $rootFull 'PACKAGE-README.txt')
@@ -154,4 +157,4 @@ $forbidden = Get-ChildItem -LiteralPath $rootFull -Recurse -File |
     }
 if ($forbidden) { throw "Forbidden payload or local evidence found: $($forbidden.FullName -join ', ')" }
 
-Write-Host 'STR8-N v1.31 release package verification PASS'
+Write-Host 'STR8-N v1.32 release package verification PASS'

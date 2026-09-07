@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable v1.31 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.32 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
@@ -11,7 +11,8 @@
 ;   invalid input is discarded without reprinting the command help
 ; V0 proof builds retain U instead of I for the fixed $C000-$EFFF HIMON gate.
 ;
-; Reset prints RESET, shows unpolled attach pulses, flushes RX, prints the banner, then
+; Reset prints a blank line and RST H/RST S, shows unpolled attach pulses,
+; flushes RX, prints the banner, then
 ; opens six live selector dots. Timeout warm-starts compatible HIMON at $C000;
 ; W selects the same RAM-preserving entry. A missing or incompatible marker falls
 ; into the STR8 menu. S enters STR8; 0-2 announce the selected bank, wait about
@@ -531,7 +532,18 @@ STR8_ENTER_MENU_NO_TARGET_PRINT:
 STR8_STARTUP_DELAY:
                         STZ             STR8_BOOT_KEY_ENABLE
                         IF              STR8_V1_LAYOUT
-                        LDX             #<MSG_RESET
+; Default to hardware/unmarked. A cooperating software restart commits "RS"
+; immediately before entering through the reset vector. Consume it before
+; printing so it cannot classify a later physical RESET as software.
+                        LDX             #<MSG_RST_H
+                        LDA             STR8_SOFT_RESET_SIG0
+                        CMP             #STR8_SOFT_RESET_SIG0_VALUE
+                        BNE             ?RESET_KIND
+                        LDA             STR8_SOFT_RESET_SIG1
+                        CMP             #STR8_SOFT_RESET_SIG1_VALUE
+                        BNE             ?RESET_KIND
+                        LDX             #<MSG_RST_S
+?RESET_KIND:            STZ             STR8_SOFT_RESET_SIG1
                         IF              STR8_V1_INSTALLER_TXN
                         JSR             STR8_PRINT_TXN_PAGE1_X
                         ELSE
@@ -1211,7 +1223,7 @@ STR8_I_PRINT_SUMMARY:
                         ENDIF
 ?INSTALL_FAIL:         LDX             #<MSG_I_FAIL
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE0_X
+                        JMP             STR8_PRINT_TXN_PAGE1_X
                         ELSE
                         LDY             #>MSG_I_S19_FAIL
                         JSR             STR8_PRINT_XY
@@ -1555,7 +1567,7 @@ STR8_I_ENTRY_IN_RANGE:
 
 STR8_I_CONFIRM_COMMIT:
                         LDX             #<MSG_I_COMMIT
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_TXN_PAGE1_X
                         JMP             STR8_CONFIRM_Y
 
 STR8_I_RECEIVE_DENSE_FAIL:
@@ -2884,7 +2896,7 @@ STR8_PRINT_TXN_PAGE0_X:
                         LDY             #>MSG_ID
                         BRA             STR8_PRINT_XY
 STR8_PRINT_TXN_PAGE1_X:
-                        LDY             #>MSG_RESET
+                        LDY             #>MSG_RST_H
                         ENDIF
 STR8_PRINT_XY:
                         STX             STR8_PTR_LO
@@ -3070,7 +3082,8 @@ MSG_JUMP_FAIL:          DB              "J FAIL",$0D,$8A
                         IF              STR8_RAM_PROOF
 MSG_COPY_FAIL_AT:       DB              $0D,$0A,"COPY FAIL @ ",('$'+$80)
                         ENDIF
-MSG_RESET:              DB              "RESET"
+MSG_RST_H:              DB              $0D,$0A,"RST H",$0D,$8A
+MSG_RST_S:              DB              $0D,$0A,"RST S"
 MSG_CRLF:               DB              $0D,$8A
                         IF              STR8_V1_LAYOUT
 MSG_BACKSPACE:          DB              $08,$20,$88

@@ -1,6 +1,6 @@
 """Differential tests against the canonical 521fd0a resident (not board flash).
 
-Requires py65==1.2.0, installed normally or in BUILD/v1.31/local/test-deps.
+Requires py65==1.2.0, installed normally or in BUILD/v1.32/local/test-deps.
 Executes actual linked 65C02 code. Console transport and flash hardware are
 stubbed explicitly; this does not constitute board or flash-programming proof.
 """
@@ -23,8 +23,8 @@ except ImportError:
 GOLDEN = json.loads((ROOT / 'tools/fixtures/resident-521fd0a.json').read_text())
 OLD = base64.b64decode(GOLDEN['image'])
 assert hashlib.sha256(OLD).hexdigest() == GOLDEN['sha256']
-NEW = (REL / 'bin/str8n-v1.31-bank3-f000-ffff.bin').read_bytes()
-MAPS = [GOLDEN['symbols'], symbols(REL / 'map/str8n-v1.31-f000.map')]
+NEW = (REL / 'bin/str8n-v1.32-bank3-f000-ffff.bin').read_bytes()
+MAPS = [GOLDEN['symbols'], symbols(REL / 'map/str8n-v1.32-f000.map')]
 
 
 class Run:
@@ -243,7 +243,8 @@ def staging(variant, size, chunk, bad=False, commit=True):
 def invariant_tests():
     assert NEW[0xD5C:] == OLD[0xD5C:], 'worker/directory/config/vectors changed'
     assert len(NEW) == len(OLD) == 4096
-    assert NEW[MAPS[1]['_BEG_DATA'] - 0xF000:MAPS[1]['_END_DATA'] - 0xF000] == OLD[MAPS[0]['_BEG_DATA'] - 0xF000:MAPS[0]['_END_DATA'] - 0xF000]
+    # Resident data intentionally differs in the version digit and reset face;
+    # test_resident_reclaim.py proves the exact normalized data transition.
     for name, length in [('STR8_DELAY_FIXED_A', 15), ('STR8_IVY_ENTRY_NMI', 20),
                          ('STR8_IVY_ENTRY_IRQ_MASTER', 46), ('STR8_REC_ADVANCE_APPLY_POINTERS', 13),
                          ('STR8_CON_INIT', 12), ('STR8_IN65_EDU_QUIET', 21),

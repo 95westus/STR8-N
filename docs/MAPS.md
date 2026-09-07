@@ -1,6 +1,6 @@
-# STR8-N v1.31 Maps and Diagrams
+# STR8-N v1.32 Maps and Diagrams
 
-These diagrams describe the host-qualified and board-derived v1.31 release.
+These diagrams describe the host-qualified and board-derived v1.32 release.
 
 ## Ownership
 
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.31/
+|-- v1.32/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -47,7 +47,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.31 top updater S19]
+    TOP --> UPDATE[guarded v1.32 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
@@ -89,7 +89,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[Silent pre-I/O quarantine<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.31]
+    A --> P[Flush input<br/>STR8-N 1.32]
     P --> Q{Silent live selector interval<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -115,7 +115,7 @@ flowchart TD
     C --> E[Whole-bank FNV prefilter<br/>plus byte-exact B0/B3 compare]
     E --> T[Validate carried 4K top<br/>then program/verify B3:F]
     T --> D[Publish COMPLETE D0 WDCM2<br/>roles FFF0/FFF1 remain FF/FF]
-    D --> S[STR8-N 1.31 in B3]
+    D --> S[STR8-N 1.32 in B3]
     S -->|selector 0 or J0| W[Retained WDCMONv2 in B0<br/>CS0-CS3 chase]
     W -->|physical RESET| S
 ```
@@ -182,9 +182,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        608 B   |
 $FD4F  +------------------------------+
-       | available growth      40 B   |
-$FD27  +------------------------------+
-       | resident code/data  3368 B   |
+       | available growth      10 B   |
+$FD45  +------------------------------+
+       | resident code/data  3398 B   |
 $F000  +------------------------------+
 ```
 
@@ -255,13 +255,13 @@ flowchart TD
     Q --> F
 ```
 
-## STR8-N v1.31 RAM ownership
+## STR8-N v1.32 RAM ownership
 
 ```text
 $7DFF  +------------------------------+
-       | STR8 state $7DE9-$7DFF       |
-$7DE8  +------------------------------+
-       | reserved $7DC8-$7DE8         |
+       | STR8 state $7DE7-$7DFF       |
+$7DE6  +------------------------------+
+       | reserved $7DC8-$7DE6         |
 $7DC7  +------------------------------+
        | HIMON AP link $7DC0-$7DC7    |
 $7DBF  +------------------------------+
@@ -287,7 +287,7 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.31. In the
+STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.32. In the
 integrated R-YORS payload, APMAN transiently uses `$1A00-$1AFF` as its command
 shadow while `AP`, `APS`, or banked `INSTALL` delegates; `$1B00-$1FFF` remains
 the unconditional user-low slice outside another phase owner. The whole `$0200-$09FF` Worker
@@ -302,7 +302,7 @@ Development and proof programs may still use other addresses in the WCT and
 are not covered by this maintained-runtime high-water guarantee.
 
 Bank Maintenance and the other foreground tools use the single-owner
-`$7C00-$7DBF` overlay. The exact `$7DE9-$7DFF` Recovery State Capsule fields
+`$7C00-$7DBF` overlay. The exact `$7DE7-$7DFF` Recovery State Capsule fields
 are listed in the [Technical Guide](TECHNICAL_GUIDE.md#str8-n-v130-high-ram-abi).
 
 ## RAM capacity by operating path

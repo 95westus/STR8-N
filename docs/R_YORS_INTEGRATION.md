@@ -26,16 +26,16 @@ STR8-N commits do not require lock churn.
 ## Published STR8-N artifacts
 
 ```text
-BUILD/v1.31/bin/str8n-v1.31-bank3-f000-ffff.bin
-BUILD/v1.31/s19/str8n-v1.31-f000.s19
-BUILD/v1.31/s19/str8n-v1.31-worker-0200.s19
-BUILD/v1.31/s19/str8n-v1.31-bank-maint-2000.s19
-BUILD/v1.31/s19/str8n-v1.31-console-abi-test-2000.s19
-BUILD/v1.31/s19/str8n-v1.31-top-update-2000.s19
-BUILD/v1.31/s19/str8n-v1.31-directory-refresh-2000.s19
-BUILD/v1.31/s19/str8n-v1.31-wdcmonv2-archive-2000.s19
-BUILD/v1.31/s19/str8n-v1.31-wdcmonv2-install-2000.s19
-BUILD/v1.31/include/str8n-public.inc
+BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin
+BUILD/v1.32/s19/str8n-v1.32-f000.s19
+BUILD/v1.32/s19/str8n-v1.32-worker-0200.s19
+BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19
+BUILD/v1.32/s19/str8n-v1.32-console-abi-test-2000.s19
+BUILD/v1.32/s19/str8n-v1.32-top-update-2000.s19
+BUILD/v1.32/s19/str8n-v1.32-directory-refresh-2000.s19
+BUILD/v1.32/s19/str8n-v1.32-wdcmonv2-archive-2000.s19
+BUILD/v1.32/s19/str8n-v1.32-wdcmonv2-install-2000.s19
+BUILD/v1.32/include/str8n-public.inc
 BUILD/str8n-manifest.json
 ```
 
@@ -92,7 +92,7 @@ The reverse dependency is limited to the optional full-bank image builder:
 ```text
 R-YORS/RELEASE/ryors-v1.2-himon-asm-bank3-8-e.s19
                          28K dense payload, $8000-$EFFF, S9 $C000
-STR8-N BUILD/v1.31/bin/str8n-v1.31-bank3-f000-ffff.bin
+STR8-N BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin
                           4K current top, $F000-$FFFF
                                       |
                                       v

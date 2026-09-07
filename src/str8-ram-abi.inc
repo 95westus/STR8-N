@@ -11,7 +11,16 @@ STR8_HIGH_TOOL_END          EQU             $7DBF
 HIM_AP_LINK_WORK_BASE       EQU             $7DC0
 HIM_AP_LINK_WORK_END        EQU             $7DC7
 
-STR8_STATE_BASE             EQU             $7DE9
+; One-shot reset-source record. Software writes SIG0 first and commits SIG1
+; last immediately before entering STR8-N through its reset vector. STR8-N
+; clears SIG1 on entry; an absent/invalid record means hardware or an
+; unmarked legacy entry.
+STR8_SOFT_RESET_SIG0        EQU             $7DE7
+STR8_SOFT_RESET_SIG1        EQU             $7DE8
+STR8_SOFT_RESET_SIG0_VALUE  EQU             'R'
+STR8_SOFT_RESET_SIG1_VALUE  EQU             'S'
+
+STR8_STATE_BASE             EQU             $7DE7
 STR8_STATE_END              EQU             $7DFF
 STR8_MARK_SECTOR_HI         EQU             $7DE9
 STR8_MARK_ADDR_LO           EQU             $7DEA

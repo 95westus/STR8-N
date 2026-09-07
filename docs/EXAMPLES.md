@@ -1,4 +1,4 @@
-# STR8-N v1.31 Worked Examples
+# STR8-N v1.32 Worked Examples
 
 These examples show what to type and which S19 file to send. Text after `<-`
 is explanation, not terminal input. Use normal full-speed text-file transfer
@@ -10,8 +10,8 @@ Wait until the identity and selector appear, then press `S` during the silent
 live-key interval:
 
 ```text
-RESET
-STR8-N 1.31
+RST H
+STR8-N 1.32
 0-2 C W S: S
 I L C W J
 STR8-N>
@@ -23,7 +23,7 @@ compatible HIMON and preserves RAM.
 
 ## Migrate a factory WDCMONv2 board
 
-From an extracted v1.31 migration kit, use the stock board's COM port:
+From an extracted v1.32 migration kit, use the stock board's COM port:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass `
@@ -33,7 +33,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 At the physical-reset gate, reset the board, wait two seconds, and press Enter
 in PowerShell. After byte-exact RAM verification, type the single exact flash
 confirmation requested by the RAM program. The accepted result preserves all
-of stock B3 in B0, installs STR8-N 1.31 only in B3:F, and publishes COMPLETE
+of stock B3 in B0, installs STR8-N 1.32 only in B3:F, and publishes COMPLETE
 D0 `WDCM2`; it does not install HIMON, ASM-F2, or R-YORS. Exit the bridge with
 Ctrl+], connect an ordinary 115200-8N1 terminal, and prove `J0` plus physical
 RESET. See [WDCMONV2_MIGRATION.md](WDCMONV2_MIGRATION.md) for the complete
@@ -135,7 +135,7 @@ make ryors-full-bank
 This creates:
 
 ```text
-C:/SRC/STR8-N/BUILD/v1.31/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+C:/SRC/STR8-N/BUILD/v1.32/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 ```
 
 Install it in Bank 0, 1, or 2:
@@ -189,13 +189,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.31/s19/str8n-v1.31-bank-maint-2000.s19
+BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19
 ```
 
 It starts automatically:
 
 ```text
-STR8-N 1.31 BANK MAINT
+STR8-N 1.32 BANK MAINT
 B3 ERASE RETURNS TO STR8; SELECT S
 !STR8=SOURCE HAS STR8
 C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR N=RENAME DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT>
@@ -230,7 +230,7 @@ If the payload bank was deliberately erased but its old directory row remains,
 reclaim that one row before retrying the copy:
 
 ```text
-STR8-N 1.31 BANK MAINT
+STR8-N 1.32 BANK MAINT
 ... R=RECLAIM DIR ...> R
 RECLAIM DIR 0-3> 0
 
@@ -251,7 +251,7 @@ installed STR8-N or R-YORS payload. At least one Bank-0/1/2 sector must be
 completely erased for the verified temporary B3F backup:
 
 ```text
-STR8-N 1.31 BANK MAINT
+STR8-N 1.32 BANK MAINT
 ... R=RECLAIM DIR ...> R
 RECLAIM DIR 0-3> 3
 
@@ -281,13 +281,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.31/s19/str8n-v1.31-directory-refresh-2000.s19
+BUILD/v1.32/s19/str8n-v1.32-directory-refresh-2000.s19
 ```
 
 The guarded confirmations and successful result are:
 
 ```text
-STR8-N 1.31 DIRECTORY REFRESH
+STR8-N 1.32 DIRECTORY REFRESH
 BACKUP B1:F; TARGET B3:F
 TYPE BACKUP B1F> BACKUP B1F
 BACKUP VERIFIED
