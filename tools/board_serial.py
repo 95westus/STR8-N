@@ -14,6 +14,7 @@ def main():
     g = p.add_mutually_exclusive_group()
     g.add_argument('--hex', default='')
     g.add_argument('--s19', type=Path)
+    g.add_argument('--text', type=Path, help='Send an ASCII text file one CR-terminated line at a time')
     p.add_argument('--wait', type=float, default=1.0)
     p.add_argument('--line-delay', type=float, default=0.04)
     p.add_argument('--follow-match', help='Send follow-hex once when this exact RX text appears')
@@ -64,6 +65,18 @@ def main():
                         raise ValueError('Invalid S-record count/checksum')
                 for line in lines:
                     data = line + b'\r\n'
+                    record('TX', data)
+                    link.write(data)
+                    link.flush()
+                    receive(args.line_delay)
+            elif args.text:
+                payload = args.text.read_bytes()
+                evidence.write(json.dumps(dict(file=str(args.text), sha256=hashlib.sha256(payload).hexdigest())) + '\n')
+                if b'\0' in payload:
+                    raise ValueError('Text transport contains NUL')
+                payload.decode('ascii')
+                for line in payload.splitlines():
+                    data = line + b'\r'
                     record('TX', data)
                     link.write(data)
                     link.flush()
