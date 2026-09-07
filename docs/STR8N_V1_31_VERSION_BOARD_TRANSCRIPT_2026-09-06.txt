@@ -1,0 +1,58 @@
+STR8-N v1.31 version-promotion board transcript - 2026-09-06
+COM4, 115200 baud
+
+Canonical top SHA-256:
+3E1F63035C3CA63C73830AD628D89B8C5B591F6768CA3E80788097928A65C015
+
+Guarded top updater SHA-256:
+8F2F6F243EB1C4F573664B7802192E7424CF796077532477AB7E190F1221FF74
+
+The v1.31 and preceding board-proven v1.30 top images differ only at file
+offset $C6D / CPU $FC6D: ASCII 0 ($30) became ASCII 1 ($31).
+
+Physical RESET before update exited the temporary PWE# RAM probe.
+Operator observation: warm HIMON handoff displayed $00.
+
+G F000
+GO F000
+RESET
+
+STR8-N 1.30
+0-2 C W S: S
+I L C W J
+STR8-N> L
+S19
+
+STR8-N 1.31 TOP UPDATE
+BACKUP B1:F; TARGET B3:F
+TYPE BACKUP B1F> BACKUP B1F
+BACKUP VERIFIED
+SAFE PHY $0F000-$0FFFF; TARGET PHY $1F000-$1FFFF; SUM=$4998
+TYPE STR8-N 1.31> STR8-N 1.31
+ERASING B3:F - NO RESET/NMI/POWER
+STR8-N 1.31 VERIFIED; RESET
+RESET
+
+STR8-N 1.31
+0-2 C W S:
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>
+
+G F000
+GO F000
+RESET
+
+STR8-N 1.31
+0-2 C W S: S
+I L C W J
+STR8-N>
+
+Operator observation: $43 was displayed at the installed v1.31 prompt.
+
+W
+BOOT WARM
+
+HIMON V 00.0902(1707)
+>

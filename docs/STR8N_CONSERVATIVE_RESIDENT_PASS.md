@@ -1,5 +1,11 @@
 # STR8-N v1.30: conservative resident follow-up
 
+> **Historical predecessor:** the current LED slices use 58 of the resident
+> bytes reclaimed here and expand/re-pack the worker by 12 bytes.
+> The current host-built layout is documented in `README.md`,
+> `TECHNICAL_GUIDE.md`, and `LED_STATUS_PROPOSAL.md`. The board evidence below
+> applies to this preceding conservative image, not to the LED candidate.
+
 The accepted scope is resident-only size reduction. No worker optimization,
 worker repacking, public ABI change, prompt deletion, or weakened validation
 is included. Version stays 1.30. This candidate has its own board evidence

@@ -1,10 +1,10 @@
 param(
     [string]$SourcePath = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm',
-    [string]$S19Path = 'BUILD/v1.30/s19/str8n-v1.30-wdcmonv2-install-2000.s19',
-    [string]$MapPath = 'BUILD/v1.30/map/str8n-v1.30-wdcmonv2-install-2000.map',
-    [string]$TopBinPath = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin',
-    [string]$CandidateBinPath = 'BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin',
-    [string]$VersionText = '1.30'
+    [string]$S19Path = 'BUILD/v1.31/s19/str8n-v1.31-wdcmonv2-install-2000.s19',
+    [string]$MapPath = 'BUILD/v1.31/map/str8n-v1.31-wdcmonv2-install-2000.map',
+    [string]$TopBinPath = 'BUILD/v1.31/bin/str8n-v1.31-bank3-f000-ffff.bin',
+    [string]$CandidateBinPath = 'BUILD/v1.31/bin/str8n-v1.31-bank3-f000-ffff.bin',
+    [string]$VersionText = '1.31'
 )
 
 Set-StrictMode -Version Latest

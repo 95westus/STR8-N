@@ -1,6 +1,6 @@
 """Differential tests against the canonical 521fd0a resident (not board flash).
 
-Requires py65==1.2.0, installed normally or in BUILD/v1.30/local/test-deps.
+Requires py65==1.2.0, installed normally or in BUILD/v1.31/local/test-deps.
 Executes actual linked 65C02 code. Console transport and flash hardware are
 stubbed explicitly; this does not constitute board or flash-programming proof.
 """
@@ -23,8 +23,8 @@ except ImportError:
 GOLDEN = json.loads((ROOT / 'tools/fixtures/resident-521fd0a.json').read_text())
 OLD = base64.b64decode(GOLDEN['image'])
 assert hashlib.sha256(OLD).hexdigest() == GOLDEN['sha256']
-NEW = (REL / 'bin/str8n-v1.30-bank3-f000-ffff.bin').read_bytes()
-MAPS = [GOLDEN['symbols'], symbols(REL / 'map/str8n-v1.30-f000.map')]
+NEW = (REL / 'bin/str8n-v1.31-bank3-f000-ffff.bin').read_bytes()
+MAPS = [GOLDEN['symbols'], symbols(REL / 'map/str8n-v1.31-f000.map')]
 
 
 class Run:

@@ -19,6 +19,7 @@
                         INCLUDE         "str8-ram-abi.inc"
                         INCLUDE         "str8-record-eq.inc"
                         INCLUDE         "str8-jump-eq.inc"
+                        INCLUDE         "str8-led-eq.inc"
                         INCLUDE         "str8-worker-eq.inc"
 
 ; 2026-05-07T22:58-05:00        WLP2        Combined ROM layout moves STR8 to $F000.
@@ -27,6 +28,7 @@
 ; 2026-07-23T13:07-05:00        Codex       Size pass shares buffer and flash-operation tails.
 ; 2026-07-23T17:27-05:00        Codex       Enrollment mode is removed with the E command.
 ; 2026-08-01T22:15-05:00        Codex       V0 copy/restore modes retire; unknown modes fail closed.
+; 2026-09-06T15:38-05:00        Codex       Assert all-red during mutation and release on guest jump.
 STR8_COPY_MODE_PROGRAM_STAGED EQU        $05
 STR8_RESET_VECTOR       EQU             $FFFC
 
@@ -112,13 +114,18 @@ STR8W_START_BODY:
 ?JUMP_BANK:
                         JSR             STR8W_JUMP_BANK
 ?DONE:
-                        BCC             ?FAIL
+; Preserve the operation result across bank restoration and the LED write.
+; The entry PHP remains below this temporary result byte on the stack.
+                        PHP
                         JSR             STR8W_SELECT_BANK3
+                        LDA             #STR8_LED_STATUS_RUNNING
+                        STA             STR8_LED_PIA_PORTA
+                        PLP
+                        BCC             ?FAIL
                         PLP
                         SEC
                         RTS
 ?FAIL:
-                        JSR             STR8W_SELECT_BANK3
                         PLP
                         CLC
                         RTS
@@ -155,6 +162,8 @@ STR8W_JUMP_BANK:
                         STA             STR8_BANK_JUMP_SIG0
                         LDA             #STR8_BANK_JUMP_SIG1_VALUE
                         STA             STR8_BANK_JUMP_SIG1
+; The validated guest owns Port A after the final non-returning jump.
+                        STZ             STR8_LED_PIA_PORTA
                         JMP             (STR8_JUMP_VEC_LO)
 ?BAD_BANK:
                         LDA             #STR8_JUMP_STATUS_BANK
@@ -414,6 +423,10 @@ STR8W_FLASH_WAIT:
                         RTS
 
 STR8W_FLASH_UNLOCK:
+; This is the last shared boundary before an erase or program command can
+; mutate flash. Keep all red asserted until START restores Bank 3 and RUN.
+                        LDA             #STR8_LED_STATUS_FLASH_MUTATE
+                        STA             STR8_LED_PIA_PORTA
                         LDA             #$AA
                         STA             STR8_FLASH_UNLOCK1
                         LDA             #$55

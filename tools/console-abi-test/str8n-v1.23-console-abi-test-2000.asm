@@ -1,4 +1,4 @@
-; STR8-N v1.30 resident raw console ABI hardware probe.
+; STR8-N v1.31 resident raw console ABI hardware probe.
 ; Load with STR8-N L; S9 starts the probe at $2000.
 ; Type lowercase q followed by Enter when prompted. Physical RESET exits.
 
@@ -11,11 +11,22 @@ CAT_PTR_HI              EQU             $81
 CAT_SAVED_A             EQU             $82
 CAT_X_SENTINEL          EQU             $5A
 CAT_Y_SENTINEL          EQU             $A5
+CAT_PIA_PORTA           EQU             $7FA0
+CAT_APP_LED_PATTERN     EQU             $A5
 
 CAT_START:              SEI
                         CLD
                         LDX             #$FF
                         TXS
+
+; STR8-N must release the display before the L-command S9 handoff. Claim it
+; with an application pattern before exercising every public console service.
+                        LDA             CAT_PIA_PORTA
+                        BEQ             CAT_HANDOFF_RELEASED
+                        JMP             CAT_HANDOFF_FAIL
+CAT_HANDOFF_RELEASED:
+                        LDA             #CAT_APP_LED_PATTERN
+                        STA             CAT_PIA_PORTA
 
 ; Old images return C=0 from the former $F006 tombstone. The new query must
 ; advertise the exact ABI version/capability byte without disturbing Y.
@@ -67,6 +78,9 @@ CAT_INIT_GOOD:
                         JSR             CAT_PRINT_XY
                         LDX             #<CAT_MSG_INIT_OK
                         LDY             #>CAT_MSG_INIT_OK
+                        JSR             CAT_PRINT_XY
+                        LDX             #<CAT_MSG_HANDOFF_OK
+                        LDY             #>CAT_MSG_HANDOFF_OK
                         JSR             CAT_PRINT_XY
                         LDX             #<CAT_MSG_CHAROUT_OK
                         LDY             #>CAT_MSG_CHAROUT_OK
@@ -126,8 +140,17 @@ CAT_ENTER_REPORT:       JSR             CAT_PRINT_XY
                         JSR             CAT_PRINT_XY
                         BRK
                         NOP
+; Neither raw console I/O nor STR8-N's interrupt front door may reclaim Port A.
+                        LDA             CAT_PIA_PORTA
+                        CMP             #CAT_APP_LED_PATTERN
+                        BEQ             CAT_LED_OWNED
+                        JMP             CAT_LED_FAIL
+CAT_LED_OWNED:
                         LDX             #<CAT_MSG_PASS_WORD
                         LDY             #>CAT_MSG_PASS_WORD
+                        JSR             CAT_PRINT_XY
+                        LDX             #<CAT_MSG_LED_OK
+                        LDY             #>CAT_MSG_LED_OK
                         JSR             CAT_PRINT_XY
                         LDX             #<CAT_MSG_PASS
                         LDY             #>CAT_MSG_PASS
@@ -207,6 +230,16 @@ CAT_INIT_FAIL:          LDX             #<CAT_MSG_INIT_FAIL
                         JSR             CAT_PRINT_XY
                         JMP             CAT_HALT
 
+CAT_HANDOFF_FAIL:       LDX             #<CAT_MSG_HANDOFF_FAIL
+                        LDY             #>CAT_MSG_HANDOFF_FAIL
+                        JSR             CAT_PRINT_XY
+                        JMP             CAT_HALT
+
+CAT_LED_FAIL:           LDX             #<CAT_MSG_LED_FAIL
+                        LDY             #>CAT_MSG_LED_FAIL
+                        JSR             CAT_PRINT_XY
+                        JMP             CAT_HALT
+
 CAT_DATA_FAIL:          LDX             #<CAT_MSG_DATA_FAIL
                         LDY             #>CAT_MSG_DATA_FAIL
                         JSR             CAT_PRINT_XY
@@ -224,9 +257,10 @@ CAT_PRINT_NEXT:         LDY             #$00
                         BRA             CAT_PRINT_NEXT
 CAT_PRINT_DONE:         RTS
 
-CAT_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.30 CONSOLE ABI TEST",$0D,$0A,0
+CAT_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.31 CONSOLE ABI TEST",$0D,$0A,0
 CAT_MSG_ABI_OK:         DB              "ABI_QUERY $F006 V1 CAPS $3F/Y/C: PASS",$0D,$0A,0
 CAT_MSG_INIT_OK:        DB              "CONSOLE_INIT $F003 A/X/Y/C: PASS",$0D,$0A,0
+CAT_MSG_HANDOFF_OK:     DB              "L HANDOFF LED $00: PASS",$0D,$0A,0
 CAT_MSG_CHAROUT_OK:     DB              "CHAROUT $F019 A/X/Y/C: PASS",$0D,$0A,0
 CAT_MSG_TYPE_Q:         DB              "TYPE q THEN ENTER> ",0
 CAT_MSG_Q_OK:           DB              " <- $71 RAW: PASS",$0D,$0A,0
@@ -236,10 +270,13 @@ CAT_MSG_CHAR_READY_OK:  DB              "CHAR_READY $F03E EMPTY/READY/X/Y/C: PAS
 CAT_MSG_CHARIN_OK:      DB              "CHARIN $F013 X/Y/C: PASS",$0D,$0A,0
 CAT_MSG_BRK:            DB              "BRK VECTOR $F0E6: ",0
 CAT_MSG_PASS_WORD:      DB              "PASS",$0D,$0A,0
+CAT_MSG_LED_OK:         DB              "APP LED $A5 THROUGH RAW I/O/BRK: PASS",$0D,$0A,0
 CAT_MSG_PASS:           DB              "CONSOLE ABI TEST: PASS",$0D,$0A
                         DB              "PRESS PHYSICAL RESET",$0D,$0A,0
 CAT_MSG_CHARIN_FAIL:    DB              $0D,$0A,"CHARIN CONTRACT: FAIL",$0D,$0A,0
 CAT_MSG_CHAR_READY_FAIL: DB             $0D,$0A,"CHAR_READY CONTRACT: FAIL",$0D,$0A,0
 CAT_MSG_ABI_FAIL:       DB              $0D,$0A,"ABI_QUERY CONTRACT: FAIL",$0D,$0A,0
 CAT_MSG_INIT_FAIL:      DB              $0D,$0A,"CONSOLE_INIT CONTRACT: FAIL",$0D,$0A,0
+CAT_MSG_HANDOFF_FAIL:   DB              $0D,$0A,"L HANDOFF LED NOT $00: FAIL",$0D,$0A,0
+CAT_MSG_LED_FAIL:       DB              $0D,$0A,"APP LED OWNERSHIP: FAIL",$0D,$0A,0
 CAT_MSG_DATA_FAIL:      DB              $0D,$0A,"RAW INPUT DATA: FAIL",$0D,$0A,0

@@ -1,7 +1,7 @@
 param(
-    [string]$BinPath = "BUILD/v1.30/bin/str8n-v1.30-bank3-f000-ffff.bin",
-    [string]$OutPath = "BUILD/v1.30/generated/str8n-v1.30-top-image.inc",
-    [string]$Identity = 'STR8-N 1.30'
+    [string]$BinPath = "BUILD/v1.31/bin/str8n-v1.31-bank3-f000-ffff.bin",
+    [string]$OutPath = "BUILD/v1.31/generated/str8n-v1.31-top-image.inc",
+    [string]$Identity = 'STR8-N 1.31'
 )
 
 Set-StrictMode -Version Latest

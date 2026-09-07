@@ -1,6 +1,6 @@
 param(
     [string]$SourceDir = "src",
-    [string]$OutPath = "BUILD/v1.30/include/str8n-public.inc"
+    [string]$OutPath = "BUILD/v1.31/include/str8n-public.inc"
 )
 
 Set-StrictMode -Version Latest
