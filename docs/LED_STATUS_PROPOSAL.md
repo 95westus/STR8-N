@@ -235,6 +235,47 @@ the installed private output wrapper emitted `T`. See the
 [I/O activity board report](LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md) and
 [retained transcript](LED_IO_ACTIVITY_BOARD_TRANSCRIPT_2026-09-06.txt).
 
+## Future periodic heartbeat overlay (proposal only)
+
+A future timer interrupt may add a heartbeat without replacing the foreground
+status. Reserve Port A bit 7, the leftmost red LED, as a short pulse over the
+current base value. The lower seven bits continue to identify the state:
+
+| Base state | During heartbeat pulse | Meaning |
+| --- | --- | --- |
+| `$01` | `$81` | STR8-N run plus heartbeat |
+| `$21` | `$A1` | no-host wait plus heartbeat |
+| `$43` | `$C3` | host-present wait plus heartbeat |
+| `$07` | `$87` | receive activity plus heartbeat |
+| `$0B` | `$8B` | transmit activity plus heartbeat |
+| `$F0` | `$F0` | flash mutation; heartbeat suppressed |
+| `$00` | `$00` | display released; heartbeat disabled |
+
+The preferred visible cadence is one pulse per second, with bit 7 asserted for
+roughly 50-100 ms. This reads as one red tick while the base pattern remains
+recognizable; it is not a 50-percent-duty alternation between two status
+codes.
+
+Implementation requires a private base-status shadow byte, heartbeat phase or
+countdown, and an explicit LED-owner/heartbeat-enable flag. Foreground status
+publishers update the shadow and display the base with the current heartbeat
+phase applied. The interrupt preserves every register and processor flag it
+uses, acknowledges its timer source, and writes Port A only while its component
+owns the display.
+
+STR8-N disables the overlay before `$00` handoff. HIMON disables it before `G`
+or any other transfer to a user program and reclaims it only if that program
+returns to the monitor. ASM-F2 remains under HIMON ownership and therefore
+inherits HIMON's overlay. Flash mutation keeps solid `$F0`; the heartbeat must
+not obscure it. Public raw console and record services remain LED-neutral, and
+the heartbeat is not a public LED ABI. These ownership rules prevent a
+periodic firmware interrupt from overwriting an application's eight-bit Port A
+display.
+
+This proposal has no implementation, ROM-size measurement, interrupt source,
+or board proof yet. Selecting and qualifying the periodic timebase is a
+separate prerequisite.
+
 ## Later slices
 
 Continue with one independently testable behavior at a time:
@@ -246,6 +287,8 @@ Continue with one independently testable behavior at a time:
    component restores its caller's state on return.
 4. Document the optional contract for user programs while retaining their
    right to use all eight bits arbitrarily.
+5. Select a periodic interrupt source and measure the heartbeat overlay above
+   as its own candidate slice.
 
-A genuine heartbeat is outside this proposal. It needs a periodic timebase;
-a steady `G_RUN` means only that firmware reached and published that state.
+Until that slice exists, a steady `G_RUN` means only that firmware reached and
+published that state.
