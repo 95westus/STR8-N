@@ -1,6 +1,6 @@
 param(
     [string]$SourceDir = "src",
-    [string]$OutPath = "BUILD/v1.31/include/str8n-public.inc"
+    [string]$OutPath = "BUILD/v1.32/include/str8n-public.inc"
 )
 
 Set-StrictMode -Version Latest
@@ -21,6 +21,8 @@ $groups = @(
             'STR8_RAM_ABI_VERSION',
             'STR8_HIGH_TOOL_BASE', 'STR8_HIGH_TOOL_END',
             'HIM_AP_LINK_WORK_BASE', 'HIM_AP_LINK_WORK_END',
+            'STR8_SOFT_RESET_SIG0', 'STR8_SOFT_RESET_SIG1',
+            'STR8_SOFT_RESET_SIG0_VALUE', 'STR8_SOFT_RESET_SIG1_VALUE',
             'STR8_STATE_BASE', 'STR8_STATE_END',
             'STR8_BANK_JUMP_SIG0', 'STR8_BANK_JUMP_SIG1',
             'STR8_BANK_LAST_JUMP',

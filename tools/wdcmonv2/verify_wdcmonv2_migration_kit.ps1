@@ -22,7 +22,7 @@ $expected = @(
     'LICENSE',
     'PACKAGE-MANIFEST.json',
     'PACKAGE-README.txt',
-    'SOURCE/str8n-v1.31-wdcmonv2-install-image.inc',
+    'SOURCE/str8n-v1.32-wdcmonv2-install-image.inc',
     'SOURCE/wdcmonv2str8n-archive-2000.asm',
     'SOURCE/wdcmonv2str8n-install-2000.asm',
     'TOOLS/check_wdcmonv2_archive.ps1',
@@ -47,7 +47,7 @@ if ($manifest.schema -ne 1 -or
     $manifest.ryorsPayloadIncluded -ne $false -or
     $manifest.windowsHostStatus -notmatch 'board-proven' -or
     $manifest.ubuntuPythonHostStatus -notmatch 'no board proof' -or
-    $manifest.archiveRoot -ne 'STR8-N-v1.31-Migration-Kit') {
+    $manifest.archiveRoot -ne 'STR8-N-v1.32-Migration-Kit') {
     throw 'Migration kit provenance flags are invalid'
 }
 $rows = @($manifest.files)
@@ -70,13 +70,13 @@ foreach ($required in @('STR8-iN/65 LOADER - FAST PATH', 'STR8-N-v1-30.bin',
 }
 $pythonQuick = Get-Content -Raw -LiteralPath (Join-Path $root 'STR8-iN65-LOADER.py')
 foreach ($required in @('UNTESTED ON LINUX HARDWARE', 'Windows 11 PowerShell remains the board-proven reference',
-        'COPY B3 TO B0', 'INSTALL STR8-N 1.31', 'READ THE SCREEN', 'CTRL+U once',
+        'COPY B3 TO B0', 'INSTALL STR8-N 1.32', 'READ THE SCREEN', 'CTRL+U once',
         'CTRL+D once', 'J0 is a complete handoff', 'Physical RESET is the designed return',
         'not a flaw', 'ADOPT B0')) {
     if (-not $pythonQuick.Contains($required)) { throw "Experimental Python wrapper lacks required safety text: $required" }
 }
 $quickStart = Get-Content -Raw -LiteralPath (Join-Path $root 'QUICKSTART.txt')
-foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.31', 'PROPOSED D0 B3:$FFB0',
+foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.32', 'PROPOSED D0 B3:$FFB0',
         'D0 FF WDCV2 FFFF FCFFFFFF', '-Details', 'Windows PowerShell 5.1',
         '[System.IO.Ports.SerialPort]::GetPortNames()', 'UBUNTU LINUX HOST',
         'NOT BOARD-TESTED', 'STR8-iN65-LOADER.py', 'Python 3 + pySerial',
@@ -88,7 +88,7 @@ foreach ($required in @('COPY B3 TO B0', 'INSTALL STR8-N 1.31', 'PROPOSED D0 B3:
 $packageReadme = Get-Content -Raw -LiteralPath (Join-Path $root 'PACKAGE-README.txt')
 foreach ($required in @('Windows PowerShell 5.1', 'USB COM-port driver',
         'writable folder', 'NOT NEEDED', 'powershell.exe', 'UBUNTU PYTHON UNTESTED',
-        'ARCHIVE ROOT: STR8-N-v1.31-Migration-Kit', 'READ THE SCREEN',
+        'ARCHIVE ROOT: STR8-N-v1.32-Migration-Kit', 'READ THE SCREEN',
         'CTRL+U and CTRL+D send different packaged files',
         'physical RESET is the designed return', 'intentional, not a flaw')) {
     if (-not $packageReadme.Contains($required)) { throw "Package README lacks Windows requirement: $required" }
@@ -112,4 +112,4 @@ Write-Host ('MIGRATION KIT       = VERIFIED; {0} allowlisted files' -f $expected
 Write-Host 'WDCMONV2 FIRMWARE    = NOT INCLUDED'
 Write-Host 'LOCAL BANK ARCHIVES  = NOT INCLUDED'
 Write-Host 'R-YORS PAYLOAD        = NOT INCLUDED'
-Write-Host 'HARDWARE STATUS      = V1.31 FACTORY MIGRATION OPERATOR-DEFERRED'
+Write-Host 'HARDWARE STATUS      = V1.32 FACTORY MIGRATION OPERATOR-DEFERRED'

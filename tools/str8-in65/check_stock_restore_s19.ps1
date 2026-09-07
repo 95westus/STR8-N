@@ -1,8 +1,8 @@
 param(
     [string]$SourcePath = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm',
-    [string]$S19Path = 'BUILD/v1.31/s19/str8n-v1.31-str8-in65-factory-restore-2000.s19',
-    [string]$MapPath = 'BUILD/v1.31/map/str8n-v1.31-str8-in65-factory-restore-2000.map',
-    [string]$VersionText = '1.31'
+    [string]$S19Path = 'BUILD/v1.32/s19/str8n-v1.32-str8-in65-factory-restore-2000.s19',
+    [string]$MapPath = 'BUILD/v1.32/map/str8n-v1.32-str8-in65-factory-restore-2000.map',
+    [string]$VersionText = '1.32'
 )
 
 Set-StrictMode -Version Latest

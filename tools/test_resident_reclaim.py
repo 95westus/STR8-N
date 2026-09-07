@@ -1,4 +1,4 @@
-"""v1.31 binary regressions: message pages, delay contract, actual range parser.
+"""v1.32 binary regressions: message pages, delay contract, actual range parser.
 
 The deliberately limited CPU harness rejects unsupported instructions; it runs
 the linked range parser, stubbing only console printing and line acquisition.
@@ -11,7 +11,7 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-REL = ROOT / 'BUILD/v1.31'
+REL = ROOT / 'BUILD/v1.32'
 
 
 def symbols(path):
@@ -19,9 +19,9 @@ def symbols(path):
 
 
 def main():
-    sym = symbols(REL / 'map/str8n-v1.31-f000.map')
-    worker_sym = symbols(REL / 'map/str8n-v1.31-worker-0200.map')
-    image = (REL / 'bin/str8n-v1.31-bank3-f000-ffff.bin').read_bytes()
+    sym = symbols(REL / 'map/str8n-v1.32-f000.map')
+    worker_sym = symbols(REL / 'map/str8n-v1.32-worker-0200.map')
+    image = (REL / 'bin/str8n-v1.32-bank3-f000-ffff.bin').read_bytes()
     mem = bytearray(65536)
     mem[0xF000:] = image
     # Frozen canonical host image, never a board dump. Protect the deliberately
@@ -39,17 +39,21 @@ def main():
         assert old[previous:previous + length] == image[current:current + length], name
     new_data = bytearray(image[sym['_BEG_DATA'] - 0xF000:sym['_END_DATA'] - 0xF000])
     old_data = bytearray(old[golden['symbols']['_BEG_DATA'] - 0xF000:golden['symbols']['_END_DATA'] - 0xF000])
-    # v1.31 changes only the final identity digit in otherwise frozen resident
-    # data. Check that exact transition, then compare every remaining byte.
+    # Normalize the accepted identity transition and the intentional reset-face
+    # replacement, then compare every remaining resident-data byte.
     version_addr = sym['MSG_ID'] + len(b'\r\nSTR8-N 1.3')
     version_offset = version_addr - sym['_BEG_DATA']
     assert old_data[version_offset] == ord('0')
-    assert new_data[version_offset] == ord('1')
+    assert new_data[version_offset] == ord('2')
     old_data[version_offset] = new_data[version_offset]
+    old_reset = b'RESET\r\x8a'
+    new_reset = b'\r\nRST H\r\x8a\r\nRST S\r\x8a'
+    assert old_data.count(old_reset) == 1
+    old_data = old_data.replace(old_reset, new_reset)
     assert new_data == old_data
-    assert sym['_END_DATA'] == 0xFD28
+    assert sym['_END_DATA'] == 0xFD46
     assert sym['STR8_WORKER_STORE'] == 0xFD50
-    assert image[0xD28:0xD50] == b'\xff' * 40
+    assert image[0xD46:0xD50] == b'\xff' * 10
     page0 = sym['STR8_PRINT_TXN_PAGE0_X'] - 0xF000
     page1 = sym['STR8_PRINT_TXN_PAGE1_X'] - 0xF000
     assert page1 == page0 + 4
@@ -57,7 +61,7 @@ def main():
     # Compact messages use explicit $FC/$FD helpers. A string may cross the
     # boundary; its call must select the page containing its first byte.
     assert sym['MSG_ID'] >> 8 == 0xFC
-    assert sym['MSG_JUMP_FAIL'] >> 8 == sym['MSG_RESET'] >> 8 == 0xFD
+    assert sym['MSG_JUMP_FAIL'] >> 8 == sym['MSG_RST_H'] >> 8 == sym['MSG_RST_S'] >> 8 == 0xFD
     assert (sym['MSG_BACKSPACE'] + 2) >> 8 == 0xFD
     assert sym['STR8_REC_OP_PARSE'] == sym['STR8_REC_FORMAT_S19'] == sym['STR8_REC_SOURCE_CONSOLE'] == 1
     assert sym['STR8_REC_SOURCE_BUFFER'] == sym['STR8_REC_DATA_BUF_LO'] == 0
@@ -154,7 +158,17 @@ def main():
             if value & 128:
                 return bytes(out)
         raise AssertionError('unterminated string')
-    assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.31\r\n0-2 C W S: '
+    assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.32\r\n0-2 C W S: '
+    assert string_at(sym['MSG_RST_H']) == b'\r\nRST H\r\n'
+    assert string_at(sym['MSG_RST_S']) == b'\r\nRST S\r\n'
+    startup = sym['STR8_STARTUP_DELAY'] - 0xF000
+    reset_classifier = bytes((
+        0xA2, sym['MSG_RST_H'] & 255,
+        0xAD, 0xE7, 0x7D, 0xC9, ord('R'), 0xD0, 0x09,
+        0xAD, 0xE8, 0x7D, 0xC9, ord('S'), 0xD0, 0x02,
+        0xA2, sym['MSG_RST_S'] & 255,
+        0x9C, 0xE8, 0x7D))
+    assert image[startup + 3:startup + 3 + len(reset_classifier)] == reset_classifier
     assert string_at(sym['MSG_JUMP_B']) == b'\r\nJ B'
     assert string_at(sym['MSG_JUMP_FAIL']) == b'J FAIL\r\n'
 
@@ -261,7 +275,7 @@ def main():
         for text in (b'', b'CC', b'C--E', b'C/E', b'G-F', b'8-G'):
             assert not run_range(bank, text)[0], text
             cases += 1
-    print(f'RESIDENT RECLAIM PASS: {checked} compiled message-page calls, {cases} linked parser cases, 40-byte margin')
+    print(f'RESIDENT RECLAIM PASS: {checked} compiled message-page calls, {cases} linked parser cases, 10-byte margin')
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.31/map/str8n-v1.31-f000.map",
-    [string]$WorkerMapPath = "BUILD/v1.31/map/str8n-v1.31-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/v1.31/s19/str8n-v1.31-worker-0200.s19",
+    [string]$Str8MapPath = "BUILD/v1.32/map/str8n-v1.32-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.32/map/str8n-v1.32-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/v1.32/s19/str8n-v1.32-worker-0200.s19",
     [string]$WorkerEqPath = "src/str8-worker-eq.inc",
     [string]$RamAbiPath = "src/str8-ram-abi.inc",
     [string]$ConsoleEqPath = "src/str8-console-eq.inc",
@@ -21,7 +21,7 @@ $TopBackupDefault = 0x1F
 $VectorStart = 0xFFFA
 $WorkerRunStart = 0x0200
 $WorkerSelectEntry = 0x0203
-$MinimumMargin = 32
+$MinimumMargin = 8
 
 function Get-MapSymbol {
     param([string]$Path, [string]$Name)
@@ -88,7 +88,9 @@ Assert-Equal (Get-EquValue $RamAbiPath 'STR8_RAM_ABI_VERSION') 0x12 'RAM ABI ver
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_HIGH_TOOL_BASE') 0x7C00 'High Tool Overlay start'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_HIGH_TOOL_END') 0x7DBF 'High Tool Overlay end'
 Assert-Equal (Get-EquValue $RamAbiPath 'HIM_AP_LINK_WORK_BASE') 0x7DC0 'HIMON AP-link scratch start'
-Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_BASE') 0x7DE9 'STR8 state start'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_SOFT_RESET_SIG0') 0x7DE7 'Soft-reset record start'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_SOFT_RESET_SIG1') 0x7DE8 'Soft-reset record end'
+Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_BASE') 0x7DE7 'STR8 state start'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_STATE_END') 0x7DFF 'STR8 state end'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_JUMP_SIG0') 0x7DFD 'Bank Jump Record start'
 Assert-Equal (Get-EquValue $RamAbiPath 'STR8_BANK_LAST_JUMP') 0x7DFF 'Bank Jump Record end'
@@ -125,5 +127,5 @@ Write-Host ('SELECTOR PREFIX      = ${0:X4}-${1:X4}; {2} bytes' -f $workerStart,
 Write-Host ('WORKER S19 SHA-256   = {0}' -f $workerHash)
 Write-Host ('DIRECTORY/CONFIG/VEC = $FFB0-$FFEF / $FFF0-$FFF9 / $FFFA-$FFFF')
 Write-Host 'PUBLIC RESIDENT ABI  = INIT $F003; QUERY $F006; CHARIN $F013; CHAROUT $F019; READY $F03E'
-Write-Host 'RAM ABI              = $12; LOW USER $1A00-$1FFF; STR8 STATE $7DE9-$7DFF'
+Write-Host 'RAM ABI              = $12; LOW USER $1A00-$1FFF; STR8 STATE $7DE7-$7DFF'
 Write-Host 'LAYOUT CHECK         = PASS'

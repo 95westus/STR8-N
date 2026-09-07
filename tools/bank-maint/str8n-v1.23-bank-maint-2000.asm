@@ -4,7 +4,7 @@
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.31/s19/str8n-v1.31-bank-maint-2000.s19
+;   send BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -97,6 +97,8 @@ BM_FTDI_TXE EQU $01
 BM_FTDI_RXF EQU $02
 BM_FTDI_WR EQU $04
 BM_FTDI_RD EQU $08
+BM_SOFT_RESET_SIG0 EQU $7DE7
+BM_SOFT_RESET_SIG1 EQU $7DE8
 
 BM_MAIN LDX #$00
 ?WCOPY LDA $3400,X
@@ -191,6 +193,7 @@ BM_MAIN LDX #$00
         STA $7C01
         LDA #$AC
         STA $7C00
+        JSR BM_ARM_SOFT_RESET
         JMP $F000
 ?MAP   JMP BM_MAP
         IF STR8_IN65_BANK_MAINT
@@ -2352,6 +2355,7 @@ BM_ENODOT LDA $7C04
         BNE BM_SUCCESS
         LDA #$AC
         STA $7C00
+        JSR BM_ARM_SOFT_RESET
         JMP $F000
 
 BM_FSTAGE LDA #$E1
@@ -2368,7 +2372,15 @@ BM_FAILCODE STA $7C00
         LDA $7C02
         CMP #$03
         BNE BM_FAIL
+        JSR BM_ARM_SOFT_RESET
         JMP $F000
+BM_ARM_SOFT_RESET
+        STZ BM_SOFT_RESET_SIG1
+        LDA #'R'
+        STA BM_SOFT_RESET_SIG0
+        LDA #'S'
+        STA BM_SOFT_RESET_SIG1
+        RTS
 BM_FAIL LDA #'!'
         JSR BM_OUT
         LDA #$0D
@@ -2392,8 +2404,8 @@ BM_SUCCESS LDA #$AC
         JMP BM_MAIN
 
 BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' '
-        IF STR8_IN65_VERSION_131
-        DB '1','.','3','1',' '
+        IF STR8_IN65_VERSION_132
+        DB '1','.','3','2',' '
         ELSE
         DB '1','.','2','3',' '
         ENDIF
@@ -2405,8 +2417,8 @@ BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' '
         DB ' ','D',' ',' ','A','D','O','P','T',' ','D','I','R',$0D,$0A
         DB ' ','N',' ',' ','R','E','N','A','M','E',' ','D','I','R',$0D,$0A
         DB ' ','R',' ',' ','R','E','C','L','A','I','M',' ','D','I','R',$0D,$0A
-        DB ' ','E',' ',' ','E','R','A','S','E',' ','B','A','N','K',' ','R','A','N','G','E',$0D,$0A
-        DB ' ','P',' ',' ','P','U','T',' ','A','P',' ','$','7','0','0','0',' ','-','>',' ','B','A','N','K',' ','S','E','C','T','O','R',$0D,$0A
+        DB ' ','E',' ',' ','E','R','A','S','E',' ','R','A','N','G','E',$0D,$0A
+        DB ' ','P',' ',' ','P','U','T',' ','A','P',' ','$','7','0','0','0',$0D,$0A
         DB ' ','U',' ',' ','U','P','D','A','T','E',' ','B','3',':','F',' ','('
         DB 'B','A','C','K','U','P',' ','B','1',':','F',';',' ','R','E','S','E','T',')',$0D,$0A
         DB ' ','?',' ',' ','M','E','N','U',$0D,$0A
