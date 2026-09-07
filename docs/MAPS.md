@@ -399,7 +399,7 @@ The operator separately observed the expected CS0-CS3 chase.
 
 > [!NOTE]
 > Archived v1.21 acceptance topology. It is retained as hardware evidence, not
-> as a current v1.29 operating procedure or memory map.
+> as a current v1.32 operating procedure or memory map.
 
 ```mermaid
 flowchart LR

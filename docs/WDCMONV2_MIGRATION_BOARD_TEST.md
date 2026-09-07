@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > Historical v1.28 acceptance record. Retain the transcript and hashes for
-> provenance; use the v1.29 migration guide and artifacts for a current board.
+> provenance; use the v1.32 migration guide and artifacts for a current board.
 
 Status: the operator-authorized Phase A programmer-hash waiver remains
 recorded below. The STR8-iN/65 v1.28 cold-start image, physical RESET,
