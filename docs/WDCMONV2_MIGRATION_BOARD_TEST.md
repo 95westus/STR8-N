@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > Historical v1.28 acceptance record. Retain the transcript and hashes for
-> provenance; use the v1.32 migration guide and artifacts for a current board.
+> provenance. The 2026-09-08 section below records current v1.32 acceptance.
 
 Status: the operator-authorized Phase A programmer-hash waiver remains
 recorded below. The STR8-iN/65 v1.28 cold-start image, physical RESET,
@@ -403,10 +403,17 @@ extended map/dump/archive evidence path; it is not a factory-minimal gate.
 3. Type exact `MIGRATE WDC TO STR8-N 1.28` once.
 4. For an erased B0, require eight progress dots followed by
    `B0 == ORIGINAL B3 VERIFIED`.
+   On a connected EDU, require solid `$F0` throughout the active copy and
+   verification interval and require it to clear before the top-BIN input
+   wait. Record absence of the optional LED hardware rather than waiving the
+   terminal's no-reset/no-power rule.
 5. For an already-identical B0, require the same verified line with no copy
    prompt and no copy dots. In both paths this line means both the FNV prefilter
    and the complete byte-for-byte B0/B3 comparison passed.
 6. Do not touch RESET, NMI, or power while B3:F is active.
+   On a connected EDU, require solid `$F0` from the first B3:F mutation
+   boundary through the final verification; STR8-N takes over the display
+   after the successful handoff.
 7. Require `MIGRATION VERIFIED; STARTING STR8-N`, followed by the STR8-N reset banner and
    selector. This first banner follows the installer's software jump through
    the newly written B3 RESET vector; it is not yet the physical-reset proof.
@@ -983,3 +990,80 @@ This board #3 transcript accepts factory migration, erased-B0 preservation,
 external v1.29 top install, retained WDCMONv2 launch through selector `0` and
 shell `J0`, and physical-RESET return to STR8-N 1.29 on a no-date-stamp board.
 It records the D0 `WDCV2` description.
+
+## 2026-09-08 v1.32 factory migration and `$F0` acceptance
+
+The current v1.32 consumer path is accepted on a physical W65C02SXB/EDU on
+COM4. The loader identified `SXB2; HW=3.00; WDCMON=2.00` and `$BF/$B5` flash,
+loaded the RAM installer byte-exact at `$2000-$29B4`, and proved stock B3 as
+`FNV1A=1249E1F3`. Before the consumer run, the matching factory-restore tool
+copied the retained stock image from B0 to B3, verified B3:F last, erased and
+verified B0, and booted stock B3. The operator confirmed that factory restore
+held solid LED `$F0` during its mutation/verification interval and cleared it
+before the WDC handoff.
+
+The consumer run exercised the erased-B0 path and produced:
+
+```text
+WDCMONV2 -> STR8-N 1.32 MIGRATION
+B3 STOCK -> B0; STR8-N 1.32 -> B3:F
+NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0
+FLASH ID=BF/B5
+STOCK B3 FNV1A=1249E1F3
+COPY/VERIFY B3 -> B0 ........
+B0 == ORIGINAL B3 VERIFIED
+STR8-N TOP RECEIVED
+ERASING/PROGRAMMING B3:F
+MIGRATION VERIFIED; STARTING STR8-N
+```
+
+The operator directly observed solid `$F0` throughout the B3-to-B0 flash
+mutation and verification and saw it clear at the safe top-BIN wait. The
+operator also observed the brief solid `$F0` interval during the B3:F install
+and saw it clear before STR8-N started. This accepts the RAM migration tool's
+visual mutation indicator in addition to its serial safety cue and verified
+completion messages.
+
+STR8-N 1.32 started with `RST S`. The packaged Bank Maintenance tool proposed
+and committed the exact directory record below, and its map verified B3:F as
+protected:
+
+```text
+PROPOSED D0 B3:$FFB0: FF FF FF FF 57 44 43 56 32 FE FF FF FC FF FF FF
+D0 FF WDCV2 FFFF FCFFFFFF
+```
+
+Shell `J0` dispatched `J B0` and reached the full retained WDC application
+menu. OLED, RTC, and SPI SRAM reported `OK`; the absent optional ADC and CardKB
+reported `not found`. Physical RESET returned through `RST H` to STR8-N 1.32.
+Reset selector `0` again dispatched `J B0` and reached the same WDC menu, and
+a final physical RESET again returned through `RST H` to the STR8-N shell.
+
+The exact firmware artifacts used for the accepted run were:
+
+```text
+RAM installer S19 SHA-256  E8A604F5FC560EC9B9C73438F2D18AA7488D609392D20951D71CE5CCE3011F4B
+RAM installer range       $2000-$29B4; FNV1A=37B26AC0
+canonical top BIN SHA-256 5447E9F197ED8FE7AB90FEEEBF25318FBBDCA721612356050F600CDE2268425E
+run-kit ZIP SHA-256       82A303D1A8A41BC6CC31028ED9DA4E1DFFACF508B6B351442F0F714F26B27EEA
+factory restore SHA-256   F744C9F35722FA47E47F7F1D8833A88192C64F707F5BC952776C44ADA904EAD3
+```
+
+The retained real-time evidence is:
+
+```text
+consumer raw       BUILD/v1.32/wdcmonv2-str8n-migration-kit/LOCAL/factory-migration-v1.32-f0-20260908.raw
+consumer raw SHA   F00B1648BA50229C96AB8BB2E28DD8881FDFBD0597A6A48AB7F23E9F92CE0885
+consumer events    BUILD/v1.32/wdcmonv2-str8n-migration-kit/LOCAL/factory-migration-v1.32-f0-20260908.raw.events.txt
+consumer event SHA 3606A74DAB6FBA12445C1EC26B1AF8F5C27F99F554F9CA17DF52D7226D37D12B
+restore raw        BUILD/v1.32/local/wdc-migr8-f0-factory-restore-20260908.raw
+restore raw SHA    E3BE88DEF42C894F0ED8D6942D6EA5B572599977E1CEFA28F6EFD972571C2EA0
+restore events     BUILD/v1.32/local/wdc-migr8-f0-factory-restore-20260908.raw.events.txt
+restore event SHA  3F678247813A88316974FB2BA84AB54457EF39076A6C1D0303BA292D9DB360D4
+```
+
+This accepts the complete v1.32 factory migration, including stock B3
+preservation in B0, canonical B3:F installation, exact D0 adoption, both WDC
+launch paths, repeated physical-reset recovery, and the EDU `$F0` safety
+indication. Visual LED observations are operator evidence and are not encoded
+in the serial transcript.

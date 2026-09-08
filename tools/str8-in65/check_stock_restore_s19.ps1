@@ -30,6 +30,10 @@ foreach ($required in @(
     'B0 == B3 WHOLE BANK VERIFIED',
     'W2R_ERASE_B0:',
     'JSR             W2I_FLASH_ERASE_SECTOR',
+    'W2I_LED_STATUS_FLASH_MUTATE EQU         $F0',
+    'W2I_LED_FLASH_ACTIVE:',
+    'W2I_LED_RELEASE:',
+    'NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0',
     'FACTORY BASELINE VERIFIED: B0 ERASED; B3 STOCK'
 )) {
     if (-not $source.Contains($required)) {
@@ -78,10 +82,13 @@ if ($minAddress -ne 0x2000 -or $maxAddress -ge 0x4000 -or $entry -ne 0x2000) {
 }
 
 $ascii = [System.Text.Encoding]::ASCII.GetString($payload.ToArray())
-[byte[]]$quietStart = 0x78, 0xA9, 0x30, 0x8D, 0xA1, 0x7F
+[byte[]]$quietStart = 0x78, 0xA9, 0x30, 0x8D, 0xA1, 0x7F,
+    0xA9, 0xFF, 0x8D, 0xA0, 0x7F,
+    0xA9, 0x34, 0x8D, 0xA1, 0x7F,
+    0x9C, 0xA0, 0x7F
 for ($i = 0; $i -lt $quietStart.Length; $i++) {
     if ($payload[$i] -ne $quietStart[$i]) {
-        throw 'Stock restore must begin SEI; LDA #$30; STA $7FA1 to mute the EDU buzzer immediately'
+        throw 'Stock restore must mute the EDU buzzer, configure all LED pins as outputs, and clear Port A before other initialization'
     }
 }
 foreach ($prompt in @(

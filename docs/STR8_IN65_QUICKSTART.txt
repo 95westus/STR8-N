@@ -1,8 +1,8 @@
 STR8-iN/65 QUICK START
 Factory WDCMONv2 -> STR8-N 1.32
 
-v1.32 factory-migration hardware proof is operator-deferred. The retained factory-board
-acceptance is v1.29; host qualification does not replace that board procedure.
+v1.32 factory migration is board-accepted on SXB2 HW 3.00 / WDCMON 2.00 with
+BF/B5 flash on COM4, 2026-09-08, including the operator-observed LED $F0 cue.
 
 WINDOWS 11 HOST - BOARD-PROVEN REFERENCE
 
@@ -80,6 +80,11 @@ press each key only when the screen asks for it, and press it only once.
    image passes its board-side check, type:
 
    INSTALL STR8-N 1.32
+
+   On a connected EDU, require solid LED $F0 (all red on, all green off)
+   during each active copy/install flash interval.  It clears only after the
+   corresponding verification succeeds.  The terminal warning remains the
+   authority when the optional LEDs are absent or not visible.
 
 4. After STR8-N 1.32 starts, select S.  At STR8-N> enter L, then press Ctrl+D
    once to send the packaged production Bank Maintenance S19.
