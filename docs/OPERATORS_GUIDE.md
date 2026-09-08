@@ -7,10 +7,12 @@ Version 1.32 is the maintained version. It adds the one-shot reset-source
 record and reports `RST H` or `RST S` after a leading CR/LF. Its guarded
 update, true physical-reset capture, cooperating HIMON reset, and cold/warm
 boot-policy checks passed on COM4 on 2026-09-07. The private `$07` receive and
-`$0B` transmit LED behavior remains from v1.31.
-Factory migration remains operator-deferred. See the
+`$0B` transmit LED behavior remains from v1.31. The complete v1.32 factory
+migration and its RAM-worker `$F0` mutation indication passed on COM4 on
+2026-09-08. See the
 [I/O activity proof](LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md), the
 [v1.32 reset-source board report](STR8N_V1_32_RESET_SOURCE_BOARD_TEST_2026-09-07.md), the
+[factory-migration board report](WDCMONV2_MIGRATION_BOARD_TEST.md), the
 [host-presence proof](LED_HOST_PRESENCE_BOARD_TEST_2026-09-06.md), and the
 [original v1.30 board evidence](STR8N_V1_30_RECLAIM.md).
 

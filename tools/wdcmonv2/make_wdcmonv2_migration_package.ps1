@@ -89,7 +89,7 @@ $readmePath = Join-Path $kitFull 'PACKAGE-README.txt'
 $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
-    'STATUS: v1.32 HOST-VERIFIED; FACTORY MIGRATION HARDWARE PROOF OPERATOR-DEFERRED',
+    'STATUS: v1.32 FACTORY MIGRATION BOARD-ACCEPTED; COM4; 2026-09-08; LED $F0 CONFIRMED',
     'HOST STATUS: WINDOWS 11 POWERSHELL BOARD-PROVEN; UBUNTU PYTHON UNTESTED',
     ('ARCHIVE ROOT: {0}' -f $ArchiveRootName),
     '',
@@ -154,7 +154,7 @@ $fileRows = foreach ($file in $payloadFiles) {
 $manifest = [ordered]@{
     schema = 1
     package = 'str8n-v1.32-wdcmonv2-str8n-migration-kit'
-    hardwareStatus = 'v1.32 host-verified; factory migration hardware proof operator-deferred'
+    hardwareStatus = 'v1.32 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-08; operator-confirmed F0'
     windowsHostStatus = 'Windows 11 PowerShell board-proven'
     ubuntuPythonHostStatus = 'experimental; offline-tested only; no board proof'
     archiveRoot = $ArchiveRootName

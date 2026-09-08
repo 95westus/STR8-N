@@ -1,15 +1,16 @@
 # Stock WDCMONv2 to STR8-N Migration
 
-Current artifacts and commands below target v1.32. Its factory-migration
-hardware proof is operator-deferred until later; acceptance below remains v1.29.
-The v1.32 guarded in-place top upgrade is a separate test.
+Current artifacts and commands below target v1.32. The complete factory
+migration is board-accepted on `SXB2`, HW 3.00, WDCMON 2.00, `$BF/$B5` flash
+on COM4, 2026-09-08. The v1.32 guarded in-place top upgrade is a separate test.
 
 This is the short onboarding rail for a stock WDC W65C02SXB, either alone or
 with the W65C02EDU expansion board installed. W65C02EDU is an add-on for the
-SXB, not a standalone CPU board. The complete v1.29 factory path is accepted
-on a physical W65C02SXB/EDU, including erased-B0 preservation and exact
-`D0 FF WDCV2`. The accepted v1.28 run remains historical hardware evidence;
-the longer archive path remains available as optional owner-local evidence.
+SXB, not a standalone CPU board. The complete v1.32 path is accepted on a
+physical W65C02SXB/EDU, including erased-B0 preservation, exact
+`D0 FF WDCV2`, and operator-observed `$F0` during flash mutation/verification.
+The v1.28/v1.29 runs remain historical evidence; the longer archive path
+remains available as optional owner-local evidence.
 
 Current status:
 
@@ -18,8 +19,8 @@ board-accepted                read-only four-bank inventory and selected-bank ex
 board-accepted                local BIN/S19/receipt extraction and validation
 board-accepted                binary WDCMONv2 load/readback/execute host bridge
 board-accepted                guarded B3 -> erased B0 copy and exact verify
-board-accepted                external 4096-byte v1.29 BIN receive and B3:F install
-board-accepted                v1.29 EDU quiet-start, first boot, and RESET return
+board-accepted                external 4096-byte v1.32 BIN receive and B3:F install
+board-accepted                v1.32 EDU $F0 mutation cue, first boot, and RESET return
 board-accepted                D0 FF/WDCV2, selector 0, J0, and RESET return
 separate optional procedure   load HIMON C-E and ASM-F2 8-B component slices
 ```
@@ -540,11 +541,15 @@ Power loss during B3:F erase/program remains an external-programmer recovery
 case. The board has no alternate boot jumper and cannot execute the B0 copy
 after an invalid B3 RESET vector prevents startup.
 
-STR8-N v1.32 production startup includes the EDU quiet-start work: it forces
-the buzzer control inactive and configures/clears the LED outputs before normal
-console initialization. These startup changes do not turn the LEDs into a
-write-progress indicator; the terminal's active-write message and the test-card
-power exclusion remain the authoritative do-not-power-off indication.
+The v1.32 RAM migration and factory-restore tools force the EDU buzzer inactive,
+configure and clear all eight LED outputs before normal console initialization,
+and show solid `$F0` (all four red LEDs on, all four green LEDs off) from each
+actual flash-mutation boundary through that transaction's final verification.
+They clear the display before a safe host-input wait or program handoff. The
+terminal's active-write message and the test-card power exclusion remain the
+authoritative do-not-power-off indication if the optional EDU LEDs are absent
+or not visible. STR8-N production startup takes over the same display after the
+migration handoff.
 
 At the first STR8-N reset selector choose `S`, load Bank Maintenance, and adopt
 D0 as described above. The migration is complete only after the resulting D0

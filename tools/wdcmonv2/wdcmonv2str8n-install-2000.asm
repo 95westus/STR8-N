@@ -42,6 +42,7 @@ W2I_FTDI_DATA           EQU             $7FE1
 W2I_FTDI_DDRB           EQU             $7FE2
 W2I_FTDI_DDRA           EQU             $7FE3
 W2I_BANK_PCR            EQU             $7FEC
+W2I_EDU_PIA_PORTA       EQU             $7FA0
 W2I_EDU_PIA_CRA         EQU             $7FA1
 
 W2I_FTDI_TXE            EQU             $01
@@ -51,6 +52,9 @@ W2I_FTDI_RD             EQU             $08
 W2I_FTDI_INIT           EQU             $0C
 W2I_BANK_MASK           EQU             $EE
 W2I_EDU_PIA_CA2_LOW     EQU             $30
+W2I_EDU_PIA_PORTA_OUT   EQU             $34
+W2I_LED_STATUS_RELEASED EQU             $00
+W2I_LED_STATUS_FLASH_MUTATE EQU         $F0
 
 W2I_FLASH_UNLOCK1       EQU             $D555
 W2I_FLASH_UNLOCK2       EQU             $AAAA
@@ -70,9 +74,15 @@ W2I_SOFT_RESET_SIG1     EQU             $7DE8
 START:
                         SEI
 ; The EDU buzzer sounds while PIA CA2 is high.  Silence it at the first safe
-; instruction boundary, before stack setup, console initialization, or output.
+; instruction boundary, then make all eight active-high LED pins outputs and
+; clear them before stack setup, console initialization, or output.
                         LDA             #W2I_EDU_PIA_CA2_LOW
                         STA             W2I_EDU_PIA_CRA
+                        LDA             #$FF
+                        STA             W2I_EDU_PIA_PORTA
+                        LDA             #W2I_EDU_PIA_PORTA_OUT
+                        STA             W2I_EDU_PIA_CRA
+                        STZ             W2I_EDU_PIA_PORTA
                         CLD
                         LDX             #$FF
                         TXS
@@ -163,6 +173,10 @@ W2I_COMPARE_FAILED:
                         JMP             W2I_ABORT_XY
 
 W2I_B0_PROVEN:
+; A completed preservation copy is safe to leave while the host supplies and
+; confirms the separate top image.  Do not leave the flash-active indication
+; asserted across that non-mutating wait.
+                        JSR             W2I_LED_RELEASE
                         LDA             #$03
                         JSR             W2I_SELECT_BANK_A
                         LDX             #<W2I_MSG_B0_OK
@@ -220,6 +234,7 @@ W2I_RETRY_CANDIDATE:
                         LDX             #<W2I_MSG_INSTALLED
                         LDY             #>W2I_MSG_INSTALLED
                         JSR             W2I_PUTS
+                        JSR             W2I_LED_RELEASE
                         JSR             W2I_ARM_SOFT_RESET
                         JMP             ($FFFC)
 
@@ -249,6 +264,7 @@ W2I_RECOVERY:
                         LDX             #<W2I_MSG_OLD_RESTORED
                         LDY             #>W2I_MSG_OLD_RESTORED
                         JSR             W2I_PUTS
+                        JSR             W2I_LED_RELEASE
                         JSR             W2I_ARM_SOFT_RESET
                         JMP             ($FFFC)
 
@@ -452,6 +468,7 @@ W2R_FACTORY_VERIFY:
                         LDX             #<W2R_MSG_BOOT
                         LDY             #>W2R_MSG_BOOT
                         JSR             W2I_PUTS
+                        JSR             W2I_LED_RELEASE
                         JSR             W2I_ARM_SOFT_RESET
                         JMP             ($FFFC)
 
@@ -710,6 +727,9 @@ W2I_PROGRAM_STAGE:
                         RTS
 
 W2I_FLASH_ERASE_SECTOR:
+; Assert all four red LEDs at the last shared boundary before an erase can
+; mutate flash.  Reassertion is intentional; no console path may clear it.
+                        JSR             W2I_LED_FLASH_ACTIVE
                         JSR             W2I_FLASH_UNLOCK
                         LDA             #$80
                         STA             W2I_FLASH_UNLOCK1
@@ -762,6 +782,8 @@ W2I_FLASH_WRITE_BYTE:
                         AND             W2I_DATA
                         CMP             W2I_DATA
                         BNE             ?FAIL
+; Assert the same solid $F0 state immediately before a byte-program unlock.
+                        JSR             W2I_LED_FLASH_ACTIVE
                         JSR             W2I_FLASH_UNLOCK
                         LDA             #$A0
                         STA             W2I_FLASH_UNLOCK1
@@ -813,6 +835,16 @@ W2I_FLASH_UNLOCK:
                         STA             W2I_FLASH_UNLOCK1
                         LDA             #$55
                         STA             W2I_FLASH_UNLOCK2
+                        RTS
+
+W2I_LED_FLASH_ACTIVE:
+                        LDA             #W2I_LED_STATUS_FLASH_MUTATE
+                        STA             W2I_EDU_PIA_PORTA
+                        RTS
+
+W2I_LED_RELEASE:
+                        LDA             #W2I_LED_STATUS_RELEASED
+                        STA             W2I_EDU_PIA_PORTA
                         RTS
 
 W2I_HASH_CANDIDATE:
@@ -1103,7 +1135,7 @@ W2I_FNV_OFFSET:         DB              $C5,$9D,$1C,$81
 
 W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.32 MIGRATION",$0D,$0A
                         DB              "B3 STOCK -> B0; STR8-N 1.32 -> B3:F",$0D,$0A
-                        DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE",$0D,$0A,0
+                        DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0",$0D,$0A,0
 W2I_MSG_ID_OK:          DB              "FLASH ID=",0
 W2I_MSG_ID_FAIL:        DB              "REFUSE: FLASH IS NOT SST39SF010A BF/B5",$0D,$0A,0
 W2I_MSG_B3_HASH:        DB              "STOCK B3 FNV1A=",0
@@ -1131,7 +1163,7 @@ W2I_MSG_ABORT:          DB              "HALTED IN RAM; PHYSICAL RESET SELECTS B
                         IF              W2I_RESTORE_STOCK
 W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.32 STOCK RESTORE",$0D,$0A
                         DB              "FACTORY BASELINE: B0 -> B3, THEN ERASE B0",$0D,$0A
-                        DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE",$0D,$0A,0
+                        DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0",$0D,$0A,0
 W2R_MSG_SOURCE:         DB              "SOURCE B0 FNV1A=",0
 W2R_MSG_RESET:          DB              " RESET=$",0
 W2R_MSG_ORDER:          DB              "DEST B3 WILL BE REPLACED",$0D,$0A

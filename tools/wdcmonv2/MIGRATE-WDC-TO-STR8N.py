@@ -80,6 +80,7 @@ def main() -> int:
         print("When the screen asks for the top BIN, press CTRL+U once.")
         print("After boot, follow the screen: S, L, CTRL+D once, D, then 0, FF, WDCV2, ADOPT B0.")
         print("Do not reset, assert NMI, or remove power during active flash writes.")
+        print("On an EDU, solid LED $F0 marks active flash mutation and clears after verification.")
         if args.details:
             print()
             print("DETAILS")

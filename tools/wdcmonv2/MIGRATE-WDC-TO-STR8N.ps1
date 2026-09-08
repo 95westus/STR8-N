@@ -61,6 +61,7 @@ Write-Host 'Confirmations: COPY B3 TO B0, then INSTALL STR8-N 1.32.'
 Write-Host 'When the screen asks for the top BIN, press CTRL+U once.'
 Write-Host 'After boot, follow the screen: S, L, CTRL+D once, D, then 0, FF, WDCV2, ADOPT B0.'
 Write-Host 'Do not reset, assert NMI, or remove power during active flash writes.'
+Write-Host 'On an EDU, solid LED $F0 marks active flash mutation and clears after verification.'
 if ($Details) {
     Write-Host ''
     Write-Host 'DETAILS'

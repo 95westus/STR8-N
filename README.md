@@ -33,8 +33,9 @@ focused board run: `$07` remained latched after accepted input and `$0B`
 remained latched after private output. See the
 [I/O activity board report](docs/LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md).
 HIMON and ASM remain separate LED owners.
-Older hardware acceptance below retains its original version; factory
-migration acceptance is not automatically transferred to the new release.
+Older hardware acceptance below retains its original version. The current
+v1.32 factory migration and its RAM-worker `$F0` indication were accepted on
+physical hardware on 2026-09-08.
 
 STR8-N is the reset supervisor, recovery console, and guarded flash installer
 for a W65C02SXB/EDU with four 32K flash banks. It lives in the protected Bank-3
@@ -233,7 +234,7 @@ evidence of the general multibank handoff path.
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
 | LED status | Show `$43` while STR8-N waits with FTDI configured, `$21` when that wait begins without a configured host, `$07` for private receive activity, `$0B` for private transmit activity, `$F0` throughout RAM-worker flash mutation, and `$00` at program handoff | Public console and record services never touch the LEDs; HIMON, ASM, and user programs own their display after handoff; STR8-N states board-proven 2026-09-06 |
 | Record parser ABI | Validate one buffered or console S0/S1/S9 record through `SR/02` at `$F009` | Parser-only; callers own destination and execution policy, and the generated public contract exports the complete request/result card |
-| Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.32 BIN, and install it in B3:F through the RAM loader | v1.32 factory-migration hardware proof is operator-deferred until later, not a size-release blocker; v1.29 accepted with `SXB2` and `$BF/$B5` flash from erased B0; B1/B2 remain untouched |
+| Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.32 BIN, and install it in B3:F through the RAM loader | v1.32 accepted on `SXB2`, HW 3.00, WDCMON 2.00, `$BF/$B5` flash from erased B0 on COM4, 2026-09-08; the operator confirmed solid `$F0` during both mutation/verification intervals and clear at safe waits; B1/B2 remain untouched |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
 | Protected top upgrade | Load the supplied v1.32 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.32 sector, and verify all 4 KiB | Conservative candidate passed guarded update and exact readback on COM4, 2026-09-05; live directory retained; see the follow-up report for test scope |
 | Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The canonical v1.32 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |
@@ -248,9 +249,9 @@ STR8-N `I`.
 
 The v1.32 host verification suite covers the relocated RAM ABI, artifact
 layout, quiet-start build configuration, and byte-exact promotion of the
-production STR8-iN/65 image. The guarded v1.32 top update and EDU quiet-start
-are board-accepted. The v1.32 factory migration remains operator-deferred;
-the complete v1.29 factory path remains historical board evidence. Retained
+production STR8-iN/65 image. The guarded v1.32 top update, EDU quiet-start,
+and complete factory migration are board-accepted. The complete v1.29 factory
+path remains historical board evidence. Retained
 v1.1/v1.2 board sessions also remain historical evidence; the
 original migration sequence is tracked in the
 [v1.2 Implementation Plan](docs/STR8N_V1_2_IMPLEMENTATION_PLAN.md).

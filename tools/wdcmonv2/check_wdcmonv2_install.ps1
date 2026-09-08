@@ -24,9 +24,26 @@ foreach ($required in @(
     'W2I_COPY_B3_TO_B0', 'W2I_RECEIVE_CANDIDATE',
     'SEND STR8-N TOP BIN; 4096 BYTES; START $F000',
     'W2I_HASH_CANDIDATE', 'W2I_CANDIDATE_TO_STAGE',
-    'W2I_PROGRAM_STAGE', 'W2I_MSG_RECOVERY', 'W2I_MSG_OLD_RESTORED'
+    'W2I_PROGRAM_STAGE', 'W2I_MSG_RECOVERY', 'W2I_MSG_OLD_RESTORED',
+    'W2I_EDU_PIA_PORTA       EQU             $7FA0',
+    'W2I_EDU_PIA_PORTA_OUT   EQU             $34',
+    'W2I_LED_STATUS_FLASH_MUTATE EQU         $F0',
+    'W2I_LED_FLASH_ACTIVE:', 'W2I_LED_RELEASE:'
 )) {
     if (-not $source.Contains($required)) { throw "Installer source lacks required gate: $required" }
+}
+if (-not $source.Contains('NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0')) {
+    throw 'Installer must tell the operator that solid LED $F0 marks active flash mutation'
+}
+$eraseBody = $source.Substring(
+    $source.IndexOf('W2I_FLASH_ERASE_SECTOR:'),
+    $source.IndexOf('W2I_FLASH_WRITE_BYTE:') - $source.IndexOf('W2I_FLASH_ERASE_SECTOR:'))
+$writeBody = $source.Substring(
+    $source.IndexOf('W2I_FLASH_WRITE_BYTE:'),
+    $source.IndexOf('W2I_VERIFY_STAGE:') - $source.IndexOf('W2I_FLASH_WRITE_BYTE:'))
+if (-not $eraseBody.Contains('JSR             W2I_LED_FLASH_ACTIVE') -or
+    -not $writeBody.Contains('JSR             W2I_LED_FLASH_ACTIVE')) {
+    throw 'Installer must assert LED $F0 at both erase and byte-program mutation boundaries'
 }
 foreach ($requiredFlash in @('$D555', '$AAAA', '#$90', '#$F0', '#$80', '#$30', '#$A0')) {
     if (-not $source.Contains($requiredFlash)) { throw "Installer source lacks flash sequence token: $requiredFlash" }
@@ -96,10 +113,13 @@ if ($minAddress -ne 0x2000 -or $maxAddress -ge 0x4000 -or $entry -ne 0x2000) {
 for ($address = 0x2000; $address -le $maxAddress; $address++) {
     if ($memory[$address] -lt 0) { throw ('Installer S19 is not dense at ${0:X4}' -f $address) }
 }
-[byte[]]$quietStart = 0x78, 0xA9, 0x30, 0x8D, 0xA1, 0x7F
+[byte[]]$quietStart = 0x78, 0xA9, 0x30, 0x8D, 0xA1, 0x7F,
+    0xA9, 0xFF, 0x8D, 0xA0, 0x7F,
+    0xA9, 0x34, 0x8D, 0xA1, 0x7F,
+    0x9C, 0xA0, 0x7F
 for ($i = 0; $i -lt $quietStart.Length; $i++) {
     if ($memory[0x2000 + $i] -ne $quietStart[$i]) {
-        throw 'Installer must begin SEI; LDA #$30; STA $7FA1 to mute the EDU buzzer immediately'
+        throw 'Installer must mute the EDU buzzer, configure all LED pins as outputs, and clear Port A before other initialization'
     }
 }
 

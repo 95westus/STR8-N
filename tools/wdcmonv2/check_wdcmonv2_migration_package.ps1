@@ -85,8 +85,8 @@ if ($manifest.ryorsPayloadIncluded -ne $false) { throw 'Manifest must state that
 if ($manifest.windowsHostStatus -notmatch 'board-proven') { throw 'Manifest must retain Windows host proof status' }
 if ($manifest.ubuntuPythonHostStatus -notmatch 'no board proof') { throw 'Manifest must mark Ubuntu Python as lacking board proof' }
 if ($manifest.archiveRoot -ne $ArchiveRootName) { throw 'Manifest archive root does not match the required surrounding folder' }
-if ($manifest.hardwareStatus -ne 'v1.32 host-verified; factory migration hardware proof operator-deferred') {
-    throw 'Manifest must distinguish v1.32 host checks from operator-deferred factory-migration board proof'
+if ($manifest.hardwareStatus -ne 'v1.32 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-08; operator-confirmed F0') {
+    throw 'Manifest must publish the accepted v1.32 factory-migration board proof'
 }
 if ($manifest.firstProcedure -notmatch 'STR8-iN65-LOADER') { throw 'Manifest must publish the one-command factory path first' }
 
@@ -157,4 +157,4 @@ try {
 Write-Host ('MIGRATION PACKAGE   = PASS; {0} allowlisted files' -f $expected.Count)
 Write-Host ('PACKAGE ZIP SHA256  = {0}' -f (Get-Sha256 -Path $ZipPath))
 Write-Host 'WDC FIRMWARE/ARCHIVE = ABSENT BY ALLOWLIST'
-Write-Host 'V1.32 FACTORY MIGRATION BOARD PROOF = OPERATOR-DEFERRED'
+Write-Host 'V1.32 FACTORY MIGRATION BOARD PROOF = ACCEPTED; COM4; 2026-09-08; LED F0 CONFIRMED'

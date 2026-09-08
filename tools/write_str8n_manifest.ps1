@@ -137,7 +137,7 @@ $manifest = [ordered]@{
             receiveBufferEnd = '4FFF'
             externalCandidate = 'exact canonical 4096-byte top BIN; directory empty; FFF0=1E WORK; FFF1=1F top backup'
             destinationPolicy = 'B0 erased or byte-identical to B3; B1/B2 untouched; B3:F last'
-            hardwareStatus = 'v1.32 host-verified; factory migration hardware proof operator-deferred'
+            hardwareStatus = 'v1.32 factory migration accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-08; operator confirmed F0 during mutation/verification and clear at safe waits'
             candidateTopBin = 'BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin'
             candidateTopSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2InstallTopBinPath).Hash
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2InstallS19Path).Hash
