@@ -5,12 +5,17 @@
 # STR8-N v1.32
 
 The current v1.32 working candidate distinguishes hardware/unmarked reset entry
-as `RST H` from cooperating software reset entry as `RST S`, with a leading
-blank line. The resident is 3,398 bytes (`$F000-$FD45`), with 10 bytes free
+as `RST H` from cooperating software reset entry as `RST S`. Two linefeeds
+separate that marker from the immediately printed `STR8-N` identity; the former
+hidden six-second pre-banner quarantine is removed. The resident is 3,394 bytes
+(`$F000-$FD41`), with 14 bytes free
 before the unchanged 608-byte worker at `$FD50`; the layout guard now preserves
 an 8-byte minimum. Public ABI versions, public raw-console and record-service
 behavior, selector prefix, and prompt text are retained. The formerly reserved
-`$7DE7-$7DE8` pair now holds the one-shot software-reset record.
+`$7DE7-$7DE8` pair now holds the one-shot software-reset record. The
+immediate-banner image passed guarded update and live recovery on COM4 on
+2026-09-10; see the
+[board report](docs/STR8N_V1_32_IMMEDIATE_BANNER_BOARD_TEST_2026-09-10.md).
 
 See the [reset-source contract](docs/RESET_SOURCE_CONTRACT.md), the
 [LED status implementation record](docs/LED_STATUS_PROPOSAL.md), and

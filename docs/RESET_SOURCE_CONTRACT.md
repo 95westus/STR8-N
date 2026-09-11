@@ -36,7 +36,7 @@ does not write the record remains compatible and reports `RST H`.
 
 ## Layout
 
-The resident grows from 3,368 to 3,398 bytes and ends at `$FD45`. Ten erased
-bytes remain before the fixed worker at `$FD50`; the layout guard enforces an
-8-byte minimum. The fixed resident entry points, IVI targets, worker, directory,
+The current resident is 3,394 bytes and ends at `$FD41`. Fourteen erased bytes
+remain before the fixed worker at `$FD50`; the layout guard enforces an 8-byte
+minimum. The fixed resident entry points, IVI targets, worker, directory,
 configuration pocket, and hardware vectors are unchanged.

@@ -11,15 +11,17 @@ live-key interval:
 
 ```text
 RST H
+
 STR8-N 1.32
 0-2 C W S: S
 I L C W J
 STR8-N>
 ```
 
-A key typed during the silent quarantine interval is ignored and flushed. The selector accepts only
-`0`, `1`, `2`, `C`, `W`, or `S`. If no key is pressed, timeout warm-starts
-compatible HIMON and preserves RAM.
+The reset marker is followed by two linefeeds and the `STR8-N` identity without
+a hidden delay. Stale input is flushed before the selector is printed. Its live
+six-second window accepts only `0`, `1`, `2`, `C`, `W`, or `S`. If no key is
+pressed, timeout warm-starts compatible HIMON and preserves RAM.
 
 ## Migrate a factory WDCMONv2 board
 

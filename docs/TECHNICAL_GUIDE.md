@@ -57,31 +57,30 @@ STR8-N code and data.
 
 ### Power-up visibility and selector timing
 
-After the calibrated pre-I/O delay and console initialization, STR8-N prints a
-leading blank line and `RST H` or `RST S`, then runs six silent quarantine
-ticks approximately one second apart.
-This unpolled phase gives the FT245R and host terminal time to attach. STR8-N
-then flushes queued input and prints its identity and selector:
+After console initialization, STR8-N prints a leading blank line and `RST H` or
+`RST S`, follows it with two linefeeds, flushes stale RX, and immediately prints
+its identity and selector:
 
 ```text
 
 RST H
+
 STR8-N 1.32
 0-2 C W S:
 ```
 
-The six live selector ticks are also approximately one second apart and are
-silent in v1.32. Only this second phase polls `0`, `1`, `2`, `C`, `W`, or `S`. `C` cold-starts compatible
-HIMON; `W` and timeout warm-start it and preserve RAM. Total automatic startup
-time remains approximately twelve seconds.
+The six live selector ticks are approximately one second apart and are silent
+in v1.32. They poll `0`, `1`, `2`, `C`, `W`, or `S`. `C` cold-starts compatible
+HIMON; `W` and timeout warm-start it and preserve RAM. With the former hidden
+six-tick quarantine removed, automatic startup takes approximately six seconds.
 
 ## Protected 4K top-sector budget
 
 The complete protected sector is exactly 4096 bytes:
 
 ```text
-$F000-$FD45  resident supervisor, installer, loader   3398 bytes
-$FD46-$FD4F  currently unused margin                    10 bytes
+$F000-$FD41  resident supervisor, installer, loader   3394 bytes
+$FD42-$FD4F  currently unused margin                    14 bytes
 $FD50-$FFAF  stored unified worker                    608 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
 $FFF0        WORK sector locator (`$1E` = B1:E)          1 byte
