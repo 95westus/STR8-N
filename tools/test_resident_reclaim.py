@@ -1,4 +1,4 @@
-"""v1.32 binary regressions: message pages, delay contract, actual range parser.
+"""v1.33 binary regressions: message pages, delay contract, actual range parser.
 
 The deliberately limited CPU harness rejects unsupported instructions; it runs
 the linked range parser, stubbing only console printing and line acquisition.
@@ -11,7 +11,7 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-REL = ROOT / 'BUILD/v1.32'
+REL = ROOT / 'BUILD/v1.33'
 
 
 def symbols(path):
@@ -19,9 +19,9 @@ def symbols(path):
 
 
 def main():
-    sym = symbols(REL / 'map/str8n-v1.32-f000.map')
-    worker_sym = symbols(REL / 'map/str8n-v1.32-worker-0200.map')
-    image = (REL / 'bin/str8n-v1.32-bank3-f000-ffff.bin').read_bytes()
+    sym = symbols(REL / 'map/str8n-v1.33-f000.map')
+    worker_sym = symbols(REL / 'map/str8n-v1.33-worker-0200.map')
+    image = (REL / 'bin/str8n-v1.33-bank3-f000-ffff.bin').read_bytes()
     mem = bytearray(65536)
     mem[0xF000:] = image
     # Frozen canonical host image, never a board dump. Protect the deliberately
@@ -44,7 +44,7 @@ def main():
     version_addr = sym['MSG_ID'] + len(b'\r\nSTR8-N 1.3')
     version_offset = version_addr - sym['_BEG_DATA']
     assert old_data[version_offset] == ord('0')
-    assert new_data[version_offset] == ord('2')
+    assert new_data[version_offset] == ord('3')
     old_data[version_offset] = new_data[version_offset]
     old_reset = b'RESET\r\x8a'
     new_reset = b'\r\nRST H\r\x8a\r\nRST S\r\x8a'
@@ -158,14 +158,14 @@ def main():
             if value & 128:
                 return bytes(out)
         raise AssertionError('unterminated string')
-    assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.32\r\n0-2 C W S: '
+    assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.33\r\n0-2 C W S: '
     assert string_at(sym['MSG_RST_H']) == b'\r\nRST H\r\n'
     assert string_at(sym['MSG_RST_S']) == b'\r\nRST S\r\n'
     assert string_at(sym['MSG_RST_H']) + string_at(sym['MSG_ID']) == (
-        b'\r\nRST H\r\n\r\nSTR8-N 1.32\r\n0-2 C W S: '
+        b'\r\nRST H\r\n\r\nSTR8-N 1.33\r\n0-2 C W S: '
     )
     assert string_at(sym['MSG_RST_S']) + string_at(sym['MSG_ID']) == (
-        b'\r\nRST S\r\n\r\nSTR8-N 1.32\r\n0-2 C W S: '
+        b'\r\nRST S\r\n\r\nSTR8-N 1.33\r\n0-2 C W S: '
     )
     startup = sym['STR8_STARTUP_DELAY'] - 0xF000
     reset_classifier = bytes((

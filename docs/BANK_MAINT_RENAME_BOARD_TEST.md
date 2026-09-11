@@ -1,7 +1,7 @@
 # Bank Maintenance Directory Rename Board Test
 
 > [!NOTE]
-> Superseded pre-v1.29 proof card. The current v1.32 Bank Maintenance image
+> Superseded pre-v1.29 proof card. The current v1.33 Bank Maintenance image
 > includes `N`; use the current Operator's Guide and versioned artifact. The
 > source path and prompts below are retained only to reproduce this pending
 > historical test.

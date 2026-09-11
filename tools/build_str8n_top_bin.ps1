@@ -1,9 +1,9 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.32/map/str8n-v1.32-f000.map",
-    [string]$Str8S19Path = "BUILD/v1.32/s19/str8n-v1.32-f000.s19",
-    [string]$WorkerMapPath = "BUILD/v1.32/map/str8n-v1.32-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/v1.32/s19/str8n-v1.32-worker-0200.s19",
-    [string]$BinPath = "BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin"
+    [string]$Str8MapPath = "BUILD/v1.33/map/str8n-v1.33-f000.map",
+    [string]$Str8S19Path = "BUILD/v1.33/s19/str8n-v1.33-f000.s19",
+    [string]$WorkerMapPath = "BUILD/v1.33/map/str8n-v1.33-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/v1.33/s19/str8n-v1.33-worker-0200.s19",
+    [string]$BinPath = "BUILD/v1.33/bin/str8n-v1.33-bank3-f000-ffff.bin"
 )
 
 Set-StrictMode -Version Latest

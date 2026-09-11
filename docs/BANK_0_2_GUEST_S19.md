@@ -58,7 +58,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BinPath C:\IMAGES\guest.bin `
   -BaseAddress 32768 `
   -Bank 0 `
-  -S19Path BUILD/v1.32/s19/guest-bank0-8000-ffff.s19
+  -S19Path BUILD/v1.33/s19/guest-bank0-8000-ffff.s19
 ```
 
 For a full image, the converter derives S9 from RESET. For a partial image it
@@ -69,11 +69,11 @@ uses `$FFFF` unless `-EntryAddress` supplies an in-range address.
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools/compose_str8n_install_s19.ps1 `
-  -PayloadS19Path BUILD/v1.32/s19/guest-bank0-8000-ffff.s19 `
+  -PayloadS19Path BUILD/v1.33/s19/guest-bank0-8000-ffff.s19 `
   -PayloadStart 32768 `
   -PayloadEndExclusive 65536 `
   -Bank 0 `
-  -S19Path BUILD/v1.32/s19/str8n-i-guest.s19
+  -S19Path BUILD/v1.33/s19/str8n-i-guest.s19
 ```
 
 The validator reports the exact range, record count, S9, per-sector CRC-16,

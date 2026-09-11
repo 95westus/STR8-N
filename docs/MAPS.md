@@ -1,6 +1,6 @@
-# STR8-N v1.32 Maps and Diagrams
+# STR8-N v1.33 Maps and Diagrams
 
-These diagrams describe the host-qualified and board-derived v1.32 release.
+These diagrams describe the host-qualified and board-derived v1.33 release.
 
 ## Ownership
 
@@ -25,7 +25,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.32/
+|-- v1.33/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -47,7 +47,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.32 top updater S19]
+    TOP --> UPDATE[guarded v1.33 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
@@ -89,7 +89,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[RST H/S<br/>two linefeeds]
-    A --> P[Flush stale input<br/>print STR8-N 1.32 immediately]
+    A --> P[Flush stale input<br/>print STR8-N 1.33 immediately]
     P --> Q{Six-second live selector interval<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -115,7 +115,7 @@ flowchart TD
     C --> E[Whole-bank FNV prefilter<br/>plus byte-exact B0/B3 compare]
     E --> T[Validate carried 4K top<br/>then program/verify B3:F]
     T --> D[Publish COMPLETE D0 WDCM2<br/>roles FFF0/FFF1 remain FF/FF]
-    D --> S[STR8-N 1.32 in B3]
+    D --> S[STR8-N 1.33 in B3]
     S -->|selector 0 or J0| W[Retained WDCMONv2 in B0<br/>CS0-CS3 chase]
     W -->|physical RESET| S
 ```
@@ -255,7 +255,7 @@ flowchart TD
     Q --> F
 ```
 
-## STR8-N v1.32 RAM ownership
+## STR8-N v1.33 RAM ownership
 
 ```text
 $7DFF  +------------------------------+
@@ -287,7 +287,7 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.32. In the
+STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.33. In the
 integrated R-YORS payload, APMAN transiently uses `$1A00-$1AFF` as its command
 shadow while `AP`, `APS`, or banked `INSTALL` delegates; `$1B00-$1FFF` remains
 the unconditional user-low slice outside another phase owner. The whole `$0200-$09FF` Worker
@@ -399,7 +399,7 @@ The operator separately observed the expected CS0-CS3 chase.
 
 > [!NOTE]
 > Archived v1.21 acceptance topology. It is retained as hardware evidence, not
-> as a current v1.32 operating procedure or memory map.
+> as a current v1.33 operating procedure or memory map.
 
 ```mermaid
 flowchart LR

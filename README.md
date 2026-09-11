@@ -2,9 +2,9 @@
 >
 > This project is developed with AI assistance and is grounded in human ideas, methods, and engineering judgment. Unless explicitly stated otherwise, all code has been tested on physical hardware and approved by a human.
 
-# STR8-N v1.32
+# STR8-N v1.33
 
-The current v1.32 working candidate distinguishes hardware/unmarked reset entry
+The current v1.33 release distinguishes hardware/unmarked reset entry
 as `RST H` from cooperating software reset entry as `RST S`. Two linefeeds
 separate that marker from the immediately printed `STR8-N` identity; the former
 hidden six-second pre-banner quarantine is removed. The resident is 3,394 bytes
@@ -13,9 +13,9 @@ before the unchanged 608-byte worker at `$FD50`; the layout guard now preserves
 an 8-byte minimum. Public ABI versions, public raw-console and record-service
 behavior, selector prefix, and prompt text are retained. The formerly reserved
 `$7DE7-$7DE8` pair now holds the one-shot software-reset record. The
-immediate-banner image passed guarded update and live recovery on COM4 on
-2026-09-10; see the
-[board report](docs/STR8N_V1_32_IMMEDIATE_BANNER_BOARD_TEST_2026-09-10.md).
+v1.33 image passed guarded update, exact readback, software-reset entry, and
+HIMON warm recovery on COM4 on 2026-09-10; see the
+[v1.33 board report](docs/STR8N_V1_33_TOP_UPDATE_BOARD_TEST_2026-09-10.md).
 
 See the [reset-source contract](docs/RESET_SOURCE_CONTRACT.md), the
 [LED status implementation record](docs/LED_STATUS_PROPOSAL.md), and
@@ -38,9 +38,10 @@ focused board run: `$07` remained latched after accepted input and `$0B`
 remained latched after private output. See the
 [I/O activity board report](docs/LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md).
 HIMON and ASM remain separate LED owners.
-Older hardware acceptance below retains its original version. The current
-v1.32 factory migration and its RAM-worker `$F0` indication were accepted on
-physical hardware on 2026-09-08.
+Older hardware acceptance below retains its original version. The v1.32
+factory migration and its RAM-worker `$F0` indication were accepted on
+physical hardware on 2026-09-08; the v1.33 migration artifacts are host-tested
+but that complete factory path has not been repeated on hardware.
 
 STR8-N is the reset supervisor, recovery console, and guarded flash installer
 for a W65C02SXB/EDU with four 32K flash banks. It lives in the protected Bank-3
@@ -230,7 +231,7 @@ evidence of the general multibank handoff path.
 
 ## Feature card
 
-| Capability | What STR8-N v1.32 can do | Safety boundary |
+| Capability | What STR8-N v1.33 can do | Safety boundary |
 | --- | --- | --- |
 | Reset supervision | Take physical RESET in Bank 3, run the pre-I/O settling interval, print a blank line and `RST H`; cooperating software restart paths print `RST S` | The one-shot `RS` RAM record is commit-last and consumed on entry; `H` also covers unmarked legacy software entry because the CPU has no reset-cause latch |
 | Multi-bank boot | Start enrolled systems in Banks 0-2 with `J0`-`J2`, or hand off through the Bank-3 RESET vector with `J3` | Banks 0-2 must have a COMPLETE directory journal and a valid RESET vector |
@@ -239,10 +240,10 @@ evidence of the general multibank handoff path.
 | Recovery loading | Load an S19 program into RAM with `L` and execute its S9 entry | RAM only, `$2000-$7AFF`; there is no load-without-run form |
 | LED status | Show `$43` while STR8-N waits with FTDI configured, `$21` when that wait begins without a configured host, `$07` for private receive activity, `$0B` for private transmit activity, `$F0` throughout RAM-worker flash mutation, and `$00` at program handoff | Public console and record services never touch the LEDs; HIMON, ASM, and user programs own their display after handoff; STR8-N states board-proven 2026-09-06 |
 | Record parser ABI | Validate one buffered or console S0/S1/S9 record through `SR/02` at `$F009` | Parser-only; callers own destination and execution policy, and the generated public contract exports the complete request/result card |
-| Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.32 BIN, and install it in B3:F through the RAM loader | v1.32 accepted on `SXB2`, HW 3.00, WDCMON 2.00, `$BF/$B5` flash from erased B0 on COM4, 2026-09-08; the operator confirmed solid `$F0` during both mutation/verification intervals and clear at safe waits; B1/B2 remain untouched |
+| Factory migration | Preserve stock WDCMONv2 from B3 into opaque B0, receive the canonical 4096-byte STR8-N 1.33 BIN, and install it in B3:F through the RAM loader | The v1.33 artifact is host-qualified; the complete v1.32 path was accepted on `SXB2`, HW 3.00, WDCMON 2.00, `$BF/$B5` flash from erased B0 on COM4, 2026-09-08; B1/B2 remain untouched |
 | Bank maintenance | Load the supplied RAM tool to map banks, copy and verify 32K banks, adopt existing payloads, reclaim stale D0-D2 rows after an erased-bank proof, compact an exhausted D3 journal, erase guarded ranges, and install the narrow AP carrier | Reclaim/compaction requires exact confirmation and rewrites/verifies the complete protected Bank-3 sector F while preserving all unrelated bytes |
-| Protected top upgrade | Load the supplied v1.32 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.32 sector, and verify all 4 KiB | Conservative candidate passed guarded update and exact readback on COM4, 2026-09-05; live directory retained; see the follow-up report for test scope |
-| Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The canonical v1.32 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |
+| Protected top upgrade | Load the supplied v1.33 updater with `L`, back up Bank-3 sector F into Bank 1, program the embedded v1.33 sector, and verify all 4 KiB | v1.33 passed guarded update and exact readback on COM4, 2026-09-10; live directory retained |
+| Directory refresh | Load the dedicated RAM refresh tool, verify a fresh Bank-1 sector-F backup, clear the Bank-3 directory, and install the current configuration pocket | The canonical v1.33 image publishes B1:E WORK at `$FFF0=$1E` and B1:F backup at `$FFF1=$1F` |
 | Image preparation | Convert aligned guest BINs, normalize payload S19 files, and compose a complete R-YORS Bank-0/1/2 image | Generated install files contain payload only, never the `$0200` worker image |
 | Reproducible release | Build the resident, worker evidence, maintenance image, programmer BIN, manifest, and host qualification matrices | Layout checks enforce fixed interfaces, the exact 4K image, and no overlap with the fixed worker |
 
@@ -252,11 +253,11 @@ it has no private S19 parser. Retired HIMON `L G` and `L F` examples belong
 only to historical image records. Persistent payload installation is owned by
 STR8-N `I`.
 
-The v1.32 host verification suite covers the relocated RAM ABI, artifact
+The v1.33 host verification suite covers the relocated RAM ABI, artifact
 layout, quiet-start build configuration, and byte-exact promotion of the
-production STR8-iN/65 image. The guarded v1.32 top update, EDU quiet-start,
-and complete factory migration are board-accepted. The complete v1.29 factory
-path remains historical board evidence. Retained
+production STR8-iN/65 image. The guarded v1.33 top update is board-accepted;
+the v1.33 factory-migration artifact is host-qualified only. The complete
+v1.32 and v1.29 factory paths remain historical board evidence. Retained
 v1.1/v1.2 board sessions also remain historical evidence; the
 original migration sequence is tracked in the
 [v1.2 Implementation Plan](docs/STR8N_V1_2_IMPLEMENTATION_PLAN.md).
@@ -306,8 +307,8 @@ meanings at the `STR8-N>` prompt.
 
 ## Ready-made artifacts
 
-Run `make release-package` to build and verify the complete STR8-N v1.32-only
-bundle at `BUILD/v1.32/str8n-v1.32-release.zip`. It gathers the canonical
+Run `make release-package` to build and verify the complete STR8-N v1.33-only
+bundle at `BUILD/v1.33/str8n-v1.33-release.zip`. It gathers the canonical
 resident, maintenance and recovery tools, public contract, manifest,
 checksums, essential guides, and the separately verified WDCMONv2 migration
 kit. It contains no WDCMONv2 firmware, owner bank archive, HIMON, ASM-F2, or
@@ -325,7 +326,7 @@ R-YORS payload.
 - A deterministic raw console ABI hardware probe covering blocking input,
   blocking output, non-consuming input readiness, initialization, and ABI
   discovery, loaded and started with `L`.
-- A guarded v1.32 top-sector updater S19 loaded and started with `L`.
+- A guarded v1.33 top-sector updater S19 loaded and started with `L`.
 - A guarded onboard directory-pocket refresh S19 with backup, retry, and
   restore.
 - A composed 32K ASM + HIMON + STR8-N image for Bank 0, 1, or 2.
@@ -335,7 +336,7 @@ R-YORS payload.
   the retained transcript.
 - A two-confirmation factory-board RAM loader that accepts only an erased or
   already-identical B0, preserves and exactly verifies stock B3 there, receives
-  the canonical 4096-byte STR8-N 1.32 BIN, installs it in B3:F, and leaves
+  the canonical 4096-byte STR8-N 1.33 BIN, installs it in B3:F, and leaves
   B1/B2 untouched. The kit exposes it as `STR8-iN65-LOADER.ps1`; it enumerates
   ports when `-Port` is omitted. D0 adoption is a separate, explicit production
   Bank Maintenance step after the first verified boot.
@@ -351,7 +352,7 @@ Build the combined tool with `make bank-maint-menu`. Its terminal
 card is deliberately one command per line:
 
 ```text
-STR8-N 1.32 BANK MAINT + TOP
+STR8-N 1.33 BANK MAINT + TOP
  M  MAP+DIR
  C  COPY+ENROLL
  D  ADOPT DIR
@@ -441,7 +442,7 @@ range to be erased, and uses a target-specific confirmation such as
 
 ## Deliberate scope
 
-STR8-N v1.32 is a recovery and installation layer, not a general-purpose flash
+STR8-N v1.33 is a recovery and installation layer, not a general-purpose flash
 filesystem. Bank 3 publishes two packed sector roles: `$FFF0=$1E` assigns
 B1:E as application WORK, and `$FFF1=$1F` protects B1:F as the raw B3:F
 recovery backup. `$FFF2-$FFF9` remain erased for later configuration,

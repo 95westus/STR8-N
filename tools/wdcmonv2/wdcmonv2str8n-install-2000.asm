@@ -1133,8 +1133,8 @@ W2I_CRLF:
 W2I_BANK_BITS:          DB              $CC,$CE,$EC,$EE
 W2I_FNV_OFFSET:         DB              $C5,$9D,$1C,$81
 
-W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.32 MIGRATION",$0D,$0A
-                        DB              "B3 STOCK -> B0; STR8-N 1.32 -> B3:F",$0D,$0A
+W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.33 MIGRATION",$0D,$0A
+                        DB              "B3 STOCK -> B0; STR8-N 1.33 -> B3:F",$0D,$0A
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0",$0D,$0A,0
 W2I_MSG_ID_OK:          DB              "FLASH ID=",0
 W2I_MSG_ID_FAIL:        DB              "REFUSE: FLASH IS NOT SST39SF010A BF/B5",$0D,$0A,0
@@ -1150,7 +1150,7 @@ W2I_MSG_B0_OK:          DB              "B0 == ORIGINAL B3 VERIFIED",$0D,$0A,0
 W2I_MSG_SEND_CANDIDATE: DB              "SEND STR8-N TOP BIN; 4096 BYTES; START $F000",$0D,$0A,0
 W2I_MSG_CANDIDATE_RX:   DB              "STR8-N TOP RECEIVED",$0D,$0A,0
 W2I_MSG_CANDIDATE_BAD:  DB              "RECEIVED STR8-N TOP CHECK FAILED",$0D,$0A,0
-W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 1.32> ",0
+W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 1.33> ",0
 W2I_MSG_INSTALL_CANCEL: DB              "CANCELLED: INSTALL TEXT DID NOT MATCH",$0D,$0A,0
 W2I_MSG_INSTALLING:     DB              "ERASING/PROGRAMMING B3:F",$0D,$0A,0
 W2I_MSG_INSTALLED:      DB              "MIGRATION VERIFIED; STARTING STR8-N",$0D,$0A
@@ -1161,7 +1161,7 @@ W2I_MSG_CANCEL:         DB              "CANCELLED; NOTHING FURTHER WRITTEN",$0D
 W2I_MSG_ABORT:          DB              "HALTED IN RAM; PHYSICAL RESET SELECTS B3",$0D,$0A,0
 
                         IF              W2I_RESTORE_STOCK
-W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.32 STOCK RESTORE",$0D,$0A
+W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 STOCK RESTORE",$0D,$0A
                         DB              "FACTORY BASELINE: B0 -> B3, THEN ERASE B0",$0D,$0A
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0",$0D,$0A,0
 W2R_MSG_SOURCE:         DB              "SOURCE B0 FNV1A=",0
@@ -1186,7 +1186,7 @@ W2R_MSG_BOOT:           DB              "BOOT STOCK B3",$0D,$0A,0
                         ENDIF
 
 W2I_TOKEN_COPY:         DB              "COPY B3 TO B0",0
-W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.32",0
+W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.33",0
 W2I_ARCHIVE_TOKEN:      DB              "ARCHIVE ",0,0,0,0,0,0,0,0,0
                         IF              W2I_RESTORE_STOCK
 W2R_TOKEN_RESTORE:      DB              "RESTORE FACTORY BOARD",0
@@ -1219,14 +1219,14 @@ W2R_RESET_HI:           DB              $00
                         IF              W2I_RESTORE_STOCK
                         ELSE
                         IF              W2I_STR8_IN65_IMAGE
-                        IF              STR8_IN65_VERSION_132
-                        INCLUDE         "str8n-v1.32-str8-in65-test-image.inc"
+                        IF              STR8_IN65_VERSION_133
+                        INCLUDE         "str8n-v1.33-str8-in65-test-image.inc"
                         ELSE
                         INCLUDE         "str8n-v1.23-str8-in65-test-image.inc"
                         ENDIF
                         ELSE
-                        IF              STR8_IN65_VERSION_132
-                        INCLUDE         "str8n-v1.32-wdcmonv2-install-image.inc"
+                        IF              STR8_IN65_VERSION_133
+                        INCLUDE         "str8n-v1.33-wdcmonv2-install-image.inc"
                         ELSE
                         INCLUDE         "str8n-v1.23-wdcmonv2-install-image.inc"
                         ENDIF

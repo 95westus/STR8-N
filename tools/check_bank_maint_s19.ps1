@@ -1,9 +1,9 @@
 param(
-    [string]$S19Path = "BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19",
+    [string]$S19Path = "BUILD/v1.33/s19/str8n-v1.33-bank-maint-2000.s19",
     [string]$SourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-2000.asm",
     [string]$RenameSourcePath = "tools/bank-maint/str8n-v1.23-bank-maint-rename.inc",
     [string]$FlagsSourcePath = "tools/bank-maint/str8n-v1.28-str8-in65-bank-maint-flags.inc",
-    [string]$VersionText = "1.32",
+    [string]$VersionText = "1.33",
     [switch]$In65,
     [switch]$MenuTop
 )

@@ -1,16 +1,17 @@
-# STR8-N v1.32 Operator's Guide
+# STR8-N v1.33 Operator's Guide
 
 The v1.22 `C`/`W` selector and warm timeout were board-accepted by the operator
 on 2026-08-19. The exact test card, retained transcript, and acceptance are in
 [STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md](STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md).
-Version 1.32 is the maintained version. It adds the one-shot reset-source
-record and reports `RST H` or `RST S` after a leading CR/LF. Its guarded
-update, true physical-reset capture, cooperating HIMON reset, and cold/warm
-boot-policy checks passed on COM4 on 2026-09-07. The private `$07` receive and
-`$0B` transmit LED behavior remains from v1.31. The complete v1.32 factory
-migration and its RAM-worker `$F0` mutation indication passed on COM4 on
-2026-09-08. See the
+Version 1.33 is the maintained version. It retains the v1.32 reset-source and
+immediate-banner behavior and passed guarded top update, exact readback,
+software-reset entry, and HIMON warm recovery on COM4 on 2026-09-10. The
+private `$07` receive and `$0B` transmit LED behavior remains from v1.31. The
+complete v1.32 factory migration and its RAM-worker `$F0` mutation indication
+passed on COM4 on 2026-09-08; v1.33 migration artifacts are host-qualified but
+that complete path has not been repeated on hardware. See the
 [I/O activity proof](LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md), the
+[v1.33 top-update board report](STR8N_V1_33_TOP_UPDATE_BOARD_TEST_2026-09-10.md), the
 [v1.32 reset-source board report](STR8N_V1_32_RESET_SOURCE_BOARD_TEST_2026-09-07.md), the
 [factory-migration board report](WDCMONV2_MIGRATION_BOARD_TEST.md), the
 [host-presence proof](LED_HOST_PRESENCE_BOARD_TEST_2026-09-06.md), and the
@@ -57,7 +58,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 
 The accepted path requires a factory board with B0 erased or already
 byte-identical to B3. It copies and exactly verifies all of B3 in B0, installs
-STR8-N 1.32 only in B3:F, and then guides the operator through publishing the
+STR8-N 1.33 only in B3:F, and then guides the operator through publishing the
 retained WDCMONv2 system as COMPLETE D0 `WDCV2`. B1/B2 are untouched.
 Migration stops at STR8-N; HIMON and ASM-F2 are optional later component
 loads, not migration payloads.
@@ -97,7 +98,7 @@ the marker:
 ```text
 RST H
 
-STR8-N 1.32
+STR8-N 1.33
 0-2 C W S:
 ```
 
@@ -211,7 +212,7 @@ a syntactically valid S9 ends the transfer. If the sender stops without S9,
 press Ctrl-C to return to the prompt.
 
 Ctrl-C (`$03`) while `L` is receiving S19 cancels the load. The on-board
-STR8-N 1.32 image reports `BAD`, returns to `STR8-N>`, and does not execute the
+STR8-N 1.33 image reports `BAD`, returns to `STR8-N>`, and does not execute the
 S9 entry. Complete S1 records accepted before Ctrl-C remain in RAM; cancellation
 is not rollback. Ctrl-C is also the explicit terminator while STR8-N is
 quenching a failed transfer.
@@ -220,15 +221,15 @@ quenching a failed transfer.
 is therefore `$7AFF`, even when one S1 record crosses a page boundary. Stop
 sending after S9; queued serial bytes are inherited by the recovery program.
 
-### Load the STR8-N 1.32 bank-maintenance program
+### Load the STR8-N 1.33 bank-maintenance program
 
-Use `BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19`. It is a temporary RAM tool;
+Use `BUILD/v1.33/s19/str8n-v1.33-bank-maint-2000.s19`. It is a temporary RAM tool;
 loading it does not change flash. It does not require HIMON and uses the
 board's FT245R console directly.
 
 1. At `STR8-N>`, type `L`.
 2. When `S19` appears, send
-   `BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19` at normal full speed.
+   `BUILD/v1.33/s19/str8n-v1.33-bank-maint-2000.s19` at normal full speed.
 3. STR8-N validates the file and starts it automatically at `$2000`.
 
 The menu commands are:
@@ -253,10 +254,10 @@ The shortest safe rule is: use `M` freely; treat `C`, `D`, `E`, `N`, `P`, and
 `R` as flash operations. `N` requires exact `RENAME Dn XXXXX` and preserves
 the selected row's type, seal, entry, and journal.
 
-### Upgrade Bank 3 sector F to STR8-N v1.32
+### Upgrade Bank 3 sector F to STR8-N v1.33
 
-The v1.32 release includes the RAM-resident updater
-`BUILD/v1.32/s19/str8n-v1.32-top-update-2000.s19`. It is loaded by the existing
+The v1.33 release includes the RAM-resident updater
+`BUILD/v1.33/s19/str8n-v1.33-top-update-2000.s19`. It is loaded by the existing
 STR8-N `L` command and runs entirely from RAM while Bank-3 sector F is erased.
 An external programmer remains the preferred first-board and recovery method.
 This maintained Top Update artifact replaces the older ASM-generated
@@ -271,7 +272,7 @@ restore is still a separate acceptance gate.
 Before starting:
 
 1. Keep both the v1.1 rollback BIN and
-   `BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin` off-board.
+   `BUILD/v1.33/bin/str8n-v1.33-bank3-f000-ffff.bin` off-board.
 2. Confirm Bank 1 CPU `$F000-$FFFF` may be replaced by the fresh protected
    raw backup (`STR8_TOP_SAFE`, physical `$0F000-$0FFFF`). The successful
    updater leaves that backup in place; it is not scratch space afterward.
@@ -282,12 +283,12 @@ Before starting:
 
 Then update the protected top sector:
 
-1. Type `L` and send `str8n-v1.32-top-update-2000.s19` at normal full speed.
+1. Type `L` and send `str8n-v1.33-top-update-2000.s19` at normal full speed.
 2. Check that the tool prints `BACKUP B1:F; TARGET B3:F`.
 3. Type the exact first confirmation `BACKUP B1F` only if Bank 1 sector F may
    be replaced by the fresh protected backup.
 4. Require `BACKUP VERIFIED` before continuing.
-5. Type the exact final confirmation `STR8-N 1.32`.
+5. Type the exact final confirmation `STR8-N 1.33`.
 6. Do not press NMI or RESET, remove power, or disturb the flash/FTDI hardware
    until the tool reports verification and enters the new RESET vector.
 
@@ -296,12 +297,12 @@ prints `ABORT - NO ACTIVE TOP UPDATE`, and returns to STR8-N. Any other
 nonmatching confirmation has the same safe result.
 
 If active programming fails, do not reset. At the RAM recovery prompt use `R`
-to retry the embedded v1.32 image or `O` to restore the verified Bank-1 backup.
+to retry the embedded v1.33 image or `O` to restore the verified Bank-1 backup.
 If the RAM tool cannot recover, externally copy physical `$0F000-$0FFFF` back
 to `$1F000-$1FFFF`, or program one of the retained 4096-byte BINs at physical
 `$1F000`.
 
-After v1.32 starts, verify `S`, `C`, `W`, selector timeout, the
+After v1.33 starts, verify `S`, `C`, `W`, selector timeout, the
 `$7DFD-$7DFF` Bank Jump Record, and the ASM `$7CFF/$7D00` boundary before
 updating Banks 0-2.
 
@@ -310,8 +311,8 @@ confirmation. The combined menu's `U` top update and the isolated STR8-iN/65
 tool's `F` search-flag update also write flash under their own exact gates.
 Do not press NMI, reset, remove power, or remove the flash during a write or
 erase. `C` prints `!STR8` before confirmation when the source contains the
-STR8-N 1.32 `SR 02 03` service signature. `Q` starts the normal STR8-N startup
-display again; the timing interval is deliberately silent in v1.32.
+STR8-N 1.33 `SR 02 03` service signature. `Q` starts the normal STR8-N startup
+display again; the timing interval is deliberately silent in v1.33.
 
 `C` accepts source Bank 0-3 and destination Bank 0-2. The destination's
 Bank-3 directory row must be completely erased; otherwise it prints
@@ -439,13 +440,13 @@ must point to real code in that bank. `J0`-`J2` ignore S9 and follow RESET.
 ### Full R-YORS 8-F image for Banks 0-2
 
 `make ryors-full-bank` composes the current R-YORS ASM+HIMON 28K payload with
-the current STR8-N 1.32 top sector:
+the current STR8-N 1.33 top sector:
 
 ```text
-C:/SRC/STR8-N/BUILD/v1.32/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+C:/SRC/STR8-N/BUILD/v1.33/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 $8000-$BFFF  ASM-F2
 $C000-$EFFF  HIMON
-$F000-$FFFF  STR8-N 1.32 clone
+$F000-$FFFF  STR8-N 1.33 clone
 S9/RESET     $F000
 ```
 
@@ -525,7 +526,7 @@ below or the external-programmer fallback.
 
 ## Refresh the directory onboard
 
-`BUILD/v1.32/s19/str8n-v1.32-directory-refresh-2000.s19` is a dedicated
+`BUILD/v1.33/s19/str8n-v1.33-directory-refresh-2000.s19` is a dedicated
 RAM-resident sector-F rewrite. It embeds the exact current 4096-byte top BIN,
 whose directory is erased and whose configuration publishes B1:E as WORK at
 `$FFF0=$1E` and B1:F as the protected Bank-3:F backup at `$FFF1=$1F`.
@@ -543,8 +544,8 @@ replaced by a fresh exact backup of the live Bank-3 sector F, and the backup is
 retained as a protected role after success.
 
 1. At STR8-N, type `L`, then `S19`, and send
-   `BUILD/v1.32/s19/str8n-v1.32-directory-refresh-2000.s19`.
-2. Require the title `STR8-N 1.32 DIRECTORY REFRESH` and
+   `BUILD/v1.33/s19/str8n-v1.33-directory-refresh-2000.s19`.
+2. Require the title `STR8-N 1.33 DIRECTORY REFRESH` and
    `BACKUP B1:F; TARGET B3:F`.
 3. Type `BACKUP B1F` only if Bank 1 sector F may be replaced by that backup.
 4. Require `BACKUP VERIFIED` and record the safe/target physical ranges and
@@ -594,7 +595,7 @@ rest of the device with a checked full-image merge:
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/build_directory_refresh_image.ps1 `
   -ReadbackPath "PATH/board-before-directory-refresh-read-1.bin" `
   -ConfirmReadbackPath "PATH/board-before-directory-refresh-read-2.bin" `
-  -OutPath "BUILD/v1.32/bin/board-directory-refreshed-20000.bin"
+  -OutPath "BUILD/v1.33/bin/board-directory-refreshed-20000.bin"
 ```
 
 4. Require the tool to report a 131072-byte output, the current top-BIN hash,
