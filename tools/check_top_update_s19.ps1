@@ -1,7 +1,7 @@
 param(
-    [string]$S19Path = "BUILD/v1.32/s19/str8n-v1.32-top-update-2000.s19",
-    [string]$TopBinPath = "BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin",
-    [string]$VersionText = '1.32',
+    [string]$S19Path = "BUILD/v1.33/s19/str8n-v1.33-top-update-2000.s19",
+    [string]$TopBinPath = "BUILD/v1.33/bin/str8n-v1.33-bank3-f000-ffff.bin",
+    [string]$VersionText = '1.33',
     [switch]$DirectoryRefresh
 )
 

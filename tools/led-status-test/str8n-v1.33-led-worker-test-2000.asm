@@ -1,4 +1,4 @@
-; STR8-N v1.32 RAM-worker LED hardware probe.
+; STR8-N v1.33 RAM-worker LED hardware probe.
 ; Load with STR8-N L; S9 starts at $2000. The probe requires scratch sector
 ; B2:8 to be erased, programs and verifies a dense test pattern, then erases
 ; and verifies it with the production worker. B2:8 ends erased and the

@@ -1,13 +1,13 @@
 param(
-    [string]$ArchiveS19Path = 'BUILD/v1.32/s19/str8n-v1.32-wdcmonv2-archive-2000.s19',
-    [string]$InstallS19Path = 'BUILD/v1.32/s19/str8n-v1.32-wdcmonv2-install-2000.s19',
-    [string]$CandidateBinPath = 'BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin',
-    [string]$CanonicalS19Path = 'BUILD/v1.32/s19/str8n-v1.32-f000.s19',
-    [string]$BankMaintS19Path = 'BUILD/v1.32/s19/str8n-v1.32-str8-in65-bank-maint-2000.s19',
-    [string]$InstallIncludePath = 'BUILD/v1.32/generated/str8n-v1.32-wdcmonv2-install-image.inc',
-    [string]$KitDirectory = 'BUILD/v1.32/wdcmonv2-str8n-migration-kit',
-    [string]$ZipPath = 'BUILD/v1.32/str8n-v1.32-wdcmonv2-str8n-migration-kit.zip',
-    [string]$ArchiveRootName = 'STR8-N-v1.32-Migration-Kit'
+    [string]$ArchiveS19Path = 'BUILD/v1.33/s19/str8n-v1.33-wdcmonv2-archive-2000.s19',
+    [string]$InstallS19Path = 'BUILD/v1.33/s19/str8n-v1.33-wdcmonv2-install-2000.s19',
+    [string]$CandidateBinPath = 'BUILD/v1.33/bin/str8n-v1.33-bank3-f000-ffff.bin',
+    [string]$CanonicalS19Path = 'BUILD/v1.33/s19/str8n-v1.33-f000.s19',
+    [string]$BankMaintS19Path = 'BUILD/v1.33/s19/str8n-v1.33-str8-in65-bank-maint-2000.s19',
+    [string]$InstallIncludePath = 'BUILD/v1.33/generated/str8n-v1.33-wdcmonv2-install-image.inc',
+    [string]$KitDirectory = 'BUILD/v1.33/wdcmonv2-str8n-migration-kit',
+    [string]$ZipPath = 'BUILD/v1.33/str8n-v1.33-wdcmonv2-str8n-migration-kit.zip',
+    [string]$ArchiveRootName = 'STR8-N-v1.33-Migration-Kit'
 )
 
 Set-StrictMode -Version Latest
@@ -35,7 +35,7 @@ $inputs = [ordered]@{
     'ARTIFACTS/STR8-N-v1-30.s19' = $CanonicalS19Path
     'SOURCE/wdcmonv2str8n-archive-2000.asm' = 'tools/wdcmonv2/wdcmonv2str8n-archive-2000.asm'
     'SOURCE/wdcmonv2str8n-install-2000.asm' = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm'
-    'SOURCE/str8n-v1.32-wdcmonv2-install-image.inc' = $InstallIncludePath
+    'SOURCE/str8n-v1.33-wdcmonv2-install-image.inc' = $InstallIncludePath
     'TOOLS/extract_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/extract_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/check_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_install.ps1' = 'tools/wdcmonv2/check_wdcmonv2_install.ps1'
@@ -89,7 +89,7 @@ $readmePath = Join-Path $kitFull 'PACKAGE-README.txt'
 $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
-    'STATUS: v1.32 FACTORY MIGRATION BOARD-ACCEPTED; COM4; 2026-09-08; LED $F0 CONFIRMED',
+    'STATUS: v1.33 ARTIFACT HOST-QUALIFIED; v1.32 FACTORY PATH BOARD-ACCEPTED',
     'HOST STATUS: WINDOWS 11 POWERSHELL BOARD-PROVEN; UBUNTU PYTHON UNTESTED',
     ('ARCHIVE ROOT: {0}' -f $ArchiveRootName),
     '',
@@ -114,9 +114,9 @@ $readme = @(
     '  press each once and only when its corresponding request appears.',
     '',
     'The RAM installer requires separate COPY and INSTALL confirmations.',
-    'It copies/verifies stock B3 into B0, receives the canonical STR8-N 1.32',
+    'It copies/verifies stock B3 into B0, receives the canonical STR8-N 1.33',
     'BIN, and installs it in B3:F.',
-    'After verified v1.32 boot, the included Bank Maintenance image prompts for',
+    'After verified v1.33 boot, the included Bank Maintenance image prompts for',
     'D0 FF WDCV2 adoption; Bank 0 remains an opaque byte-for-byte factory guest.',
     'After J0, physical RESET is the designed return from that factory guest',
     'to STR8-N. This reset-only return is intentional, not a flaw.',
@@ -153,8 +153,8 @@ $fileRows = foreach ($file in $payloadFiles) {
 }
 $manifest = [ordered]@{
     schema = 1
-    package = 'str8n-v1.32-wdcmonv2-str8n-migration-kit'
-    hardwareStatus = 'v1.32 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-08; operator-confirmed F0'
+    package = 'str8n-v1.33-wdcmonv2-str8n-migration-kit'
+    hardwareStatus = 'v1.33 artifact host-qualified; v1.32 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-08'
     windowsHostStatus = 'Windows 11 PowerShell board-proven'
     ubuntuPythonHostStatus = 'experimental; offline-tested only; no board proof'
     archiveRoot = $ArchiveRootName

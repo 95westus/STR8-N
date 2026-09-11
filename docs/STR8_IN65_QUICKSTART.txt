@@ -1,16 +1,17 @@
 STR8-iN/65 QUICK START
-Factory WDCMONv2 -> STR8-N 1.32
+Factory WDCMONv2 -> STR8-N 1.33
 
-v1.32 factory migration is board-accepted on SXB2 HW 3.00 / WDCMON 2.00 with
-BF/B5 flash on COM4, 2026-09-08, including the operator-observed LED $F0 cue.
+The v1.33 artifacts are host-qualified.  The complete v1.32 factory migration
+is board-accepted on SXB2 HW 3.00 / WDCMON 2.00 with BF/B5 flash on COM4,
+2026-09-08, including the operator-observed LED $F0 cue.
 
-WINDOWS 11 HOST - BOARD-PROVEN REFERENCE
+WINDOWS 11 HOST - v1.32 BOARD-PROVEN REFERENCE
 
 NEEDED
 - Windows 11 with Windows PowerShell 5.1 (powershell.exe).
 - The board's USB COM-port driver; the powered board must appear as COMx.
 - This ZIP extracted to a writable location.  It creates the surrounding folder
-  STR8-N-v1.32-Migration-Kit; work inside that folder.
+  STR8-N-v1.33-Migration-Kit; work inside that folder.
 - A free COM port, stable power, and access to the board's physical RESET button.
 
 NOT NEEDED
@@ -79,14 +80,14 @@ press each key only when the screen asks for it, and press it only once.
    board prints SEND STR8-N TOP BIN, press Ctrl+U once.  After the 4096-byte
    image passes its board-side check, type:
 
-   INSTALL STR8-N 1.32
+   INSTALL STR8-N 1.33
 
    On a connected EDU, require solid LED $F0 (all red on, all green off)
    during each active copy/install flash interval.  It clears only after the
    corresponding verification succeeds.  The terminal warning remains the
    authority when the optional LEDs are absent or not visible.
 
-4. After STR8-N 1.32 starts, select S.  At STR8-N> enter L, then press Ctrl+D
+4. After STR8-N 1.33 starts, select S.  At STR8-N> enter L, then press Ctrl+D
    once to send the packaged production Bank Maintenance S19.
 
 5. At BM> enter D.  Enter Bank 0, type FF, and description WDCV2.  Require
@@ -104,7 +105,7 @@ press each key only when the screen asks for it, and press it only once.
 
    Test reset selector 0 and shell J0.  J0 hands the computer completely to
    the preserved factory system in Bank 0.  To leave that system and return to
-   STR8-N 1.32, press the board's physical RESET button.  Requiring physical
+   STR8-N 1.33, press the board's physical RESET button.  Requiring physical
    RESET after J0 is intentional and by design; it is not a flaw or a failed
    migration.
 

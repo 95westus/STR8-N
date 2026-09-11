@@ -1,4 +1,4 @@
-# STR8-N v1.32 Technical Guide
+# STR8-N v1.33 Technical Guide
 
 This document is the current STR8-N integration and image-format contract.
 Numeric address ranges are inclusive unless an end is explicitly called
@@ -65,12 +65,12 @@ its identity and selector:
 
 RST H
 
-STR8-N 1.32
+STR8-N 1.33
 0-2 C W S:
 ```
 
 The six live selector ticks are approximately one second apart and are silent
-in v1.32. They poll `0`, `1`, `2`, `C`, `W`, or `S`. `C` cold-starts compatible
+in v1.33. They poll `0`, `1`, `2`, `C`, `W`, or `S`. `C` cold-starts compatible
 HIMON; `W` and timeout warm-start it and preserve RAM. With the former hidden
 six-tick quarantine removed, automatic startup takes approximately six seconds.
 
@@ -253,7 +253,7 @@ commands at the `STR8-N>` prompt and in the live RESET selector.
 Historical combined streams that start with S1 records at `$0200` are invalid.
 The first S1 for `I` must be the selected flash start, normally `$8000`,
 `$9000`, and so on. The worker component in
-`BUILD/v1.32/s19/str8n-v1.32-worker-0200.s19` is build and integration evidence, not a file
+`BUILD/v1.33/s19/str8n-v1.33-worker-0200.s19` is build and integration evidence, not a file
 to send to `I`.
 
 ## Creating and checking install files
@@ -270,7 +270,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BinPath C:\IMAGES\guest.bin `
   -BaseAddress 32768 `
   -Bank 0 `
-  -S19Path BUILD/v1.32/s19/guest-bank0-8000-ffff.s19
+  -S19Path BUILD/v1.33/s19/guest-bank0-8000-ffff.s19
 ```
 
 For a first Bank-3 HIMON image:
@@ -282,7 +282,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BaseAddress 49152 `
   -EntryAddress 49152 `
   -Bank 3 `
-  -S19Path BUILD/v1.32/s19/himon-bank3-c000-efff.s19
+  -S19Path BUILD/v1.33/s19/himon-bank3-c000-efff.s19
 ```
 
 `tools/compose_str8n_install_s19.ps1` validates an existing payload and writes
@@ -293,11 +293,11 @@ per-sector CRC-16, and whole-file SHA-256. For an existing Bank-3 row, pass
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools/compose_str8n_install_s19.ps1 `
-  -PayloadS19Path BUILD/v1.32/s19/guest-bank0-8000-ffff.s19 `
+  -PayloadS19Path BUILD/v1.33/s19/guest-bank0-8000-ffff.s19 `
   -PayloadStart 32768 `
   -PayloadEndExclusive 65536 `
   -Bank 0 `
-  -S19Path BUILD/v1.32/s19/str8n-i-guest.s19
+  -S19Path BUILD/v1.33/s19/str8n-i-guest.s19
 ```
 
 ## Transaction timing and recovery
@@ -363,10 +363,10 @@ quench when a failed sender will not provide S9. During `L`, STR8-N reports
 `BAD`, returns to the prompt, and does not jump to S9. S1 records already copied
 into RAM remain present.
 
-### STR8-N 1.32 bank-maintenance RAM image
+### STR8-N 1.33 bank-maintenance RAM image
 
 `make bank-maint` builds and validates
-`BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19`. Its S9 entry is `$2000`; the S1
+`BUILD/v1.33/s19/str8n-v1.33-bank-maint-2000.s19`. Its S9 entry is `$2000`; the S1
 address span is `$2000-$39B2`, wholly inside the `L` contract. The fixed
 private worker remains at `$3400-$362A`; the guarded rename extension follows
 it without changing the worker bytes. The WDC linker
@@ -476,7 +476,7 @@ the guarded RAM directory-refresh tool or an external programmer must refresh
 the protected sector before another install to that bank.
 
 The programmer BIN and the candidate embedded by
-`str8n-v1.32-directory-refresh-2000.s19` contain an all-`$FF` directory and
+`str8n-v1.33-directory-refresh-2000.s19` contain an all-`$FF` directory and
 the current configuration: `$FFF0=$1E` selects B1:E as application WORK and
 `$FFF1=$1F` protects B1:F as the raw B3:F backup; `$FFF2-$FFF9` remain erased.
 Refreshing erases every bank's journal and Bank-3 install identity but retains
@@ -548,7 +548,7 @@ helper begins at `$0500`, above the worker's fixed `$045F` last byte.
 
 ### `$1A00-$1FFF`: STR8-N-free low RAM
 
-STR8-N v1.32 itself makes no fixed runtime allocation in `$1A00-$1FFF`.
+STR8-N v1.33 itself makes no fixed runtime allocation in `$1A00-$1FFF`.
 Integrated R-YORS APMAN does transiently use `$1A00-$1AFF` as its command
 shadow while `AP`, `APS`, or banked `INSTALL` delegates. Therefore
 `$1B00-$1FFF` is the unconditional R-YORS user-low slice outside another phase
@@ -558,7 +558,7 @@ avoid colliding with another user program that it loaded itself.
 The v1.2 capsule and optional-tool allocations in this range are obsolete.
 Do not use a v1.2 RAM tool with the v1.2 firmware set.
 
-### STR8-N v1.32 high-RAM ABI
+### STR8-N v1.33 high-RAM ABI
 
 ```text
 $7C00-$7DBF  foreground High Tool Overlay
@@ -731,7 +731,7 @@ On return, A equals status; carry is set only for success. X and Y are
 clobbered, and decimal mode is cleared. Interpret the other result fields only
 when carry is set.
 
-The generated `BUILD/v1.32/include/str8n-public.inc` exports this complete
+The generated `BUILD/v1.33/include/str8n-public.inc` exports this complete
 request/result contract, not only the `$F009-$F00F` discovery bytes. External
 clients such as HIMON must consume that generated contract and verify `SR/02`
 plus the required source capability before issuing a request.
@@ -819,7 +819,7 @@ placement, exact image size, and at least 32 bytes between resident and worker.
 `BUILD/str8n-manifest.json` publishes the resulting addresses and hashes.
 `make range-matrix-check` generates and re-validates every top-aligned 4K-32K
 Bank 0-2 range, every 4K-28K Bank-3 range, and representative middle spans.
-These host fixtures are written below `BUILD/v1.32/test/range-matrix`; they do not
+These host fixtures are written below `BUILD/v1.33/test/range-matrix`; they do not
 change the firmware image or consume protected-sector space.
 `make ram-load-contract-check` verifies the linked `L` entry and every lower,
 upper, crossing-record, empty-record, and S9 boundary case.
@@ -832,37 +832,37 @@ dense 32K Bank-0/1/2 payload. It deliberately does not use the older STR8-N
 copy embedded in R-YORS's previously combined BIN.
 
 ```text
-BUILD/v1.32/bin/str8n-v1.32-bank3-f000-ffff.bin
+BUILD/v1.33/bin/str8n-v1.33-bank3-f000-ffff.bin
                                       exact 4096-byte programmer image
-BUILD/v1.32/s19/str8n-v1.32-f000.s19         resident build component
-BUILD/v1.32/s19/str8n-v1.32-worker-0200.s19  worker evidence/build component
-BUILD/v1.32/s19/str8n-v1.32-bank-maint-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-f000.s19         resident build component
+BUILD/v1.33/s19/str8n-v1.33-worker-0200.s19  worker evidence/build component
+BUILD/v1.33/s19/str8n-v1.33-bank-maint-2000.s19
                                       self-contained RAM maintenance program
-BUILD/v1.32/s19/str8n-v1.32-console-abi-test-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-console-abi-test-2000.s19
                                       raw console ABI hardware probe
-BUILD/v1.32/s19/str8n-v1.32-led-worker-test-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-led-worker-test-2000.s19
                                       guarded LED/production-worker probe
-BUILD/v1.32/s19/str8n-v1.32-top-update-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-top-update-2000.s19
                                       guarded Bank-3 sector-F updater
-BUILD/v1.32/s19/str8n-v1.32-directory-refresh-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-directory-refresh-2000.s19
                                       guarded directory-pocket refresh
-BUILD/v1.32/s19/str8n-v1.32-str8-in65-bank-maint-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-str8-in65-bank-maint-2000.s19
                                       isolated WDC migration maintenance tool
-BUILD/v1.32/s19/str8n-v1.32-wdcmonv2-archive-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-wdcmonv2-archive-2000.s19
                                       optional read-only stock-bank archive
-BUILD/v1.32/s19/str8n-v1.32-wdcmonv2-install-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-wdcmonv2-install-2000.s19
                                       factory WDCMONv2 migration program
-BUILD/v1.32/bin/str8n-v1.32-wdcmonv2-bank3-f000-ffff.bin
+BUILD/v1.33/bin/str8n-v1.33-wdcmonv2-bank3-f000-ffff.bin
                                       migration top: D0 WDCM2; roles FF/FF
-BUILD/v1.32/str8n-v1.32-wdcmonv2-str8n-migration-kit.zip
+BUILD/v1.33/str8n-v1.33-wdcmonv2-str8n-migration-kit.zip
                                       allowlisted consumer migration kit
-BUILD/v1.32/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+BUILD/v1.33/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
                                       32K STR8-N+HIMON+ASM Bank-0/1/2 payload
 BUILD/str8n-manifest.json             sizes, addresses, ABI, and hashes
 ```
 
 All BIN, S19, and generated S19 qualification fixtures live below the version
-root `BUILD/v1.32/`. The compatibility manifest remains at
+root `BUILD/v1.33/`. The compatibility manifest remains at
 `BUILD/str8n-manifest.json` and records the versioned artifact paths.
 Compiler/linker intermediates remain directly below `BUILD/obj`, `BUILD/lst`,
 and `BUILD/sym`.

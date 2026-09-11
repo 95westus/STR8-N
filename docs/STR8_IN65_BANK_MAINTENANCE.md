@@ -1,23 +1,27 @@
-# STR8-iN/65 v1.32 RAM Bank Maintenance
+# STR8-iN/65 v1.33 RAM Bank Maintenance
 
-This guide applies to the production STR8-iN/65 v1.32 RAM image:
+This guide applies to the production STR8-iN/65 v1.33 RAM image:
 
 ```text
-BUILD/v1.32/s19/str8n-v1.32-str8-in65-bank-maint-2000.s19
+BUILD/v1.33/s19/str8n-v1.33-str8-in65-bank-maint-2000.s19
 ```
 
-It is part of the v1.32 factory migration ZIP under the consumer-facing name
+It is part of the v1.33 factory migration ZIP under the consumer-facing name
 `ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19`. The resident cold-start and EDU
-quiet-start sequence it supports is canonical v1.32; the tool's WDC-specific
+quiet-start sequence it supports is canonical v1.33; the tool's WDC-specific
 defaults and `F` command remain isolated in RAM. Load it with the running STR8
 `L` command. Its S9 record starts the menu at `$2000` automatically.
+
+The v1.33 migration artifacts are host-qualified. The complete factory
+migration remains board-proven for v1.32; do not relabel that earlier proof as
+v1.33 until the factory path is repeated with these exact artifacts.
 
 ## D0 in the current migration image
 
 The current factory loader preserves the original WDCMONv2 image in opaque B0
-and installs the exact canonical STR8-N v1.32 top with an erased Bank-3
+and installs the exact canonical STR8-N v1.33 top with an erased Bank-3
 directory. This RAM maintenance image is therefore a required consumer step:
-it explicitly publishes D0 only after the first verified v1.32 boot. `J0`
+it explicitly publishes D0 only after the first verified v1.33 boot. `J0`
 correctly fails closed while D0 is absent.
 
 ## Enroll a retained WDCMONv2 Bank 0 when D0 is absent
@@ -37,7 +41,7 @@ physical Bank-3 directory address and every byte that will be programmed; no
 Bank-0 payload byte is part of the write.
 
 The generic RAM tool retains `FF` and `WDCM2` as its empty-input Bank-0
-defaults. The v1.32 consumer procedure keeps type `FF` and deliberately
+defaults. The v1.33 consumer procedure keeps type `FF` and deliberately
 overrides the description with `WDCV2`. Automatic descriptions for the other banks
 remain `BANK1`, `BANK2`, and `STR8N`. Descriptions accept uppercase letters,
 digits, `-`, `_`, and `.`.
@@ -126,7 +130,7 @@ provisions the accepted byte contract for the later HIMON scoped-search slice.
 ## Deliberately not written by this image
 
 - B3:`$FFF0` WORK and `$FFF1` top-backup role bytes are preserved exactly by
-  D0 adoption; the canonical v1.32 image initializes them to B1:E and B1:F.
+  D0 adoption; the canonical v1.33 image initializes them to B1:E and B1:F.
 - No VTOC byte layout is implemented or frozen in STR8-N or R-YORS. Current
   planning treats a future VTOC as a projection/locator over a managed catalog,
   not bytes that this migration tool may invent. Therefore this RAM image has
