@@ -88,9 +88,9 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    R[Physical RESET<br/>forces Bank 3] --> A[Silent pre-I/O quarantine<br/>keys ignored]
-    A --> P[Flush input<br/>STR8-N 1.32]
-    P --> Q{Silent live selector interval<br/>0-2 C W S}
+    R[Physical RESET<br/>forces Bank 3] --> A[RST H/S<br/>two linefeeds]
+    A --> P[Flush stale input<br/>print STR8-N 1.32 immediately]
+    P --> Q{Six-second live selector interval<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
     C -->|yes| J[Select bank and jump through RESET vector]
@@ -182,9 +182,9 @@ $FFEF  +------------------------------+
 $FFAF  +------------------------------+
        | stored worker        608 B   |
 $FD4F  +------------------------------+
-       | available growth      10 B   |
-$FD45  +------------------------------+
-       | resident code/data  3398 B   |
+       | available growth      14 B   |
+$FD41  +------------------------------+
+       | resident code/data  3394 B   |
 $F000  +------------------------------+
 ```
 

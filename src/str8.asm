@@ -115,7 +115,7 @@ STR8_WORKER_COPY_LEN_HI EQU             >STR8_WORKER_SIZE
 STR8_SELECTOR_COPY_LEN  EQU             STR8_WORKER_SELECT_SIZE
 STR8_DELAY_TICK_X       EQU             $B6
 STR8_DELAY_TICK_Y       EQU             $F8
-STR8_STARTUP_DOT_COUNT  EQU             $0C
+STR8_STARTUP_DOT_COUNT  EQU             $06
 STR8_STARTUP_LIVE_TICKS EQU             $06
 STR8_STARTUP_DOT_A      EQU             $23    ; 0.992s at 8 MHz
 STR8_BANK_BOOT_DELAY_A  EQU             $6A    ; 3.005s at 8 MHz
@@ -525,10 +525,10 @@ STR8_ENTER_MENU_NO_TARGET_PRINT:
                         ELSE
 ; OUT: C=1 and A='0'/'1'/'2'/'H'/'S' when a choice was consumed.
 ;      C=0 if the timeout elapsed.
-; Six one-second quarantine ticks cannot consume a key. At the midpoint RX is
-; flushed, identity and selector are printed, and six one-second live ticks
-; poll only 0/1/2/H/S. The STR8-iN/65 diagnostic build keeps all twelve timing
-; ticks but suppresses their WAIT/dot text to recover protected-sector bytes.
+; Flush stale RX, print reset source plus two linefeeds and the identity/selector
+; immediately, then run six one-second live ticks polling only 0/1/2/C/W/S.
+; The STR8-iN/65 diagnostic build keeps the live timing but suppresses its
+; WAIT/dot text to recover protected-sector bytes.
 STR8_STARTUP_DELAY:
                         STZ             STR8_BOOT_KEY_ENABLE
                         IF              STR8_V1_LAYOUT
@@ -551,11 +551,6 @@ STR8_STARTUP_DELAY:
                         JSR             STR8_PRINT_XY
                         ENDIF
                         ENDIF
-                        LDA             #STR8_STARTUP_DOT_COUNT
-?TICK:
-                        PHA
-                        CMP             #STR8_STARTUP_LIVE_TICKS
-                        BNE             ?WAIT
                         JSR             STR8_CON_FLUSH_RX
                         INC             STR8_BOOT_KEY_ENABLE
                         LDX             #<MSG_ID
@@ -571,6 +566,9 @@ STR8_STARTUP_DELAY:
                         LDY             #>MSG_BOOT_PROMPT
                         JSR             STR8_PRINT_XY
                         ENDIF
+                        LDA             #STR8_STARTUP_DOT_COUNT
+?TICK:
+                        PHA
 ?WAIT:
                         IF              STR8_V1_LAYOUT
                         IF              STR8_IN65_COLD_BOOT
@@ -3082,6 +3080,8 @@ MSG_JUMP_FAIL:          DB              "J FAIL",$0D,$8A
                         IF              STR8_RAM_PROOF
 MSG_COPY_FAIL_AT:       DB              $0D,$0A,"COPY FAIL @ ",('$'+$80)
                         ENDIF
+; The terminating LF here plus MSG_ID's leading LF gives two linefeeds between
+; the reset-source line and the STR8-N identity.
 MSG_RST_H:              DB              $0D,$0A,"RST H",$0D,$8A
 MSG_RST_S:              DB              $0D,$0A,"RST S"
 MSG_CRLF:               DB              $0D,$8A

@@ -89,24 +89,20 @@ to STR8-N; this is intentional, not a flaw. Follow
 ## What happens at RESET
 
 Physical RESET always returns the hardware to Bank 3 and starts STR8-N. The
-initial quarantine interval gives the FTDI connection and terminal time
-to attach. Keys are ignored during it. v1.32 keeps the timing but suppresses
-the former `WAIT...` chatter. The reset-source line has a leading blank line.
-`RST H` means physical reset or an unmarked legacy entry; `RST S` means a
-cooperating software path committed the one-shot reset record immediately
-before entering STR8-N:
+reset-source line has a leading blank line. `RST H` means physical reset or an
+unmarked legacy entry; `RST S` means a cooperating software path committed the
+one-shot reset record immediately before entering STR8-N. Two linefeeds follow
+the marker:
 
 ```text
 RST H
-```
 
-STR8-N then discards any queued input, identifies itself, and opens the silent
-live selector interval:
-
-```text
 STR8-N 1.32
 0-2 C W S:
 ```
+
+STR8-N discards stale queued input before printing the identity and immediately
+opens the silent six-second live selector interval.
 
 - `0`, `1`, or `2` starts a completed guest in that bank.
 - `C` cold-starts compatible HIMON at `$C000` in Bank 3.

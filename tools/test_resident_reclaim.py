@@ -51,9 +51,9 @@ def main():
     assert old_data.count(old_reset) == 1
     old_data = old_data.replace(old_reset, new_reset)
     assert new_data == old_data
-    assert sym['_END_DATA'] == 0xFD46
+    assert sym['_END_DATA'] == 0xFD42
     assert sym['STR8_WORKER_STORE'] == 0xFD50
-    assert image[0xD46:0xD50] == b'\xff' * 10
+    assert image[0xD42:0xD50] == b'\xff' * 14
     page0 = sym['STR8_PRINT_TXN_PAGE0_X'] - 0xF000
     page1 = sym['STR8_PRINT_TXN_PAGE1_X'] - 0xF000
     assert page1 == page0 + 4
@@ -161,6 +161,12 @@ def main():
     assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.32\r\n0-2 C W S: '
     assert string_at(sym['MSG_RST_H']) == b'\r\nRST H\r\n'
     assert string_at(sym['MSG_RST_S']) == b'\r\nRST S\r\n'
+    assert string_at(sym['MSG_RST_H']) + string_at(sym['MSG_ID']) == (
+        b'\r\nRST H\r\n\r\nSTR8-N 1.32\r\n0-2 C W S: '
+    )
+    assert string_at(sym['MSG_RST_S']) + string_at(sym['MSG_ID']) == (
+        b'\r\nRST S\r\n\r\nSTR8-N 1.32\r\n0-2 C W S: '
+    )
     startup = sym['STR8_STARTUP_DELAY'] - 0xF000
     reset_classifier = bytes((
         0xA2, sym['MSG_RST_H'] & 255,
@@ -169,6 +175,16 @@ def main():
         0xA2, sym['MSG_RST_S'] & 255,
         0x9C, 0xE8, 0x7D))
     assert image[startup + 3:startup + 3 + len(reset_classifier)] == reset_classifier
+    after_reset = startup + 3 + len(reset_classifier)
+    immediate_identity = bytes((
+        0x20, sym['STR8_PRINT_TXN_PAGE1_X'] & 255, sym['STR8_PRINT_TXN_PAGE1_X'] >> 8,
+        0x20, sym['STR8_CON_FLUSH_RX'] & 255, sym['STR8_CON_FLUSH_RX'] >> 8,
+        0xEE, sym['STR8_BOOT_KEY_ENABLE'] & 255, sym['STR8_BOOT_KEY_ENABLE'] >> 8,
+        0xA2, sym['MSG_ID'] & 255,
+        0x20, sym['STR8_PRINT_TXN_PAGE0_X'] & 255, sym['STR8_PRINT_TXN_PAGE0_X'] >> 8,
+        0xA9, 0x06, 0x48,
+    ))
+    assert image[after_reset:after_reset + len(immediate_identity)] == immediate_identity
     assert string_at(sym['MSG_JUMP_B']) == b'\r\nJ B'
     assert string_at(sym['MSG_JUMP_FAIL']) == b'J FAIL\r\n'
 
@@ -275,7 +291,8 @@ def main():
         for text in (b'', b'CC', b'C--E', b'C/E', b'G-F', b'8-G'):
             assert not run_range(bank, text)[0], text
             cases += 1
-    print(f'RESIDENT RECLAIM PASS: {checked} compiled message-page calls, {cases} linked parser cases, 10-byte margin')
+    margin = sym['STR8_WORKER_STORE'] - sym['_END_DATA']
+    print(f'RESIDENT RECLAIM PASS: {checked} compiled message-page calls, {cases} linked parser cases, {margin}-byte margin')
 
 
 if __name__ == '__main__':
