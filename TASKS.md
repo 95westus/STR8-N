@@ -5,26 +5,29 @@ project. Check an item only when its artifact hashes, host checks, board
 transcript, and final flash readback agree. Keep owner-local WDCMONv2 images
 out of published release artifacts.
 
-## v1.28 release staging
+## v1.33 release status
 
-The repository may be committed locally in reviewable pieces, but it is not
-ready to push or publish until the remaining release bundle is assembled and
-verified.
+The v1.33 source, host qualification, board evidence, and release artifacts
+are current. The complete factory migration remains qualified by the accepted
+v1.32 hardware run plus v1.33 host checks; repeat that whole path on hardware
+before describing the v1.33 migration itself as board-accepted.
 
-- [x] Promote the board-proven silent cold-start sequence as canonical v1.28.
-- [x] Prove the factory WDCMONv2 path: exact B3-to-B0 preservation, STR8-N in
-  B3:F, COMPLETE D0 `WDCM2`, `J0`, CS0-CS3 chase, and physical RESET recovery.
-- [x] Bring README, maps/graphs, operator/technical guides, and migration
-  boundaries into agreement with the accepted v1.28 behavior.
-- [ ] From the committed tree, rebuild and collect the final migration ZIP,
-  release S19 set, canonical and STR8-iN/65 Bank Maintenance S19 files, and
-  their SHA-256 receipts.
-- [ ] Review the Bank Maintenance, WDC migration, HIMON/ASM-F2 follow-on, and
-  recovery guides beside those exact artifacts.
-- [ ] Run the package allowlist/self-verifier from a clean extracted directory
-  and prove that owner-local WDCMONv2 bytes, raw captures, and R-YORS payloads
-  are absent.
-- [ ] Review the local commit series and final hashes before any push.
+- [x] Promote the immediate reset banner and reset-source indication as
+  canonical STR8-N v1.33.
+- [x] Bring README, maps, operator/technical guides, migration boundaries,
+  manifests, filenames, and public contracts into agreement with v1.33.
+- [x] From committed source, rebuild and verify the v1.33 release ZIP,
+  migration ZIP, S19 set, Bank Maintenance images, and SHA-256 receipts.
+- [x] Run the migration-package allowlist and extracted-package self-verifier;
+  owner-local WDCMONv2 bytes, bank archives, raw captures, and R-YORS payloads
+  are absent from that focused migration kit.
+- [x] Accept the guarded v1.33 top-sector update, exact readback, reset-source
+  behavior, and HIMON warm recovery on hardware.
+- [ ] Repeat the complete factory WDCMONv2-to-STR8-N migration on hardware with
+  the exact v1.33 artifacts. The corresponding v1.32 path remains the accepted
+  hardware evidence.
+- [ ] Tag the reviewed commit and publish the verified v1.33 release package
+  and its SHA-256 receipt.
 
 ## LED status service
 
@@ -47,19 +50,23 @@ console ABI free of LED side effects so user applications retain Port A.
   Public character I/O and public record parsing remain LED-neutral; HIMON and
   ASM activity belongs in their own later slices. Guarded installation and
   focused `$07`/`$0B` observations passed on COM4 on 2026-09-06.
-- [ ] Carry the shared vocabulary into HIMON and ASM as separate, measured
-  changes; do not claim their states from STR8-N after handoff.
+- [x] Carry the shared vocabulary into HIMON and ASM as separate, measured
+  changes without claiming their states from STR8-N after handoff. R-YORS
+  commits `40d6a10` and `fda8401` added and refined the HIMON-owned service
+  wrappers; the focused linked-byte check and full ASM host suite pass, and
+  COM4 accepted HIMON and ASM-F2 wait/RX/TX states plus physical-reset recovery
+  on 2026-09-10.
 
-## Task 1: Stock SXB3 to a usable multi-bank system
+## Optional board project: Stock SXB3 to a usable multi-bank system
 
 Goal: preserve the factory system twice, install a clean STR8 system in Bank
-3, and put one independently bootable example in Bank 1.
+3, and put one independently bootable example in Bank 1. This is an end-to-end
+board deployment project, not a gate on the standalone v1.33 release.
 
 ### 1. Freeze the build identity
 
-- [ ] Choose the product/banner name for this pass: `STR8-N v1.xx` or
-  `STR8-IN/65`.
-- [ ] Assign the exact version and use the same name/version in banners,
+- [x] Use the canonical product/banner name `STR8-N v1.33` for this pass.
+- [x] Use v1.33 consistently in banners,
   filenames, manifests, directory descriptions, transcripts, and hashes.
 - [ ] Rebuild and record the exact migration-kit, Bank-3 payload, and example
   payload hashes before touching hardware.
