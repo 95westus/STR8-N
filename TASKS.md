@@ -26,7 +26,7 @@ before describing the v1.33 migration itself as board-accepted.
 - [ ] Repeat the complete factory WDCMONv2-to-STR8-N migration on hardware with
   the exact v1.33 artifacts. The corresponding v1.32 path remains the accepted
   hardware evidence.
-- [ ] Tag the reviewed commit and publish the verified v1.33 release package
+- [x] Tag the reviewed commit and publish the verified v1.33 release package
   and its SHA-256 receipt.
 
 ## LED status service
