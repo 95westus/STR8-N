@@ -1,5 +1,13 @@
 # STR8-N / HIMON / ASM LED status proposal and implementation record
 
+For the current implemented patterns, use the
+[v1.34 operator LED legend](OPERATORS_GUIDE.md#edu-led-patterns-v134).
+This document retains historical implementation stages and proposed future
+behavior. Its full normal-state and error-code tables are not a list of
+implemented v1.34 diagnostics. The current main input wait uses `$21` or
+`$43`; `$41` belongs to the earlier unsampled wait. The heartbeat and detailed
+error-code extensions below remain unimplemented.
+
 Status LEDs are useful only when their owner and meaning are predictable. The
 W65C02SXB/EDU PIA Port A is therefore treated as an explicitly owned,
 full-byte display. STR8-N, HIMON, ASM, a RAM flash worker, and a user

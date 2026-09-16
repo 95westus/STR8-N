@@ -33,6 +33,9 @@ known, bootable state. `8` refers to the 8-bit platform, and `STR` reverses the
 - Report its own wait, console activity, flash-write, and handoff states on the
   EDU LEDs.
 
+See the [v1.34 EDU LED legend](docs/OPERATORS_GUIDE.md#edu-led-patterns-v134)
+for the current patterns, ownership, and flash-operation indication.
+
 The release also includes separate RAM tools for inspected bank maintenance,
 copy and enrollment, directory maintenance, protected-top updates, factory
 migration, and image preparation. These tools are not always-resident STR8-N
