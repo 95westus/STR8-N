@@ -54,8 +54,8 @@ if($DirectoryRefresh){
     for($offset=0x0FB0;$offset -le 0x0FEF;$offset++){
         if($data[0x4000+$offset] -ne 0xFF){throw ('Directory-refresh candidate byte ${0:X3} is not erased' -f $offset)}
     }
-    if($data[0x4FF0] -ne 0x1E){throw ('Directory-refresh WORK locator is ${0:X2}; expected $1E' -f $data[0x4FF0])}
-    if($data[0x4FF1] -ne 0x1F){throw ('Directory-refresh top-backup locator is ${0:X2}; expected $1F' -f $data[0x4FF1])}
+    if($data[0x4FF0] -ne 0xFF){throw ('Directory-refresh WORK locator is ${0:X2}; expected $FF' -f $data[0x4FF0])}
+    if($data[0x4FF1] -ne 0x2F){throw ('Directory-refresh top-backup locator is ${0:X2}; expected $2F' -f $data[0x4FF1])}
     for($offset=0x0FF2;$offset -le 0x0FF9;$offset++){
         if($data[0x4000+$offset] -ne 0xFF){throw ('Reserved configuration byte ${0:X3} is not erased' -f $offset)}
     }

@@ -25,7 +25,7 @@ TU_FTDI_RXF             EQU             $02
 TU_FTDI_WR              EQU             $04
 TU_FTDI_RD              EQU             $08
 TU_PCR                   EQU             $7FEC
-TU_BANK1                 EQU             $CE
+TU_BACKUP_BANK           EQU             $EC
 TU_BANK3                 EQU             $EE
 
 TU_STATUS                EQU             $7C00
@@ -46,7 +46,7 @@ TU_DST_LO                EQU             $CA
 TU_DST_HI                EQU             $CB
 TU_DATA                  EQU             $CC
 TU_TMO0                  EQU             $CD
-TU_TMO1                  EQU             $CE
+TU_TMO1                  EQU             $DE
 TU_TMO2                  EQU             $CF
 TU_SUM_LO                EQU             $D0
 TU_SUM_HI                EQU             $D1
@@ -110,7 +110,7 @@ TU_BACKUP_CONFIRMED:
                         STA             TU_OLD_SUM_LO
                         LDA             TU_SUM_HI
                         STA             TU_OLD_SUM_HI
-                        LDA             #TU_BANK1
+                        LDA             #TU_BACKUP_BANK
                         JSR             TU_SELECT
                         JSR             TU_PROGRAM_STAGE
                         BCS             TU_BACKUP_PROGRAMMED
@@ -182,7 +182,7 @@ TU_RECOVERY:            LDX             #<TU_MSG_RECOVERY
                         BEQ             TU_RETRY_CANDIDATE
                         CMP             #'O'
                         BNE             TU_RECOVERY
-                        LDA             #TU_BANK1
+                        LDA             #TU_BACKUP_BANK
                         JSR             TU_SELECT
                         JSR             TU_FLASH_TO_STAGE
                         JSR             TU_SUM_STAGE
@@ -583,10 +583,10 @@ TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.23 TOP UPDATE",$0D,$0A
                         ENDIF
                         ENDIF
                         ENDIF
-                        DB              "BACKUP B1:F; TARGET B3:F",$0D,$0A,0
-TU_MSG_BACKUP:         DB              "TYPE BACKUP B1F> ",0
+                        DB              "BACKUP B2:F; TARGET B3:F",$0D,$0A,0
+TU_MSG_BACKUP:         DB              "TYPE BACKUP B2F> ",0
 TU_MSG_BACKUP_OK:      DB              "BACKUP VERIFIED",$0D,$0A,0
-TU_MSG_RECEIPT:        DB              "SAFE PHY $0F000-$0FFFF; TARGET PHY "
+TU_MSG_RECEIPT:        DB              "SAFE PHY $17000-$17FFF; TARGET PHY "
                         DB              "$1F000-$1FFFF; SUM=$",0
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_FINAL:          DB              "TYPE ERASE DIRECTORY> ",0
@@ -622,7 +622,7 @@ TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE DIRECTORY REFRESH",$0D
                         ELSE
 TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE TOP UPDATE",$0D,$0A,0
                         ENDIF
-TU_CONFIRM_BACKUP:     DB              "BACKUP B1F",0
+TU_CONFIRM_BACKUP:     DB              "BACKUP B2F",0
                         IF              STR8_DIRECTORY_REFRESH
 TU_CONFIRM_FINAL:      DB              "ERASE DIRECTORY",0
                         ELSE

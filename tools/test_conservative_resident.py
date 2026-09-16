@@ -246,7 +246,9 @@ def staging(variant, size, chunk, bad=False, commit=True):
 
 def invariant_tests():
     assert len(NEW) == len(OLD) == 4096
-    assert NEW[0xFB0:0xFFA] == OLD[0xFB0:0xFFA], 'directory/configuration changed'
+    assert NEW[0xFB0:0xFF0] == OLD[0xFB0:0xFF0], 'directory changed'
+    assert NEW[0xFF0:0xFF2] == bytes((0xFF, 0x2F)), 'unexpected role defaults'
+    assert NEW[0xFF2:0xFFA] == OLD[0xFF2:0xFFA], 'other configuration changed'
     for name in ('START', 'STR8_CONSOLE_INIT_SERVICE_ENTRY', 'STR8_ABI_QUERY_SERVICE_ENTRY',
                  'STR8_RECORD_SERVICE_ENTRY', 'STR8_BANK_SELECT_SERVICE_ENTRY',
                  'STR8_CHARIN_SERVICE_ENTRY', 'STR8_CHAROUT_SERVICE_ENTRY',

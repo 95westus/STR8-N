@@ -36,8 +36,8 @@ for ($offset = 0; $offset -lt 0x1000; $offset++) {
         throw ('External migration BIN differs from canonical top at ${0:X3}' -f $offset)
     }
 }
-if ($canonical[0x0FF0] -ne 0x1E -or $canonical[0x0FF1] -ne 0x1F) {
-    throw 'Canonical v1.34 must publish WORK=B1:E and top backup=B1:F'
+if ($canonical[0x0FF0] -ne 0xFF -or $canonical[0x0FF1] -ne 0x2F) {
+    throw 'Canonical v1.34 must publish WORK=none and top backup=B2:F'
 }
 for ($offset = 0x0FB0; $offset -le 0x0FEF; $offset++) {
     if ($migration[$offset] -ne 0xFF) {

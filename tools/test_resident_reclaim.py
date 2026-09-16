@@ -46,7 +46,9 @@ def main():
     old = base64.b64decode(golden['image'])
     assert hashlib.sha256(old).hexdigest() == golden['sha256']
     old = normalize_baseline_version(old, golden['symbols'], image, sym)
-    assert image[0xFB0:0xFFA] == old[0xFB0:0xFFA]
+    assert image[0xFB0:0xFF0] == old[0xFB0:0xFF0]
+    assert image[0xFF0:0xFF2] == bytes((0xFF, 0x2F))
+    assert image[0xFF2:0xFFA] == old[0xFF2:0xFFA]
     for name, length in [('STR8_DELAY_FIXED_A', 15), ('STR8_IVY_ENTRY_NMI', 20),
                          ('STR8_IVY_ENTRY_IRQ_MASTER', 46), ('STR8_REC_ADVANCE_APPLY_POINTERS', 13),
                          ('STR8_CON_INIT', 12),
