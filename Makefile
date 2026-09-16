@@ -229,6 +229,10 @@ board-probe-check: irq-test led-worker-test
 bank-maint-role-check: bank-maint bank-maint-menu str8-in65-bank-maint
 	python tools/test_bank_maint_roles.py
 
+.PHONY: top-backup-role-check
+top-backup-role-check: top-update onboard-directory-refresh str8-in65-top-update bank-maint-menu
+	python tools/test_top_backup_roles.py
+
 $(IRQ_TEST_OBJ): $(IRQ_TEST_SRC) | dirs
 	$(ASM) -G -L -S -W $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)

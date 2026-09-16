@@ -69,7 +69,7 @@ $manifest = [ordered]@{
             cpuStart = 'F000'
             cpuEnd = 'FFFF'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopBinPath).Hash
-            hardwareStatus = 'v1.34 COM4, 2026-09-15: guarded update/readback, power/physical/software reset, NMI/VIA1 IRQ/BRK, console, HIMON/ASM, J3, and optimized-worker B2:9 program/erase passed; broader release matrix remains incomplete.'
+            hardwareStatus = 'WORK=none/B2:F installed on COM4 2026-09-16; ordinary updater, software reset and exact four-bank readback pass; physical reset and final four-bank isolation pass. See docs/STR8N_V1_34_SECTOR_ROLE_BOARD_TEST_2026-09-16.md. Prior layout evidence: v1.34 COM4, 2026-09-15: guarded update/readback, power/physical/software reset, NMI/VIA1 IRQ/BRK, console, HIMON/ASM, J3, and optimized-worker B2:9 program/erase passed; broader release matrix remains incomplete.'
             validationReport = 'docs/STR8N_V1_34_SIZE_OPTIMIZATION.md'
             boardReport = 'docs/STR8N_V1_34_BOARD_TEST_2026-09-15.md'
             followupBoardReport = 'docs/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md'
@@ -104,8 +104,8 @@ $manifest = [ordered]@{
             candidateStart = '4000'
             candidateEnd = '4FFF'
             entry = '2000'
-            backup = 'Bank 1 CPU F000-FFFF / physical 0F000-0FFFF'
-            hardwareEvidence = 'v1.34 guarded update and exact live readback with preserved directory passed on COM4, 2026-09-15; docs/STR8N_V1_34_BOARD_TEST_2026-09-15.md'
+            backup = 'Bank 2 CPU F000-FFFF / physical 17000-17FFF'
+            hardwareEvidence = 'B2:F ordinary-updater backup and exact four-bank readback passed on COM4 2026-09-16; physical reset and final four-bank isolation pass. See docs/STR8N_V1_34_SECTOR_ROLE_BOARD_TEST_2026-09-16.md. Prior B1:F layout: v1.34 guarded update and exact live readback with preserved directory passed on COM4, 2026-09-15; docs/STR8N_V1_34_BOARD_TEST_2026-09-15.md'
             historicalCanonicalTopSha256 = '60B7FE19E42766AACFCDEF8320A35D9D5AB7C5F91F0FE3130041F2CFF4799734'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $TopUpdateS19Path).Hash
         }
@@ -116,9 +116,9 @@ $manifest = [ordered]@{
             candidateStart = '4000'
             candidateEnd = '4FFF'
             entry = '2000'
-            backup = 'Bank 1 CPU F000-FFFF / physical 0F000-0FFFF'
+            backup = 'Bank 2 CPU F000-FFFF / physical 17000-17FFF'
             clears = 'Bank 3 CPU FFB0-FFEF / physical 1FFB0-1FFEF'
-            installs = 'Bank 3 CPU FFF0=1E (B1:E WORK); FFF1=1F (B1:F protected B3:F backup); FFF2-FFF9 erased'
+            installs = 'Bank 3 CPU FFF0=FF (no flash WORK); FFF1=2F (B2:F protected B3:F backup); FFF2-FFF9 erased'
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $DirectoryRefreshS19Path).Hash
         }
         wdcmonv2ArchiveS19 = [ordered]@{
@@ -137,9 +137,9 @@ $manifest = [ordered]@{
             entry = '2000'
             receiveBufferStart = '4000'
             receiveBufferEnd = '4FFF'
-            externalCandidate = 'exact canonical 4096-byte top BIN; directory empty; FFF0=1E WORK; FFF1=1F top backup'
+            externalCandidate = 'exact canonical 4096-byte top BIN; directory empty; FFF0=FF no WORK; FFF1=2F top backup'
             destinationPolicy = 'B0 erased or byte-identical to B3; B1/B2 untouched; B3:F last'
-            hardwareStatus = 'v1.34 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-15; Windows physical-reset arm; Linux has no board proof'
+            hardwareStatus = 'Factory migration with the new role configuration has no board proof; ordinary-updater proof is separate. Prior configuration: v1.34 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-15; Windows physical-reset arm; Linux has no board proof'
             boardReport = 'docs/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md'
             candidateTopBin = 'BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin'
             candidateTopSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $Wdcmonv2InstallTopBinPath).Hash
@@ -159,12 +159,14 @@ $manifest = [ordered]@{
         configurationStart = 'FFF0'
         configurationEnd = 'FFF9'
         workSectorAddress = 'FFF0'
-        workSector = 'B1:E'
-        workSectorPacked = '1E'
+        workSector = 'NONE'
+        workSectorPacked = 'FF'
         topBackupSectorAddress = 'FFF1'
-        topBackupSector = 'B1:F'
-        topBackupSectorPacked = '1F'
-        reservedConfigurationStart = 'FFF2'
+        topBackupSector = 'B2:F'
+        topBackupSectorPacked = '2F'
+        fnvPolicyAddress = 'FFF2'
+        fnvPolicyDefault = 'FF'
+        reservedConfigurationStart = 'FFF3'
         reservedConfigurationEnd = 'FFF9'
         vectorsStart = 'FFFA'
         vectorsEnd = 'FFFF'

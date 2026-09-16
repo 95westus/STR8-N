@@ -188,7 +188,7 @@ if ($MenuTop) {
         'M  MAP+DIR', 'C  COPY+ENROLL', 'D  ADOPT DIR',
         'N  RENAME DIR', 'R  RECLAIM DIR',
         'E  ERASE RANGE', 'P  PUT AP $7000',
-        'U  UPDATE B3:F (BACKUP B1:F; RESET)', '?  MENU',
+        'U  UPDATE B3:F (BACKUP B2:F; RESET)', '?  MENU',
         'Q/ENTER  RETURN TO STR8-N', 'BM> ')
 }
 elseif (-not $In65) {

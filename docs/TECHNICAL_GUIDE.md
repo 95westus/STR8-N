@@ -1,5 +1,12 @@
 # STR8-N v1.34 Technical Guide
 
+Configuration update (2026-09-16): no flash WORK (`$FFF0=$FF`),
+protected backup B2:F (`$FFF1=$2F`). Installed on COM4 with guarded ordinary updater and exact four-bank readback;
+physical reset and final four-bank isolation pass. See
+[role-update evidence](STR8N_V1_34_SECTOR_ROLE_BOARD_TEST_2026-09-16.md).
+Earlier B1:E/B1:F hardware evidence remains specific to its original images.
+See the [role migration sequence](../../R-YORS/DOC/GUIDES/AP/SECTOR_ROLES_AND_RAM_TRANSIENTS_2026-09-16.md).
+
 Version 1.34 is the current release. Its exact image passed the
 [update/reset/console tests](STR8N_V1_34_BOARD_TEST_2026-09-15.md),
 [interrupt and worker tests](STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md), and
@@ -91,9 +98,10 @@ $F000-$FCF1  resident supervisor, installer, loader   3314 bytes
 $FCF2-$FD77  currently unused margin                   134 bytes
 $FD78-$FFAF  stored unified worker                    568 bytes
 $FFB0-$FFEF  four 16-byte bank-directory records       64 bytes
-$FFF0        WORK sector locator (`$1E` = B1:E)          1 byte
-$FFF1        protected B3:F backup locator (`$1F`=B1:F)  1 byte
-$FFF2-$FFF9  reserved configuration (erased)             8 bytes
+$FFF0        WORK sector locator (`$FF` = none)          1 byte
+$FFF1        protected B3:F backup locator (`$2F`=B2:F)  1 byte
+$FFF2        AP/FNV bank policy (default $FF: disabled)  1 byte
+$FFF3-$FFF9  reserved configuration (erased)             7 bytes
 $FFFA-$FFFF  NMI, RESET, IRQ/BRK vectors                 6 bytes
                                                        ----------
                                                        4096 bytes
@@ -485,11 +493,16 @@ the protected sector before another install to that bank.
 
 The programmer BIN and the candidate embedded by
 `str8n-v1.34-directory-refresh-2000.s19` contain an all-`$FF` directory and
-the current configuration: `$FFF0=$1E` selects B1:E as application WORK and
-`$FFF1=$1F` protects B1:F as the raw B3:F backup; `$FFF2-$FFF9` remain erased.
+the candidate configuration: `$FFF0=$FF` leaves flash WORK unassigned and
+`$FFF1=$2F` protects B2:F as the raw B3:F backup; `$FFF2-$FFF9` remain erased.
+The public contract assigns `$FFF2` to scoped AP/FNV bank eligibility. `$FF`
+and invalid signatures disable discovery; `$A0-$A7` encode a signature and
+three allowed-bank bits. R-YORS's candidate resolver consumes this constant;
+the default binary still contains `$FF`, and this source allocation does not
+provision or qualify a board policy. `$FFF3-$FFF9` remain unassigned.
 Refreshing erases every bank's journal and Bank-3 install identity but retains
-both configured roles. The onboard tool first verifies an exact live-sector
-backup in Bank 1 sector F and retains retry/restore control in RAM while the
+the candidate role configuration. The onboard tool first verifies an exact live-sector
+backup in Bank 2 sector F and retains retry/restore control in RAM while the
 Bank-3 reset sector is unavailable.
 
 The Top Update and Directory Refresh artifacts share the same guarded RAM

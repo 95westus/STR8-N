@@ -12,12 +12,17 @@ STR8_CONFIG_END              EQU             $FFF9
 STR8_CONFIG_NONE             EQU             $FF
 
 STR8_CONFIG_WORK_SECTOR      EQU             $FFF0
-STR8_CONFIG_WORK_DEFAULT     EQU             $1E
-; Default $1E is Bank 1, sector E.
+STR8_CONFIG_WORK_DEFAULT     EQU             $FF
+; No flash WORK sector; SPI SRAM allocation is a future hardware contract.
 
 STR8_CONFIG_TOP_BACKUP_SECTOR EQU            $FFF1
-STR8_CONFIG_TOP_BACKUP_DEFAULT EQU           $1F
-; Default $1F is Bank 1, sector F: protected raw backup of Bank 3 sector F.
+STR8_CONFIG_TOP_BACKUP_DEFAULT EQU           $2F
+; Default $2F is Bank 2, sector F: protected raw backup of Bank 3 sector F.
 
-; $FFF2-$FFF9 remain erased and unassigned. A future directory-expansion
-; locator may consume one of them without changing these sector roles.
+; Scoped FNV/AP discovery policy. Fresh images remain disabled ($FF).
+; Only $A0-$A7 are valid: low bits enroll B0/B1/B2; invalid values disable.
+; The consumer reads this byte in B3 before changing banks. This constant
+; does not provision a live board; updates require the guarded B3:F path.
+STR8_CONFIG_FNV_POLICY       EQU             $FFF2
+STR8_CONFIG_FNV_DEFAULT      EQU             $FF
+; $FFF3-$FFF9 remain erased and unassigned.

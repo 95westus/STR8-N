@@ -1,5 +1,22 @@
 # R-YORS Integration Boundary
 
+Configuration update (2026-09-16): no flash WORK (`$FFF0=$FF`),
+protected backup B2:F (`$FFF1=$2F`). Installed on COM4 with guarded ordinary updater and exact four-bank readback;
+physical reset and final four-bank isolation pass. See
+[role-update evidence](STR8N_V1_34_SECTOR_ROLE_BOARD_TEST_2026-09-16.md).
+Earlier B1:E/B1:F hardware evidence remains specific to its original images.
+
+Later workbench smoke on 2026-09-16 installed scoped HIMON/AM02 and live
+`$FFF2=$A6` through a separately guarded RAM policy updater. Physical reset
+and final four-bank isolation pass; canonical release defaults remain `$FF`.
+See the [R-YORS smoke record](../../R-YORS/DOC/GUIDES/LOGS/SCOPED_SMOKE_BOARD_2026-09-16.md).
+The [banked AP qualification](../../R-YORS/DOC/GUIDES/LOGS/SCOPED_QUALIFICATION_2026-09-16.md)
+now passes BANKDUMP, malformed/duplicate refusal, role predicates, paced LED/PCR
+observation, reset and final isolation. BANKDUMP is retained at B2:A; B1:A is
+erased. Expected B1 directory enrollment and installer journal updates remain.
+RAM-provider/HREC search is still open.
+See the [role migration sequence](../../R-YORS/DOC/GUIDES/AP/SECTOR_ROLES_AND_RAM_TRANSIENTS_2026-09-16.md).
+
 STR8-N owns its resident source, embedded worker, payload tools, protected 4K
 layout, directory rules, and public ABI. R-YORS consumes verified artifacts;
 it must not maintain a second live STR8-N source tree.
@@ -50,10 +67,13 @@ record service version/capabilities, and hashes for every maintained RAM tool.
 Bank Maintenance loads at `$2000-$39B2`, keeps its private worker at
 `$3400-$362A`, and offers map, copy+directory, adopt, reclaim, rename, erase,
 AP operations, and protected-top maintenance.
-The directory-refresh image preserves a verified copy in Bank 1 sector F
-before clearing Bank 3 `$FFB0-$FFEF`; it then installs `$FFF0=$1E` for B1:E
-WORK, `$FFF1=$1F` for the protected B1:F B3:F backup, and leaves
-`$FFF2-$FFF9` erased. The
+The directory-refresh image preserves a verified copy in Bank 2 sector F
+before clearing Bank 3 `$FFB0-$FFEF`; it then installs `$FFF0=$FF` for no flash
+WORK, `$FFF1=$2F` for the protected B2:F B3:F backup, and leaves
+`$FFF2-$FFF9` erased. The public contract now exports
+`STR8_CONFIG_FNV_POLICY=$FFF2` and `STR8_CONFIG_FNV_DEFAULT=$FF`; manifest layout
+records those values and reserves `$FFF3-$FFF9`. The new sector-role defaults change both top and public-contract hashes.
+The role migration and FNV policy enrollment remain separate board gates. The
 R-YORS lock binds the core top-sector/public-contract content needed by its build.
 R-YORS verifies the locked values, resident ABI gates, fixed service
 addresses, vectors, and protected layout before constructing Bank 3.

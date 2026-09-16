@@ -77,11 +77,11 @@ for ($offset = $DirectoryOffset; $offset -le $DirectoryEndOffset; $offset++) {
         throw ('Top BIN directory byte ${0:X3} is ${1:X2}; expected erased $FF' -f $offset, $top[$offset])
     }
 }
-if ($top[$WorkSectorOffset] -ne 0x1E) {
-    throw ('Top BIN WORK locator is ${0:X2}; expected B1:E $1E' -f $top[$WorkSectorOffset])
+if ($top[$WorkSectorOffset] -ne 0xFF) {
+    throw ('Top BIN WORK locator is ${0:X2}; expected unassigned $FF' -f $top[$WorkSectorOffset])
 }
-if ($top[$TopBackupSectorOffset] -ne 0x1F) {
-    throw ('Top BIN protected backup locator is ${0:X2}; expected B1:F $1F' -f $top[$TopBackupSectorOffset])
+if ($top[$TopBackupSectorOffset] -ne 0x2F) {
+    throw ('Top BIN protected backup locator is ${0:X2}; expected B2:F $2F' -f $top[$TopBackupSectorOffset])
 }
 for ($offset = $TopBackupSectorOffset + 1; $offset -le $ConfigEndOffset; $offset++) {
     if ($top[$offset] -ne 0xFF) {
@@ -115,8 +115,8 @@ Write-Host ('TOP BIN              = {0}; {1} bytes' -f $topFullPath, $top.Length
 Write-Host ('TOP BIN SHA-256      = {0}' -f $topHash)
 Write-Host ('CHANGED PHYSICAL     = $1F000-$1FFFF only')
 Write-Host ('ERASED DIRECTORY     = $1FFB0-$1FFEF')
-Write-Host ('WORK SECTOR LOCATOR  = $1FFF0:$1E (B1:E)')
-Write-Host ('TOP BACKUP LOCATOR   = $1FFF1:$1F (B1:F; protected B3:F backup)')
+Write-Host ('WORK SECTOR LOCATOR  = $1FFF0:$FF (unassigned)')
+Write-Host ('TOP BACKUP LOCATOR   = $1FFF1:$2F (B2:F; protected B3:F backup)')
 Write-Host ('RESERVED CONFIG      = $1FFF2-$1FFF9 erased')
 Write-Host ('RESET VECTOR         = $F000')
 Write-Host ('PROGRAMMER IMAGE     = {0}; {1} bytes' -f $outFullPath, $merged.Length)

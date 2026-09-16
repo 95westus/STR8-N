@@ -1,5 +1,12 @@
 # STR8-N v1.34 Operator's Guide
 
+Configuration update (2026-09-16): no flash WORK (`$FFF0=$FF`),
+protected backup B2:F (`$FFF1=$2F`). Installed on COM4 with guarded ordinary updater and exact four-bank readback;
+physical reset and final four-bank isolation pass. See
+[role-update evidence](STR8N_V1_34_SECTOR_ROLE_BOARD_TEST_2026-09-16.md).
+Earlier B1:E/B1:F hardware evidence remains specific to its original images.
+See the [role migration sequence](../../R-YORS/DOC/GUIDES/AP/SECTOR_ROLES_AND_RAM_TRANSIENTS_2026-09-16.md).
+
 ## EDU LED patterns (v1.34)
 
 These are the implemented patterns while STR8-N owns the optional EDU LEDs.
@@ -328,8 +335,8 @@ Before starting:
 
 1. Keep both the v1.1 rollback BIN and
    `BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin` off-board.
-2. Confirm Bank 1 CPU `$F000-$FFFF` may be replaced by the fresh protected
-   raw backup (`STR8_TOP_SAFE`, physical `$0F000-$0FFFF`). The successful
+2. Confirm Bank 2 CPU `$F000-$FFFF` may be replaced by the fresh protected
+   raw backup (`STR8_TOP_SAFE`, physical `$17000-$17FFF`). The successful
    updater leaves that backup in place; it is not scratch space afterward.
 3. Install `ryors-v1.2-himon-asm-bank3-8-e.s19` into Bank 3 sectors `8-E`
    using the existing STR8-N `I` command.
@@ -339,8 +346,8 @@ Before starting:
 Then update the protected top sector:
 
 1. Type `L` and send `str8n-v1.34-top-update-2000.s19` at normal full speed.
-2. Check that the tool prints `BACKUP B1:F; TARGET B3:F`.
-3. Type the exact first confirmation `BACKUP B1F` only if Bank 1 sector F may
+2. Check that the tool prints `BACKUP B2:F; TARGET B3:F`.
+3. Type the exact first confirmation `BACKUP B2F` only if Bank 2 sector F may
    be replaced by the fresh protected backup.
 4. Require `BACKUP VERIFIED` before continuing.
 5. Type the exact final confirmation `STR8-N 1.34`.
@@ -352,8 +359,8 @@ prints `ABORT - NO ACTIVE TOP UPDATE`, and returns to STR8-N. Any other
 nonmatching confirmation has the same safe result.
 
 If active programming fails, do not reset. At the RAM recovery prompt use `R`
-to retry the embedded v1.34 image or `O` to restore the verified Bank-1 backup.
-If the RAM tool cannot recover, externally copy physical `$0F000-$0FFFF` back
+to retry the embedded v1.34 image or `O` to restore the verified Bank-2 backup.
+If the RAM tool cannot recover, externally copy physical `$17000-$17FFF` back
 to `$1F000-$1FFFF`, or program one of the retained 4096-byte BINs at physical
 `$1F000`.
 
@@ -583,26 +590,26 @@ below or the external-programmer fallback.
 
 `BUILD/v1.34/s19/str8n-v1.34-directory-refresh-2000.s19` is a dedicated
 RAM-resident sector-F rewrite. It embeds the exact current 4096-byte top BIN,
-whose directory is erased and whose configuration publishes B1:E as WORK at
-`$FFF0=$1E` and B1:F as the protected Bank-3:F backup at `$FFF1=$1F`.
+whose directory is erased and whose candidate configuration leaves flash WORK
+unassigned at `$FFF0=$FF` and protects B2:F for backup at `$FFF1=$2F`.
 Unlike the normal top updater, it intentionally does not restore
 the live `$FFB0-$FFEF` directory bytes into the candidate before programming;
 both updater variants install the candidate `$FFF0-$FFF9` configuration.
 
-The refresh otherwise uses the hardware-proven top-updater safety path. It
-copies the complete live Bank-3 sector F into Bank 1 sector F, verifies that
+The refresh retains the top-updater safety path, with new B2:F routing still
+requiring board proof. It copies the live Bank-3 sector F into Bank 2 sector F, verifies that
 backup, runs from RAM while Bank-3 sector F is unavailable, verifies the new
 sector, and offers retry or restoration after a write failure.
 
-Before starting, Bank 1 sector F must be replaceable. Its current contents are
+Before starting, Bank 2 sector F must be replaceable. Its current contents are
 replaced by a fresh exact backup of the live Bank-3 sector F, and the backup is
 retained as a protected role after success.
 
 1. At STR8-N, type `L`, then `S19`, and send
    `BUILD/v1.34/s19/str8n-v1.34-directory-refresh-2000.s19`.
 2. Require the title `STR8-N 1.34 DIRECTORY REFRESH` and
-   `BACKUP B1:F; TARGET B3:F`.
-3. Type `BACKUP B1F` only if Bank 1 sector F may be replaced by that backup.
+   `BACKUP B2:F; TARGET B3:F`.
+3. Type `BACKUP B2F` only if Bank 2 sector F may be replaced by that backup.
 4. Require `BACKUP VERIFIED` and record the safe/target physical ranges and
    old-sector checksum.
 5. Type the exact final confirmation `ERASE DIRECTORY`.
@@ -614,10 +621,10 @@ active erase, prints `ABORT - NO ACTIVE DIRECTORY REFRESH`, and returns to
 STR8-N. Any other nonmatching confirmation has the same safe result.
 
 If active programming fails, do not reset. Type `R` to retry the erased-pocket
-candidate or `O` to restore the verified old sector from Bank 1. After success,
+candidate or `O` to restore the verified old sector from Bank 2. After success,
 physical RESET returns to STR8-N with D0-D3 and all install journals erased.
 Bank payload sectors are unchanged, but `J0`-`J3` remain directory-gated until
-the desired rows are enrolled again. Keep Bank 1 sector F intact until the
+the desired rows are enrolled again. Keep Bank 2 sector F intact until the
 refresh and subsequent enrollment proof are accepted.
 
 ## External-programmer recovery
@@ -630,8 +637,8 @@ file offset $000-$FFF  -> CPU $F000-$FFFF
 ```
 
 Do not program byte zero of this file at physical device address zero. A new
-top-sector BIN contains an erased directory, `$FFF0=$1E` for B1:E WORK,
-`$FFF1=$1F` for the protected B1:F B3:F backup, and erased `$FFF2-$FFF9`
+top-sector BIN contains an erased directory, `$FFF0=$FF` for no flash WORK,
+`$FFF1=$2F` for the protected B2:F B3:F backup, and erased `$FFF2-$FFF9`
 reserve. Writing it therefore clears all STR8-N install
 journals and Bank-3 identity; existing
 Bank 0-2 contents are not erased, but `J0`-`J2` remain directory-gated until
@@ -666,7 +673,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/build_directory_refres
 The merge tool requires two distinct readback paths and refuses them unless
 both files are exactly 128 KiB with identical SHA-256 hashes. It also refuses
 a top BIN that is not exactly 4096 bytes, a mismatched STR8-N signature/RESET
-vector, an unerased directory, role locators other than `$1E/$1F`, or non-`$FF`
+vector, an unerased directory, role locators other than `$FF/$2F`, or non-`$FF`
 bytes in `$FFF2-$FFF9`.
 It never modifies either archived readback and changes only output offsets
 `$1F000-$1FFFF`.
