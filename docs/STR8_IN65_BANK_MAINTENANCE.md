@@ -12,9 +12,9 @@ quiet-start sequence it supports is canonical v1.34; the tool's WDC-specific
 defaults and `F` command remain isolated in RAM. Load it with the running STR8
 `L` command. Its S9 record starts the menu at `$2000` automatically.
 
-The v1.34 migration artifacts are host-qualified. The complete factory
-migration remains board-proven for v1.32; do not relabel that earlier proof as
-v1.34 until the factory path is repeated with these exact artifacts.
+The packaged v1.34 maintenance image passed D0 adoption and map readback in
+the [2026-09-15 complete factory migration](STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md).
+That run verified the exact resulting top and all four banks independently.
 
 ## D0 in the current migration image
 
