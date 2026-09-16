@@ -1,5 +1,48 @@
 # STR8-N v1.34 Operator's Guide
 
+## EDU LED patterns (v1.34)
+
+These are the implemented patterns while STR8-N owns the optional EDU LEDs.
+The four red LEDs use bits 7-4; the four green LEDs use bits 3-0. In the
+table, bits run from 7 down to 0, and `1` means illuminated.
+
+| Value | Red bits / green bits | Meaning |
+| --- | --- | --- |
+| `$00` | `0000 / 0000` | Display released; the next application owns it |
+| `$01` | `0000 / 0001` | Running; also restored when the resident flash worker returns |
+| `$21` | `0010 / 0001` | Waiting for input; FTDI unconfigured or suspended |
+| `$43` | `0100 / 0011` | Waiting for input; FTDI configured |
+| `$07` | `0000 / 0111` | Receive activity |
+| `$0B` | `0000 / 1011` | Transmit activity |
+| `$F0` | `1111 / 0000` | Flash mutation or its required verification is active |
+
+**All four red LEDs on, all green off (`$F0`): leave RESET, NMI, USB, and
+power untouched during the active flash operation.** Follow the terminal's
+prompts and verification result; LEDs alone do not establish success or
+permission to interrupt an operation.
+
+Activity patterns latch until another state replaces them. A steady `$07`
+or `$0B` is not a transfer-rate indicator. There is **no periodic heartbeat**
+in v1.34. Host presence is sampled when entering the main command wait;
+`$43` does not prove a terminal application is open, and a host change need
+not appear until the next command wait.
+
+The resident flash worker restores `$01` on both successful and failed
+returns. The factory migration/restore RAM tool instead clears its `$F0`
+display to `$00` after successful verification before waiting or handing
+off. Neither `$01` nor all LEDs off is a standalone success indication.
+
+After handoff to HIMON, ASM-F2, a WDC guest, or another application, that
+program may display its own patterns. This legend no longer defines their
+meaning. Public STR8-N console calls leave the application's LEDs alone.
+
+The old `$41` unsampled input-wait pattern is historical; the current main
+command wait uses `$21` or `$43`. Detailed red error codes and heartbeat
+patterns in the [design record](LED_STATUS_PROPOSAL.md) are proposals, not
+implemented v1.34 diagnostics.
+
+## Validation status
+
 The v1.22 `C`/`W` selector and warm timeout were board-accepted by the operator
 on 2026-08-19. The exact test card, retained transcript, and acceptance are in
 [STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md](STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md).
@@ -13,8 +56,9 @@ behavior. The accepted v1.33 binary passed guarded top update, exact readback,
 software-reset entry, and HIMON warm recovery on COM4 on 2026-09-10. The
 private `$07` receive and `$0B` transmit LED behavior remains from v1.31. The
 complete v1.32 factory migration and its RAM-worker `$F0` mutation indication
-passed on COM4 on 2026-09-08; v1.34 migration artifacts are host-qualified but
-that complete path has not been repeated on hardware. See the
+passed on COM4 on 2026-09-08. The
+[complete v1.34 migration](STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md)
+also passed on 2026-09-15, without adding visual LED observations. See the
 [I/O activity proof](LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md), the
 [v1.33 top-update board report](STR8N_V1_33_TOP_UPDATE_BOARD_TEST_2026-09-10.md), the
 [v1.32 reset-source board report](STR8N_V1_32_RESET_SOURCE_BOARD_TEST_2026-09-07.md), the

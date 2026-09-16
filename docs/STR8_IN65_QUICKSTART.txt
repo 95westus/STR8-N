@@ -1,11 +1,17 @@
 STR8-iN/65 QUICK START
 Factory WDCMONv2 -> STR8-N 1.34
 
-The v1.34 artifacts are host-qualified.  The complete v1.32 factory migration
-is board-accepted on SXB2 HW 3.00 / WDCMON 2.00 with BF/B5 flash on COM4,
-2026-09-08, including the operator-observed LED $F0 cue.
+The complete v1.34 factory migration passed on SXB2 HW 3.00 / WDCMON 2.00
+with BF/B5 flash on COM4, 2026-09-15.  That run did not add visual LED
+observations; the migration's operator-observed $F0 cue was accepted in the
+v1.32 run on 2026-09-08.
 
-WINDOWS 11 HOST - v1.32 BOARD-PROVEN REFERENCE
+WINDOWS 11 HOST - v1.34 BOARD-PROVEN WITH PHYSICAL RESET ARM
+
+The accepted v1.34 run used -PhysicalResetArmSeconds 60 on the Windows
+launcher, then physical RESET while its arm window was active.  See
+DOC\WDCMONV2_MIGRATION.md for this option if the default reset/Enter gate
+misses the WDC monitor.
 
 NEEDED
 - Windows 11 with Windows PowerShell 5.1 (powershell.exe).
@@ -114,6 +120,37 @@ SAFETY
 Do not press RESET, assert NMI, disconnect USB, or remove power while ERASE
 or PROGRAM is displayed.  Bank 0 remains an opaque byte-for-byte factory
 guest.  Its D0 record is stored only in the Bank-3 directory.
+
+EDU LED QUICK REFERENCE - IMPLEMENTED v1.34 PATTERNS
+
+Red LEDs are bits 7-4; green LEDs are bits 3-0.  Below, bits run from 7 to 0;
+1 means illuminated.  These meanings apply while STR8-N owns the display.
+
+Value  Red / Green  Meaning
+$00    0000 / 0000  Display released to the next application.
+$01    0000 / 0001  Running; also the resident flash worker's return state.
+$21    0010 / 0001  Waiting for input; FTDI unconfigured or suspended.
+$43    0100 / 0011  Waiting for input; FTDI configured.
+$07    0000 / 0111  Receive activity.
+$0B    0000 / 1011  Transmit activity.
+$F0    1111 / 0000  Flash mutation or its required verification is active.
+
+All red on, all green off ($F0): leave RESET, NMI, USB, and power untouched
+during the active flash operation.  Follow the terminal's prompts and result.
+The migration/restore RAM tool clears $F0 to $00 after successful verification
+before waiting or handing off.  The resident worker returns to $01 on both
+success and failure.  Neither $01 nor all LEDs off alone means success.
+
+Activity latches until another state replaces it; there is no periodic
+heartbeat.  $43 does not prove a terminal is open.  Host presence is sampled
+at the main command wait, so a host change may appear only on the next wait.
+Once HIMON, ASM-F2, or a WDC/user application takes over, it owns the LEDs
+and may assign different meanings.  Proposed detailed error patterns are
+not implemented v1.34 diagnostics; $41 is an earlier input-wait pattern.
+
+This card includes the legend for offline use.  The full Operator's Guide
+in the source repository is docs/OPERATORS_GUIDE.md, "EDU LED patterns (v1.34)":
+https://github.com/95westus/STR8-N/blob/main/docs/OPERATORS_GUIDE.md#edu-led-patterns-v134
 
 DETAILS
 
