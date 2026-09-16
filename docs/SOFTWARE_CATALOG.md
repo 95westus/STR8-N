@@ -1,83 +1,70 @@
-# STR8-N 1.29 / HIMON / ASM-F2 Software
+# STR8-N v1.34 software catalog
 
-The v1.34 package retains this software and the identical public console ABI.
-Versioned software acceptance below remains the original v1.29 evidence.
+The standalone STR8-N release contains reset/recovery firmware, installation
+and maintenance tools, and their manuals. HIMON, ASM-F2, and their application
+collections have separate release ZIPs. See the [manual index](RELEASE_MANUALS.md).
 
-This directory is the current, board-facing software shelf for the packaged
-STR8-N 1.29, HIMON, and ASM-F2 stack. Files here are maintained applications,
-utilities, demonstrations, or advanced tools. Pre-1.29 STR8-N releases and
-regression/proof fixtures remain under `ARCHIVE` and are not presented here.
+## Included firmware and tools
 
-The retained `v1.2` text in R-YORS source history identifies the independent
-R-YORS/AP generation, not an old STR8-N release. Packaged display names remove
-that historical prefix where it is not part of the program's identity. The
-STR8-N public ABI used by these tools is byte-identical between the accepted
-1.23 baseline and 1.29.
+| Release file | Use |
+| --- | --- |
+| `ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin` | Exact 4 KiB programmer image, Bank 3 CPU `$F000-$FFFF`, device offset `$1F000` |
+| `ARTIFACTS/str8n-v1.34-f000.s19` | Resident S19 for integration; resident `I` cannot overwrite protected sector F |
+| `ARTIFACTS/str8n-v1.34-worker-0200.s19` | Worker build/evidence component, not a standalone operator application |
+| `ARTIFACTS/str8n-v1.34-bank-maint-2000.s19` | RAM map, copy, adoption, reclaim, erase, and AP maintenance |
+| `ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.s19` | Expanded maintenance menu, including guarded top update |
+| `ARTIFACTS/str8n-v1.34-top-update-2000.s19` | Guarded top-sector update with verified backup |
+| `ARTIFACTS/str8n-v1.34-directory-refresh-2000.s19` | Guarded directory refresh; deliberately clears existing directory records |
+| `APPLICATIONS/str8n-v1.34-bank-maint-menu-2000.a` | ASM-F2 image carrier matching the expanded maintenance S19 |
+| `TOOLS/convert_guest_bin_to_s19.ps1` | Convert an owner-supplied guest BIN into S19 |
+| `TOOLS/compose_str8n_install_s19.ps1` | Validate and prepare dense installer S19 |
+| `PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip` | Separate factory-migration workflow with project-written tools |
 
-## Ready-to-load S19 programs
+STR8 `L` loads and executes the RAM tools' `$2000` entry. Read the
+[operator guide](OPERATORS_GUIDE.md) before any maintenance command; several
+operations erase or program flash and require the shown confirmations.
+The isolated WDC adoption tool lives inside the migration kit and has its own
+[maintenance guide](STR8_IN65_BANK_MAINTENANCE.md).
 
-From the HIMON `>` prompt, enter `L`, send one S19, then use the listed `G`
-address:
+## Bank Maintenance from ASM-F2
 
-| Program | Run | Purpose |
-| --- | --- | --- |
-| `GAMES/life-2000.s19` | `G 2000` | Interactive Conway's Life |
-| `DEMOS/pia-led-show-2000.s19` | `G 2000` | Eight-LED PIA demonstration |
-| `UTILITIES/bank-audit-2000.s19` | `G 2000` | Read-only all-bank CRC/role audit |
-| `UTILITIES/bank-dump-2000.s19` | `G 2000` | Read-only sector/AP inspection and dump |
+The `.a` file is a generated `DB` image carrier, not symbolic assembly source.
+It emits the exact 12,288-byte maintenance menu at `$2000-$4FFF`, including
+the canonical top-sector candidate at `$4000`. The release verifier compares
+every emitted byte with the supplied S19.
 
-The utility board cards in `UTILITIES` contain the detailed operator flows.
+With separately installed HIMON and ASM-F2:
 
-## Maintained onboard ASM-F2 sources
+1. Enter `ASM NEW` from HIMON.
+2. Send the complete `.a` file; stop on any `ERR=` response.
+3. At `SEAL>`, enter `.` to return to HIMON.
+4. Enter `G 2000` to start maintenance and follow its prompts.
 
-`ASM-SOURCES` contains complete `.a` inputs for `ASM NEW`. Paste one complete
-file, finish its documented `SEAL>` flow, and run/package it as directed by
-its comments or board card.
+Edit the project's symbolic `.asm` sources and regenerate the carrier when
+developing the tool. The carrier is provided for convenient board loading.
 
-The ten maintained sources are:
+## Separate HIMON and ASM-F2 releases
 
-1. `asm-session-report-ap-2000.a`
-2. `bank-audit-2000.a`
-3. `bank-crc-all-3000.a`
-4. `bank-dump-2000.a`
-5. `flash-bank-dump-ap-2000.a`
-6. `flash-bank-read-ap-2000.a`
-7. `pia-led-show-2000.a`
-8. `terminal-answerback-vt100-3000.a`
-9. `vt102-exerciser-7000.a`
-10. `vt525-exerciser-7000.a`
+The [R-YORS releases](https://github.com/95westus/R-YORS/releases) provide
+HIMON, ASM-F2, their relevant manuals, and maintained applications. Those
+collections include bank audit/dump/CRC tools, AP flash read/dump tools, an
+ASM session report, LED and terminal examples, and appropriately licensed
+games selected by their release manifests. Consult those manifests and
+license notices for exact contents and prerequisites.
 
-The terminal sources use the stable raw-console ABI retained by STR8-N 1.29.
-Only one `$7000` terminal exerciser should be assembled/run at a time.
+These files are not duplicated into the STR8-N distribution. Use the
+[component installation guide](HIMON_ASMF2_AFTER_STR8N.md) after factory
+migration or when updating an existing board.
 
-## Current-stack rebuild validation
+## Qualification programs and distribution boundary
 
-The shelf is rebuilt from the current source stack, not accepted merely because
-an older S19 exists. `make -C R-YORS/SRC asm-test` rebuilds and checks HIMON,
-ASM-F2, APMAN, AP Store, the map-sensitive sources, host `.asm` counterparts,
-and all ten onboard `.a` inputs. The test includes the STR8-N 1.29 public ABI,
-current `$F010`/`$0203` read-only bank interface, ASM-F2's 64-symbol/source-line
-limits, AP-v2 envelopes, terminal source layouts, and WDC host-assembly checks
-where a host counterpart is defined.
+`TESTS/` contains optional console ABI, IRQ, and LED/worker test programs.
+The worker test can program and erase flash. Use the documented procedure
+in the [follow-up report](STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md);
+these are qualification fixtures, not ordinary applications.
 
-`make -C R-YORS/SRC release-files` then rebuilds the four ready-to-load S19
-programs and publishes the checked artifacts. The STR8-N `release-package`
-target copies those exact files and validates their dense address ranges, S9
-entries, package inventory, and SHA-256 list.
-
-## Advanced persistent tools
-
-`ADVANCED/APMAN` contains the APMAN manager, its initial dense Bank-2 carrier,
-and the exact AP-v2 envelope. Follow `APMAN_V1_BOARD_TEST.md`; preparation is
-destructive and requires its explicit confirmations.
-
-`ADVANCED/AP-STORE` contains the current chain-install and Slice-6 catalog
-packages. These are not ordinary HIMON `L` programs; use their documented
-package/install workflow.
-
-## Deliberately not on the active shelf
-
-Expression rejection, rollback, opcode coverage, relocation, canary, linker
-smoke, and symbol-capacity files are tests or proof fixtures. Historical
-Life16/biorhythm and pre-split `$F003` writers are also excluded because they
-are not current STR8-N 1.29 operator software.
+All supplied STR8-N code carries the project MIT license. The release does
+not include WDC tool executables, WDCMON firmware, stock bank images,
+owner captures, or games. Migration tools communicate with firmware already
+on the owner's board and keep any archive bytes local. See the
+[provenance policy](WDCMONV2_MIGRATION_PROVENANCE.md).

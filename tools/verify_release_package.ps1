@@ -1,170 +1,243 @@
-param([string]$Root = $PSScriptRoot)
+param(
+    [string]$Root = $PSScriptRoot,
+    [string]$ZipPath = ''
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-$rootFull = [IO.Path]::GetFullPath($Root)
-$sumsPath = Join-Path $rootFull 'SHA256SUMS.txt'
-if (-not (Test-Path -LiteralPath $sumsPath -PathType Leaf)) { throw 'SHA256SUMS.txt is missing' }
-
-$required = @(
+$rootFull = [IO.Path]::GetFullPath($Root).TrimEnd('\', '/')
+$canonicalHash = '9538D97854BA9D5D76143CBA0FEDB3B2E7CE18F977CE89557406E63404026CB7'
+$expected = @(
+    'README.md', 'CHECK-LINKS.ps1',
+    'DOC/HIMON_ASMF2_AFTER_STR8N.md', 'DOC/SOFTWARE_CATALOG.md', 'DOC/R_YORS_INTEGRATION.md',
     'ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin',
     'ARTIFACTS/str8n-v1.34-f000.s19',
+    'ARTIFACTS/str8n-v1.34-worker-0200.s19',
     'ARTIFACTS/str8n-v1.34-bank-maint-2000.s19',
     'ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.s19',
+    'APPLICATIONS/str8n-v1.34-bank-maint-menu-2000.a',
     'ARTIFACTS/str8n-v1.34-top-update-2000.s19',
     'ARTIFACTS/str8n-v1.34-directory-refresh-2000.s19',
-    'ARCHIVE/TESTS/str8n-v1.34-console-abi-test-2000.s19',
-    'ARCHIVE/TESTS/str8n-v1.34-irq-test-2000.s19',
-    'ARCHIVE/TESTS/str8n-v1.34-led-worker-test-2000.s19',
-    'ARCHIVE/TESTS/README.md',
-    'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19',
-    'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19',
-    'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19',
-    'OPTIONAL/HIMON-ASM/INSTALL.md',
-    'SOFTWARE/README.md',
-    'SOFTWARE/GAMES/life-2000.s19',
-    'SOFTWARE/DEMOS/pia-led-show-2000.s19',
-    'SOFTWARE/UTILITIES/bank-audit-2000.s19',
-    'SOFTWARE/UTILITIES/bank-dump-2000.s19',
-    'SOFTWARE/ASM-SOURCES/asm-session-report-ap-2000.a',
-    'SOFTWARE/ASM-SOURCES/bank-audit-2000.a',
-    'SOFTWARE/ASM-SOURCES/bank-crc-all-3000.a',
-    'SOFTWARE/ASM-SOURCES/bank-dump-2000.a',
-    'SOFTWARE/ASM-SOURCES/flash-bank-dump-ap-2000.a',
-    'SOFTWARE/ASM-SOURCES/flash-bank-read-ap-2000.a',
-    'SOFTWARE/ASM-SOURCES/pia-led-show-2000.a',
-    'SOFTWARE/ASM-SOURCES/terminal-answerback-vt100-3000.a',
-    'SOFTWARE/ASM-SOURCES/vt102-exerciser-7000.a',
-    'SOFTWARE/ASM-SOURCES/vt525-exerciser-7000.a',
-    'SOFTWARE/ADVANCED/APMAN/apman-7000.s19',
-    'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.s19',
-    'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.bin',
-    'SOFTWARE/ADVANCED/APMAN/apman-v1.ap',
-    'SOFTWARE/ADVANCED/APMAN/APMAN_V1_BOARD_TEST.md',
-    'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-chain-install-tool-package-4000.s19',
-    'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19',
-    'SOFTWARE/UTILITIES/BANK_AUDIT_AP_CARD.md',
-    'SOFTWARE/UTILITIES/BANK_DUMP_AP_CARD.md',
+    'TESTS/str8n-v1.34-console-abi-test-2000.s19',
+    'TESTS/str8n-v1.34-irq-test-2000.s19',
+    'TESTS/str8n-v1.34-led-worker-test-2000.s19',
+    'TESTS/README.md',
+    'TOOLS/convert_guest_bin_to_s19.ps1',
+    'TOOLS/compose_str8n_install_s19.ps1',
+    'INCLUDE/str8n-public.inc',
     'MANIFEST/str8n-manifest.json',
-    'DOC/STR8N_V1_30_RECLAIM.md',
-    'DOC/STR8N_CONSERVATIVE_RESIDENT_PASS.md',
-    'DOC/STR8N_CONSERVATIVE_BOARD_TRANSCRIPT.txt',
-    'DOC/STR8N_V1_30_BOARD_TRANSCRIPT.txt',
-    'DOC/LED_STATUS_PROPOSAL.md',
-    'DOC/LED_STATUS_BOARD_TEST_2026-09-06.md',
-    'DOC/LED_STATUS_BOARD_TRANSCRIPT_2026-09-06.txt',
-    'DOC/LED_HOST_PRESENCE_BOARD_TEST_2026-09-06.md',
-    'DOC/LED_HOST_PRESENCE_BOARD_TRANSCRIPT_2026-09-06.txt',
-    'DOC/LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md',
-    'DOC/LED_IO_ACTIVITY_BOARD_TRANSCRIPT_2026-09-06.txt',
-    'DOC/STR8N_V1_31_VERSION_BOARD_TEST_2026-09-06.md',
-    'DOC/STR8N_V1_31_VERSION_BOARD_TRANSCRIPT_2026-09-06.txt',
-    'DOC/STR8N_V1_32_RESET_SOURCE_BOARD_TEST_2026-09-07.md',
-    'DOC/STR8N_V1_32_RESET_SOURCE_BOARD_TRANSCRIPT_2026-09-07.txt',
-    'DOC/STR8N_V1_33_TOP_UPDATE_BOARD_TEST_2026-09-10.md',
+    'PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip',
+    'DOC/OPERATORS_GUIDE.md',
+    'DOC/TECHNICAL_GUIDE.md',
+    'DOC/EXAMPLES.md',
+    'DOC/MAPS.md',
+    'DOC/BANK_0_2_GUEST_S19.md',
+    'DOC/RESET_SOURCE_CONTRACT.md',
+    'DOC/STR8_IN65_BANK_MAINTENANCE.md',
+    'DOC/WDCMONV2_MIGRATION.md',
+    'DOC/WDCMONV2_MIGRATION_PROVENANCE.md',
     'DOC/STR8N_V1_34_SIZE_OPTIMIZATION.md',
     'DOC/STR8N_V1_34_BOARD_TEST_2026-09-15.md',
-    'DOC/STR8N_V1_34_BOARD_TRANSCRIPT_2026-09-15.txt',
     'DOC/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md',
-    'DOC/STR8N_V1_34_FOLLOWUP_BOARD_TRANSCRIPT_2026-09-15.txt',
-    'DOC/STR8N_V1_33_TOP_UPDATE_BOARD_TRANSCRIPT_2026-09-10.txt',
-    'DOC/RESET_SOURCE_CONTRACT.md',
-    'PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip',
-    'PACKAGE-README.txt', 'SHA256SUMS.txt'
-)
-foreach ($relative in $required) {
-    if (-not (Test-Path -LiteralPath (Join-Path $rootFull $relative) -PathType Leaf)) {
-        throw "Required release file is missing: $relative"
-    }
-}
+    'DOC/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md',
+    'VERIFY-PACKAGE.ps1', 'LICENSE', 'PACKAGE-README.txt',
+    'PACKAGE-MANIFEST.json', 'SHA256SUMS.txt'
+) | Sort-Object
+$actual = @(Get-ChildItem -LiteralPath $rootFull -Recurse -File | ForEach-Object {
+    $_.FullName.Substring($rootFull.Length + 1).Replace('\', '/')
+} | Sort-Object)
+if (($actual -join [char]10) -cne ($expected -join [char]10)) { throw 'Standalone release file allowlist mismatch' }
 
-foreach ($line in Get-Content -LiteralPath $sumsPath) {
+$checked = @{}
+foreach ($line in Get-Content -LiteralPath (Join-Path $rootFull 'SHA256SUMS.txt')) {
     if ($line -notmatch '^([0-9A-F]{64})  (.+)$') { throw "Invalid checksum row: $line" }
-    $path = Join-Path $rootFull $Matches[2]
-    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Checksummed file is missing: $($Matches[2])" }
-    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash -ne $Matches[1]) {
-        throw "Checksum mismatch: $($Matches[2])"
+    $hash, $relative = $Matches[1], $Matches[2]
+    if ($relative -notin $expected -or $relative -eq 'SHA256SUMS.txt' -or $checked.ContainsKey($relative)) {
+        throw "Unexpected or repeated checksum path: $relative"
+    }
+    if ((Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $rootFull $relative)).Hash -ne $hash) {
+        throw "Checksum mismatch: $relative"
+    }
+    $checked[$relative] = $hash
+}
+if ($checked.Count -ne ($expected.Count - 1)) { throw 'Checksum inventory is incomplete' }
+
+$manifest = Get-Content -Raw -LiteralPath (Join-Path $rootFull 'PACKAGE-MANIFEST.json') | ConvertFrom-Json
+if ($manifest.schema -ne 1 -or $manifest.product -ne 'STR8-N' -or $manifest.version -ne '1.34' -or
+        $manifest.canonicalTopSha256 -ne $canonicalHash -or
+        $manifest.stockWdcmonv2FirmwareIncluded -ne $false -or
+        $manifest.localBankArchivesIncluded -ne $false -or $manifest.otherProductPayloadsIncluded -ne $false) {
+    throw 'Standalone release identity/provenance is invalid'
+}
+$manifestNames = @($manifest.files | ForEach-Object { $_.file } | Sort-Object)
+$payloadNames = @($expected | Where-Object { $_ -notin @('PACKAGE-MANIFEST.json', 'SHA256SUMS.txt') })
+if (($manifestNames -join [char]10) -cne ($payloadNames -join [char]10)) { throw 'Manifest inventory mismatch' }
+foreach ($row in $manifest.files) {
+    $path = Join-Path $rootFull $row.file
+    if ([int64]$row.bytes -ne (Get-Item -LiteralPath $path).Length -or $row.sha256 -ne $checked[$row.file]) {
+        throw "Manifest length/hash mismatch: $($row.file)"
     }
 }
 
-function Assert-S19Contract {
-    param(
-        [string]$RelativePath,
-        [int]$ExpectedStart,
-        [int]$ExpectedEnd,
-        [int]$ExpectedEntry
-    )
-    $first = 0x10000
-    $last = -1
+function Read-S19 {
+    param([string]$Relative)
+    $data = @{}
     $entry = -1
-    $dataBytes = 0
-    foreach ($line in Get-Content -LiteralPath (Join-Path $rootFull $RelativePath)) {
-        if ($line.StartsWith('S1')) {
-            $count = [Convert]::ToInt32($line.Substring(2, 2), 16)
-            $address = [Convert]::ToInt32($line.Substring(4, 4), 16)
-            $length = $count - 3
-            $first = [Math]::Min($first, $address)
-            $last = [Math]::Max($last, $address + $length - 1)
-            $dataBytes += $length
-        } elseif ($line.StartsWith('S9')) {
-            if ($entry -ge 0) { throw "Duplicate S9 record: $RelativePath" }
-            $entry = [Convert]::ToInt32($line.Substring(4, 4), 16)
+    foreach ($raw in Get-Content -LiteralPath (Join-Path $rootFull $Relative)) {
+        $line = $raw.Trim()
+        if (-not $line) { continue }
+        if ($line -notmatch '^S([19])([0-9A-Fa-f]+)$' -or ($line.Length % 2) -ne 0 -or $entry -ge 0) {
+            throw "Malformed or post-entry S-record in $Relative"
+        }
+        $kind, $hex = $Matches[1], $Matches[2]
+        $bytes = @(for ($i = 0; $i -lt $hex.Length; $i += 2) { [Convert]::ToInt32($hex.Substring($i, 2), 16) })
+        $sum = 0
+        foreach ($value in $bytes) { $sum = ($sum + $value) -band 255 }
+        if ($bytes.Count -lt 4 -or $bytes[0] -ne ($bytes.Count - 1) -or $sum -ne 255) {
+            throw "S-record count/checksum mismatch in $Relative"
+        }
+        $address = ($bytes[1] -shl 8) -bor $bytes[2]
+        if ($kind -eq '9') {
+            if ($bytes.Count -ne 4) { throw "Malformed S9 in $Relative" }
+            $entry = $address
+        } else {
+            for ($i = 3; $i -lt ($bytes.Count - 1); $i++) {
+                if ($address -gt 65535 -or $data.ContainsKey($address)) { throw "Overlapping/wrapped data in $Relative" }
+                $data[$address] = $bytes[$i]
+                $address++
+            }
         }
     }
-    $expectedBytes = $ExpectedEnd - $ExpectedStart + 1
-    if ($first -ne $ExpectedStart -or $last -ne $ExpectedEnd -or
-            $dataBytes -ne $expectedBytes -or $entry -ne $ExpectedEntry) {
-        throw ('Optional S19 contract failed for {0}: range=${1:X4}-${2:X4}, bytes={3}, S9=${4:X4}' -f
-            $RelativePath, $first, $last, $dataBytes, $entry)
+    if ($entry -lt 0 -or $data.Count -eq 0) { throw "Incomplete S19: $Relative" }
+    return [pscustomobject]@{ Data = $data; Entry = $entry }
+}
+
+$images = @{}
+foreach ($relative in @($expected | Where-Object { $_.EndsWith('.s19') })) {
+    $image = Read-S19 $relative
+    $images[$relative] = $image
+    $resident = $relative -eq 'ARTIFACTS/str8n-v1.34-f000.s19'
+    $worker = $relative -eq 'ARTIFACTS/str8n-v1.34-worker-0200.s19'
+    $low, $high, $entry = 0x2000, 0x4FFF, 0x2000
+    if ($resident) { $low, $high, $entry = 0xF000, 0xFFFF, 0xF000 }
+    elseif ($worker) { $low, $high, $entry = 0x0200, 0x0437, 0x0200 }
+    if ($image.Entry -ne $entry) { throw "Unexpected S9 entry: $relative" }
+    foreach ($address in $image.Data.Keys) {
+        if ($address -lt $low -or $address -gt $high) { throw "Unexpected S19 address in $relative" }
     }
 }
 
-Assert-S19Contract 'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19' 0xC000 0xEFFF 0xC000
-Assert-S19Contract 'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19' 0x8000 0xBFFF 0x8000
-Assert-S19Contract 'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19' 0x8000 0xEFFF 0xC000
-Assert-S19Contract 'SOFTWARE/GAMES/life-2000.s19' 0x2000 0x2D7A 0x2000
-Assert-S19Contract 'SOFTWARE/DEMOS/pia-led-show-2000.s19' 0x2000 0x2083 0x2000
-Assert-S19Contract 'SOFTWARE/UTILITIES/bank-audit-2000.s19' 0x2000 0x2201 0x2000
-Assert-S19Contract 'SOFTWARE/UTILITIES/bank-dump-2000.s19' 0x2000 0x292B 0x2000
-Assert-S19Contract 'SOFTWARE/ADVANCED/APMAN/apman-7000.s19' 0x7000 0x7B11 0x7000
-Assert-S19Contract 'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.s19' 0x8000 0x8FFF 0x8000
-
-$asmSourceDir = Join-Path $rootFull 'SOFTWARE/ASM-SOURCES'
-$asmSources = @(Get-ChildItem -LiteralPath $asmSourceDir -File -Filter '*.a')
-if ($asmSources.Count -ne 10) {
-    throw "SOFTWARE/ASM-SOURCES must contain exactly 10 maintained .a files; found $($asmSources.Count)"
+$topPath = Join-Path $rootFull 'ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin'
+$top = [IO.File]::ReadAllBytes($topPath)
+if ($top.Length -ne 4096 -or (Get-FileHash -Algorithm SHA256 -LiteralPath $topPath).Hash -ne $canonicalHash) {
+    throw 'Canonical top differs from the hardware-accepted v1.34 firmware'
 }
-foreach ($source in $asmSources) {
-    foreach ($line in Get-Content -LiteralPath $source.FullName) {
-        $code = ($line -split ';', 2)[0]
-        if ($code.Length -gt 63) {
-            throw "ASM-F2 code line exceeds 63 characters in $($source.Name): $code"
+foreach ($item in $images['ARTIFACTS/str8n-v1.34-f000.s19'].Data.GetEnumerator()) {
+    if ($top[$item.Key - 0xF000] -ne $item.Value) { throw 'Resident S19 differs from canonical BIN' }
+}
+foreach ($name in @('bank-maint-menu', 'top-update')) {
+    $data = $images[('ARTIFACTS/str8n-v1.34-{0}-2000.s19' -f $name)].Data
+    for ($i = 0; $i -lt 4096; $i++) {
+        if (-not $data.ContainsKey(0x4000 + $i) -or $data[0x4000 + $i] -ne $top[$i]) {
+            throw "Embedded top differs from canonical BIN: $name"
         }
     }
 }
-$vt100 = Get-Content -Raw -LiteralPath (Join-Path $asmSourceDir 'terminal-answerback-vt100-3000.a')
-if ($vt100 -match 'STR8-N 1\.22' -or $vt100 -notmatch 'STR8-N 1\.29') {
-    throw 'VT100 answerback source must retain its STR8-N 1.29 compatible-console provenance'
+
+$source = @{}
+$address = -1
+$ended = $false
+foreach ($raw in Get-Content -LiteralPath (Join-Path $rootFull 'APPLICATIONS/str8n-v1.34-bank-maint-menu-2000.a')) {
+    $line = ($raw -split ';', 2)[0].Trim()
+    if (-not $line) { continue }
+    if ($ended -or $line.Length -gt 63) { throw 'Invalid maintenance .a line or data after END' }
+    if ($line -match '^ORG \$([0-9A-F]{4})$') { $address = [Convert]::ToInt32($Matches[1], 16) }
+    elseif ($line -match '^DB (\$[0-9A-F]{2})(,\$[0-9A-F]{2})*$') {
+        foreach ($value in [regex]::Matches($line, '\$([0-9A-F]{2})')) {
+            if ($address -lt 0 -or $source.ContainsKey($address)) { throw 'Invalid maintenance .a address' }
+            $source[$address] = [Convert]::ToInt32($value.Groups[1].Value, 16)
+            $address++
+        }
+    } elseif ($line -eq 'END') { $ended = $true }
+    else { throw "Unexpected maintenance .a syntax: $line" }
+}
+$menu = $images['ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.s19'].Data
+if (-not $ended -or $source.Count -ne 12288 -or $source.Count -ne $menu.Count) { throw 'Maintenance .a size mismatch' }
+foreach ($item in $source.GetEnumerator()) {
+    if (-not $menu.ContainsKey($item.Key) -or $menu[$item.Key] -ne $item.Value) { throw 'Maintenance .a/S19 byte mismatch' }
 }
 
-if ((Get-Item -LiteralPath (Join-Path $rootFull 'ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin')).Length -ne 4096) {
-    throw 'Canonical top BIN is not exactly 4096 bytes'
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+function Get-ZipBytes {
+    param($Archive, [string]$Name)
+    $entry = $Archive.GetEntry($Name)
+    if ($null -eq $entry) { throw "Missing ZIP entry: $Name" }
+    $input = $entry.Open()
+    $buffer = [IO.MemoryStream]::new()
+    try { $input.CopyTo($buffer); return ,$buffer.ToArray() }
+    finally { $input.Dispose(); $buffer.Dispose() }
 }
-$packageReadme = Get-Content -Raw -LiteralPath (Join-Path $rootFull 'PACKAGE-README.txt')
-foreach ($text in @('follow the screen', 'CTRL+U and CTRL+D send different',
-        'press each once and only when requested', 'After J0, physical',
-        'RESET is the designed return')) {
-    if (-not $packageReadme.Contains($text)) { throw "Package README lacks operator guidance: $text" }
+function Get-BytesHash {
+    param([byte[]]$Bytes)
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash($Bytes))).Replace('-', '') }
+    finally { $sha.Dispose() }
 }
-$allowedBankImages = @(
-    [IO.Path]::GetFullPath((Join-Path $rootFull 'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.s19')),
-    [IO.Path]::GetFullPath((Join-Path $rootFull 'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.bin'))
-)
-$forbidden = Get-ChildItem -LiteralPath $rootFull -Recurse -File |
-    Where-Object {
-        $_.FullName -match '(?i)[\\/](LOCAL|R-YORS|HIMON|ASM-F2)[\\/]' -or
-        ($_.Name -match '(?i)bank[0-2].*\.(bin|s19)$' -and $_.FullName -notin $allowedBankImages)
+$migrationNames = @(
+    'CHECK-LINKS.ps1',
+    'STR8-iN65-LOADER.ps1', 'STR8-iN65-LOADER.py', 'QUICKSTART.txt',
+    'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19', 'ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19',
+    'ARTIFACTS/STR8-iN65-LOADER-2000.s19', 'ARTIFACTS/STR8-N-v1-30.bin', 'ARTIFACTS/STR8-N-v1-30.s19',
+    'DOC/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md',
+    'DOC/HIMON_ASMF2_AFTER_STR8N.md', 'DOC/STR8_IN65_BANK_MAINTENANCE.md',
+    'DOC/WDCMONV2_MIGRATION.md', 'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md',
+    'DOC/WDCMONV2_MIGRATION_PROVENANCE.md', 'LICENSE', 'PACKAGE-MANIFEST.json', 'PACKAGE-README.txt',
+    'SOURCE/str8n-v1.34-wdcmonv2-install-image.inc', 'SOURCE/wdcmonv2str8n-archive-2000.asm',
+    'SOURCE/wdcmonv2str8n-install-2000.asm', 'TOOLS/check_wdcmonv2_archive.ps1',
+    'TOOLS/check_wdcmonv2_install.ps1', 'TOOLS/extract_wdcmonv2_archive.ps1',
+    'TOOLS/start_wdcmonv2_ram.ps1', 'TOOLS/start_wdcmonv2_ram.py', 'VERIFY-PACKAGE.ps1'
+) | Sort-Object
+$prefix = 'STR8-N-v1.34-Migration-Kit/'
+$zip = [IO.Compression.ZipFile]::OpenRead((Join-Path $rootFull 'PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip'))
+try {
+    $names = @($zip.Entries | Where-Object Name | ForEach-Object FullName | Sort-Object)
+    $wanted = @($migrationNames | ForEach-Object { $prefix + $_ } | Sort-Object)
+    if (($names -join [char]10) -cne ($wanted -join [char]10)) { throw 'Nested migration ZIP allowlist mismatch' }
+    $m = [Text.Encoding]::UTF8.GetString((Get-ZipBytes $zip ($prefix + 'PACKAGE-MANIFEST.json'))) | ConvertFrom-Json
+    if ($m.stockWdcmonv2FirmwareIncluded -ne $false -or $m.localBankArchivesIncluded -ne $false -or
+            $m.ryorsPayloadIncluded -ne $false -or $m.hardwareStatus -notmatch '^v1.34 factory migration board-accepted') {
+        throw 'Nested migration provenance mismatch'
     }
-if ($forbidden) { throw "Forbidden payload or local evidence found: $($forbidden.FullName -join ', ')" }
+    $rowNames = @($m.files | ForEach-Object file | Sort-Object)
+    if (($rowNames -join [char]10) -cne (($migrationNames | Where-Object { $_ -ne 'PACKAGE-MANIFEST.json' }) -join [char]10)) {
+        throw 'Nested migration manifest inventory mismatch'
+    }
+    foreach ($row in $m.files) {
+        $bytes = Get-ZipBytes $zip ($prefix + $row.file)
+        if ($bytes.Length -ne $row.bytes -or (Get-BytesHash $bytes) -ne $row.sha256) { throw 'Nested migration hash mismatch' }
+    }
+    if ((Get-BytesHash (Get-ZipBytes $zip ($prefix + 'ARTIFACTS/STR8-N-v1-30.bin'))) -ne $canonicalHash) {
+        throw 'Nested migration BIN differs from canonical top'
+    }
+} finally { $zip.Dispose() }
 
-Write-Host 'STR8-N v1.34 release package verification PASS'
+if ($ZipPath) {
+    $zip = [IO.Compression.ZipFile]::OpenRead([IO.Path]::GetFullPath($ZipPath))
+    try {
+        $prefix = 'str8n-v1.34-release/'
+        $names = @($zip.Entries | Where-Object Name | ForEach-Object { $_.FullName.Replace('\', '/') } | Sort-Object)
+        $wanted = @($expected | ForEach-Object { $prefix + $_ } | Sort-Object)
+        if (($names -join [char]10) -cne ($wanted -join [char]10)) { throw 'Release ZIP allowlist mismatch' }
+        foreach ($entry in $zip.Entries) {
+            if (-not $entry.Name) { continue }
+            $name = $entry.FullName.Replace('\', '/').Substring($prefix.Length)
+            $hash = Get-BytesHash (Get-ZipBytes $zip $entry.FullName)
+            if ($hash -ne (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $rootFull $name)).Hash) {
+                throw "Release ZIP differs from staged file: $name"
+            }
+        }
+    } finally { $zip.Dispose() }
+}
+& (Join-Path $rootFull 'CHECK-LINKS.ps1') -Root $rootFull
+Write-Host ('STR8-N v1.34 standalone release PASS; {0} allowlisted files; {1} nested migration files; canonical BIN and maintenance .a verified' -f $expected.Count, $migrationNames.Count)

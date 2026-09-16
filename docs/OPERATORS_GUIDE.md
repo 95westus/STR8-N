@@ -46,7 +46,7 @@ implemented v1.34 diagnostics.
 The v1.22 `C`/`W` selector and warm timeout were board-accepted by the operator
 on 2026-08-19. The exact test card, retained transcript, and acceptance are in
 [STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md](STR8N_V1_22_WARM_DEFAULT_BOARD_TEST.md).
-Version 1.34 is the current size-optimized candidate. Its
+Version 1.34 is the current size-optimized release. Its
 [COM4 board test](STR8N_V1_34_BOARD_TEST_2026-09-15.md) passed guarded update,
 exact readback, physical/software reset, console/BRK, HIMON/ASM, and J3;
 the [follow-up tests](STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md) also passed
@@ -105,8 +105,11 @@ binary-protocol wrapper:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\MIGRATE-WDC-TO-STR8N.ps1 -Port COM4
+  -File .\STR8-iN65-LOADER.ps1 -Port COM4 -PhysicalResetArmSeconds 60
 ```
+
+Press physical RESET while the launcher reports that its reset-arm window
+is active. This is the accepted v1.34 Windows procedure.
 
 The accepted path requires a factory board with B0 erased or already
 byte-identical to B3. It copies and exactly verifies all of B3 in B0, installs

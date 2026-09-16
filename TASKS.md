@@ -5,7 +5,7 @@ project. Check an item only when its artifact hashes, host checks, board
 transcript, and final flash readback agree. Keep owner-local WDCMONv2 images
 out of published release artifacts.
 
-## v1.34 size candidate
+## v1.34 release
 
 The current source is a 120-byte size reduction from the accepted v1.33
 binary. Its host results and exact image identity are recorded in
@@ -22,7 +22,12 @@ binary. Its host results and exact image identity are recorded in
   physical-reset return, and byte-exact four-bank readback.
 - [ ] Complete the remaining hardware gates: Bank 1-2 guest boots, resident
   installation, transient LED timing, and injected failure/recovery paths.
-- [ ] Retain board evidence before publishing this candidate as hardware accepted.
+- [x] Package the unchanged v1.34 canonical firmware with the exact existing
+  board evidence and an explicit statement that the broader matrix is incomplete.
+- [x] Split the STR8-N distribution from HIMON/ASM applications and games;
+  retain the project-written migration kit and Bank Maintenance `.a`.
+- [ ] Commit reviewed release documentation, regenerate from committed source,
+  verify the final archives and manual links, and create the release tag.
 
 ## Preceding v1.33 release status
 
