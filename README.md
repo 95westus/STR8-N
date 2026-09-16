@@ -85,6 +85,9 @@ final recovery path.
 
 ## Documentation
 
+Start with the [release manual index](docs/RELEASE_MANUALS.md) for the guides
+and software appropriate to each task.
+
 - [Operator's Guide](docs/OPERATORS_GUIDE.md) — prompts, installation,
   recovery, maintenance, and normal board operation.
 - [Worked Examples](docs/EXAMPLES.md) — complete terminal sessions.
@@ -103,7 +106,7 @@ final recovery path.
 
 ## Release and validation status
 
-The current v1.34 size candidate has a 3,314-byte resident at `$F000-$FCF1`,
+The current v1.34 release has a 3,314-byte resident at `$F000-$FCF1`,
 134 free bytes, and a 568-byte worker stored at `$FD78`. It saves 120 bytes
 against the preceding v1.33 image. The
 [v1.34 COM4 board session](docs/STR8N_V1_34_BOARD_TEST_2026-09-15.md) passed
@@ -127,6 +130,21 @@ and historical evidence are maintained outside this overview:
 
 Run `make release-package` to build and verify the complete STR8-N-only release
 bundle at `BUILD/v1.34/str8n-v1.34-release.zip`.
+
+The standalone package contains the exact 4 KiB top-sector BIN, resident S19,
+RAM maintenance/update tools, the Bank Maintenance `.a` image carrier, public
+ABI include, operator guides, current board reports, and the WDC-to-STR8
+migration kit. HIMON, ASM-F2, their application collections, and games are
+distributed separately. The migration kit contains project-written tools;
+WDCMON firmware and owner-local archives are excluded.
+
+Both archives use explicit file allowlists and file hashes. The release
+verifier also compares its resident S19 and embedded updater image with the
+accepted canonical BIN, checks the Bank Maintenance `.a` against its S19,
+and inspects the nested migration archive. CHECK-LINKS.ps1 verifies local
+manual files and headings; unbundled historical references point to the
+source repository at the recorded commit. Packaging refreshes its timestamp
+and documentation without changing the accepted v1.34 firmware.
 
 > [!NOTE]
 > STR8-N and R-YORS are independent projects and are not affiliated with,

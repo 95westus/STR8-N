@@ -1,7 +1,9 @@
 # STR8-N v1.34 Maps and Diagrams
 
-These diagrams describe the v1.34 size candidate. Its exact binary requires
-new board qualification; historical board reports retain their original versions.
+These diagrams describe the v1.34 release. Its update/reset/console,
+interrupt/worker, and Windows factory-migration results are linked from the
+[operator guide](OPERATORS_GUIDE.md#validation-status). The complete hardware
+matrix remains unfinished; historical reports retain their original versions.
 
 ## Ownership
 
@@ -55,7 +57,7 @@ flowchart LR
     TOP --> ABI_TEST[resident ABI hardware-probe S19]
     BM -->|STR8-N L| RAM_TOOL[temporary maintenance session]
     FULL -->|STR8-N I| GUEST[enrolled Bank 0, 1, or 2]
-    TOP --> WDC_TOP[migration-configured top<br/>D0 WDCM2; roles FF/FF]
+    TOP --> WDC_TOP[exact canonical top<br/>directory erased; roles 1E/1F]
     WDC_TOP --> WDC_INSTALL[factory migration RAM S19]
     WDC_INSTALL --> KIT[allowlisted migration ZIP<br/>no WDC/R-YORS payload bytes]
 ```
@@ -108,23 +110,27 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    F[Factory board<br/>stock WDCMONv2 in B3; B0 erased] --> H[PowerShell bridge<br/>physical-reset gate]
+    F[Factory board<br/>stock WDCMONv2 in B3; B0 erased] --> H[PowerShell bridge<br/>physical-reset arm]
     H --> V[Require SXB2 identity<br/>RAM load/readback byte-exact]
-    V --> M{Exact MIGRATE confirmation?}
+    V --> M{COPY B3 TO B0 confirmation?}
     M -->|no| X[Cancel in RAM<br/>flash unchanged]
     M -->|yes| C[Copy all eight B3 sectors to B0]
     C --> E[Whole-bank FNV prefilter<br/>plus byte-exact B0/B3 compare]
-    E --> T[Validate carried 4K top<br/>then program/verify B3:F]
-    T --> D[Publish COMPLETE D0 WDCM2<br/>roles FFF0/FFF1 remain FF/FF]
-    D --> S[STR8-N 1.34 in B3]
-    S -->|selector 0 or J0| W[Retained WDCMONv2 in B0<br/>CS0-CS3 chase]
+    E --> T[Receive external canonical 4K top<br/>require INSTALL STR8-N 1.34]
+    T --> P[Program/verify B3:F<br/>directory erased; roles 1E/1F]
+    P --> S[STR8-N 1.34 in B3]
+    S --> L[Load packaged Bank Maintenance<br/>STR8 L and Ctrl+D]
+    L --> D[Explicit ADOPT B0<br/>publish COMPLETE D0 FF WDCV2]
+    D -->|selector 0 or J0| W[Retained WDCMONv2 in B0]
     W -->|physical RESET| S
 ```
 
 The accepted minimal path never writes B1 or B2 and does not install HIMON,
 ASM-F2, or R-YORS. The optional read-only archive path remains available for
 additional owner-local evidence but is not a gate for an erased-B0 factory
-board.
+board. See the [migration guide](WDCMONV2_MIGRATION.md) for exact prompts and
+the [v1.34 report](STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md) for
+covered hardware behavior.
 
 ## Install transaction
 
@@ -304,7 +310,7 @@ are not covered by this maintained-runtime high-water guarantee.
 
 Bank Maintenance and the other foreground tools use the single-owner
 `$7C00-$7DBF` overlay. The exact `$7DE7-$7DFF` Recovery State Capsule fields
-are listed in the [Technical Guide](TECHNICAL_GUIDE.md#str8-n-v130-high-ram-abi).
+are listed in the [Technical Guide](TECHNICAL_GUIDE.md#str8-n-v134-high-ram-abi).
 
 ## RAM capacity by operating path
 
@@ -376,9 +382,10 @@ $2000-$39B2  loaded program, worker, extensions     6579 bytes
 
 The isolated STR8-iN/65 maintenance image used during WDC migration is a
 separate `$2000-$3B15` / 6,934-byte artifact. It adds prompted defaults for
-adoption and the scoped-search `F` byte, remains outside the canonical
-manifest and migration ZIP, and is not required by the current migrator
-because that migrator already publishes COMPLETE D0 `WDCM2`.
+adoption and the scoped-search `F` byte. The migration ZIP includes it as
+`ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19`. It is required for the explicit
+post-boot `ADOPT B0` step because the canonical migration top has an erased
+directory. The published consumer description is `WDCV2`.
 
 ## Accepted v1.29 factory-board path
 

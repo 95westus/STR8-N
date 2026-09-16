@@ -6,6 +6,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $expected = @(
+    'CHECK-LINKS.ps1',
     'STR8-iN65-LOADER.ps1',
     'STR8-iN65-LOADER.py',
     'QUICKSTART.txt',
@@ -16,6 +17,7 @@ $expected = @(
     'ARTIFACTS/STR8-N-v1-30.s19',
     'DOC/HIMON_ASMF2_AFTER_STR8N.md',
     'DOC/STR8_IN65_BANK_MAINTENANCE.md',
+    'DOC/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md',
     'DOC/WDCMONV2_MIGRATION.md',
     'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md',
     'DOC/WDCMONV2_MIGRATION_PROVENANCE.md',
@@ -42,6 +44,7 @@ if (($actual -join "`n") -ne ($expected -join "`n")) { throw 'Migration kit file
 
 $manifest = Get-Content -Raw -LiteralPath (Join-Path $root 'PACKAGE-MANIFEST.json') | ConvertFrom-Json
 if ($manifest.schema -ne 1 -or
+    $manifest.hardwareStatus -ne 'v1.34 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-15; Windows physical-reset arm; Linux has no board proof' -or
     $manifest.stockWdcmonv2FirmwareIncluded -ne $false -or
     $manifest.localBankArchivesIncluded -ne $false -or
     $manifest.ryorsPayloadIncluded -ne $false -or
@@ -99,17 +102,19 @@ foreach ($required in @('Windows PowerShell 5.1', 'USB COM-port driver',
 
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python is required to run the packaged experimental-loader offline checks' }
-& $python.Source (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --self-test
+& $python.Source -B (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --self-test
 if ($LASTEXITCODE -ne 0) { throw 'Python WDCMONv2 protocol self-test failed' }
-& $python.Source (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --validate-image (Join-Path $root 'ARTIFACTS/STR8-iN65-LOADER-2000.s19')
+& $python.Source -B (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --validate-image (Join-Path $root 'ARTIFACTS/STR8-iN65-LOADER-2000.s19')
 if ($LASTEXITCODE -ne 0) { throw 'Python WDCMONv2 S19 validation failed' }
-& $python.Source (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --validate-image (Join-Path $root 'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19')
+& $python.Source -B (Join-Path $root 'TOOLS/start_wdcmonv2_ram.py') --validate-image (Join-Path $root 'ARTIFACTS/STR8-iN65-ARCHIVE-2000.s19')
 if ($LASTEXITCODE -ne 0) { throw 'Python WDCMONv2 archive S19 validation failed' }
-& $python.Source (Join-Path $root 'STR8-iN65-LOADER.py') --self-test
+& $python.Source -B (Join-Path $root 'STR8-iN65-LOADER.py') --self-test
 if ($LASTEXITCODE -ne 0) { throw 'Python consumer-wrapper self-test failed' }
+
+& (Join-Path $root 'CHECK-LINKS.ps1') -Root $root
 
 Write-Host ('MIGRATION KIT       = VERIFIED; {0} allowlisted files' -f $expected.Count)
 Write-Host 'WDCMONV2 FIRMWARE    = NOT INCLUDED'
 Write-Host 'LOCAL BANK ARCHIVES  = NOT INCLUDED'
 Write-Host 'R-YORS PAYLOAD        = NOT INCLUDED'
-Write-Host 'HARDWARE STATUS      = V1.34 HOST-QUALIFIED; V1.32 FACTORY PATH BOARD-ACCEPTED'
+Write-Host 'HARDWARE STATUS      = V1.34 FACTORY PATH BOARD-ACCEPTED; 2026-09-15'

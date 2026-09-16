@@ -1,84 +1,49 @@
 param(
     [string]$PackageDir = 'BUILD/v1.34/str8n-v1.34-release',
-    [string]$ZipPath = 'BUILD/v1.34/str8n-v1.34-release.zip',
-    [string]$RyorsRelease = '../R-YORS/RELEASE'
+    [string]$ZipPath = 'BUILD/v1.34/str8n-v1.34-release.zip'
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# Every distributable input is explicit. Owner archives and other products
+# are intentionally outside this standalone product's release inventory.
 $files = [ordered]@{
+    'README.md' = 'docs/RELEASE_MANUALS.md'
+    'CHECK-LINKS.ps1' = 'tools/prepare_release_docs.ps1'
+    'DOC/HIMON_ASMF2_AFTER_STR8N.md' = 'docs/HIMON_ASMF2_AFTER_STR8N.md'
+    'DOC/SOFTWARE_CATALOG.md' = 'docs/SOFTWARE_CATALOG.md'
+    'DOC/R_YORS_INTEGRATION.md' = 'docs/R_YORS_INTEGRATION.md'
     'ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin' = 'BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin'
     'ARTIFACTS/str8n-v1.34-f000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-f000.s19'
     'ARTIFACTS/str8n-v1.34-worker-0200.s19' = 'BUILD/v1.34/s19/str8n-v1.34-worker-0200.s19'
     'ARTIFACTS/str8n-v1.34-bank-maint-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-bank-maint-2000.s19'
     'ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-bank-maint-menu-2000.s19'
-    'ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.a' = 'tools/bank-maint/str8n-v1.34-bank-maint-menu-2000.a'
+    'APPLICATIONS/str8n-v1.34-bank-maint-menu-2000.a' = 'tools/bank-maint/str8n-v1.34-bank-maint-menu-2000.a'
     'ARTIFACTS/str8n-v1.34-top-update-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-top-update-2000.s19'
     'ARTIFACTS/str8n-v1.34-directory-refresh-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-directory-refresh-2000.s19'
-    'ARCHIVE/TESTS/str8n-v1.34-console-abi-test-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-console-abi-test-2000.s19'
-    'ARCHIVE/TESTS/str8n-v1.34-irq-test-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-irq-test-2000.s19'
-    'ARCHIVE/TESTS/str8n-v1.34-led-worker-test-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-led-worker-test-2000.s19'
-    'ARCHIVE/TESTS/README.md' = 'tools/interrupt-test/README.md'
-    'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-himon-bank3-c-e.s19')
-    'OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-asm-bank3-8-b.s19')
-    'OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19' = (Join-Path $RyorsRelease 'ryors-v1.2-himon-asm-bank3-8-e.s19')
-    'OPTIONAL/HIMON-ASM/INSTALL.md' = 'docs/HIMON_ASMF2_AFTER_STR8N.md'
-    'SOFTWARE/README.md' = 'docs/SOFTWARE_CATALOG.md'
-    'SOFTWARE/GAMES/life-2000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/life-2000.s19')
-    'SOFTWARE/DEMOS/pia-led-show-2000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/pia-led-show-2000.s19')
-    'SOFTWARE/UTILITIES/bank-audit-2000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/bank-audit-2000.s19')
-    'SOFTWARE/UTILITIES/bank-dump-2000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/bank-dump-2000.s19')
-    'SOFTWARE/ASM-SOURCES/asm-session-report-ap-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/asm-session-report-v1.2-ap-2000.a')
-    'SOFTWARE/ASM-SOURCES/bank-audit-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/bank-audit-2000.a')
-    'SOFTWARE/ASM-SOURCES/bank-crc-all-3000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/str8n-v1.2-bank-crc-all-3000.a')
-    'SOFTWARE/ASM-SOURCES/bank-dump-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/bank-dump-2000.a')
-    'SOFTWARE/ASM-SOURCES/flash-bank-dump-ap-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/str8n-v1.2-flash-bank-dump-ap-2000.a')
-    'SOFTWARE/ASM-SOURCES/flash-bank-read-ap-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/str8n-v1.2-flash-bank-read-ap-2000.a')
-    'SOFTWARE/ASM-SOURCES/pia-led-show-2000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/pia-led-show-2000.a')
-    'SOFTWARE/ASM-SOURCES/terminal-answerback-vt100-3000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/terminal-answerback-vt100-3000.a')
-    'SOFTWARE/ASM-SOURCES/vt102-exerciser-7000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/vt102-exerciser-7000.a')
-    'SOFTWARE/ASM-SOURCES/vt525-exerciser-7000.a' = (Join-Path $RyorsRelease 'ARTIFACTS/SOURCES/vt525-exerciser-7000.a')
-    'SOFTWARE/ADVANCED/APMAN/apman-7000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/apman-7000.s19')
-    'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/apman-v1-bank2-8000.s19')
-    'SOFTWARE/ADVANCED/APMAN/apman-v1-bank2-8000.bin' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/apman-v1-bank2-8000.bin')
-    'SOFTWARE/ADVANCED/APMAN/apman-v1.ap' = (Join-Path $RyorsRelease 'ARTIFACTS/COMPONENT-IMAGES/apman-v1.ap')
-    'SOFTWARE/ADVANCED/APMAN/APMAN_V1_BOARD_TEST.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/APMAN_V1_BOARD_TEST.md')
-    'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-chain-install-tool-package-4000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/AP-STORE/ap-store-v1-chain-install-tool-package-4000.s19')
-    'SOFTWARE/ADVANCED/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19' = (Join-Path $RyorsRelease 'ARTIFACTS/AP-STORE/ap-store-v1-slice6-catalog-tool-package-4000.s19')
-    'SOFTWARE/UTILITIES/BANK_AUDIT_AP_CARD.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/BANK_AUDIT_AP_CARD.md')
-    'SOFTWARE/UTILITIES/BANK_DUMP_AP_CARD.md' = (Join-Path $RyorsRelease 'BOARD-CARDS/BANK_DUMP_AP_CARD.md')
+    'TESTS/str8n-v1.34-console-abi-test-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-console-abi-test-2000.s19'
+    'TESTS/str8n-v1.34-irq-test-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-irq-test-2000.s19'
+    'TESTS/str8n-v1.34-led-worker-test-2000.s19' = 'BUILD/v1.34/s19/str8n-v1.34-led-worker-test-2000.s19'
+    'TESTS/README.md' = 'tools/interrupt-test/README.md'
+    'TOOLS/convert_guest_bin_to_s19.ps1' = 'tools/convert_guest_bin_to_s19.ps1'
+    'TOOLS/compose_str8n_install_s19.ps1' = 'tools/compose_str8n_install_s19.ps1'
     'INCLUDE/str8n-public.inc' = 'BUILD/v1.34/include/str8n-public.inc'
     'MANIFEST/str8n-manifest.json' = 'BUILD/str8n-manifest.json'
     'PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip' = 'BUILD/v1.34/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip'
-    'DOC/README.md' = 'README.md'
-    'DOC/STR8N_V1_30_RECLAIM.md' = 'docs/STR8N_V1_30_RECLAIM.md'
-    'DOC/STR8N_CONSERVATIVE_RESIDENT_PASS.md' = 'docs/STR8N_CONSERVATIVE_RESIDENT_PASS.md'
-    'DOC/STR8N_CONSERVATIVE_BOARD_TRANSCRIPT.txt' = 'docs/STR8N_CONSERVATIVE_BOARD_TRANSCRIPT.txt'
-    'DOC/STR8N_V1_30_BOARD_TRANSCRIPT.txt' = 'docs/STR8N_V1_30_BOARD_TRANSCRIPT.txt'
-    'DOC/LED_STATUS_PROPOSAL.md' = 'docs/LED_STATUS_PROPOSAL.md'
-    'DOC/LED_STATUS_BOARD_TEST_2026-09-06.md' = 'docs/LED_STATUS_BOARD_TEST_2026-09-06.md'
-    'DOC/LED_STATUS_BOARD_TRANSCRIPT_2026-09-06.txt' = 'docs/LED_STATUS_BOARD_TRANSCRIPT_2026-09-06.txt'
-    'DOC/LED_HOST_PRESENCE_BOARD_TEST_2026-09-06.md' = 'docs/LED_HOST_PRESENCE_BOARD_TEST_2026-09-06.md'
-    'DOC/LED_HOST_PRESENCE_BOARD_TRANSCRIPT_2026-09-06.txt' = 'docs/LED_HOST_PRESENCE_BOARD_TRANSCRIPT_2026-09-06.txt'
-    'DOC/LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md' = 'docs/LED_IO_ACTIVITY_BOARD_TEST_2026-09-06.md'
-    'DOC/LED_IO_ACTIVITY_BOARD_TRANSCRIPT_2026-09-06.txt' = 'docs/LED_IO_ACTIVITY_BOARD_TRANSCRIPT_2026-09-06.txt'
-    'DOC/STR8N_V1_31_VERSION_BOARD_TEST_2026-09-06.md' = 'docs/STR8N_V1_31_VERSION_BOARD_TEST_2026-09-06.md'
-    'DOC/STR8N_V1_31_VERSION_BOARD_TRANSCRIPT_2026-09-06.txt' = 'docs/STR8N_V1_31_VERSION_BOARD_TRANSCRIPT_2026-09-06.txt'
-    'DOC/STR8N_V1_32_RESET_SOURCE_BOARD_TEST_2026-09-07.md' = 'docs/STR8N_V1_32_RESET_SOURCE_BOARD_TEST_2026-09-07.md'
-    'DOC/STR8N_V1_32_RESET_SOURCE_BOARD_TRANSCRIPT_2026-09-07.txt' = 'docs/STR8N_V1_32_RESET_SOURCE_BOARD_TRANSCRIPT_2026-09-07.txt'
-    'DOC/STR8N_V1_33_TOP_UPDATE_BOARD_TEST_2026-09-10.md' = 'docs/STR8N_V1_33_TOP_UPDATE_BOARD_TEST_2026-09-10.md'
-    'DOC/STR8N_V1_34_SIZE_OPTIMIZATION.md' = 'docs/STR8N_V1_34_SIZE_OPTIMIZATION.md'
-    'DOC/STR8N_V1_34_BOARD_TEST_2026-09-15.md' = 'docs/STR8N_V1_34_BOARD_TEST_2026-09-15.md'
-    'DOC/STR8N_V1_34_BOARD_TRANSCRIPT_2026-09-15.txt' = 'docs/STR8N_V1_34_BOARD_TRANSCRIPT_2026-09-15.txt'
-    'DOC/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md' = 'docs/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md'
-    'DOC/STR8N_V1_34_FOLLOWUP_BOARD_TRANSCRIPT_2026-09-15.txt' = 'docs/STR8N_V1_34_FOLLOWUP_BOARD_TRANSCRIPT_2026-09-15.txt'
-    'DOC/STR8N_V1_33_TOP_UPDATE_BOARD_TRANSCRIPT_2026-09-10.txt' = 'docs/STR8N_V1_33_TOP_UPDATE_BOARD_TRANSCRIPT_2026-09-10.txt'
-    'DOC/RESET_SOURCE_CONTRACT.md' = 'docs/RESET_SOURCE_CONTRACT.md'
     'DOC/OPERATORS_GUIDE.md' = 'docs/OPERATORS_GUIDE.md'
     'DOC/TECHNICAL_GUIDE.md' = 'docs/TECHNICAL_GUIDE.md'
+    'DOC/EXAMPLES.md' = 'docs/EXAMPLES.md'
+    'DOC/MAPS.md' = 'docs/MAPS.md'
+    'DOC/BANK_0_2_GUEST_S19.md' = 'docs/BANK_0_2_GUEST_S19.md'
+    'DOC/RESET_SOURCE_CONTRACT.md' = 'docs/RESET_SOURCE_CONTRACT.md'
     'DOC/STR8_IN65_BANK_MAINTENANCE.md' = 'docs/STR8_IN65_BANK_MAINTENANCE.md'
     'DOC/WDCMONV2_MIGRATION.md' = 'docs/WDCMONV2_MIGRATION.md'
+    'DOC/WDCMONV2_MIGRATION_PROVENANCE.md' = 'docs/WDCMONV2_MIGRATION_PROVENANCE.md'
+    'DOC/STR8N_V1_34_SIZE_OPTIMIZATION.md' = 'docs/STR8N_V1_34_SIZE_OPTIMIZATION.md'
+    'DOC/STR8N_V1_34_BOARD_TEST_2026-09-15.md' = 'docs/STR8N_V1_34_BOARD_TEST_2026-09-15.md'
+    'DOC/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md' = 'docs/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md'
+    'DOC/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md' = 'docs/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md'
     'VERIFY-PACKAGE.ps1' = 'tools/verify_release_package.ps1'
     'LICENSE' = 'LICENSE'
 }
@@ -86,81 +51,127 @@ $files = [ordered]@{
 foreach ($source in $files.Values) {
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Missing release input: $source" }
 }
+if ((Get-FileHash -Algorithm SHA256 -LiteralPath $files['ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin']).Hash -ne
+        '9538D97854BA9D5D76143CBA0FEDB3B2E7CE18F977CE89557406E63404026CB7') {
+    throw 'Canonical firmware differs from the accepted v1.34 image'
+}
 
+$releaseRoot = [IO.Path]::GetFullPath('BUILD/v1.34').TrimEnd('\', '/')
 $packageFull = [IO.Path]::GetFullPath($PackageDir)
 $zipFull = [IO.Path]::GetFullPath($ZipPath)
+if ($packageFull -ne (Join-Path $releaseRoot 'str8n-v1.34-release') -or
+        $zipFull -ne (Join-Path $releaseRoot 'str8n-v1.34-release.zip')) {
+    throw 'Release outputs must be the named v1.34 package directory and ZIP under BUILD/v1.34'
+}
+# Reject junctions/symlinks before the only recursive deletion.
+foreach ($target in @($packageFull, $zipFull)) {
+    $ancestor = $target
+    while ($ancestor) {
+        if ((Test-Path -LiteralPath $ancestor) -and
+                ((Get-Item -Force -LiteralPath $ancestor).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+            throw "Release output traverses a reparse point: $ancestor"
+        }
+        $ancestor = Split-Path -Parent $ancestor
+    }
+}
 if (Test-Path -LiteralPath $packageFull) { Remove-Item -LiteralPath $packageFull -Recurse -Force }
 New-Item -ItemType Directory -Path $packageFull | Out-Null
-
 foreach ($entry in $files.GetEnumerator()) {
     $destination = Join-Path $packageFull $entry.Key
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
     Copy-Item -LiteralPath $entry.Value -Destination $destination
 }
 
+& tools/prepare_release_docs.ps1 -Root $packageFull -SourceFiles $files -RepositoryRoot (Get-Location).Path -Commit ((& git rev-parse HEAD).Trim())
+
 $readme = @'
-STR8-N v1.34 release package
+STR8-N v1.34 standalone release
 
-This package contains STR8-N v1.34 deliverables, documentation, and clearly
-separated optional HIMON/ASM-F2 payloads. It contains no WDCMONv2 firmware or
-owner bank archive.
+Start with README.md for the manual index, then DOC/OPERATORS_GUIDE.md.
 
-The current v1.34 size candidate saves 120 bytes. COM4 update/readback,
-power/physical/software reset, NMI/VIA1 IRQ/BRK, console, HIMON/ASM, J3,
-and optimized-worker B2:9 program/erase passed on 2026-09-15.
-See DOC/STR8N_V1_34_BOARD_TEST_2026-09-15.md and
-DOC/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md for evidence and remaining
-hardware gates, and DOC/STR8N_V1_34_SIZE_OPTIMIZATION.md for host checks.
-Public console and record services remain LED-neutral; HIMON and ASM remain
-separate owners. Historical board reports apply to their recorded binaries.
+Installation:
+  ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin is the exact 4096-byte
+  programmer image for Bank 3 CPU F000-FFFF (device offset 1F000).
+  ARTIFACTS/str8n-v1.34-f000.s19 is the resident image for build/integration;
+  the resident I command cannot overwrite its own protected top sector.
+  Existing STR8-N installations use the guarded RAM top-update image and
+  its documented backup/confirmation procedure.
 
-Primary installation images:
-  ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin  external programmer, B3:F
-  ARTIFACTS/str8n-v1.34-f000.s19             resident S19
+Factory WDC-to-STR8 migration:
+  Extract PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip separately.
+  Read QUICKSTART.txt and follow the screen. The accepted v1.34 Windows
+  procedure used -PhysicalResetArmSeconds 60 and RESET during its arm window.
+  CTRL+U and CTRL+D send different files; press each once and only when requested.
+  After J0, physical RESET is the designed return from the factory system.
+  This kit supplies project-written migration tools, not WDC firmware.
+  Keep any bank archives created during migration owner-local.
 
-Maintenance and recovery:
-  ARTIFACTS/str8n-v1.34-bank-maint-2000.s19
-  ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.s19
-  ARTIFACTS/str8n-v1.34-top-update-2000.s19
-  ARTIFACTS/str8n-v1.34-directory-refresh-2000.s19
+Maintenance:
+  ARTIFACTS contains RAM Bank Maintenance, its expanded menu, guarded top
+  update, and directory refresh. STR8 L loads and starts their S9 entry.
+  Directory refresh replaces directory records; follow its operator guide.
+  APPLICATIONS/str8n-v1.34-bank-maint-menu-2000.a is the corresponding
+  ASM-F2 DB image carrier: ASM NEW, send the complete file, SEAL> ., G 2000.
+  It emits 12288 bytes at 2000-4FFF and embeds the canonical top at 4000.
+  ASM-F2 and HIMON are separate prerequisites for this .a workflow.
+  Stop on any ERR= response. Its maintenance menu includes flash writes.
+  TOOLS supplies guest BIN conversion and dense installer-S19 preparation.
+  TESTS contains optional console/interrupt/worker qualification programs;
+  the worker test writes/erases a selected sector. Follow its test report.
 
-Archived hardware proof:
-  ARCHIVE/TESTS/str8n-v1.34-console-abi-test-2000.s19
+Qualification:
+  The exact canonical v1.34 firmware passed guarded update/readback,
+  power/physical/software reset, NMI/VIA1 IRQ/BRK, console, HIMON/ASM,
+  J3, worker program/erase, and the complete Windows factory migration.
+  See the three 2026-09-15 board reports. Bank 1/2 guest boots, transient
+  LED timing, injected failure/recovery, and Linux migration remain
+  unqualified by those reports. No new hardware run is claimed here.
 
-Optional HIMON and ASM-F2:
-  OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19
-  OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19
-  OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19
-  OPTIONAL/HIMON-ASM/INSTALL.md
-
-Use the combined 8-E image for the simplest new Bank-3 installation, or use
-the separate C-E and 8-B images when installing/updating one component at a time.
-
-Current compatible software:
-  SOFTWARE/README.md
-  SOFTWARE/GAMES                 ready-to-load game S19
-  SOFTWARE/DEMOS                 ready-to-load hardware demo S19
-  SOFTWARE/UTILITIES             ready-to-load maintenance S19 and cards
-  SOFTWARE/ASM-SOURCES           maintained onboard ASM-F2 sources
-  SOFTWARE/ADVANCED              APMAN and AP Store packages
-
-Factory WDCMONv2 onboarding is the separately verified nested ZIP in PACKAGES.
-Read its QUICKSTART.txt and follow the screen. CTRL+U and CTRL+D send different
-packaged files; press each once and only when requested. After J0, physical
-RESET is the designed return from the preserved factory system to STR8-N.
-Run VERIFY-PACKAGE.ps1 after extracting this archive.
+Verification and redistribution:
+  Run powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\VERIFY-PACKAGE.ps1
+  The verifier checks the exact inventory, hashes, S-records, canonical
+  firmware, maintenance .a/S19 equality, and the nested migration inventory.
+  CHECK-LINKS.ps1 checks local manual destinations and headings. Historical
+  evidence not bundled here links to the source repository at the recorded commit.
+  PACKAGE-MANIFEST.json records packaging time and unchanged firmware identity.
+  SHA256SUMS.txt covers every other packaged file, including the manifest.
+  LICENSE is the project MIT license. No WDC tools, WDCMON firmware, stock
+  bank images, owner captures, HIMON/ASM payloads, or games are included.
+  HIMON and ASM-F2 applications are distributed in their own release packages.
 '@
-[IO.File]::WriteAllText((Join-Path $packageFull 'PACKAGE-README.txt'), $readme, [Text.UTF8Encoding]::new($false))
+$utf8 = [Text.UTF8Encoding]::new($false)
+[IO.File]::WriteAllText((Join-Path $packageFull 'PACKAGE-README.txt'), $readme, $utf8)
+$rows = @(Get-ChildItem -LiteralPath $packageFull -Recurse -File | Sort-Object FullName | ForEach-Object {
+    [ordered]@{
+        file = $_.FullName.Substring($packageFull.Length + 1).Replace('\', '/')
+        bytes = $_.Length
+        sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash
+    }
+})
+$manifest = [ordered]@{
+    schema = 1
+    product = 'STR8-N'
+    version = '1.34'
+    packagedUtc = [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')
+    canonicalTopSha256 = '9538D97854BA9D5D76143CBA0FEDB3B2E7CE18F977CE89557406E63404026CB7'
+    sourceCommit = (& git rev-parse HEAD).Trim()
+    sourceDirty = -not [string]::IsNullOrWhiteSpace((& git status --porcelain))
+    stockWdcmonv2FirmwareIncluded = $false
+    localBankArchivesIncluded = $false
+    otherProductPayloadsIncluded = $false
+    files = $rows
+}
+[IO.File]::WriteAllText((Join-Path $packageFull 'PACKAGE-MANIFEST.json'),
+    ($manifest | ConvertTo-Json -Depth 5) + [Environment]::NewLine, $utf8)
+$sums = @(Get-ChildItem -LiteralPath $packageFull -Recurse -File | ForEach-Object {
+    '{0}  {1}' -f (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash,
+        $_.FullName.Substring($packageFull.Length + 1).Replace('\', '/')
+} | Sort-Object)
+[IO.File]::WriteAllLines((Join-Path $packageFull 'SHA256SUMS.txt'), $sums, $utf8)
 
-$rows = Get-ChildItem -LiteralPath $packageFull -Recurse -File |
-    Where-Object Name -ne 'SHA256SUMS.txt' |
-    ForEach-Object {
-        $relative = $_.FullName.Substring($packageFull.TrimEnd('\', '/').Length + 1).Replace('\', '/')
-        '{0}  {1}' -f (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash, $relative
-    } | Sort-Object
-[IO.File]::WriteAllLines((Join-Path $packageFull 'SHA256SUMS.txt'), $rows, [Text.UTF8Encoding]::new($false))
-
+& (Join-Path $packageFull 'VERIFY-PACKAGE.ps1') -Root $packageFull
 if (Test-Path -LiteralPath $zipFull) { Remove-Item -LiteralPath $zipFull -Force }
 Compress-Archive -LiteralPath $packageFull -DestinationPath $zipFull -CompressionLevel Optimal
+& (Join-Path $packageFull 'VERIFY-PACKAGE.ps1') -Root $packageFull -ZipPath $zipFull
 Write-Host "STR8-N RELEASE PACKAGE = $zipFull"
 Write-Host "SHA-256 = $((Get-FileHash -Algorithm SHA256 -LiteralPath $zipFull).Hash)"

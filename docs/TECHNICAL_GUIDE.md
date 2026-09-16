@@ -1,9 +1,12 @@
 # STR8-N v1.34 Technical Guide
 
-Version 1.34 is the current size candidate. Its layout and host checks are
-recorded in [the size-change report](STR8N_V1_34_SIZE_OPTIMIZATION.md); new
-hardware qualification is pending. Historical evidence below remains tied to
-the versions and binaries originally tested.
+Version 1.34 is the current release. Its exact image passed the
+[update/reset/console tests](STR8N_V1_34_BOARD_TEST_2026-09-15.md),
+[interrupt and worker tests](STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md), and
+[complete Windows factory migration](STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md).
+The [size-change report](STR8N_V1_34_SIZE_OPTIMIZATION.md) records layout, host
+checks, and the remaining hardware matrix. Historical evidence below remains
+tied to the versions and binaries originally tested.
 
 This document is the current STR8-N integration and image-format contract.
 Numeric address ranges are inclusive unless an end is explicitly called
@@ -819,6 +822,7 @@ make str8-in65-promotion-check
                              compare canonical and accepted resident bytes
 make wdcmonv2-install        build/validate the factory migration RAM S19
 make wdcmonv2-package        build and verify the allowlisted migration ZIP
+make release-package        build/verify the standalone ZIP and manual links
 make clean                   remove generated BUILD artifacts
 ```
 
@@ -861,7 +865,7 @@ BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-archive-2000.s19
 BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-install-2000.s19
                                       factory WDCMONv2 migration program
 BUILD/v1.34/bin/str8n-v1.34-wdcmonv2-bank3-f000-ffff.bin
-                                      migration top: D0 WDCM2; roles FF/FF
+                                      exact canonical top: directory erased; roles 1E/1F
 BUILD/v1.34/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip
                                       allowlisted consumer migration kit
 BUILD/v1.34/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
@@ -882,6 +886,14 @@ file offset $000-$FFF -> CPU $F000-$FFFF -> physical $1F000-$1FFFF
 ```
 
 ### Qualification evidence and remaining board tests
+
+Current v1.34 evidence is the three 2026-09-15 reports linked at the start of
+this guide. Those runs cover the exact canonical top, guarded update and
+readback, power/physical/software reset, NMI/VIA1 IRQ/BRK, console, HIMON/ASM,
+J3, worker program/erase, and Windows factory migration. Bank 1/2 guest boots,
+the full range/failure matrix, transient LED timing, and Linux migration are
+not accepted by those reports. The paragraphs below retain earlier evidence
+for their named versions and must not be read as new v1.34 runs.
 
 The 2026-08-14 v1.21/R-YORS `1303` board card is complete. The guarded updater
 verified B1:F and B3:F, the dense Bank-3 `8-E` payload committed, and an
@@ -924,9 +936,9 @@ It then accepts Bank Maintenance `C` from Bank 3 to Bank 2, all eight verified
 sector writes, enrollment as `D2 FF TEST0 FFFF FCFFFFFF`, selector `2` launch
 of the copied STR8-N, and its `J3` return through physical Bank 3.
 
-The separate
+The separate historical
 [directory-maintenance proof](DIRECTORY_MAINT_HARDWARE_PROOF_2026-08-11.md)
-accepts the current Bank Maintenance artifact's metadata-only `D` path:
+accepts its recorded Bank Maintenance artifact's metadata-only `D` path:
 nonempty-row refusal, low/erased ENTRY rejection, DESC-length rejection,
 precommit cancellation, bad-RESET refusal, successful D1/D3 commits, and the
 shared `C` commit-path regression.

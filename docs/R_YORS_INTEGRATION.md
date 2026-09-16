@@ -4,11 +4,11 @@ STR8-N owns its resident source, embedded worker, payload tools, protected 4K
 layout, directory rules, and public ABI. R-YORS consumes verified artifacts;
 it must not maintain a second live STR8-N source tree.
 
-The current v1.34 size candidate changes the packed worker address and the
+The current v1.34 release changes the packed worker address and the
 linked interrupt targets. Consumers must refresh their content lock and
 generated contract; public service entries and RAM ownership stay fixed.
 See [the size-change report](STR8N_V1_34_SIZE_OPTIMIZATION.md) for validation
-and the remaining board qualification.
+and the exact board coverage and remaining hardware matrix.
 
 ## Normal two-folder workspace
 
@@ -80,7 +80,7 @@ $F000-$FFFF  STR8-N, verified external 4096-byte BIN
 ```
 
 R-YORS code binds only to interfaces listed in the
-[Technical Guide](TECHNICAL_GUIDE.md#public-interface). Its Banked-AP helper
+[Technical Guide](TECHNICAL_GUIDE.md#resident-callable-abi). Its Banked-AP helper
 runs at `$0300` after the STR8-N selector prefix at `$0200-$0226`; it shares
 the larger `$0200-$0437` worker tray rather than coexisting with the complete
 mutation worker. The R-YORS build must reject overlap with the selector prefix

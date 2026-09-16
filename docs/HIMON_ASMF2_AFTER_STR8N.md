@@ -1,106 +1,94 @@
-# Load HIMON And ASM-F2 After STR8-N
+# Load HIMON and ASM-F2 after STR8-N
 
-The WDCMONv2 migration is complete when physical RESET reaches `STR8-N 1.29`
-and the retained stock monitor can be launched with `J0`. It does not install
-R-YORS, HIMON, or ASM-F2.
+The WDCMONv2 migration is complete when physical RESET reaches `STR8-N 1.34`
+and the retained stock monitor starts through `J0`. It does not install
+HIMON or ASM-F2. Physical RESET returns from the retained factory system to
+STR8-N.
 
-`J0` hands the computer completely to the retained factory system. Physical
-RESET is the designed way back to STR8-N; the absence of a software-return
-command in that guest is intentional and is not a flaw in STR8-N or the
-migration.
+## Obtain the separate releases
 
-HIMON and ASM-F2 are optional Bank-3 component loads. The STR8-N v1.29 release
-places the ready-to-send files together under `OPTIONAL/HIMON-ASM/`:
+Extract the HIMON and ASM-F2 release ZIPs from the
+[R-YORS release distribution](https://github.com/95westus/R-YORS/releases).
+Each ZIP includes its firmware, manuals, application sources, manifest, and
+verification instructions. The STR8-N ZIP does not contain their firmware.
+Use matching releases and verify both packages before installing.
 
-```text
-OPTIONAL/HIMON-ASM/ryors-v1.2-himon-bank3-c-e.s19
-OPTIONAL/HIMON-ASM/ryors-v1.2-asm-bank3-8-b.s19
-OPTIONAL/HIMON-ASM/ryors-v1.2-himon-asm-bank3-8-e.s19
-```
+The payloads are under `FIRMWARE/` in those separate archives:
 
-The same files can be obtained or rebuilt from the adjacent R-YORS repository.
+| Payload | Bank 3 range | S9 meaning |
+| --- | --- | --- |
+| `ryors-v1.2-himon-bank3-c-e.s19` | `C-E` | Establish/retain entry `$C000` |
+| `ryors-v1.2-asm-bank3-8-b.s19` | `8-B` | `$FFFF`: retain the existing entry |
+| `ryors-v1.2-himon-asm-bank3-8-e.s19` | `8-E` | Combined first install, entry `$C000` |
 
-The `ryors-` filename prefix identifies their source repository. Loading the
-two slices does not install a complete R-YORS bank image. For the separate
-component procedure below, do not substitute either combined product:
+Both component releases include the combined `8-E` image. Check its hash
+against the supplying release. Do not substitute a full Bank-0/1/2 `8-F`
+image: the resident installer cannot write protected Bank-3 sector F.
+Keep the owner-local programmer backup and retained WDCMONv2 archive.
 
-```text
-ryors-v1.2-himon-asm-bank3-8-e.s19
-ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
-```
+## First installation
 
-Verify the component hashes against the R-YORS release that supplied them.
-Keep the 128 KiB programmer backup and the retained WDCMONv2 B0 archive.
+The combined `8-E` image installs HIMON and ASM-F2 in one transaction.
+At `STR8-N>` enter `I`, choose bank `3` and range `8-E`. For a new directory
+row, enter the chosen TYPE and five-character DESC; existing complete rows
+retain their identity and do not prompt for these fields. Confirm the printed
+bank/range with `Y`, then send the complete combined S19 when `S19` appears.
 
-## Simplest combined install
+Require six receive-time sector dots, `COMMIT? Y:`, then the final sector dot
+and `OK` after confirming `Y`. Installation returns to the STR8 prompt; it
+does not execute the S9 address. Enter `C` for a fresh HIMON cold start, then
+`ASM NEW` from HIMON to enter ASM-F2. Record both visible release identities.
 
-For a new Bank-3 installation, install the packaged combined image in one
-transaction:
+## Separate component installation or update
 
-```text
-I
-B0-3: 3
-RANGE: 8-E
-TYPE: FF
-DESC: RYORS
-I B3 8-E WRITE? Y: Y
-S19
-```
-
-Send `ryors-v1.2-himon-asm-bank3-8-e.s19`. Require seven sector dots, the
-commit prompt, and `OK`. Its S9 entry is `$C000`, so completion starts HIMON.
-The separate procedure below is useful when only one component is wanted or
-is being updated.
-
-## Load HIMON first
-
-At `STR8-N>` enter:
+Install HIMON first when Bank 3 has no enrolled entry:
 
 ```text
-I
+STR8-N>I
 B0-3: 3
 RANGE: C-E
-TYPE: 48
-DESC: HIMON
+TYPE: 5A
+DESC: RYORS
 I B3 C-E WRITE? Y: Y
 S19
+..COMMIT? Y: Y.
+OK
+STR8-N>C
 ```
 
-Send only `ryors-v1.2-himon-bank3-c-e.s19`. Require three sector dots, the
-commit prompt, and `OK`. Its S9 entry is `$C000`, so a successful transaction
-starts HIMON. Record the exact `HIMON V` banner.
+Send `FIRMWARE/ryors-v1.2-himon-bank3-c-e.s19` from the HIMON release.
+TYPE/DESC above are illustrative first-enrollment values; omit those steps
+when the board does not ask for them. Require the installed HIMON identity.
+Return with HIMON `STR8` and its confirmation, then select `S` at the selector.
 
-At the HIMON prompt enter `STR8` to return to `STR8-N>`. If that command is
-not available in the supplied HIMON build, press physical RESET and select
-`S` at the STR8-N selector.
-
-## Load ASM-F2 second
-
-At `STR8-N>` enter:
+To install ASM-F2 in the already enrolled Bank 3:
 
 ```text
-I
+STR8-N>I
 B0-3: 3
 RANGE: 8-B
-TYPE: 41
-DESC: ASMF2
 I B3 8-B WRITE? Y: Y
 S19
+...COMMIT? Y: Y.
+OK
+STR8-N>C
 ```
 
-Send only `ryors-v1.2-asm-bank3-8-b.s19`. Require four sector dots, the
-commit prompt, and `OK`. Record the exact `ASM-F2` identity after its S9 entry.
+Send `FIRMWARE/ryors-v1.2-asm-bank3-8-b.s19` from the ASM-F2 release.
+Its S9 `$FFFF` preserves the established `$C000` entry; it cannot be the
+first image in an empty Bank-3 directory. At HIMON, enter `ASM NEW` and
+require the release identity. A fresh cold entry avoids resuming RAM state
+left by an older firmware build.
 
-These are `I` flash-install payloads, not STR8 `L` RAM programs: their target
-ranges are `$8000-$BFFF` and `$C000-$EFFF`, outside STR8's `$2000-$7AFF` RAM
-load window. Neither component touches protected Bank-3 sector F.
+These are flash `I` payloads. STR8 `L` only accepts RAM `$2000-$7AFF` and
+cannot load either flash component. Both install paths preserve sector F.
 
-## Prove the resulting board
+## Verify the resulting board
 
-1. Press physical RESET and select `C`; require the installed HIMON identity.
-2. Enter ASM-F2 from HIMON and require the installed ASM identity.
-3. Return to STR8-N, run `J0`, and require the retained WDCMONv2 board identity.
-4. Press physical RESET again and require `STR8-N 1.29`.
+1. Press physical RESET, select `C`, and check the HIMON identity.
+2. Enter `ASM NEW`, check the ASM-F2 identity, and run its documented smoke test.
+3. Return to STR8, enter `J0`, and check the retained WDCMONv2 board identity.
+4. Press physical RESET and require `STR8-N 1.34` again.
 
-This optional component procedure begins after, and is not part of, the
-WDCMONv2-to-STR8-N migration transaction.
+This is an optional component-installation procedure after factory migration.
+It is not part of the migration transaction or a claim of new board testing.

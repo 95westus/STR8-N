@@ -25,6 +25,7 @@ function Get-Sha256 {
 }
 
 $inputs = [ordered]@{
+    'CHECK-LINKS.ps1' = 'tools/prepare_release_docs.ps1'
     'STR8-iN65-LOADER.ps1' = 'tools/wdcmonv2/MIGRATE-WDC-TO-STR8N.ps1'
     'STR8-iN65-LOADER.py' = 'tools/wdcmonv2/MIGRATE-WDC-TO-STR8N.py'
     'QUICKSTART.txt' = 'docs/STR8_IN65_QUICKSTART.txt'
@@ -42,6 +43,7 @@ $inputs = [ordered]@{
     'TOOLS/start_wdcmonv2_ram.ps1' = 'tools/wdcmonv2/start_wdcmonv2_ram.ps1'
     'TOOLS/start_wdcmonv2_ram.py' = 'tools/wdcmonv2/start_wdcmonv2_ram.py'
     'VERIFY-PACKAGE.ps1' = 'tools/wdcmonv2/verify_wdcmonv2_migration_kit.ps1'
+    'DOC/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md' = 'docs/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md'
     'DOC/WDCMONV2_MIGRATION.md' = 'docs/WDCMONV2_MIGRATION.md'
     'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md' = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md'
     'DOC/WDCMONV2_MIGRATION_PROVENANCE.md' = 'docs/WDCMONV2_MIGRATION_PROVENANCE.md'
@@ -85,11 +87,13 @@ foreach ($item in $inputs.GetEnumerator()) {
     Copy-Item -LiteralPath $item.Value -Destination $destination
 }
 
+& tools/prepare_release_docs.ps1 -Root $kitFull -SourceFiles $inputs -RepositoryRoot (Get-Location).Path -Commit ((& git rev-parse HEAD).Trim())
+
 $readmePath = Join-Path $kitFull 'PACKAGE-README.txt'
 $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
-    'STATUS: v1.34 ARTIFACT HOST-QUALIFIED; v1.32 FACTORY PATH BOARD-ACCEPTED',
+    'STATUS: v1.34 FACTORY PATH BOARD-ACCEPTED ON 2026-09-15',
     'HOST STATUS: WINDOWS 11 POWERSHELL BOARD-PROVEN; UBUNTU PYTHON UNTESTED',
     ('ARCHIVE ROOT: {0}' -f $ArchiveRootName),
     '',
@@ -108,6 +112,8 @@ $readme = @(
     '',
     'Factory-board minimal path:',
     '  powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\STR8-iN65-LOADER.ps1',
+    '  The accepted v1.34 run used -PhysicalResetArmSeconds 60, then RESET',
+    '  while the arm window was active. The default reset/Enter gate missed sync.',
     '  Add -Details for hashes, addresses, bank policy, and evidence paths.',
     '  See QUICKSTART.txt for the short operator card.',
     '  READ THE SCREEN. CTRL+U and CTRL+D send different packaged files;',
@@ -154,7 +160,11 @@ $fileRows = foreach ($file in $payloadFiles) {
 $manifest = [ordered]@{
     schema = 1
     package = 'str8n-v1.34-wdcmonv2-str8n-migration-kit'
-    hardwareStatus = 'v1.34 artifact host-qualified; v1.32 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-08'
+    sourceCommit = (& git rev-parse HEAD).Trim()
+    sourceDirty = -not [string]::IsNullOrWhiteSpace((& git status --porcelain))
+    packagedUtc = [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')
+    firmwareUnchangedFromTestedMigrationZip = '2E1EB81375CB6568AAC7AFF2AE50EC6459B421DB5812B143C30D124F39BDBFB4'
+    hardwareStatus = 'v1.34 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-15; Windows physical-reset arm; Linux has no board proof'
     windowsHostStatus = 'Windows 11 PowerShell board-proven'
     ubuntuPythonHostStatus = 'experimental; offline-tested only; no board proof'
     archiveRoot = $ArchiveRootName

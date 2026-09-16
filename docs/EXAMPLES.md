@@ -4,8 +4,12 @@ These examples show what to type and which S19 file to send. Text after `<-`
 is explanation, not terminal input. Use normal full-speed text-file transfer
 with zero character and line delay.
 
-They describe the v1.34 candidate and are not hardware-test transcripts.
-Its board qualification remains pending.
+These are worked procedures for the v1.34 release, not hardware transcripts.
+See the [operator guide](OPERATORS_GUIDE.md#validation-status) for the exact
+accepted binaries, covered operations, and remaining hardware matrix.
+Download HIMON and ASM-F2 separately; their payloads are not in the STR8 ZIP.
+Paths beginning with BUILD or C:/SRC describe a developer checkout; release
+users find the corresponding ready-to-send files in ARTIFACTS.
 
 ## Stay in STR8-N after RESET
 
@@ -32,10 +36,10 @@ From an extracted v1.34 migration kit, use the stock board's COM port:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\STR8-iN65-LOADER.ps1 -Port COM4
+  -File .\STR8-iN65-LOADER.ps1 -Port COM4 -PhysicalResetArmSeconds 60
 ```
 
-Follow the loader's physical-reset and RAM-verification prompts. Confirm
+Press physical RESET during the reported arm window, then follow the RAM-verification prompts. Confirm
 `COPY B3 TO B0`, wait for the complete comparison, and press Ctrl+U only when
 asked for the top BIN. Confirm `INSTALL STR8-N 1.34` after that image passes
 its check. After the first boot, select `S`, enter `L`, and press Ctrl+D when
@@ -50,7 +54,7 @@ physical RESET using the full procedure in
 Use the R-YORS 12K HIMON file:
 
 ```text
-C:/SRC/R-YORS/RELEASE/ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-himon-bank3-c-e.s19
+FIRMWARE/ryors-v1.2-himon-bank3-c-e.s19
 ```
 
 Example session:
@@ -68,7 +72,7 @@ OK
 STR8-N>C
 BOOT COLD
 
-HIMON V 00.0902(1707)
+HIMON V 00.0915(2324)
 >
 ```
 
@@ -81,7 +85,7 @@ After HIMON has established Bank 3's identity and entry, install the 16K
 ASM-only file:
 
 ```text
-C:/SRC/R-YORS/RELEASE/ARTIFACTS/COMPONENT-IMAGES/ryors-v1.2-asm-bank3-8-b.s19
+FIRMWARE/ryors-v1.2-asm-bank3-8-b.s19
 ```
 
 ```text
@@ -92,12 +96,12 @@ I B3 8-B WRITE? Y: Y
 S19
 ...COMMIT? Y: Y.
 OK
-STR8-N>W
-BOOT WARM
+STR8-N>C
+BOOT COLD
 
-HIMON V 00.0902(1707)
->ASM
-ASM-F2 00.0902(1707)
+HIMON V 00.0915(2324)
+>ASM NEW
+ASM-F2 00.0915(2324)
 ASM>
 ```
 
@@ -109,7 +113,7 @@ entry. It is not a valid first Bank-3 enrollment.
 The simplest complete writable Bank-3 payload is:
 
 ```text
-C:/SRC/R-YORS/RELEASE/ryors-v1.2-himon-asm-bank3-8-e.s19
+FIRMWARE/ryors-v1.2-himon-asm-bank3-8-e.s19
 ```
 
 Select Bank 3 and range `8-E`. On a new directory row, supply TYPE and DESC.

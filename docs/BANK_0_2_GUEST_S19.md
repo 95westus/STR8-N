@@ -90,12 +90,15 @@ make ryors-full-bank
 Output:
 
 ```text
-C:/SRC/R-YORS/RELEASE/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+BUILD/v1.34/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 $8000-$BFFF  ASM-F2
 $C000-$EFFF  HIMON
-$F000-$FFFF  current STR8-N 1.29 top sector
+$F000-$FFFF  current STR8-N 1.34 top sector
 S9 / RESET   $F000
 ```
+
+This optional developer-generated combined image is not included in the
+standalone STR8-N, HIMON, or ASM-F2 releases.
 
 Install with `I`, target Bank 0, 1, or 2, and range `8-F`. On a new directory
 row, enter TYPE and a five-character DESC. After `OK`, `J0`-`J2` may launch
