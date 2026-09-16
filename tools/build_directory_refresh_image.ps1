@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ConfirmReadbackPath,
 
-    [string]$TopBinPath = "BUILD/v1.33/bin/str8n-v1.33-bank3-f000-ffff.bin",
+    [string]$TopBinPath = "BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin",
 
     [Parameter(Mandatory = $true)]
     [string]$OutPath

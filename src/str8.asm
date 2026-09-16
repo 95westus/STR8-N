@@ -1,6 +1,6 @@
 ; ----------------------------------------------------------------------------
 ; str8.asm
-; STR8 recovery monitor, built in proof and flashable v1.33 layouts.
+; STR8 recovery monitor, built in proof and flashable v1.34 layouts.
 ;
 ; Flashable command surface:
 ;   I  preview metadata and run the dense journaled Bank 0-3 transaction
@@ -259,12 +259,10 @@ STR8_CON_WRITE_BYTE_BLOCK:
 ; CHAR_READY is a non-consuming receiver poll. C=1 means a byte is ready;
 ; C=0 means empty. A/flags are clobbered except for carry; X/Y are preserved.
 STR8_CHAR_READY_SERVICE_ENTRY:
-                        LDA             #STR8_CON_PN_RXF
-                        BIT             STR8_CON_VIA_CTRL
-                        BEQ             ?READY
-                        CLC
-                        RTS
-?READY:                 SEC
+                        LDA             STR8_CON_VIA_CTRL
+                        EOR             #STR8_CON_PN_RXF
+                        LSR             A
+                        LSR             A
                         RTS
 
 STR8_BOOT_START:
@@ -301,7 +299,7 @@ STR8_BOOT_START:
 ?HIMON:
                         LDX             #<MSG_CRLF
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_CRLF
                         JSR             STR8_PRINT_XY
@@ -310,7 +308,7 @@ STR8_BOOT_START:
 ?STR8_KEY:             JSR             STR8_CON_FLUSH_RX
                         LDX             #<MSG_BOOT_MENU
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_BOOT_MENU
                         JSR             STR8_PRINT_XY
@@ -329,7 +327,7 @@ STR8_ENTER_MENU:
 STR8_ENTER_MENU_HELP:
                         LDX             #<MSG_SCREEN
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_SCREEN
                         JSR             STR8_PRINT_XY
@@ -450,6 +448,7 @@ STR8_ENTER_HIMON_WARM:
                         STA             STR8_HIMON_RESET_SIG3
                         ENDIF
 ; HIMON becomes the display owner only after its availability gate passes.
+STR8_ENTER_HIMON_RELEASE:
                         STZ             STR8_LED_PIA_PORTA
                         JMP             STR8_HIMON_START
 
@@ -462,8 +461,7 @@ STR8_ENTER_HIMON_COLD:
                         DEX
                         BPL             ?SIG
 ; Cold HIMON receives the same released display as the warm entry.
-                        STZ             STR8_LED_PIA_PORTA
-                        JMP             STR8_HIMON_START
+                        BRA             STR8_ENTER_HIMON_RELEASE
                         ENDIF
 
                         IF              STR8_V1_LAYOUT
@@ -494,7 +492,7 @@ STR8_LOCAL_HIMON_AVAILABLE:
                         BNE             ?NO
                         DEX
                         BPL             ?BYTE
-                        SEC
+; The final matching CMP left carry set; DEX/BPL preserve it.
                         RTS
 ?NO:                   CLC
                         RTS
@@ -513,7 +511,7 @@ STR8_ENTER_MENU_NO_BOOT:
                         LDX             #<MSG_NO_TARGET
                         IF              STR8_V1_INSTALLER_TXN
 STR8_ENTER_MENU_NO_TARGET_PRINT:
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_NO_TARGET
 STR8_ENTER_MENU_NO_TARGET_PRINT:
@@ -545,7 +543,7 @@ STR8_STARTUP_DELAY:
                         LDX             #<MSG_RST_S
 ?RESET_KIND:            STZ             STR8_SOFT_RESET_SIG1
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_CRLF
                         JSR             STR8_PRINT_XY
@@ -555,7 +553,7 @@ STR8_STARTUP_DELAY:
                         INC             STR8_BOOT_KEY_ENABLE
                         LDX             #<MSG_ID
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_ID
                         JSR             STR8_PRINT_XY
@@ -579,7 +577,7 @@ STR8_STARTUP_DELAY:
                         LDX             #<MSG_LIVE_DOT
 ?PULSE:
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_WAIT
                         JSR             STR8_PRINT_XY
@@ -593,7 +591,7 @@ STR8_STARTUP_DELAY:
                         LDA             #'.'
                         JSR             STR8_WRITE_ACTIVITY_A
                         ENDIF
-                        JSR             STR8_BOOT_KEY_POLL_IF_ENABLED
+                        JSR             STR8_BOOT_KEY_POLL
                         BCS             ?KEY_PRESSED
                         PLA
                         DEC             A
@@ -623,12 +621,6 @@ STR8_DELAY_FIXED_A:
                         SEC
                         RTS
 
-STR8_BOOT_KEY_POLL_IF_ENABLED:
-                        LDA             STR8_BOOT_KEY_ENABLE
-                        BNE             STR8_BOOT_KEY_POLL
-                        CLC
-                        RTS
-
 ; 2026-08-05T00:00-05:00        Codex       Echo only accepted live-dot keys.
 STR8_BOOT_KEY_POLL:
                         JSR             STR8_CON_READ_BYTE_NONBLOCK
@@ -653,9 +645,8 @@ STR8_BOOT_KEY_POLL:
                         BEQ             ?YES
 ?NO:                   CLC
                         RTS
-?YES:                  JSR             STR8_WRITE_ACTIVITY_A
-                        SEC
-                        RTS
+; The raw writer preserves A and returns carry set.
+?YES:                  JMP             STR8_WRITE_ACTIVITY_A
                         ENDIF
 
                         IF              STR8_V1_INSTALLER_TXN
@@ -725,10 +716,9 @@ STR8_READ_LINE:
                         BEQ             ?BACKSPACE
                         CMP             #$7F
                         BEQ             ?BACKSPACE
+                        BCS             ?READ
                         CMP             #' '
                         BCC             ?READ
-                        CMP             #$7F
-                        BCS             ?READ
                         JSR             STR8_TO_UPPER_A
                         CPY             STR8_LINE_LIMIT
                         BCS             ?READ
@@ -736,13 +726,13 @@ STR8_READ_LINE:
                         JSR             STR8_CON_WRITE_BYTE_BLOCK
                         INY
                         BRA             ?READ
-?BACKSPACE:            CPY             #$00
+?BACKSPACE:            TYA
                         BEQ             ?READ
                         DEY
                         PHY
                         LDX             #<MSG_BACKSPACE
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_BACKSPACE
                         JSR             STR8_PRINT_XY
@@ -858,7 +848,7 @@ STR8_DISPATCH_A:
 ; A valid non-empty stream executes its in-range S9 address immediately.
 STR8_CMD_LOAD_RAM:
                         LDX             #<MSG_I_SEND_S19
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         STZ             STR8_RAM_LOAD_HAVE_DATA
                         LDA             #STR8_REC_OP_PARSE
                         STA             STR8_REC_OP
@@ -923,7 +913,7 @@ STR8_CMD_INSTALL_PREVIEW:
 ?PROMPT:
                         LDX             #<MSG_I_BANK
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_BANK
                         JSR             STR8_PRINT_XY
@@ -978,14 +968,7 @@ STR8_CMD_INSTALL_PREVIEW:
 ; and description.  The metadata writer accepts only erased or exact bytes.
                         LDA             #STR8_DIR_RECORD_EMPTY
                         STA             STR8_INSTALL_STATE
-                        LDA             #$FF
-                        STA             STR8_INSTALL_ENTRY_LO
-                        STA             STR8_INSTALL_ENTRY_HI
-                        JSR             STR8_I_READ_TYPE
-                        BCC             ?BAD
-                        JSR             STR8_I_READ_DESCRIPTION
-                        BCC             ?BAD
-                        JMP             STR8_I_PRINT_SUMMARY
+                        BRA             ?NEW_METADATA
 ?RECOVER_SEALED:       JSR             STR8_I_COPY_RECORD_METADATA
 ; A started Bank-3 enrollment with no published entry still needs the
 ; first-install finish path after the full recovery payload verifies.
@@ -1006,6 +989,7 @@ STR8_CMD_INSTALL_PREVIEW:
 ?CLASSIFY:
                         CMP             #STR8_DIR_RECORD_EMPTY
                         BNE             ?EXISTING
+?NEW_METADATA:
                         LDA             #$FF
                         STA             STR8_INSTALL_ENTRY_LO
                         STA             STR8_INSTALL_ENTRY_HI
@@ -1018,7 +1002,7 @@ STR8_CMD_INSTALL_PREVIEW:
                         JMP             STR8_I_PRINT_SUMMARY
 ?INVALID:              LDX             #<MSG_I_INVALID
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE0_X
+                        JMP             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_INVALID
                         JMP             STR8_PRINT_XY
@@ -1028,7 +1012,7 @@ STR8_CMD_INSTALL_PREVIEW:
 STR8_I_READ_TYPE:
                         LDX             #<MSG_I_TYPE_PROMPT
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_TYPE_PROMPT
                         JSR             STR8_PRINT_XY
@@ -1061,7 +1045,7 @@ STR8_I_READ_TYPE:
 STR8_I_READ_RANGE:
                         LDX             #<MSG_I_RANGE_PROMPT
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_RANGE_PROMPT
                         JSR             STR8_PRINT_XY
@@ -1115,7 +1099,7 @@ STR8_I_READ_RANGE:
 STR8_I_READ_DESCRIPTION:
                         LDX             #<MSG_I_DESC_PROMPT
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_DESC_PROMPT
                         JSR             STR8_PRINT_XY
@@ -1137,8 +1121,8 @@ STR8_I_READ_DESCRIPTION:
                         RTS
 
 STR8_I_COPY_RECORD_METADATA:
-                        LDY             #STR8_DIR_TYPE
-                        LDA             (STR8_PTR_LO),Y
+; TYPE is the first record byte; Y is initialized for the description below.
+                        LDA             (STR8_PTR_LO)
                         STA             STR8_INSTALL_TYPE
                         LDX             #$00
                         LDY             #STR8_DIR_DESCRIPTION
@@ -1159,7 +1143,7 @@ STR8_I_COPY_RECORD_METADATA:
 STR8_I_PRINT_SUMMARY:
                         LDX             #<MSG_I_SUMMARY
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_SUMMARY
                         JSR             STR8_PRINT_XY
@@ -1182,7 +1166,7 @@ STR8_I_PRINT_SUMMARY:
                         BEQ             STR8_I_NO_WRITE
                         IF              STR8_V1_INSTALLER_TXN
                         LDX             #<MSG_I_WRITE_CONFIRM
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDX             #<MSG_I_STAGE_CONFIRM
                         LDY             #>MSG_I_STAGE_CONFIRM
@@ -1201,7 +1185,7 @@ STR8_I_PRINT_SUMMARY:
                         BCC             ?INSTALL_FAIL
                         LDX             #<MSG_I_SEND_S19
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_SEND_S19
                         JSR             STR8_PRINT_XY
@@ -1212,7 +1196,7 @@ STR8_I_PRINT_SUMMARY:
                         JSR             STR8_I_FINISH_TRANSACTION
                         BCC             ?INSTALL_FAIL
                         LDX             #<MSG_I_INSTALL_OK
-                        JMP             STR8_PRINT_TXN_PAGE0_X
+                        JMP             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDX             #<MSG_I_STAGE_OK
                         LDY             #>MSG_I_STAGE_OK
@@ -1221,14 +1205,14 @@ STR8_I_PRINT_SUMMARY:
                         ENDIF
 ?INSTALL_FAIL:         LDX             #<MSG_I_FAIL
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE1_X
+                        JMP             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_S19_FAIL
                         JSR             STR8_PRINT_XY
                         ENDIF
 STR8_I_NO_WRITE:       LDX             #<MSG_I_NO_WRITE
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE1_X
+                        JMP             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_I_NO_WRITE
                         JMP             STR8_PRINT_XY
@@ -1295,7 +1279,7 @@ STR8_I_WRITE_METADATA:
 ?ERASED:               STA             STR8_REC_DATA_BUF,X
                         DEX
                         BNE             ?ERASED
-                        LDX             #$00
+; The erased-byte loop leaves X=0 for the description copy.
 ?DESC:                 LDA             STR8_INSTALL_DESC,X
                         STA             STR8_REC_DATA_BUF+STR8_DIR_DESCRIPTION,X
                         INX
@@ -1332,7 +1316,11 @@ STR8_I_WRITE_JOURNAL_MASK_A:
 ; Both entries already supply the mask index in A.
                         AND             #$07
                         TAX
-                        LDA             STR8_I_JOURNAL_MASK,X
+                        LDA             #$FF
+                        CLC
+?MASK:                 ROL             A
+                        DEX
+                        BPL             ?MASK
                         STA             STR8_REC_DATA_BUF
                         LDA             STR8_INSTALL_PAIR
                         LSR             A
@@ -1358,10 +1346,10 @@ STR8_I_SET_DIR_ADDRESS_A:
                         ASL             A
 ; Bank 0-3 leaves carry clear after the fourth shift.
                         ADC             #<STR8_DIR_BASE
-                        STA             STR8_REC_ADDR_LO
+                        STA             STR8_PTR_LO
                         PLA
-                        CLC
-                        ADC             STR8_REC_ADDR_LO
+; The record base has a zero low nibble; the offset occupies only that nibble.
+                        ORA             STR8_PTR_LO
                         STA             STR8_REC_ADDR_LO
                         STA             STR8_PTR_LO
                         LDA             #>STR8_DIR_BASE
@@ -1369,8 +1357,6 @@ STR8_I_SET_DIR_ADDRESS_A:
                         STA             STR8_PTR_HI
                         RTS
 
-STR8_I_JOURNAL_MASK:
-                        DB              $FE,$FD,$FB,$F7,$EF,$DF,$BF,$7F
                         ENDIF
 
 ; Receive exactly the operator-selected 4K-aligned payload range. The caller
@@ -1565,7 +1551,7 @@ STR8_I_ENTRY_IN_RANGE:
 
 STR8_I_CONFIRM_COMMIT:
                         LDX             #<MSG_I_COMMIT
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         JMP             STR8_CONFIRM_Y
 
 STR8_I_RECEIVE_DENSE_FAIL:
@@ -1677,7 +1663,7 @@ STR8_CMD_SELECT_HIMON:
                         JSR             STR8_CON_FLUSH_RX
                         LDX             #<MSG_CRLF
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_CRLF
                         JSR             STR8_PRINT_XY
@@ -1761,7 +1747,7 @@ STR8_CMD_ABORT:
                         LDX             #<MSG_ABORT
                         ENDIF
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE0_X
+                        JMP             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_ABORT
                         JMP             STR8_PRINT_XY
@@ -1786,7 +1772,7 @@ STR8_BOOT_JUMP_BANK_A:
                         JSR             STR8_CON_FLUSH_RX
                         LDX             #<MSG_BOOT_BANK_WAIT
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE0_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_BOOT_BANK_WAIT
                         JSR             STR8_PRINT_XY
@@ -1807,7 +1793,7 @@ STR8_JUMP_BANK_PREP_A:
                         STZ             STR8_JUMP_STATUS
                         LDX             #<MSG_JUMP_B
                         IF              STR8_V1_INSTALLER_TXN
-                        JSR             STR8_PRINT_TXN_PAGE1_X
+                        JSR             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_JUMP_B
                         JSR             STR8_PRINT_XY
@@ -1816,7 +1802,7 @@ STR8_JUMP_BANK_PREP_A:
                         JSR             STR8_WRITE_DEC_DIGIT_A
                         LDX             #<MSG_CRLF
                         IF              STR8_V1_INSTALLER_TXN
-                        JMP             STR8_PRINT_TXN_PAGE1_X
+                        JMP             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_CRLF
                         JSR             STR8_PRINT_XY
@@ -2258,7 +2244,7 @@ STR8_REC_PARSE_BODY:
 ?HAVE_ADDR_LO:
                         STA             STR8_REC_ADDR_LO
                         LDA             STR8_REC_WORK_COUNT
-                        SEC
+; A successful READ_SUM_BYTE leaves carry set through the loads/stores above.
                         SBC             #$03
                         STA             STR8_REC_DATA_LEN
                         STA             STR8_REC_WORK_COUNT
@@ -2354,7 +2340,6 @@ STR8_REC_FAIL_READ_X:
                         CMP             #STR8_REC_ABORT
                         BNE             STR8_REC_FAIL_READ_NOT_ABORT
 STR8_REC_RETURN_CURRENT_FAIL:
-                        LDA             STR8_REC_STATUS
                         CLC
                         RTS
 STR8_REC_FAIL_READ_NOT_ABORT:
@@ -2426,41 +2411,39 @@ STR8_REC_READ_SUM_BYTE:
                         RTS
 
 STR8_REC_READ_HEX_BYTE:
-                        JSR             STR8_REC_READ_CHAR
-                        BCC             ?FAIL
-                        JSR             STR8_REC_HEX_ASCII_TO_NIBBLE
+                        JSR             STR8_REC_READ_NIBBLE
                         BCC             ?FAIL
                         ASL             A
                         ASL             A
                         ASL             A
                         ASL             A
                         STA             STR8_REC_WORK_TMP
-                        JSR             STR8_REC_READ_CHAR
-                        BCC             ?FAIL
-                        JSR             STR8_REC_HEX_ASCII_TO_NIBBLE
+                        JSR             STR8_REC_READ_NIBBLE
                         BCC             ?FAIL
                         ORA             STR8_REC_WORK_TMP
 ?FAIL:
                         RTS
 
+STR8_REC_READ_NIBBLE:
+                        JSR             STR8_REC_READ_CHAR
+                        BCC             STR8_REC_HEX_NIBBLE_FAIL
 STR8_REC_HEX_ASCII_TO_NIBBLE:
                         CMP             #'0'
-                        BCC             ?FAIL
+                        BCC             STR8_REC_HEX_NIBBLE_FAIL
                         CMP             #'9'+1
                         BCC             ?DIGIT
                         AND             #$DF
                         CMP             #'A'
-                        BCC             ?FAIL
+                        BCC             STR8_REC_HEX_NIBBLE_FAIL
                         CMP             #'F'+1
-                        BCS             ?FAIL
-                        SEC
-                        SBC             #('A'-10)
+                        BCS             STR8_REC_HEX_NIBBLE_FAIL
+; Both accepted paths have carry clear; include the borrow in the immediate.
+                        SBC             #('A'-11)
                         RTS
 ?DIGIT:
-                        SEC
-                        SBC             #'0'
+                        SBC             #('0'-1)
                         RTS
-?FAIL:
+STR8_REC_HEX_NIBBLE_FAIL:
                         CLC
                         RTS
 
@@ -2527,26 +2510,21 @@ STR8_CONFIRM_Y:
 STR8_COPY_WORKER_TO_RAM:
                         JSR             STR8_WORKER_COPY_POINTERS
                         LDX             #STR8_WORKER_COPY_LEN_HI
-?COPY_PAGE:            LDY             #$00
-?COPY_BYTE:            LDA             (STR8_PTR_LO),Y
+                        LDY             #$00
+?COPY:                 LDA             (STR8_PTR_LO),Y
                         STA             (STR8_COPY_PTR_LO),Y
                         CMP             (STR8_COPY_PTR_LO),Y
                         BNE             ?FAIL
                         INY
-                        BNE             ?COPY_BYTE
+                        BNE             ?CHECK
                         INC             STR8_PTR_HI
                         INC             STR8_COPY_PTR_HI
                         DEX
-                        BNE             ?COPY_PAGE
-?COPY_TAIL:            CPY             #STR8_WORKER_COPY_LEN_LO
-                        BEQ             ?OK
-                        LDA             (STR8_PTR_LO),Y
-                        STA             (STR8_COPY_PTR_LO),Y
-                        CMP             (STR8_COPY_PTR_LO),Y
-                        BNE             ?FAIL
-                        INY
-                        BRA             ?COPY_TAIL
-?OK:                   SEC
+?CHECK:                CPX             #$00
+                        BNE             ?COPY
+                        CPY             #STR8_WORKER_COPY_LEN_LO
+                        BNE             ?COPY
+; CPY equality establishes the successful carry result.
                         RTS
 ?FAIL:                 CLC
                         RTS
@@ -2750,7 +2728,7 @@ STR8_PRINT_COPY_FAIL:
 STR8_PRINT_JUMP_FAIL:
                         LDX             #<MSG_JUMP_FAIL
                         IF              STR8_V1_INSTALLER_TXN
-                        BRA             STR8_PRINT_TXN_PAGE1_X
+                        BRA             STR8_PRINT_MESSAGE_X
                         ELSE
                         LDY             #>MSG_JUMP_FAIL
                         JMP             STR8_PRINT_XY
@@ -2864,15 +2842,6 @@ STR8_READ_RECORD_ACTIVITY:
                         STA             STR8_LED_PIA_PORTA
                         JMP             STR8_RECORD_SERVICE_BODY
 
-; Private STR8-N output path. Preserve the public CHAROUT contract while
-; publishing TX activity before the potentially blocking FT245R write.
-STR8_WRITE_ACTIVITY_A:
-                        PHA
-                        LDA             #STR8_LED_STATUS_TX_ACTIVITY
-                        STA             STR8_LED_PIA_PORTA
-                        PLA
-                        JMP             STR8_CON_WRITE_BYTE_BLOCK
-
 STR8_PRINT_PROMPT:
                         LDX             #<MSG_PROMPT
                         IF              STR8_V1_INSTALLER_TXN
@@ -2880,7 +2849,7 @@ STR8_PRINT_PROMPT:
 ; The STR8-iN/65 prompt already falls through to this adjacent helper.  Keep
 ; its diagnostic bootstrap inside the protected-sector size limit.
                         ELSE
-                        BRA             STR8_PRINT_TXN_PAGE0_X
+                        BRA             STR8_PRINT_MESSAGE_X
                         ENDIF
                         ELSE
                         LDY             #>MSG_PROMPT
@@ -2888,13 +2857,12 @@ STR8_PRINT_PROMPT:
                         ENDIF
 
                         IF              STR8_V1_INSTALLER_TXN
-; Packed release messages now span the end of $FC and start of $FD. Calls are
-; host-checked against the page of their referenced message.
+; Every packed release message starts on the same page. Host checks cover all
+; call sites, including both runtime-selected reset messages.
 STR8_PRINT_TXN_PAGE0_X:
-                        LDY             #>MSG_ID
-                        BRA             STR8_PRINT_XY
 STR8_PRINT_TXN_PAGE1_X:
-                        LDY             #>MSG_RST_H
+STR8_PRINT_MESSAGE_X:
+                        LDY             #>MSG_ID
                         ENDIF
 STR8_PRINT_XY:
                         STX             STR8_PTR_LO
@@ -2904,11 +2872,19 @@ STR8_PRINT_XY:
                         BMI             ?LAST
                         JSR             STR8_WRITE_ACTIVITY_A
                         INY
-                        BNE             ?LOOP
-                        INC             STR8_PTR_HI
+; Each resident message is at most 256 bytes, so Y cannot wrap before LAST.
                         BRA             ?LOOP
 ?LAST:                  AND             #$7F
-                        JMP             STR8_WRITE_ACTIVITY_A
+; Fall through to the private output wrapper for the final byte.
+
+; Private STR8-N output path. Preserve the public CHAROUT contract while
+; publishing TX activity before the potentially blocking FT245R write.
+STR8_WRITE_ACTIVITY_A:
+                        PHA
+                        LDA             #STR8_LED_STATUS_TX_ACTIVITY
+                        STA             STR8_LED_PIA_PORTA
+                        PLA
+                        JMP             STR8_CON_WRITE_BYTE_BLOCK
 
                         IF              STR8_IN65_EDU_QUIET_START
 STR8_IN65_EDU_QUIET:

@@ -4,6 +4,12 @@ STR8-N owns its resident source, embedded worker, payload tools, protected 4K
 layout, directory rules, and public ABI. R-YORS consumes verified artifacts;
 it must not maintain a second live STR8-N source tree.
 
+The current v1.34 size candidate changes the packed worker address and the
+linked interrupt targets. Consumers must refresh their content lock and
+generated contract; public service entries and RAM ownership stay fixed.
+See [the size-change report](STR8N_V1_34_SIZE_OPTIMIZATION.md) for validation
+and the remaining board qualification.
+
 ## Normal two-folder workspace
 
 ```text
@@ -26,16 +32,16 @@ STR8-N commits do not require lock churn.
 ## Published STR8-N artifacts
 
 ```text
-BUILD/v1.33/bin/str8n-v1.33-bank3-f000-ffff.bin
-BUILD/v1.33/s19/str8n-v1.33-f000.s19
-BUILD/v1.33/s19/str8n-v1.33-worker-0200.s19
-BUILD/v1.33/s19/str8n-v1.33-bank-maint-2000.s19
-BUILD/v1.33/s19/str8n-v1.33-console-abi-test-2000.s19
-BUILD/v1.33/s19/str8n-v1.33-top-update-2000.s19
-BUILD/v1.33/s19/str8n-v1.33-directory-refresh-2000.s19
-BUILD/v1.33/s19/str8n-v1.33-wdcmonv2-archive-2000.s19
-BUILD/v1.33/s19/str8n-v1.33-wdcmonv2-install-2000.s19
-BUILD/v1.33/include/str8n-public.inc
+BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin
+BUILD/v1.34/s19/str8n-v1.34-f000.s19
+BUILD/v1.34/s19/str8n-v1.34-worker-0200.s19
+BUILD/v1.34/s19/str8n-v1.34-bank-maint-2000.s19
+BUILD/v1.34/s19/str8n-v1.34-console-abi-test-2000.s19
+BUILD/v1.34/s19/str8n-v1.34-top-update-2000.s19
+BUILD/v1.34/s19/str8n-v1.34-directory-refresh-2000.s19
+BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-archive-2000.s19
+BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-install-2000.s19
+BUILD/v1.34/include/str8n-public.inc
 BUILD/str8n-manifest.json
 ```
 
@@ -75,8 +81,8 @@ $F000-$FFFF  STR8-N, verified external 4096-byte BIN
 
 R-YORS code binds only to interfaces listed in the
 [Technical Guide](TECHNICAL_GUIDE.md#public-interface). Its Banked-AP helper
-runs at `$0300` after the STR8-N selector prefix at `$0200-$0228`; it shares
-the larger `$0200-$045F` worker tray rather than coexisting with the complete
+runs at `$0300` after the STR8-N selector prefix at `$0200-$0226`; it shares
+the larger `$0200-$0437` worker tray rather than coexisting with the complete
 mutation worker. The R-YORS build must reject overlap with the selector prefix
 if that contract moves.
 
@@ -92,7 +98,7 @@ The reverse dependency is limited to the optional full-bank image builder:
 ```text
 R-YORS/RELEASE/ryors-v1.2-himon-asm-bank3-8-e.s19
                          28K dense payload, $8000-$EFFF, S9 $C000
-STR8-N BUILD/v1.33/bin/str8n-v1.33-bank3-f000-ffff.bin
+STR8-N BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin
                           4K current top, $F000-$FFFF
                                       |
                                       v

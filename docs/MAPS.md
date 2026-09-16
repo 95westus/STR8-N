@@ -1,6 +1,7 @@
-# STR8-N v1.33 Maps and Diagrams
+# STR8-N v1.34 Maps and Diagrams
 
-These diagrams describe the host-qualified and board-derived v1.33 release.
+These diagrams describe the v1.34 size candidate. Its exact binary requires
+new board qualification; historical board reports retain their original versions.
 
 ## Ownership
 
@@ -12,7 +13,7 @@ flowchart TB
     S -->|J2| B2[Bank 2 guest]
     S -->|C/W| B3[Bank 3 HIMON<br/>$C000]
     S -->|J3| R3[Bank 3 RESET vector<br/>normally STR8-N again]
-    S -->|I| W[RAM worker<br/>$0200-$045F]
+    S -->|I| W[RAM worker<br/>$0200-$0437]
     W --> FLASH[Selected flash range]
     S -->|L| RAM[Recovery RAM program<br/>$2000-$7AFF, then S9]
     RAM -->|bank-maint S19| BM[Self-contained Bank Maintenance<br/>map/copy/adopt/reclaim/erase/AP put]
@@ -25,7 +26,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.33/
+|-- v1.34/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -38,7 +39,7 @@ BUILD/
 ```mermaid
 flowchart LR
     SRC[src/str8.asm] --> TOP[4096-byte Bank-3 top BIN]
-    SRC --> WORKER[608-byte worker evidence S19]
+    SRC --> WORKER[568-byte worker evidence S19]
     BM_SRC[bank-maint ASM] --> BM[RAM bank-maint S19]
     TOP --> MANIFEST[verified manifest]
     WORKER --> MANIFEST
@@ -47,7 +48,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.33 top updater S19]
+    TOP --> UPDATE[guarded v1.34 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
@@ -89,7 +90,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[RST H/S<br/>two linefeeds]
-    A --> P[Flush stale input<br/>print STR8-N 1.33 immediately]
+    A --> P[Flush stale input<br/>print STR8-N 1.34 immediately]
     P --> Q{Six-second live selector interval<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -115,7 +116,7 @@ flowchart TD
     C --> E[Whole-bank FNV prefilter<br/>plus byte-exact B0/B3 compare]
     E --> T[Validate carried 4K top<br/>then program/verify B3:F]
     T --> D[Publish COMPLETE D0 WDCM2<br/>roles FFF0/FFF1 remain FF/FF]
-    D --> S[STR8-N 1.33 in B3]
+    D --> S[STR8-N 1.34 in B3]
     S -->|selector 0 or J0| W[Retained WDCMONv2 in B0<br/>CS0-CS3 chase]
     W -->|physical RESET| S
 ```
@@ -180,11 +181,11 @@ $FFF9  +------------------------------+
 $FFEF  +------------------------------+
        | bank directory        64 B   |
 $FFAF  +------------------------------+
-       | stored worker        608 B   |
-$FD4F  +------------------------------+
-       | available growth      14 B   |
-$FD41  +------------------------------+
-       | resident code/data  3394 B   |
+       | stored worker        568 B   |
+$FD77  +------------------------------+
+       | available growth     134 B   |
+$FCF1  +------------------------------+
+       | resident code/data  3314 B   |
 $F000  +------------------------------+
 ```
 
@@ -255,7 +256,7 @@ flowchart TD
     Q --> F
 ```
 
-## STR8-N v1.33 RAM ownership
+## STR8-N v1.34 RAM ownership
 
 ```text
 $7DFF  +------------------------------+
@@ -276,10 +277,10 @@ $1FFF  +------------------------------+
 $19FF  +------------------------------+
        | 4K sector tray $0A00-$19FF  |
 $09FF  +------------------------------+
-       | free WCT tail $0460-$09FF    |
+       | free WCT tail $0438-$09FF    |
        | allocate down from $09FF     |
-$045F  +------------------------------+
-       | current worker $0200-$045F   |
+$0437  +------------------------------+
+       | current worker $0200-$0437   |
 $01FF  +------------------------------+
        | stack                        |
 $00FF  +------------------------------+
@@ -287,15 +288,15 @@ $00FF  +------------------------------+
 $0000  +------------------------------+
 ```
 
-STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.33. In the
+STR8-N itself leaves `$1A00-$1FFF` free for user programs in v1.34. In the
 integrated R-YORS payload, APMAN transiently uses `$1A00-$1AFF` as its command
 shadow while `AP`, `APS`, or banked `INSTALL` delegates; `$1B00-$1FFF` remains
 the unconditional user-low slice outside another phase owner. The whole `$0200-$09FF` Worker
 Code Tray (WCT) remains phase-owned and volatile during worker calls, but the
-maintained runtime workers do not extend above `$045F`: the unified STR8-N
-worker ends at `$045F`, the Bank Maintenance private worker ends at `$042A`,
+maintained runtime workers do not extend above `$0437`: the unified STR8-N
+worker ends at `$0437`, the Bank Maintenance private worker ends at `$042A`,
 and HIMON's bank-safe helpers end below both. A phase-local allocator may
-therefore consume the currently free `$0460-$09FF` tail downward from `$09FF`,
+therefore consume the currently free `$0438-$09FF` tail downward from `$09FF`,
 provided it checks its low-water mark against the published exclusive
 `STR8_WORKER_END` and does not expect those bytes to survive a worker call.
 Development and proof programs may still use other addresses in the WCT and
@@ -310,10 +311,10 @@ are listed in the [Technical Guide](TECHNICAL_GUIDE.md#str8-n-v130-high-ram-abi)
 ```text
 Board RAM below I/O                         32,512 bytes  $0000-$7EFF
 STR8-N L accepted window                    23,296 bytes  $2000-$7AFF
-I named transient/service areas              5,014 bytes  excluding L flag
+I named transient/service areas              4,974 bytes  excluding L flag
 Fixed IVI cells                                  11 bytes
 Maximum hardware stack                         256 bytes  dynamic
-Outside named I/fixed areas                  27,487 bytes  before stack use
+Outside named I/fixed areas                  27,527 bytes  before stack use
 R-YORS normal application convention         18,694 bytes  monitor-dependent
 Bank-maint loaded image                       6,579 bytes  $2000-$39B2
 ```
@@ -399,7 +400,7 @@ The operator separately observed the expected CS0-CS3 chase.
 
 > [!NOTE]
 > Archived v1.21 acceptance topology. It is retained as hardware evidence, not
-> as a current v1.33 operating procedure or memory map.
+> as a current v1.34 operating procedure or memory map.
 
 ```mermaid
 flowchart LR

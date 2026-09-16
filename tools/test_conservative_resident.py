@@ -1,6 +1,6 @@
-"""Differential tests against the canonical 521fd0a resident (not board flash).
+"""Differential tests against the canonical pre-optimization v1.33 image.
 
-Requires py65==1.2.0, installed normally or in BUILD/v1.33/local/test-deps.
+Requires py65==1.2.0, installed normally or in BUILD/v1.34/local/test-deps.
 Executes actual linked 65C02 code. Console transport and flash hardware are
 stubbed explicitly; this does not constitute board or flash-programming proof.
 """
@@ -12,19 +12,23 @@ from pathlib import Path
 import random
 import sys
 
-from test_resident_reclaim import ROOT, REL, symbols
+from test_resident_reclaim import ROOT, REL, symbols, normalize_baseline_version
 
+sys.path.insert(0, str(ROOT / 'BUILD/v1.30/local/test-deps'))
 sys.path.insert(0, str(REL / 'local/test-deps'))
 try:
     from py65.devices.mpu65c02 import MPU
 except ImportError:
     raise SystemExit('Install the optional differential-test dependency: py65==1.2.0')
 
-GOLDEN = json.loads((ROOT / 'tools/fixtures/resident-521fd0a.json').read_text())
+GOLDEN = json.loads((ROOT / 'tools/fixtures/resident-v133-before-size.json').read_text())
 OLD = base64.b64decode(GOLDEN['image'])
 assert hashlib.sha256(OLD).hexdigest() == GOLDEN['sha256']
-NEW = (REL / 'bin/str8n-v1.33-bank3-f000-ffff.bin').read_bytes()
-MAPS = [GOLDEN['symbols'], symbols(REL / 'map/str8n-v1.33-f000.map')]
+NEW = (REL / 'bin/str8n-v1.34-bank3-f000-ffff.bin').read_bytes()
+MAPS = [GOLDEN['symbols'], symbols(REL / 'map/str8n-v1.34-f000.map')]
+# Execute the old instructions with only the exact, approved version byte
+# updated in memory, so all text comparisons retain their complete strictness.
+OLD = normalize_baseline_version(OLD, MAPS[0], NEW, MAPS[1])
 
 
 class Run:
@@ -241,16 +245,36 @@ def staging(variant, size, chunk, bad=False, commit=True):
 
 
 def invariant_tests():
-    assert NEW[0xD5C:] == OLD[0xD5C:], 'worker/directory/config/vectors changed'
     assert len(NEW) == len(OLD) == 4096
-    # Resident data intentionally differs in the version digit and reset face;
-    # test_resident_reclaim.py proves the exact normalized data transition.
-    for name, length in [('STR8_DELAY_FIXED_A', 15), ('STR8_IVY_ENTRY_NMI', 20),
-                         ('STR8_IVY_ENTRY_IRQ_MASTER', 46), ('STR8_REC_ADVANCE_APPLY_POINTERS', 13),
-                         ('STR8_CON_INIT', 12), ('STR8_IN65_EDU_QUIET', 21),
+    assert NEW[0xFB0:0xFFA] == OLD[0xFB0:0xFFA], 'directory/configuration changed'
+    for name in ('START', 'STR8_CONSOLE_INIT_SERVICE_ENTRY', 'STR8_ABI_QUERY_SERVICE_ENTRY',
+                 'STR8_RECORD_SERVICE_ENTRY', 'STR8_BANK_SELECT_SERVICE_ENTRY',
+                 'STR8_CHARIN_SERVICE_ENTRY', 'STR8_CHAROUT_SERVICE_ENTRY',
+                 'STR8_CHAR_READY_SERVICE_ENTRY'):
+        assert MAPS[0][name] == MAPS[1][name], name
+    expected_vectors = b''.join(MAPS[1][name].to_bytes(2, 'little') for name in
+                               ('STR8_IVY_ENTRY_NMI', 'START', 'STR8_IVY_ENTRY_IRQ_MASTER'))
+    assert NEW[0xFFA:] == expected_vectors
+    for name, length in [('STR8_DELAY_FIXED_A', 15), ('STR8_REC_ADVANCE_APPLY_POINTERS', 13),
+                         ('STR8_CON_INIT', 12),
                          ('STR8_CON_READ_BYTE_NONBLOCK', 31), ('STR8_CON_WRITE_BYTE_BLOCK', 37)]:
         old, new = (m[name] - 0xF000 for m in MAPS)
         assert OLD[old:old + length] == NEW[new:new + length], name
+    # Only the encoded resident call/jump address may move in these routines.
+    for name, length, target, opcode in (
+            ('STR8_IVY_ENTRY_NMI', 20, 'STR8_IVY_SIG_OK', 0x20),
+            ('STR8_IVY_ENTRY_IRQ_MASTER', 46, 'STR8_IVY_SIG_OK', 0x20),
+            ('STR8_IN65_EDU_QUIET', 23, 'STR8_IVY_INIT', 0x4C)):
+        normalized = []
+        for image, syms in zip((OLD, NEW), MAPS):
+            start = syms[name] - 0xF000
+            code = image[start:start + length]
+            operand = bytes([opcode]) + syms[target].to_bytes(2, 'little')
+            assert code.count(operand) == 1, name
+            normalized.append(code.replace(operand, bytes([opcode, 0, 0])))
+        assert normalized[0] == normalized[1], name
+    assert OLD[MAPS[0]['_BEG_DATA'] - 0xF000:MAPS[0]['_END_DATA'] - 0xF000] == \
+           NEW[MAPS[1]['_BEG_DATA'] - 0xF000:MAPS[1]['_END_DATA'] - 0xF000]
     for bank in range(4):
         for pair in range(16):
             for complete in (False, True):

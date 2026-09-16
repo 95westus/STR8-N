@@ -4,7 +4,7 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-# STR8-N v1.33
+# STR8-N v1.34
 
 STR8-N is a reset supervisor, recovery console, and guarded flash installer for
 the W65C02SXB/EDU with four 32K flash banks. It occupies the protected Bank 3
@@ -100,11 +100,16 @@ final recovery path.
 
 ## Release and validation status
 
-The current v1.33 resident is 3,394 bytes at `$F000-$FD41`, followed by 14 free
-bytes and the fixed 608-byte worker at `$FD50`. Its guarded top update, exact
-readback, reset-source behavior, and HIMON warm recovery passed on physical
-hardware on 2026-09-10. The v1.33 factory-migration artifacts are host-tested;
-the complete factory path was last repeated on hardware with v1.32.
+The current v1.34 size candidate has a 3,314-byte resident at `$F000-$FCF1`,
+134 free bytes, and a 568-byte worker stored at `$FD78`. It saves 120 bytes
+against the preceding v1.33 image. The
+[v1.34 COM4 board session](docs/STR8N_V1_34_BOARD_TEST_2026-09-15.md) passed
+guarded update/readback, physical/software reset, console/BRK, HIMON/ASM,
+and J3. The [follow-up tests](docs/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md)
+also passed power-cycle startup, NMI/IRQ, and worker flash program/erase.
+The full release matrix remains incomplete.
+See the [size-change report](docs/STR8N_V1_34_SIZE_OPTIMIZATION.md)
+for host validation, relocated interrupt targets, and the remaining board work.
 
 Detailed build commands, host checks, test matrices, artifact paths, hashes,
 and historical evidence are maintained outside this overview:
@@ -115,7 +120,7 @@ and historical evidence are maintained outside this overview:
 - [WDCMONv2 migration board test](docs/WDCMONV2_MIGRATION_BOARD_TEST.md)
 
 Run `make release-package` to build and verify the complete STR8-N-only release
-bundle at `BUILD/v1.33/str8n-v1.33-release.zip`.
+bundle at `BUILD/v1.34/str8n-v1.34-release.zip`.
 
 > [!NOTE]
 > STR8-N and R-YORS are independent projects and are not affiliated with,

@@ -1,7 +1,7 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.33/map/str8n-v1.33-f000.map",
-    [string]$WorkerMapPath = "BUILD/v1.33/map/str8n-v1.33-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/v1.33/s19/str8n-v1.33-worker-0200.s19",
+    [string]$Str8MapPath = "BUILD/v1.34/map/str8n-v1.34-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.34/map/str8n-v1.34-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/v1.34/s19/str8n-v1.34-worker-0200.s19",
     [string]$WorkerEqPath = "src/str8-worker-eq.inc",
     [string]$RamAbiPath = "src/str8-ram-abi.inc",
     [string]$ConsoleEqPath = "src/str8-console-eq.inc",
@@ -21,7 +21,7 @@ $TopBackupDefault = 0x1F
 $VectorStart = 0xFFFA
 $WorkerRunStart = 0x0200
 $WorkerSelectEntry = 0x0203
-$MinimumMargin = 8
+$MinimumMargin = 128
 
 function Get-MapSymbol {
     param([string]$Path, [string]$Name)
@@ -70,8 +70,8 @@ Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_BANK_SELECT_SERVICE_ENTRY') 0xF01
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CHARIN_SERVICE_ENTRY') 0xF013 '$F013 CHARIN gate'
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CHAROUT_SERVICE_ENTRY') 0xF019 '$F019 CHAROUT gate'
 Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_CHAR_READY_SERVICE_ENTRY') 0xF03E '$F03E CHAR_READY gate'
-Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_IVY_ENTRY_NMI') 0xF0D2 '$F0D2 NMI vector target'
-Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_IVY_ENTRY_IRQ_MASTER') 0xF0E6 '$F0E6 IRQ/BRK vector target'
+Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_IVY_ENTRY_NMI') 0xF0CF '$F0CF NMI vector target'
+Assert-Equal (Get-MapSymbol $Str8MapPath 'STR8_IVY_ENTRY_IRQ_MASTER') 0xF0E3 '$F0E3 IRQ/BRK vector target'
 Assert-Equal $directoryMapStart $DirectoryStart 'Directory start'
 Assert-Equal $directoryMapEnd $DirectoryEnd 'Directory end'
 Assert-Equal $workerStart $WorkerRunStart 'Worker run start'

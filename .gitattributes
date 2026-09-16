@@ -4,3 +4,7 @@
 # Firmware/programmer images must remain byte-for-byte exact.
 *.bin binary
 *.BIN binary
+
+# Serial prompts and memory-dump ASCII columns retain received trailing spaces.
+docs/STR8N_V1_34_BOARD_TRANSCRIPT_2026-09-15.txt whitespace=-blank-at-eol
+docs/STR8N_V1_34_FOLLOWUP_BOARD_TRANSCRIPT_2026-09-15.txt whitespace=-blank-at-eol

@@ -3,11 +3,11 @@ LINKER ?= wdcln
 
 SRC_DIR := src
 BUILD_DIR := BUILD
-VERSION := v1.33
-VERSION_TEXT := 1.33
+VERSION := v1.34
+VERSION_TEXT := 1.34
 RELEASE_DIR := $(BUILD_DIR)/$(VERSION)
-STR8_IN65_VERSION := v1.33
-STR8_IN65_VERSION_TEXT := 1.33
+STR8_IN65_VERSION := v1.34
+STR8_IN65_VERSION_TEXT := 1.34
 STR8_IN65_RELEASE_DIR := $(BUILD_DIR)/$(STR8_IN65_VERSION)
 STR8_IN65_S19_DIR := $(STR8_IN65_RELEASE_DIR)/s19
 STR8_IN65_BIN_DIR := $(STR8_IN65_RELEASE_DIR)/bin
@@ -26,7 +26,7 @@ STR8_LINKFLAGS := -g -s -t -cF000 -hm19 -j -o
 WORKER_LINKFLAGS := -g -s -t -c0200 -hm19 -j -o
 # Historical symbol names select the sole flashable release path; the proof
 # branches remain source-only references and are not separate shipped builds.
-RELEASE_DEFINES := -DSTR8_V1_LAYOUT -DSTR8_V1_INSTALLER_DRY -DSTR8_V1_INSTALLER_TXN -DSTR8_IN65_COLD_BOOT -DSTR8_IN65_VERSION_133 -DSTR8_IN65_EDU_QUIET_START
+RELEASE_DEFINES := -DSTR8_V1_LAYOUT -DSTR8_V1_INSTALLER_DRY -DSTR8_V1_INSTALLER_TXN -DSTR8_IN65_COLD_BOOT -DSTR8_IN65_VERSION_134 -DSTR8_IN65_EDU_QUIET_START
 STR8_IN65_DEFINES := $(RELEASE_DEFINES)
 
 STR8_SRC := $(SRC_DIR)/str8.asm
@@ -88,9 +88,12 @@ CONSOLE_ABI_TEST_SRC := tools/console-abi-test/str8n-v1.23-console-abi-test-2000
 CONSOLE_ABI_TEST_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-console-abi-test-2000.obj
 CONSOLE_ABI_TEST_S19 := $(S19_DIR)/str8n-$(VERSION)-console-abi-test-2000.s19
 CONSOLE_ABI_TEST_MAP := $(MAP_DIR)/str8n-$(VERSION)-console-abi-test-2000.map
-LED_WORKER_TEST_SRC := tools/led-status-test/str8n-v1.33-led-worker-test-2000.asm
+LED_WORKER_TEST_SRC := tools/led-status-test/str8n-v1.34-led-worker-test-2000.asm
 LED_WORKER_TEST_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-led-worker-test-2000.obj
 LED_WORKER_TEST_S19 := $(S19_DIR)/str8n-$(VERSION)-led-worker-test-2000.s19
+IRQ_TEST_SRC := tools/interrupt-test/str8n-v1.34-irq-test-2000.asm
+IRQ_TEST_OBJ := $(OBJ_DIR)/str8n-$(VERSION)-irq-test-2000.obj
+IRQ_TEST_S19 := $(S19_DIR)/str8n-$(VERSION)-irq-test-2000.s19
 TOP_UPDATE_SRC := tools/top-update/str8n-v1.23-top-update-2000.asm
 TOP_UPDATE_INC_TOOL := tools/make_top_update_image_inc.ps1
 TOP_UPDATE_INC := $(RELEASE_DIR)/generated/str8n-$(VERSION)-top-image.inc
@@ -163,7 +166,15 @@ resident-reclaim-check: programmer-bin
 conservative-differential-check: programmer-bin
 	python tools/test_conservative_resident.py
 
-release-package: all bank-maint-menu wdcmonv2-package $(RELEASE_PACKAGE_TOOL) $(RELEASE_PACKAGE_VERIFY)
+# Executes the linked resident and worker against the frozen v1.33 baseline.
+# Requires py65==1.2.0; flash/console hardware are modeled, never contacted.
+.PHONY: size-optimization-check
+size-optimization-check: programmer-bin
+	python tools/test_conservative_resident.py
+	python tools/test_size_optimization.py
+	python tools/test_worker_optimization.py
+
+release-package: all bank-maint-menu wdcmonv2-package led-worker-test irq-test $(RELEASE_PACKAGE_TOOL) $(RELEASE_PACKAGE_VERIFY)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RELEASE_PACKAGE_TOOL) -PackageDir "$(RELEASE_PACKAGE_DIR)" -ZipPath "$(RELEASE_PACKAGE_ZIP)"
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RELEASE_PACKAGE_VERIFY) -Root "$(RELEASE_PACKAGE_DIR)"
 
@@ -175,7 +186,7 @@ programmer-bin: $(TOP_BIN)
 
 # Deliberately excluded from `all`, manifest, migration kit, and release ZIP.
 # This retains the exact accepted STR8-iN/65 migration policy while canonical
-# STR8-N v1.33 is the promoted STR8-iN/65 production image.
+# STR8-N v1.34 is the promoted STR8-iN/65 production image.
 str8-in65-test-top: $(STR8_IN65_CANDIDATE_BIN)
 
 str8-in65-test-image: $(STR8_IN65_CANDIDATE_BIN) $(STR8_IN65_IMAGE_TOOL)
@@ -205,6 +216,29 @@ bank-maint-menu: $(BANK_MAINT_MENU_S19) $(BANK_MAINT_MENU_A)
 console-abi-test: $(CONSOLE_ABI_TEST_S19)
 
 led-worker-test: $(LED_WORKER_TEST_S19)
+
+.PHONY: irq-test
+irq-test: $(IRQ_TEST_S19)
+
+.PHONY: board-probe-check
+board-probe-check: irq-test led-worker-test
+	python tools/test_irq_probe.py
+	python tools/test_led_worker_probe.py
+
+.PHONY: bank-maint-role-check
+bank-maint-role-check: bank-maint bank-maint-menu str8-in65-bank-maint
+	python tools/test_bank_maint_roles.py
+
+$(IRQ_TEST_OBJ): $(IRQ_TEST_SRC) | dirs
+	$(ASM) -G -L -S -W $<
+	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
+	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-irq-test-2000.lst)
+	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-irq-test-2000.sym)
+
+$(IRQ_TEST_S19): $(IRQ_TEST_OBJ) | dirs
+	$(LINKER) -g -s -t -hm19 -j -o $@ $<
+	$(MOVE_LINK_SIDECARS)
+	@powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p='$@'; $$lines=Get-Content -LiteralPath $$p; $$lines[-1]='S9032000DC'; Set-Content -LiteralPath $$p -Value $$lines"
 
 top-update: ram-abi-check layout-check range-matrix-check ram-load-contract-check bank-maint programmer-bin $(TOP_UPDATE_S19)
 
@@ -259,13 +293,13 @@ $(WORKER_OBJ): $(WORKER_SRC) $(WORKER_INCLUDES) | dirs
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-worker.sym)
 
 $(BANK_MAINT_OBJ): $(BANK_MAINT_SRC) $(BANK_MAINT_RENAME_SRC) | dirs
-	$(ASM) -G -L -S -W -I tools/bank-maint -DSTR8_BANK_MAINT_TOP=0 -DSTR8_IN65_BANK_MAINT=0 -DSTR8_IN65_VERSION_133=1 $<
+	$(ASM) -G -L -S -W -I tools/bank-maint -DSTR8_BANK_MAINT_TOP=0 -DSTR8_IN65_BANK_MAINT=0 -DSTR8_IN65_VERSION_134=1 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-bank-maint-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-bank-maint-2000.sym)
 
 $(BANK_MAINT_MENU_OBJ): $(BANK_MAINT_MENU_SRC) $(BANK_MAINT_SRC) $(BANK_MAINT_RENAME_SRC) $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
-	$(ASM) -G -L -S -W -I tools/bank-maint -I tools/top-update -I $(RELEASE_DIR)/generated -DSTR8_IN65_BANK_MAINT=0 -DSTR8_IN65_VERSION_133=1 $<
+	$(ASM) -G -L -S -W -I tools/bank-maint -I tools/top-update -I $(RELEASE_DIR)/generated -DSTR8_IN65_BANK_MAINT=0 -DSTR8_IN65_VERSION_134=1 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-bank-maint-menu-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-bank-maint-menu-2000.sym)
@@ -277,7 +311,7 @@ $(STR8_IN65_BANK_MAINT_OBJ): $(STR8_IN65_BANK_MAINT_SRC) $(BANK_MAINT_SRC) $(BAN
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-bank-maint-2000.sym)
 
 $(CONSOLE_ABI_TEST_OBJ): $(CONSOLE_ABI_TEST_SRC) $(SRC_DIR)/str8-console-eq.inc | dirs
-	$(ASM) -G -L -S -W -I $(SRC_DIR) $<
+	$(ASM) -G -L -S -W -I $(SRC_DIR) -DSTR8_IN65_VERSION_134=1 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-console-abi-test-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-console-abi-test-2000.sym)
@@ -292,7 +326,7 @@ $(TOP_UPDATE_INC): $(TOP_BIN) $(TOP_UPDATE_INC_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_INC_TOOL) -BinPath "$(TOP_BIN)" -OutPath "$@" -Identity "STR8-N $(VERSION_TEXT)"
 
 $(TOP_UPDATE_OBJ): $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
-	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_TOP_EMBED=0 -DSTR8_DIRECTORY_REFRESH=0 -DSTR8_IN65_VERSION_133=1 $<
+	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_TOP_EMBED=0 -DSTR8_DIRECTORY_REFRESH=0 -DSTR8_IN65_VERSION_134=1 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-top-update-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-top-update-2000.sym)
@@ -301,13 +335,13 @@ $(STR8_IN65_TOP_UPDATE_INC): $(STR8_IN65_CANDIDATE_BIN) $(TOP_UPDATE_INC_TOOL) |
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(TOP_UPDATE_INC_TOOL) -BinPath "$(STR8_IN65_CANDIDATE_BIN)" -OutPath "$@" -Identity "STR8-N $(STR8_IN65_VERSION_TEXT)"
 
 $(STR8_IN65_TOP_UPDATE_OBJ): $(TOP_UPDATE_SRC) $(STR8_IN65_TOP_UPDATE_INC) | dirs
-	$(ASM) -G -L -S -W -I $(STR8_IN65_RELEASE_DIR)/generated -DSTR8_TOP_EMBED=0 -DSTR8_DIRECTORY_REFRESH=0 -DSTR8_IN65_TOP_IMAGE -DSTR8_IN65_VERSION_133 $<
+	$(ASM) -G -L -S -W -I $(STR8_IN65_RELEASE_DIR)/generated -DSTR8_TOP_EMBED=0 -DSTR8_DIRECTORY_REFRESH=0 -DSTR8_IN65_TOP_IMAGE -DSTR8_IN65_VERSION_134 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-top-update-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-top-update-2000.sym)
 
 $(DIRECTORY_REFRESH_OBJ): $(TOP_UPDATE_SRC) $(TOP_UPDATE_INC) | dirs
-	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_TOP_EMBED=0 -DSTR8_DIRECTORY_REFRESH=1 -DSTR8_IN65_VERSION_133=1 $<
+	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_TOP_EMBED=0 -DSTR8_DIRECTORY_REFRESH=1 -DSTR8_IN65_VERSION_134=1 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-directory-refresh-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-directory-refresh-2000.sym)
@@ -322,19 +356,19 @@ $(WDCMONV2_INSTALL_INC): $(TOP_BIN) $(WDCMONV2_INSTALL_INC_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_INSTALL_INC_TOOL) -TopBinPath "$(TOP_BIN)" -OutPath "$@" -CandidateBinPath "$(WDCMONV2_INSTALL_TOP_BIN)"
 
 $(WDCMONV2_INSTALL_OBJ): $(WDCMONV2_INSTALL_SRC) $(WDCMONV2_INSTALL_INC) | dirs
-	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_IN65_VERSION_133=1 $<
+	$(ASM) -G -L -S -W -I $(RELEASE_DIR)/generated -DSTR8_IN65_VERSION_134=1 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(VERSION)-wdcmonv2-install-2000.sym)
 
 $(STR8_IN65_INSTALL_OBJ): $(WDCMONV2_INSTALL_SRC) $(STR8_IN65_GENERATED_INC) | dirs
-	$(ASM) -G -L -S -W -I $(STR8_IN65_RELEASE_DIR)/generated -DW2I_STR8_IN65_IMAGE -DSTR8_IN65_VERSION_133 $<
+	$(ASM) -G -L -S -W -I $(STR8_IN65_RELEASE_DIR)/generated -DW2I_STR8_IN65_IMAGE -DSTR8_IN65_VERSION_134 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-wdcmonv2-install-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-wdcmonv2-install-2000.sym)
 
 $(STR8_IN65_STOCK_RESTORE_OBJ): $(WDCMONV2_INSTALL_SRC) | dirs
-	$(ASM) -G -L -S -W -DW2I_RESTORE_STOCK=1 -DSTR8_IN65_VERSION_133=1 $<
+	$(ASM) -G -L -S -W -DW2I_RESTORE_STOCK=1 -DSTR8_IN65_VERSION_134=1 $<
 	@if exist $(subst /,\,$(<:.asm=.obj)) move /Y $(subst /,\,$(<:.asm=.obj)) $(subst /,\,$@)
 	@if exist $(subst /,\,$(<:.asm=.lst)) move /Y $(subst /,\,$(<:.asm=.lst)) $(subst /,\,$(LST_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-factory-restore-2000.lst)
 	@if exist $(subst /,\,$(<:.asm=.sym)) move /Y $(subst /,\,$(<:.asm=.sym)) $(subst /,\,$(SYM_DIR)/str8n-$(STR8_IN65_VERSION)-str8-in65-factory-restore-2000.sym)
@@ -476,12 +510,14 @@ help:
 	@echo make str8-in65-ram-installer - build the guarded RAM installer carrying only the STR8-iN/65 fixed top
 	@echo make str8-in65-factory-restore - build the board-lab-only B0-to-B3 restore, then erase B0
 	@echo make str8-in65-top-update - build the L-loadable STR8-iN/65-only B3:F updater; not shipped
-	@echo make str8-in65-bank-maint - build the v1.33 interactive directory/search-flag RAM tool
+	@echo make str8-in65-bank-maint - build the v1.34 interactive directory/search-flag RAM tool
 	@echo directory refresh - merge that BIN into a verified 128K programmer readback with tools/build_directory_refresh_image.ps1
 	@echo make manifest - build the verified standalone STR8-N artifact manifest
 	@echo make bank-maint - build and validate the STR8-N $(VERSION_TEXT) RAM bank-maintenance S19
 	@echo make bank-maint-menu - build menu Bank Maintenance with guarded B3:F update and ASM-F2 .a carrier
 	@echo make console-abi-test - build the L-loadable raw console ABI hardware probe
+	@echo make irq-test - build the RAM-only VIA1 Timer 1 interrupt probe
+	@echo make board-probe-check - build and model-check IRQ and B2:9 flash probes; requires py65
 	@echo make led-worker-test - build the guarded L-loadable LED and production-worker probe
 	@echo make top-update - build the guarded L-loadable Bank-3 sector-F updater
 	@echo make onboard-directory-refresh - build the guarded L-loadable directory-pocket refresh
@@ -491,7 +527,7 @@ help:
 	@echo make wdcmonv2-package - package only the WDCMONv2-to-STR8-N migration; HIMON/ASM-F2 are separate loads
 	@echo make wdcmonv2-host-check - self-test the binary monitor bridge and validate both migration S19 files
 	@echo make wdcmonv2-package - build an allowlisted publishable migration ZIP with no WDC firmware or local archives
-	@echo make release-package - build and verify the STR8-N v1.33-only release ZIP
+	@echo make release-package - build and verify the STR8-N v1.34-only release ZIP
 	@echo make layout-check - require the resident to end at or before the fixed worker
 	@echo make embedded-layout-check - alias for layout-check
 	@echo make range-matrix-check - validate every documented 4K-aligned install size

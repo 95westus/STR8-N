@@ -5,10 +5,26 @@ project. Check an item only when its artifact hashes, host checks, board
 transcript, and final flash readback agree. Keep owner-local WDCMONv2 images
 out of published release artifacts.
 
-## v1.33 release status
+## v1.34 size candidate
 
-The v1.33 source, host qualification, board evidence, and release artifacts
-are current. The complete factory migration remains qualified by the accepted
+The current source is a 120-byte size reduction from the accepted v1.33
+binary. Its host results and exact image identity are recorded in
+[the size-change report](docs/STR8N_V1_34_SIZE_OPTIMIZATION.md).
+
+- [x] Retain [v1.34 COM4 evidence](docs/STR8N_V1_34_BOARD_TEST_2026-09-15.md)
+  for guarded update/readback, physical/software reset, console/BRK,
+  HIMON C/W and timeout, ASM-F2 entry/return, RAM loading, and J3.
+- [x] Retain [follow-up evidence](docs/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md)
+  for power-cycle startup, physical NMI, VIA1 timer IRQ, optimized-worker
+  program/verify/erase/verify on B2:9, invalid-write rejection, and red/green LEDs.
+- [ ] Complete the remaining hardware gates: Bank 0-2 guest boots, resident
+  installation, transient LED timing, and injected failure/recovery paths.
+- [ ] Retain board evidence before publishing this candidate as hardware accepted.
+
+## Preceding v1.33 release status
+
+The preceding v1.33 release completed the checks below. Its complete factory
+migration remains qualified by the accepted
 v1.32 hardware run plus v1.33 host checks; repeat that whole path on hardware
 before describing the v1.33 migration itself as board-accepted.
 
@@ -61,12 +77,12 @@ console ABI free of LED side effects so user applications retain Port A.
 
 Goal: preserve the factory system twice, install a clean STR8 system in Bank
 3, and put one independently bootable example in Bank 1. This is an end-to-end
-board deployment project, not a gate on the standalone v1.33 release.
+board deployment project, not a gate on the standalone v1.34 release.
 
 ### 1. Freeze the build identity
 
-- [x] Use the canonical product/banner name `STR8-N v1.33` for this pass.
-- [x] Use v1.33 consistently in banners,
+- [x] Use the canonical product/banner name `STR8-N v1.34` for this pass.
+- [x] Use v1.34 consistently in banners,
   filenames, manifests, directory descriptions, transcripts, and hashes.
 - [ ] Rebuild and record the exact migration-kit, Bank-3 payload, and example
   payload hashes before touching hardware.
