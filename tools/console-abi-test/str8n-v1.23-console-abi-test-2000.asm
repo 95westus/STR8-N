@@ -1,4 +1,4 @@
-; STR8-N v1.33 resident raw console ABI hardware probe.
+; STR8-N v1.34 resident raw console ABI hardware probe.
 ; Load with STR8-N L; S9 starts the probe at $2000.
 ; Type lowercase q followed by Enter when prompted. Physical RESET exits.
 
@@ -257,7 +257,11 @@ CAT_PRINT_NEXT:         LDY             #$00
                         BRA             CAT_PRINT_NEXT
 CAT_PRINT_DONE:         RTS
 
+                        IF              STR8_IN65_VERSION_134
+CAT_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.34 CONSOLE ABI TEST",$0D,$0A,0
+                        ELSE
 CAT_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 CONSOLE ABI TEST",$0D,$0A,0
+                        ENDIF
 CAT_MSG_ABI_OK:         DB              "ABI_QUERY $F006 V1 CAPS $3F/Y/C: PASS",$0D,$0A,0
 CAT_MSG_INIT_OK:        DB              "CONSOLE_INIT $F003 A/X/Y/C: PASS",$0D,$0A,0
 CAT_MSG_HANDOFF_OK:     DB              "L HANDOFF LED $00: PASS",$0D,$0A,0
@@ -268,7 +272,7 @@ CAT_MSG_ENTER_CR:       DB              "$0D RAW ENTER: PASS",$0D,$0A,0
 CAT_MSG_ENTER_LF:       DB              "$0A RAW ENTER: PASS",$0D,$0A,0
 CAT_MSG_CHAR_READY_OK:  DB              "CHAR_READY $F03E EMPTY/READY/X/Y/C: PASS",$0D,$0A,0
 CAT_MSG_CHARIN_OK:      DB              "CHARIN $F013 X/Y/C: PASS",$0D,$0A,0
-CAT_MSG_BRK:            DB              "BRK VECTOR $F0E6: ",0
+CAT_MSG_BRK:            DB              "BRK VECTOR DISPATCH: ",0
 CAT_MSG_PASS_WORD:      DB              "PASS",$0D,$0A,0
 CAT_MSG_LED_OK:         DB              "APP LED $A5 THROUGH RAW I/O/BRK: PASS",$0D,$0A,0
 CAT_MSG_PASS:           DB              "CONSOLE ABI TEST: PASS",$0D,$0A

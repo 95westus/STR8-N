@@ -1,4 +1,4 @@
-; STR8-N V1.23 MENU BANK MAINTENANCE + PROTECTED TOP UPDATE.
+; STR8-N V1.34 MENU BANK MAINTENANCE + PROTECTED TOP UPDATE.
 ;
 ; This host/WDC source selects the menu variant in the maintained Bank
 ; Maintenance body. U embeds the current guarded Bank-3 F-to-F updater at

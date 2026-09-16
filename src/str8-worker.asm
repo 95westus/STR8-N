@@ -29,6 +29,7 @@
 ; 2026-07-23T17:27-05:00        Codex       Enrollment mode is removed with the E command.
 ; 2026-08-01T22:15-05:00        Codex       V0 copy/restore modes retire; unknown modes fail closed.
 ; 2026-09-06T15:38-05:00        Codex       Assert all-red during mutation and release on guest jump.
+; 2026-09-15                    Codex       Share failure tails and use native indirect addressing.
 STR8_COPY_MODE_PROGRAM_STAGED EQU        $05
 STR8_RESET_VECTOR       EQU             $FFFC
 
@@ -78,11 +79,9 @@ STR8W_SELECT_BANK3:
 STR8W_BANK_SELECT_A:
                         AND             #$03
                         TAX
-                        LDA             STR8W_BANK_BIT_TABLE,X
-                        PHA
                         LDA             #STR8_BANK_PCR_MASK
                         TRB             STR8_FTDI_VIA_PCR
-                        PLA
+                        LDA             STR8W_BANK_BIT_TABLE,X
                         TSB             STR8_FTDI_VIA_PCR
                         RTS
 
@@ -114,13 +113,11 @@ STR8W_START_BODY:
 ?JUMP_BANK:
                         JSR             STR8W_JUMP_BANK
 ?DONE:
-; Preserve the operation result across bank restoration and the LED write.
-; The entry PHP remains below this temporary result byte on the stack.
-                        PHP
+; Bank selection and the LED write preserve the operation's carry result.
+; Restore the entry status below, then publish only the returned carry.
                         JSR             STR8W_SELECT_BANK3
                         LDA             #STR8_LED_STATUS_RUNNING
                         STA             STR8_LED_PIA_PORTA
-                        PLP
                         BCC             ?FAIL
                         PLP
                         SEC
@@ -141,8 +138,7 @@ STR8W_JUMP_BANK:
                         STA             STR8_JUMP_VEC_LO
                         LDA             STR8_RESET_VECTOR+1
                         STA             STR8_JUMP_VEC_HI
-                        CMP             #$80
-                        BCC             ?LOW_VECTOR
+                        BPL             ?LOW_VECTOR
                         CMP             #$FF
                         BNE             ?GO
                         LDA             STR8_JUMP_VEC_LO
@@ -196,10 +192,9 @@ STR8W_PROGRAM_RECORD:
                         LDX             STR8_REC_DATA_LEN
                         BEQ             ?OK
 ?PREFLIGHT:
-                        LDY             #$00
-                        LDA             (STR8W_BUF_LO),Y
+                        LDA             (STR8W_BUF_LO)
                         STA             STR8W_DATA
-                        LDA             (STR8W_ADDR_LO),Y
+                        LDA             (STR8W_ADDR_LO)
                         AND             STR8W_DATA
                         CMP             STR8W_DATA
                         BNE             ?FAIL
@@ -210,15 +205,11 @@ STR8W_PROGRAM_RECORD:
                         JSR             STR8W_RECORD_INIT
                         LDX             STR8_REC_DATA_LEN
 ?BYTE:
-                        LDY             #$00
-                        LDA             (STR8W_BUF_LO),Y
+                        LDA             (STR8W_BUF_LO)
                         STA             STR8W_DATA
-                        LDA             (STR8W_ADDR_LO),Y
-                        CMP             STR8W_DATA
-                        BEQ             ?NEXT
+; FLASH_WRITE skips equal bytes and rechecks the one-to-zero transition.
                         JSR             STR8W_FLASH_WRITE
                         BCC             ?FAIL
-?NEXT:
                         JSR             STR8W_RECORD_ADVANCE
                         DEX
                         BNE             ?BYTE
@@ -230,8 +221,7 @@ STR8W_PROGRAM_RECORD:
                         STA             STR8_REC_FAIL_LO
                         LDA             STR8W_ADDR_HI
                         STA             STR8_REC_FAIL_HI
-                        LDY             #$00
-                        LDA             (STR8W_ADDR_LO),Y
+                        LDA             (STR8W_ADDR_LO)
                         STA             STR8_REC_OBSERVED
                         LDA             STR8W_DATA
                         STA             STR8_REC_EXPECTED
@@ -269,8 +259,7 @@ STR8W_ERASE_DST_SECTOR:
                         LDA             STR8_MARK_ADDR_HI
                         STA             STR8W_ADDR_HI
                         JSR             STR8W_FLASH_ERASE
-                        BCC             ?DONE
-                        JSR             STR8W_DST_SECTOR_ERASED
+                        BCS             STR8W_DST_SECTOR_ERASED
 ; Both the already-erased and post-erase checks publish their result in C.
 ?DONE:                 RTS
 
@@ -295,6 +284,7 @@ STR8W_DST_SECTOR_ERASED:
                         SEC
                         RTS
 ?NOT_ERASED:
+STR8W_REPORT_PTR_FAILURE:
                         TYA
                         STA             STR8_MARK_ADDR_LO
                         LDA             STR8W_PTR_HI
@@ -312,8 +302,7 @@ STR8W_PROGRAM_DST_SECTOR:
                         LDA             STR8_STAGE_BUF_HI
                         STA             STR8W_BUF_HI
 ?BYTE:
-                        LDY             #$00
-                        LDA             (STR8W_BUF_LO),Y
+                        LDA             (STR8W_BUF_LO)
                         CMP             #$FF
                         BEQ             ?NEXT
                         STA             STR8W_DATA
@@ -349,7 +338,7 @@ STR8W_VERIFY_DST_SECTOR:
 ?BYTE:
                         LDA             (STR8W_PTR_LO),Y
                         CMP             (STR8W_BUF_LO),Y
-                        BNE             ?FAIL
+                        BNE             STR8W_REPORT_PTR_FAILURE
                         INY
                         BNE             ?BYTE
                         INC             STR8W_PTR_HI
@@ -357,14 +346,6 @@ STR8W_VERIFY_DST_SECTOR:
                         JSR             STR8W_ACTIVE_BUF_END_REACHED
                         BNE             ?PAGE
                         RTS
-?FAIL:
-                        TYA
-                        STA             STR8_MARK_ADDR_LO
-                        LDA             STR8W_PTR_HI
-                        STA             STR8_MARK_ADDR_HI
-                        CLC
-                        RTS
-
 STR8W_ACTIVE_BUF_END_REACHED:
                         LDA             STR8_STAGE_BUF_HI
                         CLC
@@ -378,16 +359,14 @@ STR8W_FLASH_ERASE:
                         STA             STR8_FLASH_UNLOCK1
                         JSR             STR8W_FLASH_UNLOCK
                         LDA             #$30
-                        LDY             #$00
-                        STA             (STR8W_ADDR_LO),Y
+                        STA             (STR8W_ADDR_LO)
                         LDA             #$FF
                         STA             STR8W_DATA
                         LDA             #STR8_FLASH_ERASE_TMO_HI
-                        JMP             STR8W_FLASH_WAIT
+                        BRA             STR8W_FLASH_WAIT
 
 STR8W_FLASH_WRITE:
-                        LDY             #$00
-                        LDA             (STR8W_ADDR_LO),Y
+                        LDA             (STR8W_ADDR_LO)
                         CMP             STR8W_DATA
                         BEQ             ?OK
                         AND             STR8W_DATA
@@ -397,9 +376,9 @@ STR8W_FLASH_WRITE:
                         LDA             #$A0
                         STA             STR8_FLASH_UNLOCK1
                         LDA             STR8W_DATA
-                        STA             (STR8W_ADDR_LO),Y
+                        STA             (STR8W_ADDR_LO)
                         LDA             #STR8_FLASH_WRITE_TMO_HI
-                        JMP             STR8W_FLASH_WAIT
+                        BRA             STR8W_FLASH_WAIT
 ?OK:
                         RTS
 

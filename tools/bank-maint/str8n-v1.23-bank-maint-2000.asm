@@ -1,10 +1,10 @@
-; STR8-N V1.23 BANK MAINTENANCE, LOAD ADDRESS $2000.
+; STR8-N V1.34 BANK MAINTENANCE, LOAD ADDRESS $2000.
 ; INTERACTIVE BANK COPY/ERASE/MAP MAINTENANCE FOR STR8-N L.
 ;
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.33/s19/str8n-v1.33-bank-maint-2000.s19
+;   send BUILD/v1.34/s19/str8n-v1.34-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -128,21 +128,20 @@ BM_MAIN LDX #$00
         LDA $7FEC
         AND #$EE
         STA $7C0C
-; Cache Bank 3 role locators while the selector is resident. Each packed byte
-; is bank:sector; $FF means no configured sector.
+; The private worker just copied to $0200 has an IW header at $0203, not
+; the resident selector. This code runs in RAM: select Bank 3 directly and
+; restore the entry bank below. Each role byte is bank:sector; $FF is unset.
         LDA #$FF
         STA $7C30
         STA $7C32
         PHP
         SEI
-        LDA #$03
-        JSR $0203
-        BCC ?CONFIG_RESTORE
+        LDA #$EE
+        TSB $7FEC
         LDA $FFF0
         STA $7C30
         LDA $FFF1
         STA $7C32
-?CONFIG_RESTORE
         LDA #$EE
         TRB $7FEC
         LDA $7C0C
@@ -2404,10 +2403,14 @@ BM_SUCCESS LDA #$AC
         JMP BM_MAIN
 
 BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' '
+        IF              STR8_IN65_VERSION_134
+        DB '1','.','3','4',' '
+        ELSE
         IF STR8_IN65_VERSION_133
         DB '1','.','3','3',' '
         ELSE
         DB '1','.','2','3',' '
+        ENDIF
         ENDIF
         IF STR8_BANK_MAINT_TOP
         DB 'B','A','N','K',' ','M','A','I','N','T',' ','+',' ','T','O','P'

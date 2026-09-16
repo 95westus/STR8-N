@@ -1,4 +1,4 @@
-"""v1.33 binary regressions: message pages, delay contract, actual range parser.
+"""v1.34 binary regressions: message pages, delay contract, actual range parser.
 
 The deliberately limited CPU harness rejects unsupported instructions; it runs
 the linked range parser, stubbing only console printing and line acquisition.
@@ -11,62 +11,80 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-REL = ROOT / 'BUILD/v1.33'
+REL = ROOT / 'BUILD/v1.34'
 
 
 def symbols(path):
     return {n: int(a, 16) for a, n in re.findall(r'^\s*([0-9a-fA-F]{8}) (\w+)\s*$', path.read_text(), re.M)}
 
 
+def normalize_baseline_version(old, old_symbols, new, new_symbols):
+    """Permit exactly the approved final banner digit in the frozen baseline."""
+    before = b'\r\nSTR8-N 1.33\r\n'
+    after = b'\r\nSTR8-N 1.34\r\n'
+    old_start = old_symbols['MSG_ID'] - 0xF000
+    new_start = new_symbols['MSG_ID'] - 0xF000
+    assert old[old_start:old_start + len(before)] == before
+    assert new[new_start:new_start + len(after)] == after
+    offset = old_start + len(b'\r\nSTR8-N 1.3')
+    normalized = bytearray(old)
+    assert normalized[offset] == ord('3')
+    normalized[offset] = ord('4')
+    assert [i for i, (a, b) in enumerate(zip(old, normalized)) if a != b] == [offset]
+    return bytes(normalized)
+
+
 def main():
-    sym = symbols(REL / 'map/str8n-v1.33-f000.map')
-    worker_sym = symbols(REL / 'map/str8n-v1.33-worker-0200.map')
-    image = (REL / 'bin/str8n-v1.33-bank3-f000-ffff.bin').read_bytes()
+    sym = symbols(REL / 'map/str8n-v1.34-f000.map')
+    worker_sym = symbols(REL / 'map/str8n-v1.34-worker-0200.map')
+    image = (REL / 'bin/str8n-v1.34-bank3-f000-ffff.bin').read_bytes()
     mem = bytearray(65536)
     mem[0xF000:] = image
-    # Frozen canonical host image, never a board dump. Protect the deliberately
-    # unchanged vectors, directory/configuration, and sensitive resident code.
-    # The LED slice deliberately changes the packed worker.
-    golden = json.loads((ROOT / 'tools/fixtures/resident-521fd0a.json').read_text())
+    # Frozen canonical v1.33 host image, never a board dump. Private interrupt
+    # code relocates; public service entries and shared RAM remain unchanged.
+    golden = json.loads((ROOT / 'tools/fixtures/resident-v133-before-size.json').read_text())
     old = base64.b64decode(golden['image'])
     assert hashlib.sha256(old).hexdigest() == golden['sha256']
-    assert image[0xFB0:] == old[0xFB0:]
+    old = normalize_baseline_version(old, golden['symbols'], image, sym)
+    assert image[0xFB0:0xFFA] == old[0xFB0:0xFFA]
     for name, length in [('STR8_DELAY_FIXED_A', 15), ('STR8_IVY_ENTRY_NMI', 20),
                          ('STR8_IVY_ENTRY_IRQ_MASTER', 46), ('STR8_REC_ADVANCE_APPLY_POINTERS', 13),
                          ('STR8_CON_INIT', 12),
                          ('STR8_CON_READ_BYTE_NONBLOCK', 31), ('STR8_CON_WRITE_BYTE_BLOCK', 37)]:
         previous, current = golden['symbols'][name] - 0xF000, sym[name] - 0xF000
-        assert old[previous:previous + length] == image[current:current + length], name
+        expected = old[previous:previous + length]
+        if name in ('STR8_IVY_ENTRY_NMI', 'STR8_IVY_ENTRY_IRQ_MASTER'):
+            # Only the JSR operand moves. Keep the complete interrupt dispatch
+            # instruction sequence and every shared-vector address frozen.
+            before = golden['symbols']['STR8_IVY_SIG_OK']
+            after = sym['STR8_IVY_SIG_OK']
+            call = bytes((0x20, before & 255, before >> 8))
+            assert expected.count(call) == 1
+            expected = expected.replace(call, bytes((0x20, after & 255, after >> 8)))
+        assert expected == image[current:current + length], name
     new_data = bytearray(image[sym['_BEG_DATA'] - 0xF000:sym['_END_DATA'] - 0xF000])
     old_data = bytearray(old[golden['symbols']['_BEG_DATA'] - 0xF000:golden['symbols']['_END_DATA'] - 0xF000])
-    # Normalize the accepted identity transition and the intentional reset-face
-    # replacement, then compare every remaining resident-data byte.
-    version_addr = sym['MSG_ID'] + len(b'\r\nSTR8-N 1.3')
-    version_offset = version_addr - sym['_BEG_DATA']
-    assert old_data[version_offset] == ord('0')
-    assert new_data[version_offset] == ord('3')
-    old_data[version_offset] = new_data[version_offset]
-    old_reset = b'RESET\r\x8a'
-    new_reset = b'\r\nRST H\r\x8a\r\nRST S\r\x8a'
-    assert old_data.count(old_reset) == 1
-    old_data = old_data.replace(old_reset, new_reset)
+    # Only the explicitly checked 1.33 -> 1.34 banner digit was normalized.
+    # Every other resident message and identity byte remains exact.
     assert new_data == old_data
-    assert sym['_END_DATA'] == 0xFD42
-    assert sym['STR8_WORKER_STORE'] == 0xFD50
-    assert image[0xD42:0xD50] == b'\xff' * 14
+    assert sym['_END_DATA'] == 0xFCF2
+    assert sym['STR8_WORKER_STORE'] == 0xFD78
+    assert image[0xCF2:0xD78] == b'\xff' * 134
     page0 = sym['STR8_PRINT_TXN_PAGE0_X'] - 0xF000
     page1 = sym['STR8_PRINT_TXN_PAGE1_X'] - 0xF000
-    assert page1 == page0 + 4
-    assert image[page0:page1 + 2] == bytes.fromhex('a0fc8002a0fd')
-    # Compact messages use explicit $FC/$FD helpers. A string may cross the
-    # boundary; its call must select the page containing its first byte.
+    assert page1 == page0 == sym['STR8_PRINT_MESSAGE_X'] - 0xF000
+    assert sym['STR8_PRINT_XY'] == 0xF000 + page0 + 2
+    assert image[page0:page0 + 2] == bytes.fromhex('a0fc')
+    # Select the page containing the first byte, including both possible
+    # reset-source messages at the same runtime-selected call site.
     assert sym['MSG_ID'] >> 8 == 0xFC
-    assert sym['MSG_JUMP_FAIL'] >> 8 == sym['MSG_RST_H'] >> 8 == sym['MSG_RST_S'] >> 8 == 0xFD
-    assert (sym['MSG_BACKSPACE'] + 2) >> 8 == 0xFD
+    assert sym['MSG_RST_H'] >> 8 == sym['MSG_RST_S'] >> 8 == image[page0 + 1]
+    assert all(addr >> 8 == image[page0 + 1] for name, addr in sym.items() if name.startswith('MSG_'))
     assert sym['STR8_REC_OP_PARSE'] == sym['STR8_REC_FORMAT_S19'] == sym['STR8_REC_SOURCE_CONSOLE'] == 1
     assert sym['STR8_REC_SOURCE_BUFFER'] == sym['STR8_REC_DATA_BUF_LO'] == 0
     assert 'STR8_WRITE_HEX_BYTE_A' not in sym
-    assert image[0xFF0:] == bytes.fromhex('1e1fffffffffffffffffd2f000f0e6f0')
+    vector_words = ('STR8_IVY_ENTRY_NMI', 'START', 'STR8_IVY_ENTRY_IRQ_MASTER')
+    assert image[0xFFA:] == b''.join(sym[name].to_bytes(2, 'little') for name in vector_words)
 
     # LED slices: raw public console code remains frozen above, while semantic
     # owners publish complete-byte states at explicit boundaries.
@@ -96,18 +114,23 @@ def main():
     printer = sym['STR8_PRINT_XY'] - 0xF000
     write_activity = sym['STR8_WRITE_ACTIVITY_A']
     assert bytes((0x20, write_activity & 255, write_activity >> 8)) in image[printer:printer + 24]
-    assert bytes((0x4C, write_activity & 255, write_activity >> 8)) in image[printer:printer + 32]
+    assert image[write_activity - 0xF000 - 2:write_activity - 0xF000] == bytes.fromhex('297f')
     ram_load = image[sym['STR8_CMD_LOAD_RAM'] - 0xF000:sym['STR8_CMD_INSTALL_PREVIEW'] - 0xF000]
     assert bytes.fromhex('9ca07f6c') in ram_load
     himon_release = bytes.fromhex('9ca07f4c00c0')
     warm = sym['STR8_ENTER_HIMON_WARM'] - 0xF000
     cold = sym['STR8_ENTER_HIMON_COLD'] - 0xF000
     assert himon_release in image[warm:cold]
-    assert himon_release in image[cold:sym['STR8_CMD_LOOP'] - 0xF000]
+    cold_end = sym['STR8_LOCAL_HIMON_AVAILABLE'] - 0xF000
+    assert image[cold_end - 2] == 0x80
+    delta = image[cold_end - 1]
+    release = cold_end + (delta if delta < 128 else delta - 256)
+    assert image[release:release + len(himon_release)] == himon_release
 
     worker_store = sym['STR8_WORKER_STORE'] - 0xF000
     worker = image[worker_store:0xFB0]
-    assert len(worker) == 0x260
+    assert len(worker) == sym['STR8_WORKER_SIZE'] == 0x238
+    assert sym['STR8_WORKER_SELECT_SIZE'] == 0x27
     flash_unlock = worker_sym['STR8W_FLASH_UNLOCK'] - 0x0200
     assert worker[flash_unlock:flash_unlock + 10] == bytes.fromhex(
         'a9f08da07fa9aa8d55d5')
@@ -115,8 +138,8 @@ def main():
     staged = worker_sym['STR8W_PROGRAM_STAGED_SECTOR'] - 0x0200
     assert bytes.fromhex('9ca07f6c') in worker[jump:staged]
     select3 = worker_sym['STR8W_SELECT_BANK3']
-    restore = bytes((0x08, 0x20, select3 & 0xFF, select3 >> 8,
-                     0xA9, 0x01, 0x8D, 0xA0, 0x7F, 0x28))
+    restore = bytes((0x20, select3 & 0xFF, select3 >> 8,
+                     0xA9, 0x01, 0x8D, 0xA0, 0x7F, 0x90))
     body = worker[worker_sym['STR8W_START_BODY'] - 0x0200:jump]
     assert restore in body
 
@@ -133,7 +156,7 @@ def main():
         if msg:
             pending = msg[1]
             assert mem[addr] == 0xA2 and mem[addr + 1] == sym[pending] & 255
-        helper = re.search(r'(?:JSR|JMP|BRA)\s+(STR8_PRINT_TXN_PAGE[01]_X)', line)
+        helper = re.search(r'(?:JSR|JMP|BRA)\s+(STR8_PRINT_(?:MESSAGE|TXN_PAGE[01])_X)', line)
         if helper:
             assert pending is not None, line
             entry = sym[helper[1]]
@@ -147,25 +170,28 @@ def main():
             assert target == entry
             checked += 1
             pending = None
-    assert checked >= 20
+    assert checked == 26
     # STR8_PRINT_PROMPT falls through into page 0 without an explicit call.
     assert sym['MSG_PROMPT'] >> 8 == mem[sym['STR8_PRINT_TXN_PAGE0_X'] + 1]
 
     def string_at(address):
         out = bytearray()
-        for value in mem[address:]:
+        for value in mem[address:address + 256]:
             out.append(value & 127)
             if value & 128:
                 return bytes(out)
-        raise AssertionError('unterminated string')
-    assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.33\r\n0-2 C W S: '
+        raise AssertionError('unterminated string or message exceeds the 256-byte printer limit')
+    for name, address in sym.items():
+        if name.startswith('MSG_'):
+            assert string_at(address)
+    assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.34\r\n0-2 C W S: '
     assert string_at(sym['MSG_RST_H']) == b'\r\nRST H\r\n'
     assert string_at(sym['MSG_RST_S']) == b'\r\nRST S\r\n'
     assert string_at(sym['MSG_RST_H']) + string_at(sym['MSG_ID']) == (
-        b'\r\nRST H\r\n\r\nSTR8-N 1.33\r\n0-2 C W S: '
+        b'\r\nRST H\r\n\r\nSTR8-N 1.34\r\n0-2 C W S: '
     )
     assert string_at(sym['MSG_RST_S']) + string_at(sym['MSG_ID']) == (
-        b'\r\nRST S\r\n\r\nSTR8-N 1.33\r\n0-2 C W S: '
+        b'\r\nRST S\r\n\r\nSTR8-N 1.34\r\n0-2 C W S: '
     )
     startup = sym['STR8_STARTUP_DELAY'] - 0xF000
     reset_classifier = bytes((
