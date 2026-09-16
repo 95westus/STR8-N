@@ -17,7 +17,10 @@ binary. Its host results and exact image identity are recorded in
 - [x] Retain [follow-up evidence](docs/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md)
   for power-cycle startup, physical NMI, VIA1 timer IRQ, optimized-worker
   program/verify/erase/verify on B2:9, invalid-write rejection, and red/green LEDs.
-- [ ] Complete the remaining hardware gates: Bank 0-2 guest boots, resident
+- [x] Repeat the [complete v1.34 factory migration](docs/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md):
+  erased-B0 preservation, exact canonical top plus D0, J0/selector 0,
+  physical-reset return, and byte-exact four-bank readback.
+- [ ] Complete the remaining hardware gates: Bank 1-2 guest boots, resident
   installation, transient LED timing, and injected failure/recovery paths.
 - [ ] Retain board evidence before publishing this candidate as hardware accepted.
 

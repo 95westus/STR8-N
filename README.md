@@ -107,6 +107,9 @@ against the preceding v1.33 image. The
 guarded update/readback, physical/software reset, console/BRK, HIMON/ASM,
 and J3. The [follow-up tests](docs/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md)
 also passed power-cycle startup, NMI/IRQ, and worker flash program/erase.
+The [factory migration test](docs/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md)
+passed stock restore, erased-B0 preservation, v1.34 installation, D0 adoption,
+both B0 launch paths, physical-reset return, and complete four-bank readback.
 The full release matrix remains incomplete.
 See the [size-change report](docs/STR8N_V1_34_SIZE_OPTIMIZATION.md)
 for host validation, relocated interrupt targets, and the remaining board work.

@@ -133,6 +133,9 @@ ASM-F2 entry/return, RAM loading, and J3. The
 [follow-up session](STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md) also passed
 power-cycle startup, physical NMI, actual VIA1 timer IRQ, and optimized-worker
 program/verify/erase/verify on B2:9, including invalid-write rejection.
-Bank 0-2 guest boots, resident installation, and injected recovery paths
-remain separate gates. The board reports state the scope and retained hashes.
+The [factory migration session](STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md)
+also passed the erased-B0 migration, D0 adoption, both B0 boot paths, and
+complete four-bank readback. Bank 1-2 guest boots, resident installation,
+and injected recovery paths remain separate gates. The board reports state
+the scope and retained hashes.
 All historical reports remain tied to their original hashes.

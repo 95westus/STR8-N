@@ -1,21 +1,19 @@
 # Stock WDCMONv2 to STR8-N Migration
 
-Current artifacts and commands below target v1.34 and are host-qualified. The
-complete v1.32 factory migration is board-accepted on `SXB2`, HW 3.00, WDCMON
-2.00, `$BF/$B5` flash on COM4, 2026-09-08. The v1.33 guarded in-place top
-upgrade passed separately on COM4 on 2026-09-10.
-
-The v1.34 size candidate requires a new guarded update, exact readback, and
-board qualification. The preceding reports do not qualify its changed binary.
+Current artifacts and commands below target v1.34. The
+[complete v1.34 factory migration](STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md)
+passed on `SXB2`, HW 3.00, WDCMON 2.00, `$BF/$B5` flash on COM4, 2026-09-15.
+It includes erased-B0 preservation, canonical top installation, exact D0,
+both B0 launch paths, physical-reset return, and complete four-bank readback.
 
 This is the short onboarding rail for a stock WDC W65C02SXB, either alone or
 with the W65C02EDU expansion board installed. W65C02EDU is an add-on for the
 SXB, not a standalone CPU board. The complete v1.32 path is accepted on a
 physical W65C02SXB/EDU, including erased-B0 preservation, exact
 `D0 FF WDCV2`, and operator-observed `$F0` during flash mutation/verification.
-The v1.34 migration artifact has not repeated that complete board path. The
-v1.28/v1.29 runs remain historical evidence; the longer archive path remains
-available as optional owner-local evidence.
+The v1.34 run repeated that complete migration path without adding visual LED
+observations. The v1.28/v1.29 runs remain historical evidence; the longer
+archive path remains available as optional owner-local evidence.
 
 Current status:
 
@@ -24,8 +22,9 @@ board-accepted                read-only four-bank inventory and selected-bank ex
 board-accepted                local BIN/S19/receipt extraction and validation
 board-accepted                binary WDCMONv2 load/readback/execute host bridge
 board-accepted                guarded B3 -> erased B0 copy and exact verify
-host-qualified               external 4096-byte v1.34 BIN receive and B3:F install
-board-accepted for v1.32     EDU $F0 mutation cue, first boot, and RESET return
+board-accepted for v1.34       external 4096-byte BIN receive and B3:F install
+board-accepted for v1.34       first boot, exact D0, and physical RESET return
+board-accepted for v1.32       operator-observed EDU $F0 mutation cue
 board-accepted                D0 FF/WDCV2, selector 0, J0, and RESET return
 separate optional procedure   load HIMON C-E and ASM-F2 8-B component slices
 ```
@@ -65,6 +64,19 @@ This is the compact default presentation. Add `-Details` to show the BIN hash,
 T48 offset, bank policy, and evidence paths before the port is opened. Both
 modes retain the same complete raw transcript and timestamped host event log.
 The extracted package's `QUICKSTART.txt` is the short operator card.
+
+If the stock application starts before the default reset/Enter gate can
+synchronize, use the packaged reset-arm option:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass `
+  -File .\STR8-iN65-LOADER.ps1 -Port COM4 -PhysicalResetArmSeconds 60
+```
+
+Press physical RESET when it reports that the arm window is active. It
+captures the WDC monitor immediately, without waiting for an Enter reply.
+This was the successful v1.34 board-run path; the default gate's failed
+synchronization is retained in that report.
 
 Read the screen throughout the migration. The loader tells the operator when
 to enter each confirmation and when to press a control key. `Ctrl+U` and
