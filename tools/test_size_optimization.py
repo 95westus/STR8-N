@@ -1,4 +1,4 @@
-"""Execute linked v1.34 against frozen v1.33 behavior with its banner digit updated.
+"""Execute linked v1.35 against frozen v1.33 behavior with its banner digit updated.
 
 Only console transport, elapsed delay, and the private flash doorway are
 stubbed. The tests never access board hardware or modify release artifacts.

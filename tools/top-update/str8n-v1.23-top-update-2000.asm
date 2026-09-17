@@ -1,6 +1,6 @@
-; STR8-N v1.34 BANK-3 TOP-SECTOR UPDATE / DIRECTORY REFRESH TOOL.
+; STR8-N v1.35 BANK-3 TOP-SECTOR UPDATE / DIRECTORY REFRESH TOOL.
 ; Load with an installed STR8-N v1.1/v1.2/v1.21 L command; S9 starts at $2000.
-; The exact host-verified v1.34 top-sector BIN is generated into the $4000 image.
+; The exact host-verified v1.35 top-sector BIN is generated into the $4000 image.
 ; This program uses direct FT245R and flash access after active erase begins.
 ; STR8_DIRECTORY_REFRESH=0 preserves the live directory and installs the
 ; candidate configuration pocket. STR8_DIRECTORY_REFRESH=1 clears only the
@@ -567,14 +567,14 @@ TU_IN_READY:           LDA             #TU_FTDI_RXF
                         RTS
 
                         IF              STR8_DIRECTORY_REFRESH
-                        IF              STR8_IN65_VERSION_134
-TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.34 DIRECTORY REFRESH",$0D,$0A
+                        IF              STR8_IN65_VERSION_135
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.35 DIRECTORY REFRESH",$0D,$0A
                         ELSE
 TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 DIRECTORY REFRESH",$0D,$0A
                         ENDIF
                         ELSE
-                        IF              STR8_IN65_VERSION_134
-TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.34 TOP UPDATE",$0D,$0A
+                        IF              STR8_IN65_VERSION_135
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.35 TOP UPDATE",$0D,$0A
                         ELSE
                         IF              STR8_IN65_VERSION_133
 TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 TOP UPDATE",$0D,$0A
@@ -591,8 +591,8 @@ TU_MSG_RECEIPT:        DB              "SAFE PHY $17000-$17FFF; TARGET PHY "
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_FINAL:          DB              "TYPE ERASE DIRECTORY> ",0
                         ELSE
-                        IF              STR8_IN65_VERSION_134
-TU_MSG_FINAL:          DB              "TYPE STR8-N 1.34> ",0
+                        IF              STR8_IN65_VERSION_135
+TU_MSG_FINAL:          DB              "TYPE STR8-N 1.35> ",0
                         ELSE
                         IF              STR8_IN65_VERSION_133
 TU_MSG_FINAL:          DB              "TYPE STR8-N 1.33> ",0
@@ -606,8 +606,8 @@ TU_MSG_RECOVERY:       DB              "WRITE FAIL: R=RETRY O=RESTORE OLD> ",0
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_OK:             DB              "DIRECTORY EMPTY; STR8-N VERIFIED; RESET",$0D,$0A,0
                         ELSE
-                        IF              STR8_IN65_VERSION_134
-TU_MSG_OK:             DB              "STR8-N 1.34 VERIFIED; RESET",$0D,$0A,0
+                        IF              STR8_IN65_VERSION_135
+TU_MSG_OK:             DB              "STR8-N 1.35 VERIFIED; RESET",$0D,$0A,0
                         ELSE
                         IF              STR8_IN65_VERSION_133
 TU_MSG_OK:             DB              "STR8-N 1.33 VERIFIED; RESET",$0D,$0A,0
@@ -626,8 +626,8 @@ TU_CONFIRM_BACKUP:     DB              "BACKUP B2F",0
                         IF              STR8_DIRECTORY_REFRESH
 TU_CONFIRM_FINAL:      DB              "ERASE DIRECTORY",0
                         ELSE
-                        IF              STR8_IN65_VERSION_134
-TU_CONFIRM_FINAL:      DB              "STR8-N 1.34",0
+                        IF              STR8_IN65_VERSION_135
+TU_CONFIRM_FINAL:      DB              "STR8-N 1.35",0
                         ELSE
                         IF              STR8_IN65_VERSION_133
 TU_CONFIRM_FINAL:      DB              "STR8-N 1.33",0
@@ -648,8 +648,8 @@ TU_CONFIRM_FINAL:      DB              "STR8-N 1.23",0
                         ORG             $4000
 TU_CANDIDATE_IMAGE:
                         IF              STR8_IN65_TOP_IMAGE
-                        IF              STR8_IN65_VERSION_134
-                        INCLUDE         "str8n-v1.34-str8-in65-top-image.inc"
+                        IF              STR8_IN65_VERSION_135
+                        INCLUDE         "str8n-v1.35-str8-in65-top-image.inc"
                         ELSE
                         IF              STR8_IN65_VERSION_133
                         INCLUDE         "str8n-v1.33-str8-in65-top-image.inc"
@@ -658,8 +658,8 @@ TU_CANDIDATE_IMAGE:
                         ENDIF
                         ENDIF
                         ELSE
-                        IF              STR8_IN65_VERSION_134
-                        INCLUDE         "str8n-v1.34-top-image.inc"
+                        IF              STR8_IN65_VERSION_135
+                        INCLUDE         "str8n-v1.35-top-image.inc"
                         ELSE
                         IF              STR8_IN65_VERSION_133
                         INCLUDE         "str8n-v1.33-top-image.inc"

@@ -1,6 +1,6 @@
 # Load HIMON and ASM-F2 after STR8-N
 
-The WDCMONv2 migration is complete when physical RESET reaches `STR8-N 1.34`
+The WDCMONv2 migration is complete when physical RESET reaches `STR8-N 1.35`
 and the retained stock monitor starts through `J0`. It does not install
 HIMON or ASM-F2. Physical RESET returns from the retained factory system to
 STR8-N.
@@ -88,7 +88,7 @@ cannot load either flash component. Both install paths preserve sector F.
 1. Press physical RESET, select `C`, and check the HIMON identity.
 2. Enter `ASM NEW`, check the ASM-F2 identity, and run its documented smoke test.
 3. Return to STR8, enter `J0`, and check the retained WDCMONv2 board identity.
-4. Press physical RESET and require `STR8-N 1.34` again.
+4. Press physical RESET and require `STR8-N 1.35` again.
 
 This is an optional component-installation procedure after factory migration.
 It is not part of the migration transaction or a claim of new board testing.

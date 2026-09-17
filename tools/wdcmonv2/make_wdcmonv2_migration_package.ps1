@@ -1,13 +1,13 @@
 param(
-    [string]$ArchiveS19Path = 'BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-archive-2000.s19',
-    [string]$InstallS19Path = 'BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-install-2000.s19',
-    [string]$CandidateBinPath = 'BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin',
-    [string]$CanonicalS19Path = 'BUILD/v1.34/s19/str8n-v1.34-f000.s19',
-    [string]$BankMaintS19Path = 'BUILD/v1.34/s19/str8n-v1.34-str8-in65-bank-maint-2000.s19',
-    [string]$InstallIncludePath = 'BUILD/v1.34/generated/str8n-v1.34-wdcmonv2-install-image.inc',
-    [string]$KitDirectory = 'BUILD/v1.34/wdcmonv2-str8n-migration-kit',
-    [string]$ZipPath = 'BUILD/v1.34/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip',
-    [string]$ArchiveRootName = 'STR8-N-v1.34-Migration-Kit'
+    [string]$ArchiveS19Path = 'BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-archive-2000.s19',
+    [string]$InstallS19Path = 'BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-install-2000.s19',
+    [string]$CandidateBinPath = 'BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin',
+    [string]$CanonicalS19Path = 'BUILD/v1.35/s19/str8n-v1.35-f000.s19',
+    [string]$BankMaintS19Path = 'BUILD/v1.35/s19/str8n-v1.35-str8-in65-bank-maint-2000.s19',
+    [string]$InstallIncludePath = 'BUILD/v1.35/generated/str8n-v1.35-wdcmonv2-install-image.inc',
+    [string]$KitDirectory = 'BUILD/v1.35/wdcmonv2-str8n-migration-kit',
+    [string]$ZipPath = 'BUILD/v1.35/str8n-v1.35-wdcmonv2-str8n-migration-kit.zip',
+    [string]$ArchiveRootName = 'STR8-N-v1.35-Migration-Kit'
 )
 
 Set-StrictMode -Version Latest
@@ -36,7 +36,7 @@ $inputs = [ordered]@{
     'ARTIFACTS/STR8-N-v1-30.s19' = $CanonicalS19Path
     'SOURCE/wdcmonv2str8n-archive-2000.asm' = 'tools/wdcmonv2/wdcmonv2str8n-archive-2000.asm'
     'SOURCE/wdcmonv2str8n-install-2000.asm' = 'tools/wdcmonv2/wdcmonv2str8n-install-2000.asm'
-    'SOURCE/str8n-v1.34-wdcmonv2-install-image.inc' = $InstallIncludePath
+    'SOURCE/str8n-v1.35-wdcmonv2-install-image.inc' = $InstallIncludePath
     'TOOLS/extract_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/extract_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_archive.ps1' = 'tools/wdcmonv2/check_wdcmonv2_archive.ps1'
     'TOOLS/check_wdcmonv2_install.ps1' = 'tools/wdcmonv2/check_wdcmonv2_install.ps1'
@@ -49,6 +49,7 @@ $inputs = [ordered]@{
     'DOC/WDCMONV2_MIGRATION_PROVENANCE.md' = 'docs/WDCMONV2_MIGRATION_PROVENANCE.md'
     'DOC/HIMON_ASMF2_AFTER_STR8N.md' = 'docs/HIMON_ASMF2_AFTER_STR8N.md'
     'DOC/STR8_IN65_BANK_MAINTENANCE.md' = 'docs/STR8_IN65_BANK_MAINTENANCE.md'
+    'DOC/CONFIGURATION_BYTES.md' = 'docs/CONFIGURATION_BYTES.md'
     'LICENSE' = 'LICENSE'
 }
 
@@ -93,8 +94,8 @@ $readmePath = Join-Path $kitFull 'PACKAGE-README.txt'
 $readme = @(
     'WDC W65C02SXB (+ OPTIONAL W65C02EDU) -> STR8-N MIGRATION KIT',
     '',
-    'STATUS: v1.34 FACTORY PATH BOARD-ACCEPTED ON 2026-09-15',
-    'HOST STATUS: WINDOWS 11 POWERSHELL BOARD-PROVEN; UBUNTU PYTHON UNTESTED',
+    'STATUS: v1.35 FACTORY PATH NOT BOARD-QUALIFIED; PRIOR v1.34 PROOF ONLY',
+    'HOST STATUS: PRIOR v1.34 WINDOWS 11 POWERSHELL BOARD-PROVEN; UBUNTU PYTHON UNTESTED',
     ('ARCHIVE ROOT: {0}' -f $ArchiveRootName),
     '',
     'BEFORE YOU START',
@@ -112,7 +113,7 @@ $readme = @(
     '',
     'Factory-board minimal path:',
     '  powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\STR8-iN65-LOADER.ps1',
-    '  The accepted v1.34 run used -PhysicalResetArmSeconds 60, then RESET',
+    '  The prior accepted v1.34 run used -PhysicalResetArmSeconds 60, then RESET',
     '  while the arm window was active. The default reset/Enter gate missed sync.',
     '  Add -Details for hashes, addresses, bank policy, and evidence paths.',
     '  See QUICKSTART.txt for the short operator card.',
@@ -120,9 +121,9 @@ $readme = @(
     '  press each once and only when its corresponding request appears.',
     '',
     'The RAM installer requires separate COPY and INSTALL confirmations.',
-    'It copies/verifies stock B3 into B0, receives the canonical STR8-N 1.34',
+    'It copies/verifies stock B3 into B0, receives the canonical STR8-N 1.35',
     'BIN, and installs it in B3:F.',
-    'After verified v1.34 boot, the included Bank Maintenance image prompts for',
+    'After verified v1.35 boot, the included Bank Maintenance image prompts for',
     'D0 FF WDCV2 adoption; Bank 0 remains an opaque byte-for-byte factory guest.',
     'After J0, physical RESET is the designed return from that factory guest',
     'to STR8-N. This reset-only return is intentional, not a flaw.',
@@ -159,13 +160,13 @@ $fileRows = foreach ($file in $payloadFiles) {
 }
 $manifest = [ordered]@{
     schema = 1
-    package = 'str8n-v1.34-wdcmonv2-str8n-migration-kit'
+    package = 'str8n-v1.35-wdcmonv2-str8n-migration-kit'
     sourceCommit = (& git rev-parse HEAD).Trim()
     sourceDirty = -not [string]::IsNullOrWhiteSpace((& git status --porcelain))
     packagedUtc = [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')
-    firmwareUnchangedFromTestedMigrationZip = '2E1EB81375CB6568AAC7AFF2AE50EC6459B421DB5812B143C30D124F39BDBFB4'
-    hardwareStatus = 'v1.34 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-15; Windows physical-reset arm; Linux has no board proof'
-    windowsHostStatus = 'Windows 11 PowerShell board-proven'
+    canonicalTopSha256 = Get-Sha256 -Path $CandidateBinPath
+    hardwareStatus = 'v1.35 factory migration has no board proof; prior v1.34 Windows factory migration passed on 2026-09-15; Linux has no board proof'
+    windowsHostStatus = 'prior v1.34 Windows 11 PowerShell board-proven; v1.35 factory path has no board proof'
     ubuntuPythonHostStatus = 'experimental; offline-tested only; no board proof'
     archiveRoot = $ArchiveRootName
     stockWdcmonv2FirmwareIncluded = $false

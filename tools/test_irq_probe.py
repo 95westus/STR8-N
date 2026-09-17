@@ -10,8 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'BUILD/v1.30/local/test-deps'))
 from py65.devices.mpu65c02 import MPU
 
-REL = ROOT / 'BUILD/v1.34'
-STEM = 'str8n-v1.34-irq-test-2000'
+REL = ROOT / 'BUILD/v1.35'
+STEM = 'str8n-v1.35-irq-test-2000'
 symbols = {n: int(a, 16) for a, n in re.findall(
     r'^\s*([0-9a-fA-F]{8}) (\w+)\s*$',
     (REL / f'map/{STEM}.map').read_text(), re.M)}
@@ -39,7 +39,7 @@ class Memory(list):
 
 for mode in ('irq', 'timeout', 'busy'):
     memory = Memory()
-    memory[0xF000:] = (REL / 'bin/str8n-v1.34-bank3-f000-ffff.bin').read_bytes()
+    memory[0xF000:] = (REL / 'bin/str8n-v1.35-bank3-f000-ffff.bin').read_bytes()
     for line in (REL / f's19/{STEM}.s19').read_text().splitlines():
         if line.startswith('S1'):
             raw = bytes.fromhex(line[2:])

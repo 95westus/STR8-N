@@ -1,7 +1,7 @@
 """Execute the linked board probe with modeled flash before using its scratch sector."""
 from test_worker_optimization import FlashMemory, MPU, PCR, LED, REL, symbols
 
-stem = 'str8n-v1.34-led-worker-test-2000'
+stem = 'str8n-v1.35-led-worker-test-2000'
 sym = symbols(REL / f'map/{stem}.map')
 assert sym['LWT_TARGET_BANK'] == 2 and sym['LWT_TARGET_SECTOR_HI'] == 0x90
 records = (REL / f's19/{stem}.s19').read_text().splitlines()
@@ -10,7 +10,7 @@ assert records[-1] == 'S9032000DC'
 for occupied in (False, True):
     mem = FlashMemory(b'')
     mem.ram[PCR] = 0xEE
-    mem.banks[3][0x7000:] = (REL / 'bin/str8n-v1.34-bank3-f000-ffff.bin').read_bytes()
+    mem.banks[3][0x7000:] = (REL / 'bin/str8n-v1.35-bank3-f000-ffff.bin').read_bytes()
     if occupied:
         mem.banks[2][0x1000] = 0x7F
     before = [bytes(bank) for bank in mem.banks]

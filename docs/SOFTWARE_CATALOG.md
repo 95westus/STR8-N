@@ -1,4 +1,4 @@
-# STR8-N v1.34 software catalog
+# STR8-N v1.35 software catalog
 
 The standalone STR8-N release contains reset/recovery firmware, installation
 and maintenance tools, and their manuals. HIMON, ASM-F2, and their application
@@ -8,17 +8,17 @@ collections have separate release ZIPs. See the [manual index](RELEASE_MANUALS.m
 
 | Release file | Use |
 | --- | --- |
-| `ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin` | Exact 4 KiB programmer image, Bank 3 CPU `$F000-$FFFF`, device offset `$1F000` |
-| `ARTIFACTS/str8n-v1.34-f000.s19` | Resident S19 for integration; resident `I` cannot overwrite protected sector F |
-| `ARTIFACTS/str8n-v1.34-worker-0200.s19` | Worker build/evidence component, not a standalone operator application |
-| `ARTIFACTS/str8n-v1.34-bank-maint-2000.s19` | RAM map, copy, adoption, reclaim, erase, and AP maintenance |
-| `ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.s19` | Expanded maintenance menu, including guarded top update |
-| `ARTIFACTS/str8n-v1.34-top-update-2000.s19` | Guarded top-sector update with verified backup |
-| `ARTIFACTS/str8n-v1.34-directory-refresh-2000.s19` | Guarded directory refresh; deliberately clears existing directory records |
-| `APPLICATIONS/str8n-v1.34-bank-maint-menu-2000.a` | ASM-F2 image carrier matching the expanded maintenance S19 |
+| `ARTIFACTS/str8n-v1.35-bank3-f000-ffff.bin` | Exact 4 KiB programmer image, Bank 3 CPU `$F000-$FFFF`, device offset `$1F000` |
+| `ARTIFACTS/str8n-v1.35-f000.s19` | Resident S19 for integration; resident `I` cannot overwrite protected sector F |
+| `ARTIFACTS/str8n-v1.35-worker-0200.s19` | Worker build/evidence component, not a standalone operator application |
+| `ARTIFACTS/str8n-v1.35-bank-maint-2000.s19` | RAM map, copy, adoption, reclaim, erase, and AP maintenance |
+| `ARTIFACTS/str8n-v1.35-bank-maint-menu-2000.s19` | Expanded maintenance menu, including guarded top update |
+| `ARTIFACTS/str8n-v1.35-top-update-2000.s19` | Guarded top-sector update with verified backup |
+| `ARTIFACTS/str8n-v1.35-directory-refresh-2000.s19` | Guarded directory refresh; deliberately clears existing directory records |
+| `APPLICATIONS/str8n-v1.35-bank-maint-menu-2000.a` | ASM-F2 image carrier matching the expanded maintenance S19 |
 | `TOOLS/convert_guest_bin_to_s19.ps1` | Convert an owner-supplied guest BIN into S19 |
 | `TOOLS/compose_str8n_install_s19.ps1` | Validate and prepare dense installer S19 |
-| `PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip` | Separate factory-migration workflow with project-written tools |
+| `PACKAGES/str8n-v1.35-wdcmonv2-str8n-migration-kit.zip` | Separate factory-migration workflow with project-written tools |
 
 STR8 `L` loads and executes the RAM tools' `$2000` entry. Read the
 [operator guide](OPERATORS_GUIDE.md) before any maintenance command; several

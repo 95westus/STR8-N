@@ -1,15 +1,15 @@
 param(
-    [string]$KitDirectory = 'BUILD/v1.34/wdcmonv2-str8n-migration-kit',
-    [string]$ZipPath = 'BUILD/v1.34/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip',
-    [string]$ArchiveS19Path = 'BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-archive-2000.s19',
-    [string]$InstallS19Path = 'BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-install-2000.s19',
-    [string]$TopBinPath = 'BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin',
-    [string]$CandidateBinPath = 'BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin',
-    [string]$CanonicalS19Path = 'BUILD/v1.34/s19/str8n-v1.34-f000.s19',
-    [string]$BankMaintS19Path = 'BUILD/v1.34/s19/str8n-v1.34-str8-in65-bank-maint-2000.s19',
+    [string]$KitDirectory = 'BUILD/v1.35/wdcmonv2-str8n-migration-kit',
+    [string]$ZipPath = 'BUILD/v1.35/str8n-v1.35-wdcmonv2-str8n-migration-kit.zip',
+    [string]$ArchiveS19Path = 'BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-archive-2000.s19',
+    [string]$InstallS19Path = 'BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-install-2000.s19',
+    [string]$TopBinPath = 'BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin',
+    [string]$CandidateBinPath = 'BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin',
+    [string]$CanonicalS19Path = 'BUILD/v1.35/s19/str8n-v1.35-f000.s19',
+    [string]$BankMaintS19Path = 'BUILD/v1.35/s19/str8n-v1.35-str8-in65-bank-maint-2000.s19',
     [string]$HostBridgePath = 'tools/wdcmonv2/start_wdcmonv2_ram.ps1',
     [string]$BoardTestPath = 'docs/WDCMONV2_MIGRATION_BOARD_TEST.md',
-    [string]$ArchiveRootName = 'STR8-N-v1.34-Migration-Kit'
+    [string]$ArchiveRootName = 'STR8-N-v1.35-Migration-Kit'
 )
 
 Set-StrictMode -Version Latest
@@ -50,6 +50,7 @@ $expected = @(
     'ARTIFACTS/STR8-N-v1-30.s19',
     'DOC/HIMON_ASMF2_AFTER_STR8N.md',
     'DOC/STR8_IN65_BANK_MAINTENANCE.md',
+    'DOC/CONFIGURATION_BYTES.md',
     'DOC/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md',
     'DOC/WDCMONV2_MIGRATION.md',
     'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md',
@@ -57,7 +58,7 @@ $expected = @(
     'LICENSE',
     'PACKAGE-MANIFEST.json',
     'PACKAGE-README.txt',
-    'SOURCE/str8n-v1.34-wdcmonv2-install-image.inc',
+    'SOURCE/str8n-v1.35-wdcmonv2-install-image.inc',
     'SOURCE/wdcmonv2str8n-archive-2000.asm',
     'SOURCE/wdcmonv2str8n-install-2000.asm',
     'TOOLS/check_wdcmonv2_archive.ps1',
@@ -87,8 +88,8 @@ if ($manifest.ryorsPayloadIncluded -ne $false) { throw 'Manifest must state that
 if ($manifest.windowsHostStatus -notmatch 'board-proven') { throw 'Manifest must retain Windows host proof status' }
 if ($manifest.ubuntuPythonHostStatus -notmatch 'no board proof') { throw 'Manifest must mark Ubuntu Python as lacking board proof' }
 if ($manifest.archiveRoot -ne $ArchiveRootName) { throw 'Manifest archive root does not match the required surrounding folder' }
-if ($manifest.hardwareStatus -ne 'v1.34 factory migration board-accepted on SXB2 HW 3.00 WDCMON 2.00 BF/B5 flash, COM4, 2026-09-15; Windows physical-reset arm; Linux has no board proof') {
-    throw 'Manifest must identify the exact v1.34 factory-migration board proof'
+if ($manifest.hardwareStatus -ne 'v1.35 factory migration has no board proof; prior v1.34 Windows factory migration passed on 2026-09-15; Linux has no board proof') {
+    throw 'Manifest must distinguish unqualified v1.35 factory migration from historical v1.34 proof'
 }
 if ($manifest.firstProcedure -notmatch 'STR8-iN65-LOADER') { throw 'Manifest must publish the one-command factory path first' }
 
@@ -159,4 +160,4 @@ try {
 Write-Host ('MIGRATION PACKAGE   = PASS; {0} allowlisted files' -f $expected.Count)
 Write-Host ('PACKAGE ZIP SHA256  = {0}' -f (Get-Sha256 -Path $ZipPath))
 Write-Host 'WDC FIRMWARE/ARCHIVE = ABSENT BY ALLOWLIST'
-Write-Host 'V1.34 FACTORY MIGRATION = BOARD-ACCEPTED; 2026-09-15'
+Write-Host 'V1.35 FACTORY MIGRATION = NOT BOARD-QUALIFIED; PRIOR V1.34 PROOF ONLY'

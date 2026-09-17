@@ -1,7 +1,7 @@
 param(
-    [string]$Str8MapPath = "BUILD/v1.34/map/str8n-v1.34-f000.map",
-    [string]$WorkerMapPath = "BUILD/v1.34/map/str8n-v1.34-worker-0200.map",
-    [string]$WorkerS19Path = "BUILD/v1.34/s19/str8n-v1.34-worker-0200.s19",
+    [string]$Str8MapPath = "BUILD/v1.35/map/str8n-v1.35-f000.map",
+    [string]$WorkerMapPath = "BUILD/v1.35/map/str8n-v1.35-worker-0200.map",
+    [string]$WorkerS19Path = "BUILD/v1.35/s19/str8n-v1.35-worker-0200.s19",
     [string]$WorkerEqPath = "src/str8-worker-eq.inc",
     [string]$RamAbiPath = "src/str8-ram-abi.inc",
     [string]$ConsoleEqPath = "src/str8-console-eq.inc",

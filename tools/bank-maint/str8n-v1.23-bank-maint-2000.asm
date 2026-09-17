@@ -1,10 +1,10 @@
-; STR8-N V1.34 BANK MAINTENANCE, LOAD ADDRESS $2000.
+; STR8-N V1.35 BANK MAINTENANCE, LOAD ADDRESS $2000.
 ; INTERACTIVE BANK COPY/ERASE/MAP MAINTENANCE FOR STR8-N L.
 ;
 ; LOAD AND RUN:
 ;   STR8-N>L
 ;   S19
-;   send BUILD/v1.34/s19/str8n-v1.34-bank-maint-2000.s19
+;   send BUILD/v1.35/s19/str8n-v1.35-bank-maint-2000.s19
 ; STR8-N L executes its S9 $2000 entry automatically. Q returns to STR8-N.
 ;
 ; C COPIES $8000-$FFFF FROM SOURCE BANK 0-3 TO AN EMPTY DESTINATION 0-2,
@@ -2403,8 +2403,8 @@ BM_SUCCESS LDA #$AC
         JMP BM_MAIN
 
 BM_MTITLE DB $0D,$0A,'S','T','R','8','-','N',' '
-        IF              STR8_IN65_VERSION_134
-        DB '1','.','3','4',' '
+        IF              STR8_IN65_VERSION_135
+        DB '1','.','3','5',' '
         ELSE
         IF STR8_IN65_VERSION_133
         DB '1','.','3','3',' '

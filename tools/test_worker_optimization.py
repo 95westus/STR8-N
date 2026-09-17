@@ -22,7 +22,7 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REL = ROOT / 'BUILD/v1.34'
+REL = ROOT / 'BUILD/v1.35'
 for directory in reversed([
     *(Path(p) for key in ('STR8_TEST_DEPS', 'PY65_PATH')
       for p in os.environ.get(key, '').split(os.pathsep) if p),
@@ -478,9 +478,9 @@ def main():
     assert hashlib.sha256(old_image).hexdigest() == fixture['sha256']
     old = Variant('baseline', old_image, fixture['symbols'], fixture['worker_symbols'])
     new = old if args.baseline_only else Variant(
-        'candidate', (REL / 'bin/str8n-v1.34-bank3-f000-ffff.bin').read_bytes(),
-        symbols(REL / 'map/str8n-v1.34-f000.map'),
-        symbols(REL / 'map/str8n-v1.34-worker-0200.map'))
+        'candidate', (REL / 'bin/str8n-v1.35-bank3-f000-ffff.bin').read_bytes(),
+        symbols(REL / 'map/str8n-v1.35-f000.map'),
+        symbols(REL / 'map/str8n-v1.35-worker-0200.map'))
     variants = (old, new)
     layout_tests(variants, args.baseline_only)
     for suite in (selector_tests, mode_tests, record_tests, staged_tests, jump_tests, poll_timing_tests):
