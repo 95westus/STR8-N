@@ -1,6 +1,6 @@
 """Differential tests against the canonical pre-optimization v1.33 image.
 
-Requires py65==1.2.0, installed normally or in BUILD/v1.34/local/test-deps.
+Requires py65==1.2.0, installed normally or in BUILD/v1.35/local/test-deps.
 Executes actual linked 65C02 code. Console transport and flash hardware are
 stubbed explicitly; this does not constitute board or flash-programming proof.
 """
@@ -24,8 +24,8 @@ except ImportError:
 GOLDEN = json.loads((ROOT / 'tools/fixtures/resident-v133-before-size.json').read_text())
 OLD = base64.b64decode(GOLDEN['image'])
 assert hashlib.sha256(OLD).hexdigest() == GOLDEN['sha256']
-NEW = (REL / 'bin/str8n-v1.34-bank3-f000-ffff.bin').read_bytes()
-MAPS = [GOLDEN['symbols'], symbols(REL / 'map/str8n-v1.34-f000.map')]
+NEW = (REL / 'bin/str8n-v1.35-bank3-f000-ffff.bin').read_bytes()
+MAPS = [GOLDEN['symbols'], symbols(REL / 'map/str8n-v1.35-f000.map')]
 # Execute the old instructions with only the exact, approved version byte
 # updated in memory, so all text comparisons retain their complete strictness.
 OLD = normalize_baseline_version(OLD, MAPS[0], NEW, MAPS[1])

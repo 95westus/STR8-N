@@ -6,29 +6,30 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $rootFull = [IO.Path]::GetFullPath($Root).TrimEnd('\', '/')
-$canonicalHash = '9538D97854BA9D5D76143CBA0FEDB3B2E7CE18F977CE89557406E63404026CB7'
+$canonicalHash = '96416190B7E1A37E2C01A407AB9C8EA4ADE06855BBFD0DDCC306FF68418A359A'
 $expected = @(
     'README.md', 'CHECK-LINKS.ps1',
     'DOC/HIMON_ASMF2_AFTER_STR8N.md', 'DOC/SOFTWARE_CATALOG.md', 'DOC/R_YORS_INTEGRATION.md',
-    'ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin',
-    'ARTIFACTS/str8n-v1.34-f000.s19',
-    'ARTIFACTS/str8n-v1.34-worker-0200.s19',
-    'ARTIFACTS/str8n-v1.34-bank-maint-2000.s19',
-    'ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.s19',
-    'APPLICATIONS/str8n-v1.34-bank-maint-menu-2000.a',
-    'ARTIFACTS/str8n-v1.34-top-update-2000.s19',
-    'ARTIFACTS/str8n-v1.34-directory-refresh-2000.s19',
-    'TESTS/str8n-v1.34-console-abi-test-2000.s19',
-    'TESTS/str8n-v1.34-irq-test-2000.s19',
-    'TESTS/str8n-v1.34-led-worker-test-2000.s19',
+    'ARTIFACTS/str8n-v1.35-bank3-f000-ffff.bin',
+    'ARTIFACTS/str8n-v1.35-f000.s19',
+    'ARTIFACTS/str8n-v1.35-worker-0200.s19',
+    'ARTIFACTS/str8n-v1.35-bank-maint-2000.s19',
+    'ARTIFACTS/str8n-v1.35-bank-maint-menu-2000.s19',
+    'APPLICATIONS/str8n-v1.35-bank-maint-menu-2000.a',
+    'ARTIFACTS/str8n-v1.35-top-update-2000.s19',
+    'ARTIFACTS/str8n-v1.35-directory-refresh-2000.s19',
+    'TESTS/str8n-v1.35-console-abi-test-2000.s19',
+    'TESTS/str8n-v1.35-irq-test-2000.s19',
+    'TESTS/str8n-v1.35-led-worker-test-2000.s19',
     'TESTS/README.md',
     'TOOLS/convert_guest_bin_to_s19.ps1',
     'TOOLS/compose_str8n_install_s19.ps1',
     'INCLUDE/str8n-public.inc',
     'MANIFEST/str8n-manifest.json',
-    'PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip',
+    'PACKAGES/str8n-v1.35-wdcmonv2-str8n-migration-kit.zip',
     'DOC/OPERATORS_GUIDE.md',
     'DOC/TECHNICAL_GUIDE.md',
+    'DOC/CONFIGURATION_BYTES.md',
     'DOC/EXAMPLES.md',
     'DOC/MAPS.md',
     'DOC/BANK_0_2_GUEST_S19.md',
@@ -37,6 +38,7 @@ $expected = @(
     'DOC/WDCMONV2_MIGRATION.md',
     'DOC/WDCMONV2_MIGRATION_PROVENANCE.md',
     'DOC/STR8N_V1_34_SIZE_OPTIMIZATION.md',
+    'DOC/STR8N_V1_35_BOARD_TEST_2026-09-16.md',
     'DOC/STR8N_V1_34_BOARD_TEST_2026-09-15.md',
     'DOC/STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md',
     'DOC/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md',
@@ -63,7 +65,7 @@ foreach ($line in Get-Content -LiteralPath (Join-Path $rootFull 'SHA256SUMS.txt'
 if ($checked.Count -ne ($expected.Count - 1)) { throw 'Checksum inventory is incomplete' }
 
 $manifest = Get-Content -Raw -LiteralPath (Join-Path $rootFull 'PACKAGE-MANIFEST.json') | ConvertFrom-Json
-if ($manifest.schema -ne 1 -or $manifest.product -ne 'STR8-N' -or $manifest.version -ne '1.34' -or
+if ($manifest.schema -ne 1 -or $manifest.product -ne 'STR8-N' -or $manifest.version -ne '1.35' -or
         $manifest.canonicalTopSha256 -ne $canonicalHash -or
         $manifest.stockWdcmonv2FirmwareIncluded -ne $false -or
         $manifest.localBankArchivesIncluded -ne $false -or $manifest.otherProductPayloadsIncluded -ne $false) {
@@ -116,8 +118,8 @@ $images = @{}
 foreach ($relative in @($expected | Where-Object { $_.EndsWith('.s19') })) {
     $image = Read-S19 $relative
     $images[$relative] = $image
-    $resident = $relative -eq 'ARTIFACTS/str8n-v1.34-f000.s19'
-    $worker = $relative -eq 'ARTIFACTS/str8n-v1.34-worker-0200.s19'
+    $resident = $relative -eq 'ARTIFACTS/str8n-v1.35-f000.s19'
+    $worker = $relative -eq 'ARTIFACTS/str8n-v1.35-worker-0200.s19'
     $low, $high, $entry = 0x2000, 0x4FFF, 0x2000
     if ($resident) { $low, $high, $entry = 0xF000, 0xFFFF, 0xF000 }
     elseif ($worker) { $low, $high, $entry = 0x0200, 0x0437, 0x0200 }
@@ -127,16 +129,16 @@ foreach ($relative in @($expected | Where-Object { $_.EndsWith('.s19') })) {
     }
 }
 
-$topPath = Join-Path $rootFull 'ARTIFACTS/str8n-v1.34-bank3-f000-ffff.bin'
+$topPath = Join-Path $rootFull 'ARTIFACTS/str8n-v1.35-bank3-f000-ffff.bin'
 $top = [IO.File]::ReadAllBytes($topPath)
 if ($top.Length -ne 4096 -or (Get-FileHash -Algorithm SHA256 -LiteralPath $topPath).Hash -ne $canonicalHash) {
-    throw 'Canonical top differs from the hardware-accepted v1.34 firmware'
+    throw 'Canonical top differs from the hardware-accepted v1.35 firmware'
 }
-foreach ($item in $images['ARTIFACTS/str8n-v1.34-f000.s19'].Data.GetEnumerator()) {
+foreach ($item in $images['ARTIFACTS/str8n-v1.35-f000.s19'].Data.GetEnumerator()) {
     if ($top[$item.Key - 0xF000] -ne $item.Value) { throw 'Resident S19 differs from canonical BIN' }
 }
 foreach ($name in @('bank-maint-menu', 'top-update')) {
-    $data = $images[('ARTIFACTS/str8n-v1.34-{0}-2000.s19' -f $name)].Data
+    $data = $images[('ARTIFACTS/str8n-v1.35-{0}-2000.s19' -f $name)].Data
     for ($i = 0; $i -lt 4096; $i++) {
         if (-not $data.ContainsKey(0x4000 + $i) -or $data[0x4000 + $i] -ne $top[$i]) {
             throw "Embedded top differs from canonical BIN: $name"
@@ -147,7 +149,7 @@ foreach ($name in @('bank-maint-menu', 'top-update')) {
 $source = @{}
 $address = -1
 $ended = $false
-foreach ($raw in Get-Content -LiteralPath (Join-Path $rootFull 'APPLICATIONS/str8n-v1.34-bank-maint-menu-2000.a')) {
+foreach ($raw in Get-Content -LiteralPath (Join-Path $rootFull 'APPLICATIONS/str8n-v1.35-bank-maint-menu-2000.a')) {
     $line = ($raw -split ';', 2)[0].Trim()
     if (-not $line) { continue }
     if ($ended -or $line.Length -gt 63) { throw 'Invalid maintenance .a line or data after END' }
@@ -161,7 +163,7 @@ foreach ($raw in Get-Content -LiteralPath (Join-Path $rootFull 'APPLICATIONS/str
     } elseif ($line -eq 'END') { $ended = $true }
     else { throw "Unexpected maintenance .a syntax: $line" }
 }
-$menu = $images['ARTIFACTS/str8n-v1.34-bank-maint-menu-2000.s19'].Data
+$menu = $images['ARTIFACTS/str8n-v1.35-bank-maint-menu-2000.s19'].Data
 if (-not $ended -or $source.Count -ne 12288 -or $source.Count -ne $menu.Count) { throw 'Maintenance .a size mismatch' }
 foreach ($item in $source.GetEnumerator()) {
     if (-not $menu.ContainsKey($item.Key) -or $menu[$item.Key] -ne $item.Value) { throw 'Maintenance .a/S19 byte mismatch' }
@@ -191,22 +193,23 @@ $migrationNames = @(
     'ARTIFACTS/STR8-iN65-LOADER-2000.s19', 'ARTIFACTS/STR8-N-v1-30.bin', 'ARTIFACTS/STR8-N-v1-30.s19',
     'DOC/STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md',
     'DOC/HIMON_ASMF2_AFTER_STR8N.md', 'DOC/STR8_IN65_BANK_MAINTENANCE.md',
+    'DOC/CONFIGURATION_BYTES.md',
     'DOC/WDCMONV2_MIGRATION.md', 'DOC/WDCMONV2_MIGRATION_BOARD_TEST.md',
     'DOC/WDCMONV2_MIGRATION_PROVENANCE.md', 'LICENSE', 'PACKAGE-MANIFEST.json', 'PACKAGE-README.txt',
-    'SOURCE/str8n-v1.34-wdcmonv2-install-image.inc', 'SOURCE/wdcmonv2str8n-archive-2000.asm',
+    'SOURCE/str8n-v1.35-wdcmonv2-install-image.inc', 'SOURCE/wdcmonv2str8n-archive-2000.asm',
     'SOURCE/wdcmonv2str8n-install-2000.asm', 'TOOLS/check_wdcmonv2_archive.ps1',
     'TOOLS/check_wdcmonv2_install.ps1', 'TOOLS/extract_wdcmonv2_archive.ps1',
     'TOOLS/start_wdcmonv2_ram.ps1', 'TOOLS/start_wdcmonv2_ram.py', 'VERIFY-PACKAGE.ps1'
 ) | Sort-Object
-$prefix = 'STR8-N-v1.34-Migration-Kit/'
-$zip = [IO.Compression.ZipFile]::OpenRead((Join-Path $rootFull 'PACKAGES/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip'))
+$prefix = 'STR8-N-v1.35-Migration-Kit/'
+$zip = [IO.Compression.ZipFile]::OpenRead((Join-Path $rootFull 'PACKAGES/str8n-v1.35-wdcmonv2-str8n-migration-kit.zip'))
 try {
     $names = @($zip.Entries | Where-Object Name | ForEach-Object FullName | Sort-Object)
     $wanted = @($migrationNames | ForEach-Object { $prefix + $_ } | Sort-Object)
     if (($names -join [char]10) -cne ($wanted -join [char]10)) { throw 'Nested migration ZIP allowlist mismatch' }
     $m = [Text.Encoding]::UTF8.GetString((Get-ZipBytes $zip ($prefix + 'PACKAGE-MANIFEST.json'))) | ConvertFrom-Json
     if ($m.stockWdcmonv2FirmwareIncluded -ne $false -or $m.localBankArchivesIncluded -ne $false -or
-            $m.ryorsPayloadIncluded -ne $false -or $m.hardwareStatus -notmatch '^v1.34 factory migration board-accepted') {
+            $m.ryorsPayloadIncluded -ne $false -or $m.hardwareStatus -ne 'v1.35 factory migration has no board proof; prior v1.34 Windows factory migration passed on 2026-09-15; Linux has no board proof') {
         throw 'Nested migration provenance mismatch'
     }
     $rowNames = @($m.files | ForEach-Object file | Sort-Object)
@@ -225,7 +228,7 @@ try {
 if ($ZipPath) {
     $zip = [IO.Compression.ZipFile]::OpenRead([IO.Path]::GetFullPath($ZipPath))
     try {
-        $prefix = 'str8n-v1.34-release/'
+        $prefix = 'str8n-v1.35-release/'
         $names = @($zip.Entries | Where-Object Name | ForEach-Object { $_.FullName.Replace('\', '/') } | Sort-Object)
         $wanted = @($expected | ForEach-Object { $prefix + $_ } | Sort-Object)
         if (($names -join [char]10) -cne ($wanted -join [char]10)) { throw 'Release ZIP allowlist mismatch' }
@@ -240,4 +243,4 @@ if ($ZipPath) {
     } finally { $zip.Dispose() }
 }
 & (Join-Path $rootFull 'CHECK-LINKS.ps1') -Root $rootFull
-Write-Host ('STR8-N v1.34 standalone release PASS; {0} allowlisted files; {1} nested migration files; canonical BIN and maintenance .a verified' -f $expected.Count, $migrationNames.Count)
+Write-Host ('STR8-N v1.35 standalone release PASS; {0} allowlisted files; {1} nested migration files; canonical BIN and maintenance .a verified' -f $expected.Count, $migrationNames.Count)

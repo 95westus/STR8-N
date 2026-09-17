@@ -1,10 +1,10 @@
-# STR8-N v1.34 Worked Examples
+# STR8-N v1.35 Worked Examples
 
 These examples show what to type and which S19 file to send. Text after `<-`
 is explanation, not terminal input. Use normal full-speed text-file transfer
 with zero character and line delay.
 
-These are worked procedures for the v1.34 release, not hardware transcripts.
+These are worked procedures for the v1.35 release, not hardware transcripts.
 See the [operator guide](OPERATORS_GUIDE.md#validation-status) for the exact
 accepted binaries, covered operations, and remaining hardware matrix.
 Download HIMON and ASM-F2 separately; their payloads are not in the STR8 ZIP.
@@ -19,7 +19,7 @@ live-key interval:
 ```text
 RST H
 
-STR8-N 1.34
+STR8-N 1.35
 0-2 C W S: S
 I L C W J
 STR8-N>
@@ -32,7 +32,7 @@ pressed, timeout warm-starts compatible HIMON and preserves RAM.
 
 ## Migrate a factory WDCMONv2 board
 
-From an extracted v1.34 migration kit, use the stock board's COM port:
+From an extracted v1.35 migration kit, use the stock board's COM port:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass `
@@ -41,7 +41,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 
 Press physical RESET during the reported arm window, then follow the RAM-verification prompts. Confirm
 `COPY B3 TO B0`, wait for the complete comparison, and press Ctrl+U only when
-asked for the top BIN. Confirm `INSTALL STR8-N 1.34` after that image passes
+asked for the top BIN. Confirm `INSTALL STR8-N 1.35` after that image passes
 its check. After the first boot, select `S`, enter `L`, and press Ctrl+D when
 prompted to load Bank Maintenance. Its separate adoption step publishes
 COMPLETE D0 `FF/WDCV2`; the top installer leaves the directory erased.
@@ -145,7 +145,7 @@ make ryors-full-bank
 This creates:
 
 ```text
-C:/SRC/STR8-N/BUILD/v1.34/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
+C:/SRC/STR8-N/BUILD/v1.35/s19/ryors-v1.2-str8n-himon-asm-bank0-2-8-f.s19
 ```
 
 Install it in Bank 0, 1, or 2:
@@ -199,13 +199,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.34/s19/str8n-v1.34-bank-maint-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-bank-maint-2000.s19
 ```
 
 It starts automatically:
 
 ```text
-STR8-N 1.34 BANK MAINT
+STR8-N 1.35 BANK MAINT
 B3 ERASE RETURNS TO STR8; SELECT S
 !STR8=SOURCE HAS STR8
 C=COPY+DIR D=ADOPT E=ERASE M=MAP+DIR N=RENAME DIR P=AP B0BF00 R=RECLAIM DIR Q=QUIT>
@@ -240,7 +240,7 @@ If the payload bank was deliberately erased but its old directory row remains,
 reclaim that one row before retrying the copy:
 
 ```text
-STR8-N 1.34 BANK MAINT
+STR8-N 1.35 BANK MAINT
 ... R=RECLAIM DIR ...> R
 RECLAIM DIR 0-3> 0
 
@@ -261,7 +261,7 @@ installed STR8-N or R-YORS payload. At least one Bank-0/1/2 sector must be
 completely erased for the verified temporary B3F backup:
 
 ```text
-STR8-N 1.34 BANK MAINT
+STR8-N 1.35 BANK MAINT
 ... R=RECLAIM DIR ...> R
 RECLAIM DIR 0-3> 3
 
@@ -291,13 +291,13 @@ S19
 Send:
 
 ```text
-BUILD/v1.34/s19/str8n-v1.34-directory-refresh-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-directory-refresh-2000.s19
 ```
 
 The guarded confirmations and successful result are:
 
 ```text
-STR8-N 1.34 DIRECTORY REFRESH
+STR8-N 1.35 DIRECTORY REFRESH
 BACKUP B1:F; TARGET B3:F
 TYPE BACKUP B1F> BACKUP B1F
 BACKUP VERIFIED

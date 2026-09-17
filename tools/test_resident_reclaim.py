@@ -1,4 +1,4 @@
-"""v1.34 binary regressions: message pages, delay contract, actual range parser.
+"""v1.35 binary regressions: message pages, delay contract, actual range parser.
 
 The deliberately limited CPU harness rejects unsupported instructions; it runs
 the linked range parser, stubbing only console printing and line acquisition.
@@ -11,7 +11,7 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-REL = ROOT / 'BUILD/v1.34'
+REL = ROOT / 'BUILD/v1.35'
 
 
 def symbols(path):
@@ -21,7 +21,7 @@ def symbols(path):
 def normalize_baseline_version(old, old_symbols, new, new_symbols):
     """Permit exactly the approved final banner digit in the frozen baseline."""
     before = b'\r\nSTR8-N 1.33\r\n'
-    after = b'\r\nSTR8-N 1.34\r\n'
+    after = b'\r\nSTR8-N 1.35\r\n'
     old_start = old_symbols['MSG_ID'] - 0xF000
     new_start = new_symbols['MSG_ID'] - 0xF000
     assert old[old_start:old_start + len(before)] == before
@@ -29,15 +29,15 @@ def normalize_baseline_version(old, old_symbols, new, new_symbols):
     offset = old_start + len(b'\r\nSTR8-N 1.3')
     normalized = bytearray(old)
     assert normalized[offset] == ord('3')
-    normalized[offset] = ord('4')
+    normalized[offset] = ord('5')
     assert [i for i, (a, b) in enumerate(zip(old, normalized)) if a != b] == [offset]
     return bytes(normalized)
 
 
 def main():
-    sym = symbols(REL / 'map/str8n-v1.34-f000.map')
-    worker_sym = symbols(REL / 'map/str8n-v1.34-worker-0200.map')
-    image = (REL / 'bin/str8n-v1.34-bank3-f000-ffff.bin').read_bytes()
+    sym = symbols(REL / 'map/str8n-v1.35-f000.map')
+    worker_sym = symbols(REL / 'map/str8n-v1.35-worker-0200.map')
+    image = (REL / 'bin/str8n-v1.35-bank3-f000-ffff.bin').read_bytes()
     mem = bytearray(65536)
     mem[0xF000:] = image
     # Frozen canonical v1.33 host image, never a board dump. Private interrupt
@@ -66,7 +66,7 @@ def main():
         assert expected == image[current:current + length], name
     new_data = bytearray(image[sym['_BEG_DATA'] - 0xF000:sym['_END_DATA'] - 0xF000])
     old_data = bytearray(old[golden['symbols']['_BEG_DATA'] - 0xF000:golden['symbols']['_END_DATA'] - 0xF000])
-    # Only the explicitly checked 1.33 -> 1.34 banner digit was normalized.
+    # Only the explicitly checked 1.33 -> 1.35 banner digit was normalized.
     # Every other resident message and identity byte remains exact.
     assert new_data == old_data
     assert sym['_END_DATA'] == 0xFCF2
@@ -186,14 +186,14 @@ def main():
     for name, address in sym.items():
         if name.startswith('MSG_'):
             assert string_at(address)
-    assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.34\r\n0-2 C W S: '
+    assert string_at(sym['MSG_ID']) == b'\r\nSTR8-N 1.35\r\n0-2 C W S: '
     assert string_at(sym['MSG_RST_H']) == b'\r\nRST H\r\n'
     assert string_at(sym['MSG_RST_S']) == b'\r\nRST S\r\n'
     assert string_at(sym['MSG_RST_H']) + string_at(sym['MSG_ID']) == (
-        b'\r\nRST H\r\n\r\nSTR8-N 1.34\r\n0-2 C W S: '
+        b'\r\nRST H\r\n\r\nSTR8-N 1.35\r\n0-2 C W S: '
     )
     assert string_at(sym['MSG_RST_S']) + string_at(sym['MSG_ID']) == (
-        b'\r\nRST S\r\n\r\nSTR8-N 1.34\r\n0-2 C W S: '
+        b'\r\nRST S\r\n\r\nSTR8-N 1.35\r\n0-2 C W S: '
     )
     startup = sym['STR8_STARTUP_DELAY'] - 0xF000
     reset_classifier = bytes((

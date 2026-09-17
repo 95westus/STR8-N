@@ -1,4 +1,4 @@
-# STR8-N v1.34 release manuals
+# STR8-N v1.35 release manuals
 
 This standalone release supplies the exact 4 KiB STR8-N top-sector BIN,
 resident S19, RAM maintenance tools, Bank Maintenance `.a`, and the separate
@@ -19,6 +19,7 @@ WDC-to-STR8 migration kit. HIMON and ASM-F2 come in their own release ZIPs.
 | Prepare a Bank 0-2 guest | [Guest S19 quick reference](BANK_0_2_GUEST_S19.md) |
 | Integrate an external STR8 checkout | [R-YORS integration](R_YORS_INTEGRATION.md) |
 | Understand physical versus software reset | [Reset-source contract](RESET_SOURCE_CONTRACT.md) |
+| Decode configuration, FNV policy, journals and prerequisites | [Configuration bytes](CONFIGURATION_BYTES.md) |
 | Review redistribution boundaries | [Migration provenance](WDCMONV2_MIGRATION_PROVENANCE.md) |
 
 The ready-to-use files are under ARTIFACTS, APPLICATIONS, TOOLS, and PACKAGES.
@@ -29,9 +30,8 @@ exist on an operator's computer. The catalog gives the archive locations.
 ## Identity and verification
 
 The canonical 4096-byte top BIN has SHA-256
-`9538D97854BA9D5D76143CBA0FEDB3B2E7CE18F977CE89557406E63404026CB7`.
-The release retains STR8-N version 1.34; packaging refreshes documentation
-and its manifest timestamp without changing that accepted firmware.
+`96416190B7E1A37E2C01A407AB9C8EA4ADE06855BBFD0DDCC306FF68418A359A`.
+This release advances STR8-N to version 1.35.
 
 Run VERIFY-PACKAGE.ps1 after extraction. SHA256SUMS.txt and
 PACKAGE-MANIFEST.json enumerate the files and hashes. CHECK-LINKS.ps1 checks
@@ -41,7 +41,10 @@ repository at the recorded commit. Those external links require internet.
 
 ## Exact hardware coverage
 
-The accepted firmware is covered by the
+Current coverage is recorded in the
+[v1.35 update/reset report](STR8N_V1_35_BOARD_TEST_2026-09-16.md).
+Factory migration and the broader hardware matrix remain unqualified for 1.35.
+The preceding v1.34 firmware is covered by the historical
 [update/reset/console report](STR8N_V1_34_BOARD_TEST_2026-09-15.md),
 [interrupt/worker report](STR8N_V1_34_FOLLOWUP_BOARD_TEST_2026-09-15.md), and
 [Windows factory-migration report](STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md).

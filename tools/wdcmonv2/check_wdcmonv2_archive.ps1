@@ -1,7 +1,7 @@
 param(
     [string]$SourcePath = 'tools/wdcmonv2/wdcmonv2str8n-archive-2000.asm',
-    [string]$S19Path = 'BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-archive-2000.s19',
-    [string]$MapPath = 'BUILD/v1.34/map/str8n-v1.34-wdcmonv2-archive-2000.map',
+    [string]$S19Path = 'BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-archive-2000.s19',
+    [string]$MapPath = 'BUILD/v1.35/map/str8n-v1.35-wdcmonv2-archive-2000.map',
     [string]$ExtractorPath = 'tools/wdcmonv2/extract_wdcmonv2_archive.ps1'
 )
 

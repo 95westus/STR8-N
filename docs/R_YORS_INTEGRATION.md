@@ -9,19 +9,21 @@ Earlier B1:E/B1:F hardware evidence remains specific to its original images.
 Later workbench smoke on 2026-09-16 installed scoped HIMON/AM02 and live
 `$FFF2=$A6` through a separately guarded RAM policy updater. Physical reset
 and final four-bank isolation pass; canonical release defaults remain `$FF`.
-See the [R-YORS smoke record](../../R-YORS/DOC/GUIDES/LOGS/SCOPED_SMOKE_BOARD_2026-09-16.md).
-The [banked AP qualification](../../R-YORS/DOC/GUIDES/LOGS/SCOPED_QUALIFICATION_2026-09-16.md)
+See the companion R-YORS repository's
+`DOC/GUIDES/LOGS/SCOPED_SMOKE_BOARD_2026-09-16.md`.
+Its banked AP qualification, `DOC/GUIDES/LOGS/SCOPED_QUALIFICATION_2026-09-16.md`,
 now passes BANKDUMP, malformed/duplicate refusal, role predicates, paced LED/PCR
 observation, reset and final isolation. BANKDUMP is retained at B2:A; B1:A is
 erased. Expected B1 directory enrollment and installer journal updates remain.
 RAM-provider/HREC search is still open.
-See the [role migration sequence](../../R-YORS/DOC/GUIDES/AP/SECTOR_ROLES_AND_RAM_TRANSIENTS_2026-09-16.md).
+The same repository retains the role migration sequence at
+`DOC/GUIDES/AP/SECTOR_ROLES_AND_RAM_TRANSIENTS_2026-09-16.md`.
 
 STR8-N owns its resident source, embedded worker, payload tools, protected 4K
 layout, directory rules, and public ABI. R-YORS consumes verified artifacts;
 it must not maintain a second live STR8-N source tree.
 
-The current v1.34 release changes the packed worker address and the
+The current v1.35 release retains the v1.34 changes to the packed worker address and the
 linked interrupt targets. Consumers must refresh their content lock and
 generated contract; public service entries and RAM ownership stay fixed.
 See [the size-change report](STR8N_V1_34_SIZE_OPTIMIZATION.md) for validation
@@ -49,16 +51,16 @@ STR8-N commits do not require lock churn.
 ## Published STR8-N artifacts
 
 ```text
-BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin
-BUILD/v1.34/s19/str8n-v1.34-f000.s19
-BUILD/v1.34/s19/str8n-v1.34-worker-0200.s19
-BUILD/v1.34/s19/str8n-v1.34-bank-maint-2000.s19
-BUILD/v1.34/s19/str8n-v1.34-console-abi-test-2000.s19
-BUILD/v1.34/s19/str8n-v1.34-top-update-2000.s19
-BUILD/v1.34/s19/str8n-v1.34-directory-refresh-2000.s19
-BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-archive-2000.s19
-BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-install-2000.s19
-BUILD/v1.34/include/str8n-public.inc
+BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin
+BUILD/v1.35/s19/str8n-v1.35-f000.s19
+BUILD/v1.35/s19/str8n-v1.35-worker-0200.s19
+BUILD/v1.35/s19/str8n-v1.35-bank-maint-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-console-abi-test-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-top-update-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-directory-refresh-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-archive-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-install-2000.s19
+BUILD/v1.35/include/str8n-public.inc
 BUILD/str8n-manifest.json
 ```
 
@@ -118,7 +120,7 @@ The reverse dependency is limited to the optional full-bank image builder:
 ```text
 R-YORS/RELEASE/ryors-v1.2-himon-asm-bank3-8-e.s19
                          28K dense payload, $8000-$EFFF, S9 $C000
-STR8-N BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin
+STR8-N BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin
                           4K current top, $F000-$FFFF
                                       |
                                       v

@@ -1,6 +1,7 @@
 # Stock WDCMONv2 to STR8-N Migration
 
-Current artifacts and commands below target v1.34. The
+Current artifacts and commands below target v1.35, whose factory path is
+not board-qualified. Historical evidence below applies only to v1.34. The
 [complete v1.34 factory migration](STR8N_V1_34_FACTORY_MIGRATION_BOARD_TEST_2026-09-15.md)
 passed on `SXB2`, HW 3.00, WDCMON 2.00, `$BF/$B5` flash on COM4, 2026-09-15.
 It includes erased-B0 preservation, canonical top installation, exact D0,
@@ -98,12 +99,12 @@ It then copies and exactly verifies all eight B3 sectors in B0. When the board
 prints `SEND STR8-N TOP BIN; 4096 BYTES; START $F000`, press Ctrl+U once. The
 host sends the packaged `STR8-N-v1-30.bin`; the RAM loader requires exactly
 4096 bytes and verifies its full build-time FNV. It then requires the separate
-exact confirmation `INSTALL STR8-N 1.34` before replacing only B3:F.
+exact confirmation `INSTALL STR8-N 1.35` before replacing only B3:F.
 That same BIN can be programmed by a T48 at device offset `$1F000`, used as a
 logical `$F000` STR8-N top image, or supplied to the guarded top updater.
 
 The canonical image deliberately starts with an empty Bank-3 directory. After
-the first verified STR8-N 1.34 boot, select `S`, enter `L`, and press Ctrl+D to
+the first verified STR8-N 1.35 boot, select `S`, enter `L`, and press Ctrl+D to
 send `STR8-iN65-BANK-MAINT-2000.s19`. In Bank Maintenance enter `D`, then enter
 Bank `0`, type `FF`, and description `WDCV2`. Inspect the exact proposed D0
 record and type `ADOPT B0`.
@@ -165,7 +166,7 @@ make wdcmonv2-archive
 The board artifact is:
 
 ```text
-BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-archive-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-archive-2000.s19
 ```
 
 It occupies `$2000-$250E` in the current build and has S9 entry `$2000`.
@@ -183,7 +184,7 @@ make wdcmonv2-install
 Its artifact is:
 
 ```text
-BUILD/v1.34/s19/str8n-v1.34-wdcmonv2-install-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-wdcmonv2-install-2000.s19
 ```
 
 It is a compact RAM image with S9 `$2000`; the current build ends below
@@ -199,7 +200,7 @@ make wdcmonv2-package
 ```
 
 This produces
-`BUILD/v1.34/str8n-v1.34-wdcmonv2-str8n-migration-kit.zip`. It contains the
+`BUILD/v1.35/str8n-v1.35-wdcmonv2-str8n-migration-kit.zip`. It contains the
 archive and loader S19 files, the production Bank Maintenance S19, the exact
 4K STR8-N BIN and matching S19, source, binary-monitor
 host bridge, extractor, operator documents, license, and a self-verifier.
@@ -473,12 +474,12 @@ support replacing a locally archived, explicitly released B0, but the stock
 onboarding installer does not.
 
 The installer does not carry a modified migration top. It receives the exact
-canonical STR8-N v1.34 BIN supplied in the release package. Its configuration
+canonical STR8-N v1.35 BIN supplied in the release package. Its configuration
 bytes are:
 
 ```text
-$FFF0 WORK sector        $1E  Bank 1 sector E
-$FFF1 top-backup sector  $1F  Bank 1 sector F
+$FFF0 WORK sector        $FF  no flash WORK
+$FFF1 top-backup sector  $2F  Bank 2 sector F
 $FFF2 FNV bank policy    $FF  automatic external search disabled
 $FFF3-$FFF9              $FF  unassigned
 ```
@@ -489,7 +490,7 @@ at `$FFB0-$FFEF` is erased in the canonical BIN. Banks 0-2 remain opaque, and
 Bank Maintenance owns the separate D0 enrollment transaction:
 
 ```text
-1  boot and verify STR8-N 1.34 from Bank 3
+1  boot and verify STR8-N 1.35 from Bank 3
 2  load the packaged production Bank Maintenance S19 through `L`
 3  enter `D` and inspect the proposed Bank-3 directory record for opaque B0
 4  require `D0 FF WDCV2 FFFF FCFFFFFF`
@@ -518,8 +519,8 @@ Maintenance completes and verifies their assignments.
 After loading and starting the installer at `$2000`, expect:
 
 ```text
-WDCMONV2 -> STR8-N 1.34 MIGRATION
-B3 STOCK -> B0; STR8-N 1.34 -> B3:F
+WDCMONV2 -> STR8-N 1.35 MIGRATION
+B3 STOCK -> B0; STR8-N 1.35 -> B3:F
 NO RESET/NMI/POWER DURING ACTIVE WRITE
 FLASH ID=BF/B5
 STOCK B3 FNV1A=xxxxxxxx
@@ -548,7 +549,7 @@ Before the top write, the host validates an exact 4096-byte input and the RAM
 loader receives those bytes into `$4000-$4FFF`. The board checks the complete
 received candidate with 32-bit FNV-1a against its build-time value; a short or
 mismatched transfer cannot authorize B3:F erase. The board then requires
-`INSTALL STR8-N 1.34`; only that second exact confirmation permits B3:F erase
+`INSTALL STR8-N 1.35`; only that second exact confirmation permits B3:F erase
 and replacement. If program/verify
 fails while RAM is still executing, `R` retries the verified received candidate
 and `O` restores the old top sector from proven B0:F. A success selects B3 and

@@ -1,7 +1,7 @@
 param(
-    [string]$TopBinPath = 'BUILD/v1.34/bin/str8n-v1.34-bank3-f000-ffff.bin',
-    [string]$OutPath = 'BUILD/v1.34/generated/str8n-v1.34-wdcmonv2-install-image.inc',
-    [string]$CandidateBinPath = 'BUILD/v1.34/bin/str8n-v1.34-wdcmonv2-bank3-f000-ffff.bin'
+    [string]$TopBinPath = 'BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin',
+    [string]$OutPath = 'BUILD/v1.35/generated/str8n-v1.35-wdcmonv2-install-image.inc',
+    [string]$CandidateBinPath = 'BUILD/v1.35/bin/str8n-v1.35-wdcmonv2-bank3-f000-ffff.bin'
 )
 
 Set-StrictMode -Version Latest

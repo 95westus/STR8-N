@@ -141,7 +141,7 @@ OBS_X:                  DB 0
 OBS_Y:                  DB 0
 OBS_P:                  DB 0
 OBS_IFR:                DB 0
-MSG_PASS:               DB $0D,$0A,"V1.34 VIA1 TIMER IRQ / A-X-Y / STACK / B=0 / RTI: PASS",$0D,$0A,0
-MSG_FAIL:               DB $0D,$0A,"V1.34 TIMER IRQ PROBE: FAIL (RAM OBS_* RETAINED)",$0D,$0A,0
+MSG_PASS:               DB $0D,$0A,"V1.35 VIA1 TIMER IRQ / A-X-Y / STACK / B=0 / RTI: PASS",$0D,$0A,0
+MSG_FAIL:               DB $0D,$0A,"V1.35 TIMER IRQ PROBE: FAIL (RAM OBS_* RETAINED)",$0D,$0A,0
 MSG_BUSY:               DB $0D,$0A,"REFUSE: VIA1 INTERRUPTS ALREADY ENABLED",$0D,$0A,0
                         END

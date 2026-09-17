@@ -1,4 +1,4 @@
-; STR8-N v1.34 resident raw console ABI hardware probe.
+; STR8-N v1.35 resident raw console ABI hardware probe.
 ; Load with STR8-N L; S9 starts the probe at $2000.
 ; Type lowercase q followed by Enter when prompted. Physical RESET exits.
 
@@ -257,8 +257,8 @@ CAT_PRINT_NEXT:         LDY             #$00
                         BRA             CAT_PRINT_NEXT
 CAT_PRINT_DONE:         RTS
 
-                        IF              STR8_IN65_VERSION_134
-CAT_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.34 CONSOLE ABI TEST",$0D,$0A,0
+                        IF              STR8_IN65_VERSION_135
+CAT_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.35 CONSOLE ABI TEST",$0D,$0A,0
                         ELSE
 CAT_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 CONSOLE ABI TEST",$0D,$0A,0
                         ENDIF

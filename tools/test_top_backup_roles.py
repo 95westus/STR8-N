@@ -2,7 +2,7 @@
 from test_worker_optimization import FlashMemory, MPU, PCR, LED, REL, symbols
 
 for name in ('top-update', 'directory-refresh', 'str8-in65-top-update', 'bank-maint-menu'):
-    stem = f'str8n-v1.34-{name}-2000'
+    stem = f'str8n-v1.35-{name}-2000'
     sym = symbols(REL / f'map/{stem}.map')
     mem = FlashMemory(b'')
     mem.ram[PCR] = 0xEE
@@ -14,7 +14,7 @@ for name in ('top-update', 'directory-refresh', 'str8-in65-top-update', 'bank-ma
             raw = bytes.fromhex(line[2:])
             at = int.from_bytes(raw[1:3], 'big')
             mem.ram[at:at+len(raw[3:-1])] = raw[3:-1]
-    top = (REL / 'bin/str8n-v1.34-bank3-f000-ffff.bin').read_bytes()
+    top = (REL / 'bin/str8n-v1.35-bank3-f000-ffff.bin').read_bytes()
     assert top[0xFF0:0xFF3] == bytes((0xFF, 0x2F, 0xFF))
     live_top = bytearray(top)
     live_top[0xFF0:0xFF2] = bytes((0x1E, 0x1F))

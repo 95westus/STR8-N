@@ -1,7 +1,7 @@
-# STR8-N v1.34 Maps and Diagrams
+# STR8-N v1.35 Maps and Diagrams
 
-These diagrams describe the v1.34 release. Its update/reset/console,
-interrupt/worker, and Windows factory-migration results are linked from the
+These diagrams describe the v1.35 release. Its focused update/reset results
+and historical v1.34 interrupt/worker and factory results are linked from the
 [operator guide](OPERATORS_GUIDE.md#validation-status). The complete hardware
 matrix remains unfinished; historical reports retain their original versions.
 
@@ -28,7 +28,7 @@ flowchart TB
 
 ```text
 BUILD/
-|-- v1.34/
+|-- v1.35/
 |   |-- bin/                 all STR8-N binary images
 |   |-- s19/                 all release and user-built S19 images
 |   `-- test/range-matrix/   generated S19 qualification fixtures
@@ -50,7 +50,7 @@ flowchart LR
     TOP --> FULL
     TOP --> PROGRAMMER[external programmer]
     PROGRAMMER --> B3F[physical $1F000-$1FFFF]
-    TOP --> UPDATE[guarded v1.34 top updater S19]
+    TOP --> UPDATE[guarded v1.35 top updater S19]
     UPDATE -->|STR8-N L, verified backup first| B3F
     TOP --> REFRESH[guarded directory-refresh S19]
     REFRESH -->|STR8-N L, backup, clear $FFB0-$FFEF, install $FFF0=$1E| B3F
@@ -92,7 +92,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     R[Physical RESET<br/>forces Bank 3] --> A[RST H/S<br/>two linefeeds]
-    A --> P[Flush stale input<br/>print STR8-N 1.34 immediately]
+    A --> P[Flush stale input<br/>print STR8-N 1.35 immediately]
     P --> Q{Six-second live selector interval<br/>0-2 C W S}
     Q -->|0,1,2| C{Directory COMPLETE?}
     C -->|no| F[Refuse handoff]
@@ -116,9 +116,9 @@ flowchart TD
     M -->|no| X[Cancel in RAM<br/>flash unchanged]
     M -->|yes| C[Copy all eight B3 sectors to B0]
     C --> E[Whole-bank FNV prefilter<br/>plus byte-exact B0/B3 compare]
-    E --> T[Receive external canonical 4K top<br/>require INSTALL STR8-N 1.34]
+    E --> T[Receive external canonical 4K top<br/>require INSTALL STR8-N 1.35]
     T --> P[Program/verify B3:F<br/>directory erased; roles 1E/1F]
-    P --> S[STR8-N 1.34 in B3]
+    P --> S[STR8-N 1.35 in B3]
     S --> L[Load packaged Bank Maintenance<br/>STR8 L and Ctrl+D]
     L --> D[Explicit ADOPT B0<br/>publish COMPLETE D0 FF WDCV2]
     D -->|selector 0 or J0| W[Retained WDCMONv2 in B0]

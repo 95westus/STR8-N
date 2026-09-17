@@ -3,7 +3,7 @@ from test_worker_optimization import FlashMemory, MPU, PCR, PATTERNS, REL, symbo
 
 count = 0
 for suffix in ('bank-maint', 'bank-maint-menu', 'str8-in65-bank-maint'):
-    stem = f'str8n-v1.34-{suffix}-2000'
+    stem = f'str8n-v1.35-{suffix}-2000'
     sym = symbols(REL / f'map/{stem}.map')
     records = (REL / f's19/{stem}.s19').read_text().splitlines()
     for roles in ((0x1E, 0x1F), (0xFF, 0x2F)):

@@ -1,14 +1,18 @@
-# STR8-iN/65 v1.34 RAM Bank Maintenance
+# STR8-iN/65 v1.35 RAM Bank Maintenance
 
-This guide applies to the production STR8-iN/65 v1.34 RAM image:
+For the `F` policy editor, all byte encodings, scratch requirements, and
+update/recovery limits, see [configuration bytes](CONFIGURATION_BYTES.md).
+
+This guide applies to the STR8-iN/65 v1.35 RAM image. The current factory
+workflow has no board proof; the v1.34 evidence below is historical only.
 
 ```text
-BUILD/v1.34/s19/str8n-v1.34-str8-in65-bank-maint-2000.s19
+BUILD/v1.35/s19/str8n-v1.35-str8-in65-bank-maint-2000.s19
 ```
 
-It is part of the v1.34 factory migration ZIP under the consumer-facing name
+It is part of the v1.35 factory migration ZIP under the consumer-facing name
 `ARTIFACTS/STR8-iN65-BANK-MAINT-2000.s19`. The resident cold-start and EDU
-quiet-start sequence it supports is canonical v1.34; the tool's WDC-specific
+quiet-start sequence it supports is canonical v1.35; the tool's WDC-specific
 defaults and `F` command remain isolated in RAM. Load it with the running STR8
 `L` command. Its S9 record starts the menu at `$2000` automatically.
 
@@ -19,9 +23,9 @@ That run verified the exact resulting top and all four banks independently.
 ## D0 in the current migration image
 
 The current factory loader preserves the original WDCMONv2 image in opaque B0
-and installs the exact canonical STR8-N v1.34 top with an erased Bank-3
+and installs the exact canonical STR8-N v1.35 top with an erased Bank-3
 directory. This RAM maintenance image is therefore a required consumer step:
-it explicitly publishes D0 only after the first verified v1.34 boot. `J0`
+it explicitly publishes D0 only after the first verified v1.35 boot. `J0`
 correctly fails closed while D0 is absent.
 
 ## Enroll a retained WDCMONv2 Bank 0 when D0 is absent
@@ -130,7 +134,7 @@ provisions the accepted byte contract for the later HIMON scoped-search slice.
 ## Deliberately not written by this image
 
 - B3:`$FFF0` WORK and `$FFF1` top-backup role bytes are preserved exactly by
-  D0 adoption; the canonical v1.34 image initializes them to B1:E and B1:F.
+  D0 adoption; the canonical v1.35 image sets no flash WORK and backup B2:F.
 - No VTOC byte layout is implemented or frozen in STR8-N or R-YORS. Current
   planning treats a future VTOC as a projection/locator over a managed catalog,
   not bytes that this migration tool may invent. Therefore this RAM image has
