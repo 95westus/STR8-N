@@ -129,7 +129,7 @@ def check_boot_and_input():
     for bank in range(4):
         cpu, mem = boot(bank)
         for line, expected in [(b'?\r\n', b'J0-J3 ?'),
-                               (b'X\n', b'Unknown command'),
+                               (b'X\n', b'Bad command'),
                                (b'J4\r', b'Bad bank'),
                                (b'J\r', b'Bad bank'),
                                (b'J0X\r', b'Bad bank'),
@@ -206,7 +206,7 @@ def check_image_and_instructions():
     cpu, mem = boot(3)
     dis = Disassembler(cpu)
     worker = REPORT['worker']
-    for start, end in [(0xF000, SYM['V2_BANNER']),
+    for start, end in [(0xF000, SYM['V2_COMMAND_KEYS']),
                        (0x7900, worker['V2W_BITS']),
                        (worker['V2W_INIT'], worker['V2W_OK_TEXT']),
                        (worker['V2W_PUTC'], worker['V2W_END']),
@@ -261,9 +261,30 @@ def check_v135_roundtrip():
     CASES.append('actual v1.35 gated J0/J1/J2 into v2 and v2 J3 back to v1 prompt (delays bypassed)')
 
 
+def check_compact_messages():
+    messages = json.loads((ROOT / 'src/v2/str8n-v2-text.json').read_text())
+    cpu, mem = boot(0)
+    for index, message in enumerate(messages):
+        start = len(mem.tx)
+        cpu.sp = 255
+        cpu.stPushWord(0x01FF)
+        cpu.x = index
+        cpu.pc = SYM['V2_PRINT']
+        run(cpu, lambda: cpu.pc == 0x0200)
+        expected = message['text'].replace('{version}', VERSION).encode('ascii')
+        assert mem.tx[start:] == expected, (index, message)
+        assert cpu.x == index and cpu.sp == 255
+    cpu, mem = boot(0)
+    output = command(cpu, b'B1\rB\rJ\r?X\r?\r')
+    assert output.count(b'Bad bank') == 2
+    assert b'Bad command' in output and b'J0-J3 ?' in output
+    assert mem.bank == 0 and mem.ram[SYM['V2_SELECTED']] == 1
+    CASES.append('all packed messages print exactly across page boundaries; stale bank suffixes and table dispatch stay safe')
+
+
 def main():
     for test in (check_boot_and_input, check_handoffs, check_vectors,
-                 check_image_and_instructions, check_v135_roundtrip):
+                 check_image_and_instructions, check_v135_roundtrip, check_compact_messages):
         test()
         print('PASS:', CASES[-1])
     (OUT / 'test-results.json').write_text(json.dumps({

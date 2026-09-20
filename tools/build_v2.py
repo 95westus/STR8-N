@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha5.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha6.
 """
 from pathlib import Path
 import argparse
@@ -12,9 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a5'
-STEM = 'str8n-v2-alpha5'
-OUT = ROOT / 'BUILD/v2-alpha5'
+VERSION = '2.0a6'
+STEM = 'str8n-v2-alpha6'
+OUT = ROOT / 'BUILD/v2-alpha6'
 SOURCE = ROOT / 'src/v2'
 
 
@@ -97,6 +97,25 @@ def main():
                  'load-test-results.json', 'flash-test-results.json', 'config-test-results.json',
                  f'{STEM}-e000-ffff.bin', f'{STEM}-e000-ffff.s19', f'{STEM}-8000-ffff.s19'):
         (OUT / name).unlink(missing_ok=True)
+    # One ordinal per message; bit 7 marks the last character. No ROM pointer
+    # table or terminator bytes. Keep editable text readable in the source JSON.
+    messages = json.loads((SOURCE / 'str8n-v2-text.json').read_text())
+    ids, pool, names = [], bytearray(), set()
+    for index, message in enumerate(messages):
+        name = message['name']
+        raw = bytearray(message['text'].replace('{version}', VERSION).encode('ascii'))
+        if index > 255 or name in names or not raw or any(b == 0 or b >= 128 for b in raw):
+            raise ValueError('Invalid or duplicate monitor message')
+        names.add(name)
+        ids.append(f'{name:24} EQU     ${index:02X}\n')
+        raw[-1] |= 128
+        pool.extend(raw)
+    (OUT / 'asm/text-ids.inc').write_text(''.join(ids), encoding='ascii')
+    include_bytes(OUT / 'asm/text-image.inc', pool)
+    with (OUT / 'asm/text-image.inc').open('r+', encoding='ascii') as stream:
+        encoded = stream.read()
+        stream.seek(0)
+        stream.write('V2_TEXT:\n' + encoded)
     worker_mem, worker_sym = assemble('str8n-v2-worker', 0x7900, assembler, linker)
     vector_mem, vector_sym = assemble('str8n-v2-vectors', 0x7E20, assembler, linker)
     worker = dense_image(worker_mem, 0x7900, worker_sym['V2W_END'])
@@ -142,7 +161,10 @@ def main():
         assert dense_image(parsed, start, 65536) == payload
         assert entry == int.from_bytes(payload[-4:-2], 'little') == 0xF000
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    report = dict(milestone='configured-autostart', resident_bytes=len(code),
+    report = dict(milestone='compact-monitor', resident_bytes=len(code),
+                  resident_code_bytes=resident['V2_COMMAND_KEYS']-0xF000,
+                  command_table_bytes=resident['V2_TEXT']-resident['V2_COMMAND_KEYS'],
+                  text_bytes=len(pool),
                   worker_bytes=len(worker), vector_code_bytes=len(vectors),
                   free_before_vectors=0xFFE0-resident['V2_END'],
                   resident=resident, worker=worker_sym, vectors=vector_sym,

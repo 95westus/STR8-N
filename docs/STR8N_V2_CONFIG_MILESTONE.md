@@ -1,5 +1,9 @@
 # STR8-N v2-alpha5 configuration and autostart
 
+Historical milestone. The current [alpha6 size pass](STR8N_V2_COMPACT_MILESTONE.md)
+retains these commands and configuration format, with shorter messages and
+compact command-list help.
+
 Completes the required command set: B, D, M, F, G, L, I, C, J, and ?.
 No convenience commands, directory, journal, or HIMON dependency were added.
 This build has not been installed or tested on physical hardware.

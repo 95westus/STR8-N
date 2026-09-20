@@ -132,7 +132,7 @@ def check_f_boundaries():
     command(cpu, b'B3\r')
     before = bytes(mem.banks[3])
     output = send(cpu, b'F FFFF 00\rY\r')
-    assert b'Recovery sector' in output and b'STR8-N self-edit' not in output
+    assert b'Recovery' in output and b'STR8-N edit' not in output
     assert mem.banks[3][:-1] == before[:-1] and mem.banks[3][-1] == 0
     output = send(cpu, b'F EFF0 00\rY\r')
     assert b'Done' in output and mem.banks[3][0x6FF0] == 0
@@ -264,7 +264,7 @@ def check_failures_and_self():
             cpu, mem = boot_flash(resident)
             mem.rx.extend(f'F F000 {value:02X}\rY\r'.encode())
             run(cpu, lambda: cpu.pc == W['V2W_HOLD'], limit=2000000)
-            assert b'STR8-N self-edit' in mem.tx and b'Done; reset' in mem.tx
+            assert b'STR8-N edit' in mem.tx and b'Done; reset' in mem.tx
             assert mem.banks[resident][0x7000] == value
             assert mem.bank == resident and cpu.pc < 0x8000
     cpu, mem = boot_flash()

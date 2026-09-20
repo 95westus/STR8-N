@@ -1,13 +1,10 @@
 ; Monitor commands share hex parsing and bank-safe reads. M preflights the
 ; complete command before changing any application byte. No flash writes.
-V2_BAD_HEX:            LDX     #<V2_BAD_HEX_TEXT
-                        LDY     #>V2_BAD_HEX_TEXT
+V2_BAD_HEX:            LDX     #V2_BAD_HEX_TEXT
                         JMP     V2_MESSAGE
-V2_BAD_RANGE:          LDX     #<V2_BAD_RANGE_TEXT
-                        LDY     #>V2_BAD_RANGE_TEXT
+V2_BAD_RANGE:          LDX     #V2_BAD_RANGE_TEXT
                         JMP     V2_MESSAGE
-V2_PROTECTED:          LDX     #<V2_PROTECTED_TEXT
-                        LDY     #>V2_PROTECTED_TEXT
+V2_PROTECTED:          LDX     #V2_PROTECTED_TEXT
                         JMP     V2_MESSAGE
 
 V2_GET_ADDRESS:        LDX     #$01
@@ -138,11 +135,19 @@ V2_D_DONE:             JMP     V2_PROMPT
 V2_COMMAND_M:          JSR     V2_GET_ADDRESS
                         BCS     V2_M_BEGIN
                         JMP     V2_BAD_HEX
-V2_M_BEGIN:            STZ     V2_COUNT
+V2_M_BEGIN:            STZ     V2_EDIT_FLASH
+V2_EDIT_BEGIN:         STZ     V2_COUNT
 V2_M_PARSE:            JSR     V2_HEX_BYTE
                         BCS     V2_M_BYTE
                         JMP     V2_BAD_HEX
-V2_M_BYTE:             JSR     V2_MODIFIABLE_ADDRESS
+V2_M_BYTE:             LDA     V2_EDIT_FLASH
+                        BEQ     V2_EDIT_RAM
+                        LDA     V2_ADDR+1
+                        AND     #$F0
+                        CMP     V2_SECTOR
+                        BEQ     V2_M_ALLOWED
+                        JMP     V2_F_CROSS
+V2_EDIT_RAM:           JSR     V2_MODIFIABLE_ADDRESS
                         BCS     V2_M_ALLOWED
                         JMP     V2_PROTECTED
 V2_M_ALLOWED:          LDY     V2_COUNT
@@ -157,8 +162,11 @@ V2_M_NEXT:             JSR     V2_SKIP_SPACES
 ; All bytes and addresses are now valid. Keep NMI from following a partially
 ; written pointer during the short commit loop; IRQ is already disabled.
                         JSR     V2_CHECK_CANCEL
-                        BCC     V2_M_COMMIT
+                        BCC     V2_EDIT_READY
                         JMP     V2_CANCELLED
+V2_EDIT_READY:         LDA     V2_EDIT_FLASH
+                        BEQ     V2_M_COMMIT
+                        JMP     V2_F_SNAPSHOT
 V2_M_COMMIT:
                         LDA     V2_VECTOR
                         STA     V2_ADDR
