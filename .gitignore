@@ -5,5 +5,5 @@ __pycache__/
 
 # Generated books are archived in a separate local Git repository, without a remote.
 /local-books/
-/output/book/*.html
-/output/pdf/*.pdf
+/output/
+/tmp/
