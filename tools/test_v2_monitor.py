@@ -198,9 +198,28 @@ def check_all_modify_addresses():
     CASES.append('exhaustive M address policy across all 65,536 addresses')
 
 
+def check_all_hex_characters():
+    cpu, mem = boot(0)
+    valid = b'0123456789ABCDEFabcdef'
+    for carry in (0, cpu.CARRY):
+        for value in range(256):
+            cpu.sp = 255
+            cpu.stPushWord(0x01FF)
+            cpu.a, cpu.x, cpu.y = value, 0xA5, 0x39
+            cpu.p = (cpu.p & ~cpu.CARRY) | carry
+            cpu.pc = SYM['V2_HEX_NIBBLE']
+            run(cpu, lambda: cpu.pc == 0x0200, limit=30)
+            assert bool(cpu.p & cpu.CARRY) == (value in valid), value
+            if value in valid:
+                assert cpu.a == int(chr(value), 16), value
+            assert (cpu.x, cpu.y, cpu.sp) == (0xA5, 0x39, 255)
+    CASES.append('hex decoder exhaustively accepts only 0-9/A-F/a-f for either incoming carry')
+
+
 def main():
     for test in (check_bank_and_display, check_modify, check_hex_and_go, check_nmi_publication,
-                 check_review_regressions, check_all_modify_addresses, check_full_flash_display):
+                 check_review_regressions, check_all_modify_addresses, check_full_flash_display,
+                 check_all_hex_characters):
         test()
         print('PASS:', CASES[-1])
     (OUT / 'monitor-test-results.json').write_text(json.dumps({

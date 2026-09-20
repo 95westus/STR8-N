@@ -2,7 +2,7 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha7 lean-validation milestone](STR8N_V2_LEAN_MILESTONE.md)
+The independent [v2-alpha8 size milestone](STR8N_V2_SCRATCH_MILESTONE.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
 The required command set is implemented; hardware qualification remains.

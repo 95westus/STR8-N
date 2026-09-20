@@ -104,7 +104,6 @@ V2_CONFIG_ADDRESS:     JSR     V2_CONFIG_SUM
                         LDA     V2_CFG_SUM2
                         CMP     V2_CONFIG+15
                         BNE     V2_CONFIG_BAD
-                        SEC
                         RTS
 V2_CONFIG_BAD:         CLC
                         RTS
@@ -152,7 +151,7 @@ V2_AUTOSTART:          JSR     V2_CONFIG_READ
                         JSR     V2_PRINT
                         LDA     V2_CONFIG+5
                         STA     V2_TICKS
-; Linked 65C02 idle path: about 0.1004 s per tick at 8 MHz. Input extends it.
+; Linked 65C02 idle path: about 0.102 s per tick at 8 MHz. Input extends it.
 V2_AUTO_TICK:          LDY     #$31
                         LDX     #$00
 V2_AUTO_POLL:          JSR     V2_AUTO_KEY

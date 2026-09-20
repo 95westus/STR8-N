@@ -1,4 +1,4 @@
-; v2-alpha7: required monitor commands, configuration and held autostart.
+; v2-alpha8: required monitor commands, configuration and held autostart.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    START
@@ -19,12 +19,10 @@ V2_RESET:
 ; Capture the visible bank before touching peripherals. Manual-low CA2/CB2
 ; selects zero; manual-high or reset input with board pull-up selects one.
                         JSR     V2_CAPTURE_BANK
-                        LDX     #$00
-V2_CLEAR_STATE:        STZ     V2_RESIDENT+3,X
+                        LDX     #$03
+V2_CLEAR_STATE:        STZ     V2_RESIDENT,X
                         INX
-                        CPX     #$FD
                         BNE     V2_CLEAR_STATE
-                        LDX     #$00
 V2_COPY_VECTORS:       LDA     V2_VECTOR_IMAGE,X
                         STA     V2_VECTOR_CODE,X
                         INX
@@ -56,27 +54,9 @@ V2_ENTER:
                         STZ     V2_SKIP_LF
                         STZ     V2_NMI_HOLD
                         JSR     V2_RX_RESET
-                        LDA     #<V2_WORKER_IMAGE
-                        STA     V2_PTR
-                        LDA     #>V2_WORKER_IMAGE
-                        STA     V2_PTR+1
-                        STZ     V2_ADDR
-                        LDA     #>V2_WORKER
-                        STA     V2_ADDR+1
-                        LDX     #>V2_WORKER_SIZE
-                        LDY     #$00
-V2_COPY_WORKER:        CPX     #$00
-                        BNE     V2_COPY_WORKER_BYTE
-                        CPY     #<V2_WORKER_SIZE
-                        BEQ     V2_WORKER_COPIED
-V2_COPY_WORKER_BYTE:   LDA     (V2_PTR),Y
-                        STA     (V2_ADDR),Y
-                        INY
-                        BNE     V2_COPY_WORKER
-                        INC     V2_PTR+1
-                        INC     V2_ADDR+1
-                        DEX
-                        BRA     V2_COPY_WORKER
+; Build-sized absolute copies cover the worker exactly. The last 256-byte
+; window can overlap the preceding one; no ROM padding or extra RAM is used.
+                        INCLUDE "worker-copy.inc"
 V2_WORKER_COPIED:
 ; Quiet the EDU buzzer and assert its running LED. No PCR write here.
                         LDA     #$30
@@ -102,14 +82,12 @@ V2_PROMPT:
                         JSR     V2_READ_LINE
                         BCS     V2_DISPATCH
                         CPY     #$03
-                        BNE     V2_LINE_NOT_CANCEL
-                        JMP     V2_CANCELLED
+                        BEQ     V2_CANCELLED
 V2_LINE_NOT_CANCEL:
                         CPY     #$02
-                        BNE     V2_LINE_OVERFLOW
-                        JMP     V2_BAD_INPUT
+                        BEQ     V2_BAD_INPUT
 V2_LINE_OVERFLOW:
-                        JMP     V2_LINE_LONG
+                        BRA     V2_LINE_LONG
 V2_DISPATCH:           LDA     V2_LINE
                         BEQ     V2_PROMPT
                         LDX     #$09
@@ -117,7 +95,7 @@ V2_DISPATCH_FIND:      CMP     V2_COMMAND_KEYS,X
                         BEQ     V2_DISPATCH_GO
                         DEX
                         BPL     V2_DISPATCH_FIND
-                        JMP     V2_UNKNOWN
+                        BRA     V2_UNKNOWN
 V2_DISPATCH_GO:        TXA
                         ASL     A
                         TAX
@@ -125,14 +103,14 @@ V2_DISPATCH_GO:        TXA
 V2_SHOW_HELP:          LDA     V2_LINE+1
                         BNE     V2_UNKNOWN
                         LDX     #V2_HELP
-                        JMP     V2_MESSAGE
+                        BRA     V2_MESSAGE
 V2_COMMAND_B:          JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
                         PHA
                         JSR     V2_CHECK_CANCEL
                         BCC     V2_B_READY
                         PLA
-                        JMP     V2_CANCELLED
+                        BRA     V2_CANCELLED
 V2_B_READY:            PLA
                         STA     V2_SELECTED
                         LDA     #'B'
@@ -140,14 +118,13 @@ V2_B_READY:            PLA
                         LDA     V2_SELECTED
                         ORA     #'0'
                         JSR     V2_PUTC
-                        JMP     V2_PROMPT
+                        BRA     V2_PROMPT
 V2_COMMAND_J:
                         JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
                         STA     V2_TARGET
                         JSR     V2_CHECK_CANCEL
-                        BCC     V2_J_READY
-                        JMP     V2_CANCELLED
+                        BCS     V2_CANCELLED
 V2_J_READY:
                         JSR     V2_WORKER
                         LDX     #V2_BAD_VECTOR_TEXT
@@ -164,7 +141,7 @@ V2_MESSAGE:            JSR     V2_PRINT
 V2_CANCELLED:          STZ     V2_CANCEL_REQUEST
                         JSR     V2_NEWLINE
                         LDX     #V2_CANCEL_TEXT
-                        JMP     V2_MESSAGE
+                        BRA     V2_MESSAGE
 
 V2_PARSE_BANK:         LDA     V2_LINE+1
                         CMP     #'0'

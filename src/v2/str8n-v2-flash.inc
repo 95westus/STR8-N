@@ -83,7 +83,7 @@ V2_FLASH_BANK:         LDA     #'B'
                         LDA     V2_SELECTED
                         ORA     #'0'
                         JSR     V2_PUTC
-                        JMP     V2_NEWLINE
+                        BRA     V2_NEWLINE
 V2_PRINT_ADDR:         LDA     V2_ADDR+1
                         JSR     V2_HEX_OUT
                         LDA     V2_ADDR
@@ -143,15 +143,12 @@ V2_I_ALLOWED:          LDA     V2_ADDR+1
                         STA     V2_SECTOR
                         STA     V2_INSTALL_NEXT+1
                         STZ     V2_INSTALL_NEXT
-                        LDA     V2_VALUE
-                        STA     V2_INSTALL_END
-                        LDA     V2_VALUE+1
-                        STA     V2_INSTALL_END+1
+; INSTALL_END aliases the parsed VALUE high byte and survives confirmation.
                         JSR     V2_FLASH_BANK
                         JSR     V2_PRINT_ADDR
                         LDA     #'-'
                         JSR     V2_PUTC
-                        LDA     V2_INSTALL_END+1
+                        LDA     V2_INSTALL_END
                         JSR     V2_HEX_OUT
                         LDA     #$FF
                         JSR     V2_HEX_OUT
@@ -195,7 +192,7 @@ V2_I_DATA:             LDA     V2_INSTALL_DONE
                         LDA     V2_ADDR+1
                         ADC     #$00
                         BCS     V2_I_FORMAT
-                        CMP     V2_INSTALL_END+1
+                        CMP     V2_INSTALL_END
                         BCC     V2_I_STAGE
                         BNE     V2_I_FORMAT
 V2_I_STAGE:            LDY     #$00
@@ -241,7 +238,7 @@ V2_I_COMMITTED:        PHY
                         JMP     V2_LOAD_ERROR
 V2_I_CONTINUE:         LDA     V2_SECTOR
                         ORA     #$0F
-                        CMP     V2_INSTALL_END+1
+                        CMP     V2_INSTALL_END
                         BEQ     V2_I_COMPLETE
                         LDA     V2_SECTOR
                         CLC

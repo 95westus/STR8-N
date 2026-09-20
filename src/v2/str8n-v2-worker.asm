@@ -44,11 +44,9 @@ V2W_READ_BYTE:         LDA     (V2_ADDR),Y
                         INY
                         CPY     V2_COUNT
                         BNE     V2W_READ_BYTE
-                        LDA     V2_RESIDENT
-                        JMP     V2W_SELECT
+                        BRA     V2W_RETURN
 V2W_RESTORE:
-                        LDA     V2_RESIDENT
-                        JSR     V2W_SELECT
+                        JSR     V2W_RETURN
 V2W_FAIL:
                         CLC
                         RTS

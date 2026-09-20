@@ -112,6 +112,10 @@ def boot(bank, reset_pcr=False):
     assert memory.ram[0x0200:0x6900] == bytes([0x5A])*0x6700
     assert not cpu.p & cpu.DECIMAL
     assert cpu.p & cpu.INTERRUPT
+    worker_end = REPORT['worker']['V2W_END']
+    image_start = SYM['V2_WORKER_IMAGE'] - 0xE000
+    assert memory.ram[0x7900:worker_end] == IMAGE[image_start:image_start+worker_end-0x7900]
+    assert memory.ram[worker_end:0x7C00] == b'\x5a' * (0x7C00-worker_end)
     for base in (0x7E00, 0x7E10):
         assert memory.ram[base:base+10] == VSYM['V2V_DEFAULT'].to_bytes(2, 'little')*5
     return cpu, memory
@@ -208,7 +212,7 @@ def check_image_and_instructions():
     worker = REPORT['worker']
     for start, end in [(0xF000, SYM['V2_COMMAND_KEYS']),
                        (0x7900, worker['V2W_BITS']),
-                       (worker['V2W_INIT'], worker['V2W_OK_TEXT']),
+                       (worker['V2W_BEGIN'], worker['V2W_OK_TEXT']),
                        (worker['V2W_PUTC'], worker['V2W_END']),
                        (0x7E20, VSYM['V2V_END'])]:
         pc = start

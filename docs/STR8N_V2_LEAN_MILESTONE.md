@@ -1,5 +1,8 @@
 # STR8-N v2-alpha7 lean validation
 
+Historical milestone. The [alpha8 pass](STR8N_V2_SCRATCH_MILESTONE.md)
+reclaims another 142 bytes without relaxing further checks.
+
 Saves another **77 bytes**, reducing the complete monitor from **3676 to
 3599 bytes**. There are **465 bytes free** before $FFE0. Together with
 alpha6, the two passes reclaim **283 bytes** from alpha5's 3882-byte image.
