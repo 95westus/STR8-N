@@ -1,5 +1,7 @@
 ; Entire mutation, polling, verification, failure and self-edit hold run in RAM.
 ; Shared 4K desired-sector image at $6900. No polling of console mid-mutation.
+V2W_BEGIN:             LDA     V2_SELECTED
+                        JSR     V2W_SELECT
 V2W_INIT:              STZ     V2_FLASH_PTR
                         STZ     V2_BUF_PTR
                         LDA     V2_SECTOR
@@ -15,16 +17,13 @@ V2W_NEXT:              INC     V2_BUF_PTR
 V2W_NEXT_DONE:         LDA     V2_BUF_PTR+1
                         CMP     #$79
                         RTS
-V2W_BEGIN:             LDA     V2_SELECTED
-                        JSR     V2W_SELECT
-                        JMP     V2W_INIT
 V2W_SNAPSHOT:          JSR     V2W_BEGIN
 V2W_SNAP_BYTE:         LDA     (V2_FLASH_PTR)
                         STA     (V2_BUF_PTR)
                         JSR     V2W_NEXT
                         BCC     V2W_SNAP_BYTE
 V2W_RETURN:            LDA     V2_RESIDENT
-                        JMP     V2W_SELECT
+                        BRA     V2W_SELECT
 V2W_ANALYZE:           STZ     V2_ERASE
                         JSR     V2W_BEGIN
 V2W_ANALYZE_BYTE:      LDA     (V2_FLASH_PTR)

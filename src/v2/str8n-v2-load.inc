@@ -79,7 +79,6 @@ V2_SREC_FIRST:
                         BCC     V2_SREC_RETURN
                         SEC
                         SBC     #'0'
-                        CMP     #$00
                         BEQ     V2_SREC_TYPE_OK
                         CMP     #$01
                         BEQ     V2_SREC_TYPE_OK

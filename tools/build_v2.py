@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha7.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha8.
 """
 from pathlib import Path
 import argparse
@@ -12,9 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a7'
-STEM = 'str8n-v2-alpha7'
-OUT = ROOT / 'BUILD/v2-alpha7'
+VERSION = '2.0a8'
+STEM = 'str8n-v2-alpha8'
+OUT = ROOT / 'BUILD/v2-alpha8'
 SOURCE = ROOT / 'src/v2'
 
 
@@ -124,6 +124,20 @@ def main():
         raise ValueError('Milestone RAM copy limit exceeded')
     include_bytes(OUT / 'asm/worker-image.inc', worker)
     include_bytes(OUT / 'asm/vectors-image.inc', vectors)
+    # Copy fixed 256-byte windows together, overlapping the final window to
+    # cover a partial page without reading/writing outside the actual worker.
+    offsets = list(range(0, len(worker)-255, 256))
+    if len(worker) % 256:
+        offsets.append(max(0, len(worker)-256))
+    copy = ['                        LDX     #$00\n', 'V2_COPY_WORKER:\n']
+    for offset in offsets:
+        copy.extend((f'                        LDA     V2_WORKER_IMAGE+${offset:04X},X\n',
+                     f'                        STA     V2_WORKER+${offset:04X},X\n'))
+    copy.append('                        INX\n')
+    if len(worker) < 256:
+        copy.append(f'                        CPX     #${len(worker):02X}\n')
+    copy.append('                        BNE     V2_COPY_WORKER\n')
+    (OUT / 'asm/worker-copy.inc').write_text(''.join(copy), encoding='ascii')
     (OUT / 'asm/vectors-symbols.inc').write_text(''.join(
         f'{name:24} EQU     ${value:04X}\n'
         for name, value in (vector_sym | worker_sym).items()
@@ -161,7 +175,7 @@ def main():
         assert dense_image(parsed, start, 65536) == payload
         assert entry == int.from_bytes(payload[-4:-2], 'little') == 0xF000
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    report = dict(milestone='lean-validation', resident_bytes=len(code),
+    report = dict(milestone='shared-scratch', resident_bytes=len(code),
                   resident_code_bytes=resident['V2_COMMAND_KEYS']-0xF000,
                   command_table_bytes=resident['V2_TEXT']-resident['V2_COMMAND_KEYS'],
                   text_bytes=len(pool),

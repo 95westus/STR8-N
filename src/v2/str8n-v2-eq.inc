@@ -5,20 +5,22 @@ V2_FLASH_PTR            EQU     $E4
 V2_BUF_PTR              EQU     $E6
 V2_SECTOR               EQU     $EE
 V2_ERASE                EQU     $EF
-V2_SELF                 EQU     $7D1A
-V2_FLASH_ERROR          EQU     $7D1B
+; Command phases have disjoint lifetimes: edit preflight precedes SELF;
+; config checksums precede flash mutation; S19 parsing never parses tokens.
+V2_SELF                 EQU     $F5      ; V2_EDIT_FLASH after preflight
+V2_FLASH_ERROR          EQU     $F6      ; V2_CFG_SUM during mutation
 V2_FLASH_DATA           EQU     $F0
 V2_TIMEOUT              EQU     $F1
-V2_INSTALL_NEXT         EQU     $7D20
-V2_INSTALL_END          EQU     $7D22
-V2_INSTALL_DONE         EQU     $7D24
+V2_INSTALL_NEXT         EQU     $FE      ; V2_VECTOR during I
+V2_INSTALL_END          EQU     $E9      ; parsed end high byte; low is always FF
+V2_INSTALL_DONE         EQU     $E8      ; parsed end low byte after confirmation
 V2_EDIT_FLASH           EQU     $F5
 V2_RESIDENT             EQU     $7D00
 V2_SELECTED             EQU     $7D01
 V2_TARGET               EQU     $7D02
 V2_VECTOR               EQU     $FE
-V2_SKIP_LF              EQU     $7D05
-V2_LAST                 EQU     $EC
+V2_SKIP_LF              EQU     $EC
+V2_LAST                 EQU     $E8      ; D retains the parsed end in VALUE
 V2_VALUE                EQU     $E8
 V2_COUNT                EQU     $EA
 V2_DIGIT_LIMIT          EQU     $EB
@@ -29,10 +31,10 @@ V2_RX_COUNT             EQU     $F9
 V2_CANCEL_REQUEST       EQU     $F8
 V2_RX_DROP              EQU     $7D11
 V2_RX_BAD               EQU     $7D12
-V2_REC_TYPE             EQU     $7D13
+V2_REC_TYPE             EQU     $EB      ; V2_DIGIT_LIMIT during S19 input
 V2_REC_SUM              EQU     $FB
 V2_REC_HEX              EQU     $FC
-V2_RX_CHAR              EQU     $7D17
+V2_RX_CHAR              EQU     $ED
 V2_RX_QUEUE             EQU     $7D40
 V2_RX_SIZE              EQU     $40
 V2_LINE                 EQU     $7C00

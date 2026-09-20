@@ -1,6 +1,6 @@
 # STR8-N v2-alpha6 size pass
 
-Historical milestone. The current [alpha7 pass](STR8N_V2_LEAN_MILESTONE.md)
+Historical milestone. The subsequent [alpha7 pass](STR8N_V2_LEAN_MILESTONE.md)
 further shares code and relaxes three nonessential checks.
 
 Reduces the complete alpha5 monitor by **206 bytes**, from **3882 to 3676**.

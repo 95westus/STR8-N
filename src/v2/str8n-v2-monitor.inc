@@ -1,11 +1,11 @@
 ; Monitor commands share hex parsing and bank-safe reads. M preflights the
 ; complete command before changing any application byte. No flash writes.
 V2_BAD_HEX:            LDX     #V2_BAD_HEX_TEXT
-                        JMP     V2_MESSAGE
+                        BRA     V2_MESSAGE
 V2_BAD_RANGE:          LDX     #V2_BAD_RANGE_TEXT
-                        JMP     V2_MESSAGE
+                        BRA     V2_MESSAGE
 V2_PROTECTED:          LDX     #V2_PROTECTED_TEXT
-                        JMP     V2_MESSAGE
+                        BRA     V2_MESSAGE
 
 V2_GET_ADDRESS:        LDX     #$01
                         JSR     V2_HEX_WORD
@@ -27,8 +27,7 @@ V2_COMMAND_G:          JSR     V2_GET_ADDRESS
                         JSR     V2_APPLICATION_ADDRESS
                         BCC     V2_PROTECTED
 V2_G_GO:               JSR     V2_CHECK_CANCEL
-                        BCC     V2_G_READY
-                        JMP     V2_CANCELLED
+                        BCS     V2_CANCELLED
 V2_G_READY:            JMP     V2W_EXECUTE
 
 V2_COMMAND_D:          JSR     V2_GET_ADDRESS
@@ -49,10 +48,8 @@ V2_D_DEFAULT:          LDA     V2_ADDR
                         STA     V2_VALUE+1
                         BCS     V2_BAD_RANGE
 V2_D_END:              LDA     V2_VALUE
-                        STA     V2_LAST
                         CMP     V2_ADDR
                         LDA     V2_VALUE+1
-                        STA     V2_LAST+1
                         SBC     V2_ADDR+1
                         BCC     V2_BAD_RANGE
 ; Reject the whole request before any target read if it intersects I/O.
@@ -62,8 +59,7 @@ V2_D_END:              LDA     V2_VALUE
                         BEQ     V2_PROTECTED
                         LDA     V2_LAST+1
                         CMP     #$7F
-                        BCC     V2_D_ROW
-                        JMP     V2_PROTECTED
+                        BCS     V2_PROTECTED
 V2_D_ROW:              JSR     V2_CHECK_CANCEL
                         BCC     V2_D_CONTINUE
                         JMP     V2_CANCELLED
@@ -124,8 +120,7 @@ V2_D_COMPARE:          LDA     V2_LAST
                         CMP     V2_ADDR
                         LDA     V2_LAST+1
                         SBC     V2_ADDR+1
-                        BCC     V2_D_DONE
-                        JMP     V2_D_ROW
+                        BCS     V2_D_ROW
 V2_D_DONE:             JMP     V2_PROMPT
 
 V2_COMMAND_M:          JSR     V2_GET_ADDRESS
@@ -198,9 +193,7 @@ V2_ADDRESS_NO:         CLC
                         RTS
 V2_APP_ZP:             LDA     V2_ADDR
                         CMP     #$E0
-                        BCC     V2_ADDRESS_YES
-                        CLC
-                        RTS
+                        BCS     V2_ADDRESS_NO
 V2_ADDRESS_YES:        SEC
                         RTS
 
@@ -213,10 +206,7 @@ V2_MODIFIABLE_ADDRESS:
                         CMP     #$7E
                         BNE     V2_ADDRESS_NO
                         LDA     V2_ADDR
-                        CMP     #$0A
-                        BCC     V2_ADDRESS_YES
-                        SEC
-                        SBC     #$10
+                        AND     #$EF
                         CMP     #$0A
                         BCC     V2_ADDRESS_YES
                         CLC
@@ -268,21 +258,18 @@ V2_HEX_FAIL:           CLC
                         RTS
 
 ; Shared by command tokens and streaming S19. Accept either case; C=valid.
-V2_HEX_NIBBLE:         CMP     #'a'
-                        BCC     V2_HEX_UPPER
-                        CMP     #'f'+1
-                        BCS     V2_HEX_FAIL
-                        AND     #$DF
-V2_HEX_UPPER:          SEC
+V2_HEX_NIBBLE:         SEC
                         SBC     #'0'
                         BCC     V2_HEX_FAIL
                         CMP     #$0A
                         BCC     V2_HEX_NIBBLE_OK
-                        SBC     #$07
-                        CMP     #$0A
-                        BCC     V2_HEX_FAIL
-                        CMP     #$10
+; After subtracting '0', A-F/a-f differ only in bit 5. CMP above supplies
+; the carry for subtraction; a valid letter leaves carry clear for ADC.
+                        ORA     #$20
+                        SBC     #('a'-'0')
+                        CMP     #$06
                         BCS     V2_HEX_FAIL
+                        ADC     #$0A
 V2_HEX_NIBBLE_OK:      SEC
                         RTS
 

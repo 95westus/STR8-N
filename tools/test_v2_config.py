@@ -3,7 +3,7 @@ import hashlib
 import json
 
 from test_v2_boot import IMAGE, OUT, SYM, Memory, MPU, command, hold, run, waiting
-from test_v2_flash import boot_flash, send
+from test_v2_flash import boot_flash, send, records, finish
 
 CASES = []
 
@@ -185,9 +185,37 @@ def check_timing():
     CASES.append('minimum ten-tenth startup window measured at 8 MHz; no loop bypass in timing test')
 
 
+def check_command_transitions():
+    # Reuse one running monitor across every aliased scratch lifetime.
+    cpu, mem = boot_flash()
+    command(cpu, b'B1\rM 0200 12 34\r')
+    assert b'0200: 12 34' in command(cpu, b'D 0200 0201\r')
+    output = send(cpu, b'L\r' + records(0x0201, b'\xef\xbe') + finish(0x0200))
+    assert b'Entry 0200' in output and mem.ram[0x0200:0x0203] == b'\x12\xef\xbe'
+    assert b'Cancelled' in send(cpu, b'I 9000 9FFF\rN\r')
+    assert not mem.events
+    payload = bytes(range(256)) * 16
+    output = send(cpu, b'I 9000 9FFF\rY\r' + records(0x9000, payload) + finish(0x9000))
+    assert b'Done' in output and mem.banks[1][0x1000:0x2000] == payload
+    assert b'Done' in send(cpu, b'C 1 2 9000 0A\rY\r')
+    assert mem.banks[0][0x6FF0:0x7000] == config(bank=2)
+    assert b'9000: 00 01 02 03' in command(cpu, b'D 9000 9003\r')
+    assert b'Done' in send(cpu, b'F 9000 FF\rY\r')
+    assert mem.banks[1][0x1000:0x2000] == b'\xff' + payload[1:]
+    command(cpu, b'M 0200 55\r')
+    assert b'0200: 55 EF BE' in command(cpu, b'D 0200 0202\r')
+    assert b'C 01 02 9000 0A' in command(cpu, b'C\r')
+    assert mem.bank == 0 and mem.ram[SYM['V2_SELECTED']] == 1
+    mem.rx.extend(b'G 0200\r')
+    run(cpu, lambda: cpu.pc == 0x0200)
+    assert mem.bank == 1 and cpu.sp == 255
+    CASES.append('M/D/L/I/C/F/G transitions reuse scratch safely without resetting the monitor')
+
+
 def main():
     for test in (check_config_command, check_rejection_and_failure, check_validity,
-                 check_handoffs_and_reentry, check_stop_keys, check_timing):
+                 check_handoffs_and_reentry, check_stop_keys, check_timing,
+                 check_command_transitions):
         test()
         print('PASS:', CASES[-1], flush=True)
     (OUT / 'config-test-results.json').write_text(json.dumps({
