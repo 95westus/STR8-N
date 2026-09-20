@@ -1,7 +1,7 @@
-"""Build the bank-independent v2 boot milestone without touching v1 outputs.
+"""Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha1.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha2.
 """
 from pathlib import Path
 import argparse
@@ -12,7 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'BUILD/v2-alpha1'
+VERSION = '2.0a2'
+STEM = 'str8n-v2-alpha2'
+OUT = ROOT / 'BUILD/v2-alpha2'
 SOURCE = ROOT / 'src/v2'
 
 
@@ -62,6 +64,9 @@ def dense_image(memory, start, end):
 
 def assemble(name, address, assembler, linker):
     stage = OUT / 'asm'
+    # Never let a failed external tool leave us reading a previous link result.
+    for suffix in ('.obj', '.map', '.s19'):
+        (stage / (name + suffix)).unlink(missing_ok=True)
     shutil.copyfile(SOURCE / (name + '.asm'), stage / (name + '.asm'))
     subprocess.run([assembler, '-G', '-L', '-S', '-W', '-I', str(SOURCE),
                     name + '.asm'], cwd=stage, check=True)
@@ -86,6 +91,11 @@ def main():
     if not assembler or not linker:
         raise SystemExit('WDC02AS and WDCLN must be on PATH')
     (OUT / 'asm').mkdir(parents=True, exist_ok=True)
+    # Invalidate only this build's named generated artifacts, including an old
+    # optional full-bank image and test receipts. Preserve all v1/alpha1 output.
+    for name in ('build.json', 'test-results.json', 'monitor-test-results.json',
+                 f'{STEM}-e000-ffff.bin', f'{STEM}-e000-ffff.s19', f'{STEM}-8000-ffff.s19'):
+        (OUT / name).unlink(missing_ok=True)
     worker_mem, worker_sym = assemble('str8n-v2-worker', 0x7900, assembler, linker)
     vector_mem, vector_sym = assemble('str8n-v2-vectors', 0x7E20, assembler, linker)
     worker = dense_image(worker_mem, 0x7900, worker_sym['V2W_END'])
@@ -96,7 +106,8 @@ def main():
     include_bytes(OUT / 'asm/vectors-image.inc', vectors)
     (OUT / 'asm/vectors-symbols.inc').write_text(''.join(
         f'{name:24} EQU     ${value:04X}\n'
-        for name, value in vector_sym.items() if name.startswith('V2V_')) +
+        for name, value in (vector_sym | worker_sym).items()
+        if name.startswith(('V2V_', 'V2W_'))) +
         f'V2_WORKER_SIZE          EQU     ${len(worker):02X}\n' +
         f'V2_VECTOR_SIZE          EQU     ${len(vectors):02X}\n', encoding='ascii')
     memory, resident = assemble('str8n-v2', 0xF000, assembler, linker)
@@ -115,13 +126,13 @@ def main():
     for address, name in hardware.items():
         image[address-0xE000:address-0xE000+2] = vector_sym[name].to_bytes(2, 'little')
     image[0x1FFC:0x1FFE] = resident['START'].to_bytes(2, 'little')
-    (OUT / 'str8n-v2-alpha1-e000-ffff.bin').write_bytes(image)
+    (OUT / f'{STEM}-e000-ffff.bin').write_bytes(image)
     starts = [0xE000] + ([0x8000] if args.full_bank else [])
     artifacts = {}
     for start in starts:
         payload = b'\xff' * (0xE000-start) + image
-        path = OUT / f'str8n-v2-alpha1-{start:04x}-ffff.s19'
-        lines = [record('0', 0, b'STR8-N 2.0a1')]
+        path = OUT / f'{STEM}-{start:04x}-ffff.s19'
+        lines = [record('0', 0, f'STR8-N {VERSION}'.encode('ascii'))]
         lines.extend(record('1', address, payload[address-start:address-start+32])
                      for address in range(start, 65536, 32))
         lines.append(record('9', resident['START']))
@@ -130,7 +141,7 @@ def main():
         assert dense_image(parsed, start, 65536) == payload
         assert entry == int.from_bytes(payload[-4:-2], 'little') == 0xF000
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    report = dict(milestone='boot-console-jump', resident_bytes=len(code),
+    report = dict(milestone='bank-display-modify-go', resident_bytes=len(code),
                   worker_bytes=len(worker), vector_code_bytes=len(vectors),
                   free_before_vectors=0xFFE0-resident['V2_END'],
                   resident=resident, worker=worker_sym, vectors=vector_sym,
@@ -138,10 +149,10 @@ def main():
                   source_sha256={p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                                  for p in sorted(SOURCE.iterdir()) if p.is_file()})
     (OUT / 'build.json').write_text(json.dumps(report, indent=2) + '\n')
-    print(f'v2-alpha1: {len(code)} resident bytes (includes RAM images), '
+    print(f'{STEM}: {len(code)} resident bytes (includes RAM images), '
           f'{len(worker)} worker, {len(vectors)} vector code; '
           f'{report["free_before_vectors"]} bytes free before vectors')
-    print(f'Guest E-F image: {OUT / "str8n-v2-alpha1-e000-ffff.s19"}')
+    print(f'Guest E-F image: {OUT / (STEM + "-e000-ffff.s19")}')
 
 
 if __name__ == '__main__':

@@ -16,7 +16,15 @@
                         INCLUDE "str8n-v2-eq.inc"
                         CODE
 START:
-V2V_NMI:               JMP     (V2_POINTERS)
+; M briefly gates NMI dispatch while publishing a complete RAM edit, including
+; a possible two-byte NMI pointer. An NMI in that window is acknowledged by RTI.
+V2V_NMI:               PHA
+                        LDA     V2_NMI_HOLD
+                        BNE     V2V_NMI_HELD
+                        PLA
+                        JMP     (V2_POINTERS)
+V2V_NMI_HELD:          PLA
+                        RTI
 V2V_COP:               JMP     (V2_POINTERS+6)
 V2V_ABORT:             JMP     (V2_POINTERS+8)
 V2V_IRQ_BRK:

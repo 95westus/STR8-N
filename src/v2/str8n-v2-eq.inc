@@ -1,12 +1,19 @@
 ; Provisional v2 milestone ABI. All addresses are CPU bank zero on the 816.
 V2_PTR                  EQU     $E0
+V2_ADDR                 EQU     $E2
 V2_RESIDENT             EQU     $7D00
 V2_SELECTED             EQU     $7D01
 V2_TARGET               EQU     $7D02
 V2_VECTOR               EQU     $7D03
 V2_SKIP_LF              EQU     $7D05
+V2_LAST                 EQU     $7D06
+V2_VALUE                EQU     $7D08
+V2_COUNT                EQU     $7D0A
+V2_DIGIT_LIMIT          EQU     $7D0B
+V2_NMI_HOLD             EQU     $7D0C
 V2_LINE                 EQU     $7C00
 V2_LINE_LIMIT           EQU     $20
+V2_BYTES                EQU     $7C80
 V2_WORKER               EQU     $7900
 V2_POINTERS             EQU     $7E00
 V2_NATIVE_POINTERS      EQU     $7E10
