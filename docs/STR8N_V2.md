@@ -1,8 +1,11 @@
 # STR8-N v2 development
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
-preserved by tag `v1.35`. This document describes intended changes;
-the firmware still implements v1.35 behavior.
+preserved by tag `v1.35`. This document describes the complete intended v2.
+The independent [v2-alpha1 boot milestone](STR8N_V2_BOOT_MILESTONE.md) now
+implements bank-independent startup, console/help, J0-J3, and RAM interrupt
+entries. Other commands and autostart are not yet implemented. Existing v1
+sources and normal release targets retain their v1.35 behavior.
 
 ## Core boundary
 
@@ -258,8 +261,9 @@ initialize its own workspace. Audit initialization of shared hardware too.
 Validate guest-bank RESET and interrupt vectors and actual physical-reset
 bank selection. Test launch from v1.35, B/D/F accesses and restoration of v2's
 resident bank, resident configuration access, I protection, software prompt
-entry, and J3 return. Verify recovery-bank flash remains unchanged by tests
-that do not explicitly target it with F. Installation compatibility and board
+entry, and J3 return. After v1 installation/enrollment, verify recovery-bank
+flash remains unchanged by v2 tests that do not explicitly target it with F.
+Installation compatibility and board
 behavior remain unverified until implementation and tests are complete.
 
 ## Console messages
