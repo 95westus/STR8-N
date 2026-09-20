@@ -206,6 +206,42 @@ immediately, including buffered input, to cancel automatic execution for
 that boot and hold at the prompt. Timeout uses the generic `G` handoff to
 the configured bank/address, without payload recognition or signatures.
 
+## Console messages
+
+Keep errors short and descriptive in plain language. Do not require an error
+code lookup or use a bare ERR/FAIL when the cause is known. Internal status
+codes may remain for control flow; translate them at the console boundary.
+
+Examples of the intended vocabulary (final wording may be tightened):
+
+| Condition | Message |
+| --- | --- |
+| Invalid command | Unknown command |
+| Invalid hex input | Bad hex |
+| Invalid bank | Bad bank |
+| Reversed or unsupported range | Bad range |
+| Write into protected storage | Protected address |
+| F edit crosses a sector | Crosses sector |
+| Invalid S-record checksum | Bad S19 checksum |
+| Invalid S-record structure | Bad S19 record |
+| Invalid execution vector | Bad vector |
+| Flash operation exceeds its bound | Flash timeout |
+| Readback differs from requested data | Verify mismatch |
+| User cancels an operation | Cancelled |
+| Erased/invalid autostart configuration | Autostart disabled |
+
+Include bank/address or expected/actual bytes only when they help identify
+the failure, using the shared hex-output routines. Keep success output and
+prompts minimal. Mutation confirmation must still identify bank, address or
+range, proposed changes, and erase requirement as required by the F contract.
+
+Reuse identical strings and useful common fragments where this reduces the
+total linked code/data size. Avoid long banners, repeated explanations, and
+synonyms for the same condition. Prefer simple zero-terminated strings and
+existing output helpers; add no compression or token-decoding machinery
+unless measured total ROM savings justify it. Measure strings together with
+their printing code, not just their character count.
+
 ## Agreed optimization targets
 
 Share one flash worker between F, I, and configuration writes. Skip unchanged
