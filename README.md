@@ -4,6 +4,12 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
+On the `v2` branch, the independent [v2 boot milestone](docs/STR8N_V2_BOOT_MILESTONE.md)
+is under development and **has not been tested on physical hardware**.
+Use `make v2-check` for its build and host execution checks. The v1 firmware
+sources and normal release targets remain unchanged; the description below
+documents the v1 product, not the full planned v2 command set.
+
 # STR8-N v1.34
 
 STR8-N is a reset supervisor, recovery console, and guarded flash installer for
