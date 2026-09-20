@@ -89,8 +89,8 @@ def run(cpu, stop, limit=100000):
 
 def waiting(cpu):
     return (cpu.pc in (SYM['V2_GETC'], SYM['V2_GETC_WAIT'])
-            and not cpu.memory.rx and not cpu.memory.ram[0x7D0F]
-            and not cpu.memory.ram[0x7D10])
+            and not cpu.memory.rx and not cpu.memory.ram[SYM['V2_RX_COUNT']]
+            and not cpu.memory.ram[SYM['V2_CANCEL_REQUEST']])
 
 
 def hold(cpu):

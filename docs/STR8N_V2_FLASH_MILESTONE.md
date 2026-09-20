@@ -1,5 +1,9 @@
 # STR8-N v2-alpha4 flash milestone
 
+Historical milestone. The current build adds
+[configuration and autostart](STR8N_V2_CONFIG_MILESTONE.md). Alpha5 also
+corrects I's preservation of configuration to the resident bank only.
+
 Adds `F` and `I` to the [alpha3 monitor](STR8N_V2_LOAD_MILESTONE.md).
 No directory, enrollment, journal, or HIMON dependency is introduced.
 Configuration commands and automatic startup remain pending. This firmware

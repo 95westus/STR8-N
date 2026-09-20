@@ -115,10 +115,7 @@ V2_D_OUTPUT:
                         INX
                         CPX     V2_COUNT
                         BNE     V2_D_PRINT
-                        LDA     #$0D
-                        JSR     V2_PUTC
-                        LDA     #$0A
-                        JSR     V2_PUTC
+                        JSR     V2_NEWLINE
                         LDA     V2_CANCEL_REQUEST
                         BEQ     V2_D_ADVANCE
                         JMP     V2_CANCELLED
