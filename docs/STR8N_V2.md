@@ -58,7 +58,7 @@ Addresses and byte values are hexadecimal. Share a compact hex parser.
 | `L` | Load S19 into permitted RAM without running it; report the S9 entry for subsequent `G`. |
 | `I` | Install S19 into a selected legal flash bank/range without directory metadata or journal state. |
 | `J0`-`J2` | Boot the selected bank through its RESET vector after bank/vector validity checks. |
-| `J3` | Restart STR8-N through Bank 3's RESET vector. |
+| `J3` | Boot Bank 3 through its RESET vector; during guest-bank testing this starts v1.35, not v2. |
 | Configuration command (name pending) | Display/set autostart enable, flash bank, address, and delay; compute the integrity check and confirm before writing. |
 
 Initial scope excludes an assembler, disassembler, register editor, and
@@ -78,7 +78,7 @@ subsequent native-mode entry and extended addressing.
 
 Provide a fixed software monitor-entry address, assigned when the ABI is
 laid out. It bypasses autostart and holds at the prompt. A software caller
-must already have Bank 3 visible and establish the common CPU contract:
+must already have the resident monitor bank visible and establish the common CPU contract:
 on the 816, emulation mode, direct page $0000, data bank $00, and execution
 in CPU bank $00. Switch flash mappings from RAM before entering. The entry
 disables IRQs, clears decimal mode, and establishes the monitor stack; it is
@@ -86,10 +86,10 @@ not a callable return or a debugger resume operation. Preserve installed
 handler pointers on this software entry; hardware/reset-style initialization
 establishes defaults. J3 remains reset-style entry, distinct from prompt entry.
 
-Banked accesses must remain executable while Bank 3 is hidden. Use RAM
+Banked accesses must remain executable while the resident bank is hidden. Use RAM
 routines for the necessary access/selection operations and restore the monitor
 mapping before returning to its flash code. Keep the operator-selected bank
-explicit even if the prompt runs with Bank 3 physically selected.
+explicit even if the prompt runs with the resident bank physically selected.
 
 Reserve and document monitor scratch RAM, worker storage, stack usage, and
 the sector buffer. Loads and edits must not overwrite live monitor storage;
@@ -124,9 +124,9 @@ not required for monitor operation.
 
 ## Vector ownership and reset
 
-Reserve Bank 3 $FFE0-$FFFF for the complete 816 vector area, including
+Reserve the resident bank's $FFE0-$FFFF for the complete 816 vector area, including
 reserved locations; the v1 configuration pocket at $FFF0 cannot carry over.
-Bank 3's implemented emulation interrupt vectors lead to RAM entry routines.
+The resident bank's implemented emulation interrupt vectors lead to RAM entry routines.
 The 65C02/emulation IRQ-BRK entry distinguishes BRK using stacked status and
 dispatches directly through the appropriate RAM pointer.
 
@@ -155,7 +155,7 @@ overwrite monitor-owned dispatch code. Preserve installed pointers through
 L/F/G. Multi-byte updates require an interrupt-aware publication procedure;
 SEI alone does not exclude NMI.
 
-Banks 0-2 own their hardware vectors. They may point directly to their own
+Other payload banks own their hardware vectors. They may point directly to their own
 handlers or deliberately use the RAM entries. The RAM table does not
 automatically intercept interrupts when another flash bank is selected.
 
@@ -173,10 +173,11 @@ required. Changes requiring only 1-to-0 transitions program directly and
 verify. Any 0-to-1 transition requires reading the entire sector into reserved
 RAM, applying the edits, erasing, rewriting, and verifying the sector while
 preserving its unedited bytes. F accepts $8000-$FFFF in every selected flash
-bank, including Bank 3 $F000-$FFFF (STR8-N code and hardware vectors). No
-top-sector prohibition applies to F. I retains its Bank 3 top-sector limit.
+bank, including the resident monitor's $F000-$FFFF and Bank 3's code and
+hardware vectors. No top-sector prohibition applies to F. I protects the
+resident monitor's top sector and Bank 3's recovery top sector.
 
-Before a Bank 3 top-sector edit, identify that STR8-N itself is being changed
+Before a resident-bank top-sector edit, identify that STR8-N itself is being changed
 in the confirmation. The full mutation, verification, and completion/failure
 path must execute from RAM with no dependency on code or constants in the
 sector being changed. Do not return through old ROM addresses after such an
@@ -199,7 +200,7 @@ monitor prompt. The configuration command computes the integrity check so
 ordinary configuration changes do not require manual checksum calculation;
 F remains a raw editing facility.
 
-Propose Bank 3 $EFF0-$EFFF as a single 16-byte configuration block: format at
+Propose the resident bank's $EFF0-$EFFF as a single 16-byte configuration block: format at
 +0, enable at +1, flash overlay at +2, little-endian start address at +3/+4,
 delay in tenths of a second at +5, reserved bytes at +6 through +13, and an
 integrity check at +14/+15. Exact encodings and check algorithm remain open.
@@ -207,16 +208,59 @@ There is no record history, journal, or rollback.
 
 This allocation shares sector $E000-$EFFF with payload bytes. F and the
 configuration command preserve neighboring contents during erase/rewrite;
-I explicitly preserves the configuration reservation. Interrupted rewrites
+I explicitly preserves the resident bank's configuration reservation. Interrupted rewrites
 can lose that sector. The alternative is dedicating a full sector, at a
 4 KiB payload cost. The shared-sector location remains provisional with the
-rest of the address map. Keep Bank 3 $F000-$FFFF protected from I; F can edit it.
+rest of the address map. Keep the resident bank and Bank 3 $F000-$FFFF
+protected from I; F can edit either. Do not reserve configuration bytes in
+unrelated target banks merely because their addresses match.
 
 On reset, initialize STR8-N, display a valid configured target, and provide
 a minimum interrupt window whenever autostart is enabled. Recognize `S`
 immediately, including buffered input, to cancel automatic execution for
 that boot and hold at the prompt. Timeout uses the generic `G` handoff to
 the configured bank/address, without payload recognition or signatures.
+
+## Installation and testing alongside v1.35
+
+Keep v1.35 in Bank 3 and install v2 as a guest into one disposable Bank 0, 1,
+or 2 using v1.35's resident I command. Launch through v1.35's matching J
+command. V1.35 owns enrollment/journal activity in its installation process;
+v2 neither implements nor depends on that policy. Its image contains only
+payload, not v1 directory records or an installation wrapper.
+
+Maintain distinct resident-bank and operator-selected-bank state. Capture
+the actual entry bank before initialization changes the bank-control
+registers; do not depend on v1 handoff signatures. Worker returns, prompt
+entry, configuration access, and self-edit detection use the resident bank.
+Use the same binary in Banks 0-3; no per-bank monitor builds.
+
+The planned test artifact is a dense E-F S19 covering $E000-$FFFF, containing
+disabled initial autostart configuration, monitor code, and hardware vectors.
+Its S9 entry is the reset/start entry within the image. If v1.35 requires
+full-bank recovery for an incomplete enrollment, supply a deliberate dense
+8-F image with S9 matching RESET. Packaging must explicitly define lower-bank
+contents; never silently pad over existing software to make a full image.
+Preserve the chosen test bank before installation: E-F replaces both sectors.
+
+Guest-bank v2 I protects its own top sector and Bank 3's v1.35 recovery top
+sector. F retains full operator-authorized access to all banks, including
+both monitors; confirmation identifies the monitor/recovery sector affected.
+J3 boots v1.35 during this test arrangement. The fixed software prompt-entry
+address instead enters the current resident v2 and bypasses autostart.
+
+Initialize all required v2 workspace on guest reset entry; assume no useful
+v1 RAM state. Keep cross-monitor handoff code in RAM and complete the bank
+switch and jump without returning through the previous monitor. Its code
+must survive until the final jump; after that, the receiving monitor may
+initialize its own workspace. Audit initialization of shared hardware too.
+
+Validate guest-bank RESET and interrupt vectors and actual physical-reset
+bank selection. Test launch from v1.35, B/D/F accesses and restoration of v2's
+resident bank, resident configuration access, I protection, software prompt
+entry, and J3 return. Verify recovery-bank flash remains unchanged by tests
+that do not explicitly target it with F. Installation compatibility and board
+behavior remain unverified until implementation and tests are complete.
 
 ## Console messages
 
@@ -305,7 +349,8 @@ size and runtime behavior before claiming any optimization savings.
    paths and commands, and define generic reset selection behavior.
 3. Simplify resident installation to bank/range selection and payload writing;
    remove metadata prompts, directory writes, and journal recovery machinery.
-   Define Bank 3 S9 entry handling independently of directory metadata.
+   Define S9 entry handling independently of directory metadata and implement
+   resident-bank tracking and guest-bank test packaging.
 4. Remove unused worker modes, directory storage reservations, and helpers;
    relink and measure actual ROM savings. Audit public ABI and RAM contracts,
    including handler ownership and reserved monitor/sector-buffer storage.
