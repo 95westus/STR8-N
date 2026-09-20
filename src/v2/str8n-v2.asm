@@ -1,4 +1,4 @@
-; v2-alpha3: B/D/M/G/L and J0-J3; safe Ctrl-C cancellation. No flash writes.
+; v2-alpha4: B/D/M/G/L/F/I and J0-J3; safe Ctrl-C cancellation.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    START
@@ -53,12 +53,28 @@ V2_ENTER:
                         STZ     V2_SKIP_LF
                         STZ     V2_NMI_HOLD
                         JSR     V2_RX_RESET
-                        LDX     #$00
-V2_COPY_WORKER:        LDA     V2_WORKER_IMAGE,X
-                        STA     V2_WORKER,X
-                        INX
-                        CPX     #V2_WORKER_SIZE
+                        LDA     #<V2_WORKER_IMAGE
+                        STA     V2_PTR
+                        LDA     #>V2_WORKER_IMAGE
+                        STA     V2_PTR+1
+                        STZ     V2_ADDR
+                        LDA     #>V2_WORKER
+                        STA     V2_ADDR+1
+                        LDX     #>V2_WORKER_SIZE
+                        LDY     #$00
+V2_COPY_WORKER:        CPX     #$00
+                        BNE     V2_COPY_WORKER_BYTE
+                        CPY     #<V2_WORKER_SIZE
+                        BEQ     V2_WORKER_COPIED
+V2_COPY_WORKER_BYTE:   LDA     (V2_PTR),Y
+                        STA     (V2_ADDR),Y
+                        INY
                         BNE     V2_COPY_WORKER
+                        INC     V2_PTR+1
+                        INC     V2_ADDR+1
+                        DEX
+                        BRA     V2_COPY_WORKER
+V2_WORKER_COPIED:
 ; Quiet the EDU buzzer and assert its running LED. No PCR write here.
                         LDA     #$30
                         STA     V2_PIA_CRA
@@ -115,8 +131,14 @@ V2_TRY_G:              CMP     #'G'
                         BNE     V2_TRY_L
                         JMP     V2_COMMAND_G
 V2_TRY_L:              CMP     #'L'
-                        BNE     V2_COMMAND_J
+                        BNE     V2_TRY_F
                         JMP     V2_COMMAND_L
+V2_TRY_F:              CMP     #'F'
+                        BNE     V2_TRY_I
+                        JMP     V2_COMMAND_F
+V2_TRY_I:              CMP     #'I'
+                        BNE     V2_COMMAND_J
+                        JMP     V2_COMMAND_I
 V2_COMMAND_B:          JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
                         PHA
@@ -184,6 +206,7 @@ V2_BANK_FAIL:          CLC
                         INCLUDE "str8n-v2-monitor.inc"
                         INCLUDE "str8n-v2-load.inc"
                         INCLUDE "str8n-v2-input.inc"
+                        INCLUDE "str8n-v2-flash.inc"
 
 V2_CAPTURE_BANK:
                         LDX     #$00
@@ -355,9 +378,9 @@ V2_TX_CANCEL:
                         PLA
                         RTS
 
-V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a3 B",$00
+V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a4 B",$00
 V2_PROMPT_TEXT:        DB      $0D,$0A,"> ",$00
-V2_HELP:               DB      "B0-B3 D addr [end] M addr bytes G addr L J0-J3 ?",$00
+V2_HELP:               DB      "B0-B3 D addr [end] M/F addr bytes G addr L I start end J0-J3 ?",$00
 V2_BAD_BANK_TEXT:      DB      "Bad bank",$00
 V2_BAD_VECTOR_TEXT:    DB      "Bad vector",$00
 V2_LONG_TEXT:          DB      "Line too long",$00
@@ -371,6 +394,7 @@ V2_S19_TEXT:           DB      "S19",$0D,$0A,$00
 V2_S19_BAD_TEXT:       DB      "Bad S19 record",$00
 V2_S19_SUM_TEXT:       DB      "Bad S19 checksum",$00
 V2_LOADED_TEXT:        DB      "Loaded; entry ",$00
+                        INCLUDE "str8n-v2-flash-text.inc"
 V2_WORKER_IMAGE:
                         INCLUDE "worker-image.inc"
 V2_VECTOR_IMAGE:

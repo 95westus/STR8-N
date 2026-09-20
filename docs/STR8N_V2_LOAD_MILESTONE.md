@@ -1,5 +1,8 @@
 # STR8-N v2-alpha3 load and cancellation milestone
 
+Historical milestone. The current build adds
+[F/I flash editing and installation](STR8N_V2_FLASH_MILESTONE.md).
+
 Adds load-only `L` and safe Ctrl-C to the [B/D/M/G/J monitor](STR8N_V2_MONITOR_MILESTONE.md).
 The same binary runs in each bank on either CPU, with the 816 in emulation
 mode. F/I, configuration, and autostart remain pending. This build has not
