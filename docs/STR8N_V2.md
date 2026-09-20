@@ -22,7 +22,8 @@ SYS/COR/BIO/PIN call chain or dependency hierarchy.
 
 Retain console and recovery RAM loading, bank selection and boot handoff,
 and a basic flash installer. Retain S19 checksums, address bounds,
-protected-top enforcement, and bounded flash completion polling.
+protected-top enforcement for I, and bounded flash completion polling. F is
+the operator's explicit flash editor and may modify the monitor sector.
 Do not remove additional verification merely to meet a size estimate.
 
 Remove directory descriptions, enrollment, persistent transaction state, and
@@ -171,7 +172,18 @@ display the selected bank, addresses, old/new bytes, and whether erase is
 required. Changes requiring only 1-to-0 transitions program directly and
 verify. Any 0-to-1 transition requires reading the entire sector into reserved
 RAM, applying the edits, erasing, rewriting, and verifying the sector while
-preserving its unedited bytes. Keep the STR8-N recovery sector protected.
+preserving its unedited bytes. F accepts $8000-$FFFF in every selected flash
+bank, including Bank 3 $F000-$FFFF (STR8-N code and hardware vectors). No
+top-sector prohibition applies to F. I retains its Bank 3 top-sector limit.
+
+Before a Bank 3 top-sector edit, identify that STR8-N itself is being changed
+in the confirmation. The full mutation, verification, and completion/failure
+path must execute from RAM with no dependency on code or constants in the
+sector being changed. Do not return through old ROM addresses after such an
+edit. Define a RAM-resident completion path that reports the result and holds
+for explicit reset/recovery. Reassess the worker-size target for this path.
+An edit may make STR8-N or its vectors unusable; recovery can require an
+external programmer. This is part of F's operator-controlled capability.
 
 Inserting a BRK byte ($00) permits direct programming; restoring the original
 instruction generally needs erase/rewrite. There is no journal or rollback:
@@ -180,7 +192,7 @@ an interruption during erase/rewrite can destroy the affected sector.
 ## Autostart contract
 
 Use a small fixed configuration location for enabled/disabled state, bank,
-execution address, and delay. Place it outside the protected STR8-N code
+execution address, and delay. Place it outside the STR8-N code
 sector so `F` can edit it; configuration edits preserve neighboring contents
 under the same sector-edit contract. Erased or invalid settings stay at the
 monitor prompt. The configuration command computes the integrity check so
@@ -198,7 +210,7 @@ configuration command preserve neighboring contents during erase/rewrite;
 I explicitly preserves the configuration reservation. Interrupted rewrites
 can lose that sector. The alternative is dedicating a full sector, at a
 4 KiB payload cost. The shared-sector location remains provisional with the
-rest of the address map. Keep Bank 3 $F000-$FFFF protected from F/I.
+rest of the address map. Keep Bank 3 $F000-$FFFF protected from I; F can edit it.
 
 On reset, initialize STR8-N, display a valid configured target, and provide
 a minimum interrupt window whenever autostart is enabled. Recognize `S`
@@ -247,7 +259,7 @@ their printing code, not just their character count.
 Share one flash worker between F, I, and configuration writes. Skip unchanged
 bytes and erase only when requested changes require a 0-to-1 transition.
 After erase, program only non-$FF bytes, then verify the entire reconstructed
-sector. Retain bounds, protected-top enforcement, and bounded completion
+sector. Retain bounds, I's protected-top enforcement, and bounded completion
 polling. Use the same flash-edit path for configuration updates; I preserves
 the configuration bytes while constructing the affected sector image.
 
