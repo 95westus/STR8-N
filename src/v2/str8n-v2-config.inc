@@ -90,12 +90,6 @@ V2_CONFIG_CHECK:       LDA     V2_CONFIG
                         LDA     V2_CONFIG+5
                         CMP     #$0A
                         BCC     V2_CONFIG_BAD
-                        LDX     #$0D
-V2_CONFIG_RESERVED:    LDA     V2_CONFIG,X
-                        BNE     V2_CONFIG_BAD
-                        DEX
-                        CPX     #$06
-                        BCS     V2_CONFIG_RESERVED
                         LDA     V2_CONFIG+3
                         STA     V2_ADDR
                         LDA     V2_CONFIG+4

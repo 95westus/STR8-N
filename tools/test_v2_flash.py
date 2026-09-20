@@ -228,7 +228,8 @@ def check_cancellation():
     # Cancellation while an erase/rewrite is active must restore all neighbors.
     mem.banks[0][:4096] = b'\x33'*4096
     mem.rx.extend(b'F 8123 FF\rY\r')
-    run(cpu, lambda: cpu.pc == W['V2W_ERASE_CHECK'], limit=300000)
+    run(cpu, lambda: cpu.pc == W['V2W_PROGRAM'], limit=300000)
+    assert mem.events[0][0] == 'erase'
     mem.rx.extend(b'\x03')
     run(cpu, lambda: waiting(cpu), limit=2000000)
     expected = bytearray(b'\x33'*4096); expected[0x123] = 255
@@ -254,11 +255,24 @@ def check_failures_and_self():
         if fault == 'erase_verify':
             mem.banks[1][0] = 0
             line = b'F 8000 FF\rY\r'
+        elif fault == 'verify':
+            # Damage an earlier, already-visited byte; only the final sweep
+            # can detect this after the programmed byte polls successfully.
+            line = b'F 8001 00\rY\r'
         else:
             line = b'F 8000 00\rY\r'
         output = send(cpu, line, limit=3000000)
         assert text in output, output
         assert mem.bank == 0 and not mem.busy and not mem.ram[SYM['V2_NMI_HOLD']]
+    # An erase defect that already matches the desired image need not abort.
+    # All differing bytes must still be programmable, and the whole result exact.
+    cpu, mem = boot_flash()
+    command(cpu, b'B1\r')
+    mem.banks[1][:4096] = b'\x00' * 4096
+    mem.fault = 'erase_verify'
+    output = send(cpu, b'F 8000 FF\rY\r')
+    assert b'Done' in output
+    assert mem.banks[1][:4096] == b'\xff' + b'\x00' * 4095
     for resident in range(4):
         for value in (0, 255):
             cpu, mem = boot_flash(resident)

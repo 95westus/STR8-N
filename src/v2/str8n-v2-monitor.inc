@@ -89,11 +89,7 @@ V2_D_FULL:             PLA
 V2_D_READ:             LDA     V2_ADDR+1
                         BPL     V2_D_HEADER
                         JSR     V2W_READ
-V2_D_HEADER:
-                        LDA     V2_ADDR+1
-                        JSR     V2_HEX_OUT
-                        LDA     V2_ADDR
-                        JSR     V2_HEX_OUT
+V2_D_HEADER:           JSR     V2_PRINT_ADDR
                         LDA     #':'
                         JSR     V2_PUTC
                         LDX     #$00
@@ -172,16 +168,23 @@ V2_M_COMMIT:
                         STA     V2_ADDR
                         LDA     V2_VECTOR+1
                         STA     V2_ADDR+1
-                        LDA     #$01
+                        LDX     #$80
+                        JSR     V2_COPY_BYTES
+                        JMP     V2_PROMPT
+; M/L share the gated, non-cancellable copy of a fully checked unit.
+; IN X=source offset in LINE, ADDR=destination, COUNT=length (nonzero).
+V2_COPY_BYTES:         LDA     #$01
                         STA     V2_NMI_HOLD
                         LDY     #$00
-V2_M_WRITE:            LDA     V2_BYTES,Y
+V2_M_WRITE:
+V2_LOAD_COPY:          LDA     V2_LINE,X
                         STA     (V2_ADDR),Y
+                        INX
                         INY
                         CPY     V2_COUNT
-                        BNE     V2_M_WRITE
+                        BNE     V2_LOAD_COPY
                         STZ     V2_NMI_HOLD
-                        JMP     V2_PROMPT
+                        RTS
 
 ; IN address in V2_ADDR; C=1 only for ordinary application RAM.
 V2_APPLICATION_ADDRESS:
@@ -246,14 +249,13 @@ V2_HEX_NEXT:           LDA     V2_LINE,X
                         JSR     V2_HEX_NIBBLE
                         BCC     V2_HEX_FAIL
 V2_HEX_DIGIT:          PHA
-                        ASL     V2_VALUE
+                        PHX
+                        LDX     #$04
+V2_HEX_SHIFT:         ASL     V2_VALUE
                         ROL     V2_VALUE+1
-                        ASL     V2_VALUE
-                        ROL     V2_VALUE+1
-                        ASL     V2_VALUE
-                        ROL     V2_VALUE+1
-                        ASL     V2_VALUE
-                        ROL     V2_VALUE+1
+                        DEX
+                        BNE     V2_HEX_SHIFT
+                        PLX
                         PLA
                         ORA     V2_VALUE
                         STA     V2_VALUE

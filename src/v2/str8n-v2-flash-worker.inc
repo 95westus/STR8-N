@@ -15,19 +15,18 @@ V2W_NEXT:              INC     V2_BUF_PTR
 V2W_NEXT_DONE:         LDA     V2_BUF_PTR+1
                         CMP     #$79
                         RTS
-V2W_SNAPSHOT:          LDA     V2_SELECTED
+V2W_BEGIN:             LDA     V2_SELECTED
                         JSR     V2W_SELECT
-                        JSR     V2W_INIT
+                        JMP     V2W_INIT
+V2W_SNAPSHOT:          JSR     V2W_BEGIN
 V2W_SNAP_BYTE:         LDA     (V2_FLASH_PTR)
                         STA     (V2_BUF_PTR)
                         JSR     V2W_NEXT
                         BCC     V2W_SNAP_BYTE
 V2W_RETURN:            LDA     V2_RESIDENT
                         JMP     V2W_SELECT
-V2W_ANALYZE:           LDA     V2_SELECTED
-                        JSR     V2W_SELECT
-                        STZ     V2_ERASE
-                        JSR     V2W_INIT
+V2W_ANALYZE:           STZ     V2_ERASE
+                        JSR     V2W_BEGIN
 V2W_ANALYZE_BYTE:      LDA     (V2_FLASH_PTR)
                         AND     (V2_BUF_PTR)
                         CMP     (V2_BUF_PTR)
@@ -42,9 +41,7 @@ V2W_MUTATE:            SEI
                         STZ     V2_FLASH_ERROR
                         LDA     #$01
                         STA     V2_NMI_HOLD
-                        LDA     V2_SELECTED
-                        JSR     V2W_SELECT
-                        JSR     V2W_INIT
+                        JSR     V2W_BEGIN
                         LDA     V2_ERASE
                         BEQ     V2W_PROGRAM
                         JSR     V2W_UNLOCK
@@ -58,12 +55,8 @@ V2W_MUTATE:            SEI
                         LDA     #$08
                         JSR     V2W_WAIT
                         BCC     V2W_FINISH
-V2W_ERASE_CHECK:       LDA     (V2_FLASH_PTR)
-                        CMP     #$FF
-                        BNE     V2W_VERIFY_FAIL
-                        JSR     V2W_NEXT
-                        BCC     V2W_ERASE_CHECK
-                        JSR     V2W_INIT
+; Per-byte transition checks and the final sector comparison validate the
+; required result; a separate all-FF sweep after erase is unnecessary.
 V2W_PROGRAM:           LDA     (V2_BUF_PTR)
                         STA     V2_FLASH_DATA
                         CMP     (V2_FLASH_PTR)

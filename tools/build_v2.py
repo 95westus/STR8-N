@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha6.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha7.
 """
 from pathlib import Path
 import argparse
@@ -12,9 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a6'
-STEM = 'str8n-v2-alpha6'
-OUT = ROOT / 'BUILD/v2-alpha6'
+VERSION = '2.0a7'
+STEM = 'str8n-v2-alpha7'
+OUT = ROOT / 'BUILD/v2-alpha7'
 SOURCE = ROOT / 'src/v2'
 
 
@@ -161,7 +161,7 @@ def main():
         assert dense_image(parsed, start, 65536) == payload
         assert entry == int.from_bytes(payload[-4:-2], 'little') == 0xF000
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    report = dict(milestone='compact-monitor', resident_bytes=len(code),
+    report = dict(milestone='lean-validation', resident_bytes=len(code),
                   resident_code_bytes=resident['V2_COMMAND_KEYS']-0xF000,
                   command_table_bytes=resident['V2_TEXT']-resident['V2_COMMAND_KEYS'],
                   text_bytes=len(pool),

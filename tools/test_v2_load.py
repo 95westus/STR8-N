@@ -13,6 +13,10 @@ def rec(kind, address, data=b''):
 
 
 def check_load():
+    cpu, mem = boot(0)
+    before = bytes(mem.ram[0x0200:0x6900])
+    assert b'Entry 0200' in command(cpu, b'L\r' + rec('9', 0x0200))
+    assert mem.ram[0x0200:0x6900] == before and mem.bank == 0
     for bank in range(4):
         cpu, mem = boot(bank)
         data = bytes(range(252))
@@ -36,7 +40,7 @@ def check_rejections():
     cases = [(bad_checksum, b'Bad S19 checksum'),
              (b'S1030200FA\r', b'Bad S19 record'),  # empty S1
              (rec('9', 0x0200, b'X'), b'Bad S19 record'),
-             (rec('9', 0x0200), b'Bad S19 record'),
+             (rec('9', 0x0200)[:-4] + b'00\r\n', b'Bad S19 checksum'),
              (b'S2030200FA\r', b'Bad S19 record'),
              (b'S1020200\r', b'Bad S19 record'),
              (b'S1040200GG00\r', b'Bad S19 record'),

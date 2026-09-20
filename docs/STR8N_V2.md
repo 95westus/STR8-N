@@ -2,7 +2,7 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha6 compact monitor milestone](STR8N_V2_COMPACT_MILESTONE.md)
+The independent [v2-alpha7 lean-validation milestone](STR8N_V2_LEAN_MILESTONE.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
 The required command set is implemented; hardware qualification remains.
@@ -221,7 +221,8 @@ Use the resident bank's $EFF0-$EFFF as a single 16-byte configuration block: for
 +0, enable at +1, flash overlay at +2, little-endian start address at +3/+4,
 delay in tenths of a second at +5, reserved bytes at +6 through +13, and an
 integrity check at +14/+15. Format is 1; enable is 0/1, bank 0-3, delay
-$0A-$FF, and reserved bytes are zero. The two integrity bytes are accumulated
+$0A-$FF. C writes zero reserved bytes; readers ignore their values but still
+include them in the integrity check. The two integrity bytes are accumulated
 8-bit sums modulo 256 over bytes 0-13, as detailed in the alpha5 guide.
 There is no record history, journal, or rollback.
 

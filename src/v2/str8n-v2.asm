@@ -1,4 +1,4 @@
-; v2-alpha6: required monitor commands, configuration and held autostart.
+; v2-alpha7: required monitor commands, configuration and held autostart.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    START

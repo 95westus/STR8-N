@@ -4,8 +4,7 @@ V2_COMMAND_L:          LDX     #$01
                         JSR     V2_SKIP_SPACES
                         BEQ     V2_LOAD_BEGIN
                         JMP     V2_BAD_HEX
-V2_LOAD_BEGIN:         STZ     V2_LOAD_HAVE_DATA
-                        LDX     #V2_S19_TEXT
+V2_LOAD_BEGIN:         LDX     #V2_S19_TEXT
                         JSR     V2_PRINT
 V2_LOAD_NEXT:          JSR     V2_SREC
                         BCC     V2_LOAD_ERROR
@@ -25,31 +24,14 @@ V2_LOAD_NEXT:          JSR     V2_SREC
                         BCS     V2_LOAD_RANGE
                         CMP     #$69
                         BCS     V2_LOAD_RANGE
-; Do not poll inside a validated record's copy. Finish it before cancelling.
-                        LDA     #$01
-                        STA     V2_NMI_HOLD
-                        LDY     #$00
-V2_LOAD_COPY:          LDA     V2_LINE,Y
-                        STA     (V2_ADDR),Y
-                        INY
-                        CPY     V2_COUNT
-                        BNE     V2_LOAD_COPY
-                        STZ     V2_NMI_HOLD
-                        LDA     #$01
-                        STA     V2_LOAD_HAVE_DATA
+                        LDX     #$00
+                        JSR     V2_COPY_BYTES
                         BRA     V2_LOAD_NEXT
-V2_LOAD_DONE:          LDA     V2_LOAD_HAVE_DATA
-                        BEQ     V2_LOAD_FORMAT
-                        LDX     #V2_LOADED_TEXT
+V2_LOAD_DONE:          LDX     #V2_LOADED_TEXT
                         JSR     V2_PRINT
-                        LDA     V2_ADDR+1
-                        JSR     V2_HEX_OUT
-                        LDA     V2_ADDR
-                        JSR     V2_HEX_OUT
+                        JSR     V2_PRINT_ADDR
                         JMP     V2_PROMPT
 V2_LOAD_RANGE:         LDA     #$04
-                        BRA     V2_LOAD_ERROR
-V2_LOAD_FORMAT:        LDA     #$01
 V2_LOAD_ERROR:         PHA
                         JSR     V2_LOAD_DRAIN
                         PLA
