@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha4.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha5.
 """
 from pathlib import Path
 import argparse
@@ -12,9 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a4'
-STEM = 'str8n-v2-alpha4'
-OUT = ROOT / 'BUILD/v2-alpha4'
+VERSION = '2.0a5'
+STEM = 'str8n-v2-alpha5'
+OUT = ROOT / 'BUILD/v2-alpha5'
 SOURCE = ROOT / 'src/v2'
 
 
@@ -94,7 +94,7 @@ def main():
     # Invalidate only this build's named generated artifacts, including an old
     # optional full-bank image and test receipts. Preserve earlier milestones.
     for name in ('build.json', 'test-results.json', 'monitor-test-results.json',
-                 'load-test-results.json', 'flash-test-results.json',
+                 'load-test-results.json', 'flash-test-results.json', 'config-test-results.json',
                  f'{STEM}-e000-ffff.bin', f'{STEM}-e000-ffff.s19', f'{STEM}-8000-ffff.s19'):
         (OUT / name).unlink(missing_ok=True)
     worker_mem, worker_sym = assemble('str8n-v2-worker', 0x7900, assembler, linker)
@@ -117,7 +117,7 @@ def main():
         raise ValueError('Resident overlaps 816 vectors')
     image = bytearray(b'\xff' * 8192)
     image[0x1000:0x1000+len(code)] = code
-    # Entire configuration remains erased: this milestone always holds.
+    # Factory configuration remains erased, so a fresh image holds.
     # Reserved vector words remain FF on both CPUs.
     hardware = {0xFFE4: 'V2V_NATIVE_COP', 0xFFE6: 'V2V_NATIVE_BRK',
                 0xFFE8: 'V2V_NATIVE_ABORT', 0xFFEA: 'V2V_NATIVE_NMI',
@@ -142,7 +142,7 @@ def main():
         assert dense_image(parsed, start, 65536) == payload
         assert entry == int.from_bytes(payload[-4:-2], 'little') == 0xF000
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    report = dict(milestone='flash-edit-and-install', resident_bytes=len(code),
+    report = dict(milestone='configured-autostart', resident_bytes=len(code),
                   worker_bytes=len(worker), vector_code_bytes=len(vectors),
                   free_before_vectors=0xFFE0-resident['V2_END'],
                   resident=resident, worker=worker_sym, vectors=vector_sym,

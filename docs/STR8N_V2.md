@@ -2,10 +2,11 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha4 flash milestone](STR8N_V2_FLASH_MILESTONE.md)
-implements bank-independent startup, B/D/M/G/L/F/I, safe Ctrl-C cancellation,
-console/help, J0-J3, and RAM interrupt entries. Configuration commands and
-autostart are not yet implemented. Existing v1
+The independent [v2-alpha5 configuration milestone](STR8N_V2_CONFIG_MILESTONE.md)
+implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
+console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
+The required command set is implemented; hardware qualification remains.
+Existing v1
 sources and normal release targets retain their v1.35 behavior.
 
 ## Core boundary
@@ -13,7 +14,7 @@ sources and normal release targets retain their v1.35 behavior.
 Ctrl-C cancels the current monitor operation at a safe boundary. Discard an
 unsubmitted command or incomplete load record; finish an already committing
 RAM edit or validated load record. Completed writes remain in place. For
-F/I, finish the active flash mutation and verification from RAM before
+F/I/C, finish the active flash mutation and verification from RAM before
 honoring cancellation; never abandon an erased sector awaiting restoration.
 Once G/J transfers control, the application owns input and cancellation.
 
@@ -70,7 +71,7 @@ Addresses and byte values are hexadecimal. Share a compact hex parser.
 | `I start end` | Install dense ascending S19 into a selected legal flash bank and inclusive sector-aligned range, without directory metadata or journal state. |
 | `J0`-`J2` | Boot the selected bank through its RESET vector after bank/vector validity checks. |
 | `J3` | Boot Bank 3 through its RESET vector; during guest-bank testing this starts v1.35, not v2. |
-| Configuration command (name pending) | Display/set autostart enable, flash bank, address, and delay; compute the integrity check and confirm before writing. |
+| `C [on bank addr delay]` | Show/set the resident bank's autostart configuration, compute its integrity check, and confirm before writing. All values are hex; delay is $0A-$FF tenths at nominal 8 MHz. |
 
 Initial scope excludes an assembler, disassembler, register editor, and
 debugger. The operator may install their own BRK/IRQ handling and use `F`
@@ -216,10 +217,12 @@ monitor prompt. The configuration command computes the integrity check so
 ordinary configuration changes do not require manual checksum calculation;
 F remains a raw editing facility.
 
-Propose the resident bank's $EFF0-$EFFF as a single 16-byte configuration block: format at
+Use the resident bank's $EFF0-$EFFF as a single 16-byte configuration block: format at
 +0, enable at +1, flash overlay at +2, little-endian start address at +3/+4,
 delay in tenths of a second at +5, reserved bytes at +6 through +13, and an
-integrity check at +14/+15. Exact encodings and check algorithm remain open.
+integrity check at +14/+15. Format is 1; enable is 0/1, bank 0-3, delay
+$0A-$FF, and reserved bytes are zero. The two integrity bytes are accumulated
+8-bit sums modulo 256 over bytes 0-13, as detailed in the alpha5 guide.
 There is no record history, journal, or rollback.
 
 This allocation shares sector $E000-$EFFF with payload bytes. F and the
@@ -232,9 +235,10 @@ protected from I; F can edit either. Do not reserve configuration bytes in
 unrelated target banks merely because their addresses match.
 
 On reset, initialize STR8-N, display a valid configured target, and provide
-a minimum interrupt window whenever autostart is enabled. Recognize `S`
+a minimum one-second input window at nominal 8 MHz whenever autostart is enabled. Recognize `S` or Ctrl-C
 immediately, including buffered input, to cancel automatic execution for
-that boot and hold at the prompt. Timeout uses the generic `G` handoff to
+that boot and hold at the prompt. Software prompt entry at $F003 always holds.
+Timeout uses the generic `G` handoff to
 the configured bank/address, without payload recognition or signatures.
 
 ## Installation and testing alongside v1.35

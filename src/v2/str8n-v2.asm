@@ -1,4 +1,4 @@
-; v2-alpha4: B/D/M/G/L/F/I and J0-J3; safe Ctrl-C cancellation.
+; v2-alpha5: required monitor commands, configuration and held autostart.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    START
@@ -40,11 +40,13 @@ V2_INIT_POINTERS:      LDA     #<V2V_DEFAULT
                         INX
                         CPX     #$0A
                         BNE     V2_INIT_POINTERS
+                        INC     V2_AUTO
                         BRA     V2_ENTER
 
 V2_REENTER:
                         SEI
                         CLD
+                        STZ     V2_AUTO
                         LDX     #$FF
                         TXS
 ; No reset initialization of RAM vectors on software prompt entry.
@@ -91,6 +93,9 @@ V2_WORKER_COPIED:
                         LDA     V2_RESIDENT
                         ORA     #'0'
                         JSR     V2_PUTC
+                        LDA     V2_AUTO
+                        BEQ     V2_PROMPT
+                        JSR     V2_AUTOSTART
 V2_PROMPT:
                         LDX     #<V2_PROMPT_TEXT
                         LDY     #>V2_PROMPT_TEXT
@@ -137,8 +142,11 @@ V2_TRY_F:              CMP     #'F'
                         BNE     V2_TRY_I
                         JMP     V2_COMMAND_F
 V2_TRY_I:              CMP     #'I'
-                        BNE     V2_COMMAND_J
+                        BNE     V2_TRY_C
                         JMP     V2_COMMAND_I
+V2_TRY_C:              CMP     #'C'
+                        BNE     V2_COMMAND_J
+                        JMP     V2_COMMAND_C
 V2_COMMAND_B:          JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
                         PHA
@@ -182,10 +190,7 @@ V2_UNKNOWN:            LDX     #<V2_UNKNOWN_TEXT
 V2_MESSAGE:            JSR     V2_PRINT
                         JMP     V2_PROMPT
 V2_CANCELLED:          STZ     V2_CANCEL_REQUEST
-                        LDA     #$0D
-                        JSR     V2_PUTC
-                        LDA     #$0A
-                        JSR     V2_PUTC
+                        JSR     V2_NEWLINE
                         LDX     #<V2_CANCEL_TEXT
                         LDY     #>V2_CANCEL_TEXT
                         JMP     V2_MESSAGE
@@ -207,6 +212,7 @@ V2_BANK_FAIL:          CLC
                         INCLUDE "str8n-v2-load.inc"
                         INCLUDE "str8n-v2-input.inc"
                         INCLUDE "str8n-v2-flash.inc"
+                        INCLUDE "str8n-v2-config.inc"
 
 V2_CAPTURE_BANK:
                         LDX     #$00
@@ -302,10 +308,7 @@ V2_LINE_END:           STZ     V2_LINE,X
 ; Clear stale suffixes so J with a missing argument cannot reuse an old bank.
                         INX
                         STZ     V2_LINE,X
-                        LDA     #$0D
-                        JSR     V2_PUTC
-                        LDA     #$0A
-                        JSR     V2_PUTC
+                        JSR     V2_NEWLINE
                         CPY     #$01
                         BCS     V2_LINE_FAIL
                         SEC
@@ -378,9 +381,9 @@ V2_TX_CANCEL:
                         PLA
                         RTS
 
-V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a4 B",$00
+V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a5 B",$00
 V2_PROMPT_TEXT:        DB      $0D,$0A,"> ",$00
-V2_HELP:               DB      "B0-B3 D addr [end] M/F addr bytes G addr L I start end J0-J3 ?",$00
+V2_HELP:               DB      "B0-B3 D addr [end] M/F addr bytes G addr L I start end C [on bank addr delay] J0-J3 ?",$00
 V2_BAD_BANK_TEXT:      DB      "Bad bank",$00
 V2_BAD_VECTOR_TEXT:    DB      "Bad vector",$00
 V2_LONG_TEXT:          DB      "Line too long",$00
@@ -395,6 +398,8 @@ V2_S19_BAD_TEXT:       DB      "Bad S19 record",$00
 V2_S19_SUM_TEXT:       DB      "Bad S19 checksum",$00
 V2_LOADED_TEXT:        DB      "Loaded; entry ",$00
                         INCLUDE "str8n-v2-flash-text.inc"
+V2_NO_CONFIG_TEXT:     DB      "No config",$00
+V2_HOLD_TEXT:          DB      "S/Ctrl-C hold",$0D,$0A,$00
 V2_WORKER_IMAGE:
                         INCLUDE "worker-image.inc"
 V2_VECTOR_IMAGE:

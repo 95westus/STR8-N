@@ -78,13 +78,7 @@ V2_F_PREVIEW_NEXT:     INX
                         CPX     V2_EDIT_COUNT
                         BNE     V2_F_PREVIEW_BYTE
                         JSR     V2W_ANALYZE
-                        LDX     #<V2_PROGRAM_TEXT
-                        LDY     #>V2_PROGRAM_TEXT
-                        LDA     V2_ERASE
-                        BEQ     V2_F_MODE
-                        LDX     #<V2_ERASE_TEXT
-                        LDY     #>V2_ERASE_TEXT
-V2_F_MODE:             JSR     V2_PRINT
+                        JSR     V2_FLASH_MODE
                         JSR     V2_CONFIRM
                         BCS     V2_F_COMMIT
                         JMP     V2_CANCELLED
@@ -234,7 +228,10 @@ V2_I_BYTE:             LDA     V2_INSTALL_NEXT+1
                         BNE     V2_I_STORE
                         LDA     V2_INSTALL_NEXT
                         CMP     #$F0
-                        BCS     V2_I_ADVANCE
+                        BCC     V2_I_STORE
+                        LDA     V2_SELECTED
+                        CMP     V2_RESIDENT
+                        BEQ     V2_I_ADVANCE
 V2_I_STORE:            LDA     V2_LINE,Y
                         STA     (V2_BUF_PTR)
 V2_I_ADVANCE:          INC     V2_INSTALL_NEXT
@@ -296,3 +293,12 @@ V2_I_CANCEL_POLL:      LDA     V2_RX_COUNT
 V2_I_CANCEL_PENDING:   LDA     V2_CANCEL_REQUEST
                         CMP     #$01
                         RTS
+
+V2_FLASH_MODE:
+                        LDX     #<V2_PROGRAM_TEXT
+                        LDY     #>V2_PROGRAM_TEXT
+                        LDA     V2_ERASE
+                        BEQ     V2_MODE_PRINT
+                        LDX     #<V2_ERASE_TEXT
+                        LDY     #>V2_ERASE_TEXT
+V2_MODE_PRINT:         JMP     V2_PRINT
