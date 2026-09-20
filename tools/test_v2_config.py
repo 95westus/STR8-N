@@ -96,11 +96,17 @@ def check_validity():
             assert mem.bank == 0 and b'S/Ctrl-C hold' not in mem.tx
     for data in [b'\xff'*16, b'\0'*16, config(enable=0),
                  config(enable=2), config(bank=4), config(delay=0), config(delay=9),
-                 config(**{'0': 2}), config(**{'6': 1}),
+                 config(**{'0': 2}),
                  *(config(address=a) for a in (0xE0, 0x100, 0x1FF, 0x6900, 0x7E00, 0x7FFF))]:
         cpu, mem = startup(data)
         hold(cpu)
         assert mem.bank == 0 and b'S/Ctrl-C hold' not in mem.tx
+    # Reserved bytes are ignored semantically, but still covered by integrity.
+    for index in range(6, 14):
+        cpu, mem = startup(config(**{str(index): 255}), keys=b'S')
+        hold(cpu)
+        assert b'S/Ctrl-C hold' in mem.tx and b'Cancelled' in mem.tx
+        assert mem.bank == 0
     CASES.append('erased/disabled/unknown/malformed configs hold; all 128 single-bit corruptions rejected; unsafe targets rejected')
 
 

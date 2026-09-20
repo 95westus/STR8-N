@@ -32,7 +32,6 @@ V2_RX_BAD               EQU     $7D12
 V2_REC_TYPE             EQU     $7D13
 V2_REC_SUM              EQU     $FB
 V2_REC_HEX              EQU     $FC
-V2_LOAD_HAVE_DATA       EQU     $7D16
 V2_RX_CHAR              EQU     $7D17
 V2_RX_QUEUE             EQU     $7D40
 V2_RX_SIZE              EQU     $40
