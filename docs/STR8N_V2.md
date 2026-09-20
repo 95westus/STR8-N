@@ -206,6 +206,46 @@ immediately, including buffered input, to cancel automatic execution for
 that boot and hold at the prompt. Timeout uses the generic `G` handoff to
 the configured bank/address, without payload recognition or signatures.
 
+## Agreed optimization targets
+
+Share one flash worker between F, I, and configuration writes. Skip unchanged
+bytes and erase only when requested changes require a 0-to-1 transition.
+After erase, program only non-$FF bytes, then verify the entire reconstructed
+sector. Retain bounds, protected-top enforcement, and bounded completion
+polling. Use the same flash-edit path for configuration updates; I preserves
+the configuration bytes while constructing the affected sector image.
+
+Use one hex parser for D/M/F/G and configuration input. Share command and
+S-record storage only where lifetimes permit: F must retain replacement
+bytes while reading the sector, and I must retain each record until consumed.
+G, autostart, and J share the final RAM handoff routine after their distinct
+target-selection and validation steps.
+
+Target a 512-byte worker instead of the provisional 768-byte reservation.
+The v1.35 worker is 568 bytes, including 100 bytes of directory-record code;
+F still needs byte programming, so that removal is not a guaranteed net
+saving. Also investigate combining monitor state, vector pointers, and entry
+code into one 256-byte page instead of two. Keep the separate 256-byte record
+buffer and 4 KiB sector buffer. Meeting both targets would recover 512 bytes
+and allow 26.25 KiB of contiguous application RAM starting at $0200.
+
+These are measured-fit targets, not frozen allocations. Keep the proposed map
+above until the linked implementation proves fit and all buffer lifetimes and
+handler ownership boundaries are checked. Native/user vector slots and stubs
+must never overlap temporary scratch. Publish revised addresses together when
+freezing the ABI.
+
+Keep interrupt dispatch to hardware vector, small entry stub, and operator
+handler. Only the shared emulation IRQ/BRK entry requires discrimination.
+Initialize defaults at reset and preserve installed pointers during monitor
+operations; do not carry forward repeated v1 signature-validation machinery
+in each interrupt path. Native handler entries remain user-owned.
+
+Retain the 16-byte configuration reservation: shrinking its byte count does
+not reduce sector erase cost. Select a compact integrity check with explicit
+format/enable encodings, computed by the configuration command. Measure code
+size and runtime behavior before claiming any optimization savings.
+
 ## Implementation sequence
 
 1. Establish a v2 build identity and validation path without overwriting
