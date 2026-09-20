@@ -29,7 +29,10 @@ V2_COMMAND_G:          JSR     V2_GET_ADDRESS
                         BMI     V2_G_GO
                         JSR     V2_APPLICATION_ADDRESS
                         BCC     V2_PROTECTED
-V2_G_GO:               JMP     V2W_EXECUTE
+V2_G_GO:               JSR     V2_CHECK_CANCEL
+                        BCC     V2_G_READY
+                        JMP     V2_CANCELLED
+V2_G_READY:            JMP     V2W_EXECUTE
 
 V2_COMMAND_D:          JSR     V2_GET_ADDRESS
                         BCC     V2_BAD_HEX
@@ -62,8 +65,12 @@ V2_D_END:              LDA     V2_VALUE
                         BEQ     V2_PROTECTED
                         LDA     V2_LAST+1
                         CMP     #$7F
-                        BCS     V2_PROTECTED
-V2_D_ROW:              LDA     #$10
+                        BCC     V2_D_ROW
+                        JMP     V2_PROTECTED
+V2_D_ROW:              JSR     V2_CHECK_CANCEL
+                        BCC     V2_D_CONTINUE
+                        JMP     V2_CANCELLED
+V2_D_CONTINUE:         LDA     #$10
                         STA     V2_COUNT
 ; Compute remaining distance; a same-page distance <15 needs a short row.
                         LDA     V2_LAST
@@ -112,6 +119,10 @@ V2_D_OUTPUT:
                         JSR     V2_PUTC
                         LDA     #$0A
                         JSR     V2_PUTC
+                        LDA     V2_CANCEL_REQUEST
+                        BEQ     V2_D_ADVANCE
+                        JMP     V2_CANCELLED
+V2_D_ADVANCE:
                         LDA     V2_ADDR
                         CLC
                         ADC     V2_COUNT
@@ -123,7 +134,8 @@ V2_D_COMPARE:          LDA     V2_LAST
                         CMP     V2_ADDR
                         LDA     V2_LAST+1
                         SBC     V2_ADDR+1
-                        BCS     V2_D_ROW
+                        BCC     V2_D_DONE
+                        JMP     V2_D_ROW
 V2_D_DONE:             JMP     V2_PROMPT
 
 V2_COMMAND_M:          JSR     V2_GET_ADDRESS
@@ -147,6 +159,10 @@ V2_M_NEXT:             JSR     V2_SKIP_SPACES
                         BNE     V2_M_PARSE
 ; All bytes and addresses are now valid. Keep NMI from following a partially
 ; written pointer during the short commit loop; IRQ is already disabled.
+                        JSR     V2_CHECK_CANCEL
+                        BCC     V2_M_COMMIT
+                        JMP     V2_CANCELLED
+V2_M_COMMIT:
                         LDA     V2_VECTOR
                         STA     V2_ADDR
                         LDA     V2_VECTOR+1
@@ -222,16 +238,8 @@ V2_HEX_NEXT:           LDA     V2_LINE,X
                         BEQ     V2_HEX_END
                         CPY     V2_DIGIT_LIMIT
                         BCS     V2_HEX_FAIL
-                        SEC
-                        SBC     #'0'
+                        JSR     V2_HEX_NIBBLE
                         BCC     V2_HEX_FAIL
-                        CMP     #$0A
-                        BCC     V2_HEX_DIGIT
-                        SBC     #$07
-                        CMP     #$0A
-                        BCC     V2_HEX_FAIL
-                        CMP     #$10
-                        BCS     V2_HEX_FAIL
 V2_HEX_DIGIT:          PHA
                         ASL     V2_VALUE
                         ROL     V2_VALUE+1
@@ -250,6 +258,25 @@ V2_HEX_DIGIT:          PHA
 V2_HEX_END:            CPY     #$01
                         RTS
 V2_HEX_FAIL:           CLC
+                        RTS
+
+; Shared by command tokens and streaming S19. Accept either case; C=valid.
+V2_HEX_NIBBLE:         CMP     #'a'
+                        BCC     V2_HEX_UPPER
+                        CMP     #'f'+1
+                        BCS     V2_HEX_FAIL
+                        AND     #$DF
+V2_HEX_UPPER:          SEC
+                        SBC     #'0'
+                        BCC     V2_HEX_FAIL
+                        CMP     #$0A
+                        BCC     V2_HEX_NIBBLE_OK
+                        SBC     #$07
+                        CMP     #$0A
+                        BCC     V2_HEX_FAIL
+                        CMP     #$10
+                        BCS     V2_HEX_FAIL
+V2_HEX_NIBBLE_OK:      SEC
                         RTS
 
 V2_HEX_OUT:            PHA
