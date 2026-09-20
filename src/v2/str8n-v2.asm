@@ -1,5 +1,4 @@
-; v2-alpha1: independent, common-instruction-subset boot milestone.
-; Only help and J0-J3 are implemented. No automatic execution or flash writes.
+; v2-alpha2: B/D/M/G and J0-J3. No automatic execution or flash writes.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    START
@@ -52,6 +51,7 @@ V2_REENTER:
                         JSR     V2_CAPTURE_BANK
 V2_ENTER:
                         STZ     V2_SKIP_LF
+                        STZ     V2_NMI_HOLD
                         LDX     #$00
 V2_COPY_WORKER:        LDA     V2_WORKER_IMAGE,X
                         STA     V2_WORKER,X
@@ -79,28 +79,51 @@ V2_PROMPT:
                         LDY     #>V2_PROMPT_TEXT
                         JSR     V2_PRINT
                         JSR     V2_READ_LINE
-                        BCC     V2_LINE_LONG
+                        BCS     V2_DISPATCH
+                        CPY     #$02
+                        BNE     V2_LINE_OVERFLOW
+                        JMP     V2_BAD_INPUT
+V2_LINE_OVERFLOW:
+                        JMP     V2_LINE_LONG
+V2_DISPATCH:
                         LDA     V2_LINE
                         BEQ     V2_PROMPT
                         CMP     #'?'
-                        BNE     V2_COMMAND_J
+                        BNE     V2_DISPATCH_COMMAND
                         LDA     V2_LINE+1
-                        BNE     V2_UNKNOWN
+                        BEQ     V2_SHOW_HELP
+                        JMP     V2_UNKNOWN
+V2_SHOW_HELP:
                         LDX     #<V2_HELP
                         LDY     #>V2_HELP
-                        BRA     V2_MESSAGE
+                        JMP     V2_MESSAGE
+V2_DISPATCH_COMMAND:
+                        CMP     #'B'
+                        BEQ     V2_COMMAND_B
+                        CMP     #'D'
+                        BNE     V2_TRY_M
+                        JMP     V2_COMMAND_D
+V2_TRY_M:              CMP     #'M'
+                        BNE     V2_TRY_G
+                        JMP     V2_COMMAND_M
+V2_TRY_G:              CMP     #'G'
+                        BNE     V2_COMMAND_J
+                        JMP     V2_COMMAND_G
+V2_COMMAND_B:          JSR     V2_PARSE_BANK
+                        BCC     V2_BAD_BANK
+                        STA     V2_SELECTED
+                        LDA     #'B'
+                        JSR     V2_PUTC
+                        LDA     V2_SELECTED
+                        ORA     #'0'
+                        JSR     V2_PUTC
+                        JMP     V2_PROMPT
 V2_COMMAND_J:
                         CMP     #'J'
                         BNE     V2_UNKNOWN
-                        LDA     V2_LINE+1
-                        CMP     #'0'
+                        JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
-                        CMP     #'4'
-                        BCS     V2_BAD_BANK
-                        AND     #$03
                         STA     V2_TARGET
-                        LDA     V2_LINE+2
-                        BNE     V2_UNKNOWN
                         JSR     V2_WORKER
                         LDX     #<V2_BAD_VECTOR_TEXT
                         LDY     #>V2_BAD_VECTOR_TEXT
@@ -111,10 +134,28 @@ V2_BAD_BANK:           LDX     #<V2_BAD_BANK_TEXT
 V2_LINE_LONG:          LDX     #<V2_LONG_TEXT
                         LDY     #>V2_LONG_TEXT
                         BRA     V2_MESSAGE
+V2_BAD_INPUT:          LDX     #<V2_BAD_INPUT_TEXT
+                        LDY     #>V2_BAD_INPUT_TEXT
+                        BRA     V2_MESSAGE
 V2_UNKNOWN:            LDX     #<V2_UNKNOWN_TEXT
                         LDY     #>V2_UNKNOWN_TEXT
 V2_MESSAGE:            JSR     V2_PRINT
-                        BRA     V2_PROMPT
+                        JMP     V2_PROMPT
+
+V2_PARSE_BANK:         LDA     V2_LINE+2
+                        BNE     V2_BANK_FAIL
+                        LDA     V2_LINE+1
+                        CMP     #'0'
+                        BCC     V2_BANK_FAIL
+                        CMP     #'4'
+                        BCS     V2_BANK_FAIL
+                        AND     #$03
+                        SEC
+                        RTS
+V2_BANK_FAIL:          CLC
+                        RTS
+
+                        INCLUDE "str8n-v2-monitor.inc"
 
 V2_CAPTURE_BANK:
                         LDX     #$00
@@ -135,7 +176,9 @@ V2_CAPTURE_DONE:       STX     V2_RESIDENT
                         RTS
 
 ; Short line reader. Overflow drains the whole line; never executes a prefix.
-; X counts accepted bytes; Y is sticky overflow. CR/LF pairs are one line.
+; X counts accepted bytes; Y=1 overflow, Y=2 invalid input (sticky). CR/LF
+; pairs are one line. Tab is whitespace; other unexpected bytes reject the
+; whole line rather than silently joining tokens into a destructive command.
 V2_READ_LINE:
                         LDX     #$00
                         LDY     #$00
@@ -159,10 +202,14 @@ V2_NOT_CR:             CMP     #$03
                         BEQ     V2_BACKSPACE
                         CMP     #$7F
                         BEQ     V2_BACKSPACE
+                        CMP     #$09
+                        BNE     V2_NOT_TAB
+                        LDA     #' '
+V2_NOT_TAB:
                         CMP     #$20
-                        BCC     V2_LINE_BYTE
+                        BCC     V2_INVALID_BYTE
                         CMP     #$7F
-                        BCS     V2_LINE_BYTE
+                        BCS     V2_INVALID_BYTE
                         CMP     #'a'
                         BCC     V2_STORE_CHAR
                         CMP     #'z'+1
@@ -175,6 +222,8 @@ V2_STORE_CHAR:         CPX     #V2_LINE_LIMIT
                         JSR     V2_PUTC
                         BRA     V2_LINE_BYTE
 V2_OVERFLOW:           INY
+                        BRA     V2_LINE_BYTE
+V2_INVALID_BYTE:       LDY     #$02
                         BRA     V2_LINE_BYTE
 V2_BACKSPACE:          CPX     #$00
                         BEQ     V2_LINE_BYTE
@@ -253,13 +302,17 @@ V2_TX_WAIT:            BIT     V2_CTRL
                         PLA
                         RTS
 
-V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a1 B",$00
+V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a2 B",$00
 V2_PROMPT_TEXT:        DB      $0D,$0A,"> ",$00
-V2_HELP:               DB      "J0-J3 ?",$00
+V2_HELP:               DB      "B0-B3 D addr [end] M addr bytes G addr J0-J3 ?",$00
 V2_BAD_BANK_TEXT:      DB      "Bad bank",$00
 V2_BAD_VECTOR_TEXT:    DB      "Bad vector",$00
 V2_LONG_TEXT:          DB      "Line too long",$00
 V2_UNKNOWN_TEXT:       DB      "Unknown command",$00
+V2_BAD_INPUT_TEXT:     DB      "Bad input",$00
+V2_BAD_HEX_TEXT:       DB      "Bad hex",$00
+V2_BAD_RANGE_TEXT:     DB      "Bad range",$00
+V2_PROTECTED_TEXT:     DB      "Protected address",$00
 V2_WORKER_IMAGE:
                         INCLUDE "worker-image.inc"
 V2_VECTOR_IMAGE:

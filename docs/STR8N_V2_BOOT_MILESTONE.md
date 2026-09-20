@@ -1,5 +1,10 @@
 # STR8-N v2-alpha1 boot milestone
 
+Historical milestone at commit `0759787`. Current build tools generate
+[v2-alpha2 with monitor commands](STR8N_V2_MONITOR_MILESTONE.md); use that
+guide for the current branch. The alpha1 descriptions and sizes below are
+retained as the boot baseline.
+
 This is an independent development image, not a complete v2 release.
 It has host execution coverage and has **not** been tested on physical
 65C02/65C816 hardware. No firmware has been sent to a board by this work.

@@ -549,3 +549,4 @@ v2:
 
 v2-check: v2
 	python tools/test_v2_boot.py
+	python tools/test_v2_monitor.py

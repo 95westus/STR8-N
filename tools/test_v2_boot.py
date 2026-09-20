@@ -11,7 +11,7 @@ import json
 import os
 import sys
 
-from build_v2 import OUT, ROOT, read_s19, symbols
+from build_v2 import OUT, ROOT, STEM, VERSION, read_s19, symbols
 
 for directory in reversed([
     *(Path(p) for key in ('STR8_TEST_DEPS', 'PY65_PATH')
@@ -28,7 +28,7 @@ except ImportError as error:
 
 REPORT = json.loads((OUT / 'build.json').read_text())
 SYM, VSYM = REPORT['resident'], REPORT['vectors']
-IMAGE = (OUT / 'str8n-v2-alpha1-e000-ffff.bin').read_bytes()
+IMAGE = (OUT / f'{STEM}-e000-ffff.bin').read_bytes()
 PATTERNS = (0xCC, 0xCE, 0xEC, 0xEE)
 CASES = []
 
@@ -45,10 +45,13 @@ class Memory:
         self.rx, self.tx = deque(), bytearray()
         self.writes = []
         self.bank_changes = []
+        self.io_reads = []
 
     def __getitem__(self, address):
         if isinstance(address, slice):
             return [self[a] for a in range(*address.indices(65536))]
+        if 0x7F00 <= address < 0x8000:
+            self.io_reads.append(address)
         if address >= 0x8000:
             return self.banks[self.bank][address-0x8000]
         if address == 0x7FE0:
@@ -96,7 +99,7 @@ def boot(bank, reset_pcr=False):
     cpu.p |= cpu.DECIMAL
     hold(cpu)
     assert memory.bank == bank and memory.ram[0x7D00:0x7D03] == bytes([bank]*3)
-    assert f'STR8-N 2.0a1 B{bank}\r\n> '.encode() in memory.tx
+    assert f'STR8-N {VERSION} B{bank}\r\n> '.encode() in memory.tx
     assert not memory.bank_changes
     assert memory.ram[:0xE0] == bytes([0x5A])*0xE0
     assert memory.ram[0x0200:0x6900] == bytes([0x5A])*0x6700
@@ -122,7 +125,7 @@ def check_boot_and_input():
                                (b'X\n', b'Unknown command'),
                                (b'J4\r', b'Bad bank'),
                                (b'J\r', b'Bad bank'),
-                               (b'J0X\r', b'Unknown command'),
+                               (b'J0X\r', b'Bad bank'),
                                (b'J0' + b'X'*40 + b'\r', b'Line too long'),
                                (b'?\x08?\r', b'J0-J3 ?')]:
             output = command(cpu, line)
@@ -187,8 +190,9 @@ def check_vectors():
 
 
 def check_image_and_instructions():
-    memory, entry = read_s19(OUT / 'str8n-v2-alpha1-e000-ffff.s19')
+    memory, entry = read_s19(OUT / f'{STEM}-e000-ffff.s19')
     assert entry == 0xF000 and set(memory) == set(range(0xE000, 0x10000))
+    assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
     assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
     for address in (0xFFE0, 0xFFE2, 0xFFEC, 0xFFF0, 0xFFF2, 0xFFF6):
         assert bytes(memory[a] for a in range(address, address+2)) == b'\xff\xff'
@@ -230,7 +234,7 @@ def check_v135_roundtrip():
         cpu.sp = 255
         hold(cpu)
         assert mem.bank == bank and mem.ram[0x7D00] == bank
-        assert f'STR8-N 2.0a1 B{bank}'.encode() in mem.tx
+        assert f'STR8-N {VERSION} B{bank}'.encode() in mem.tx
         # Real v2 J3 and real v1 reset startup. Skip only long calibrated delay.
         mem.rx.extend(b'J3\rS')
         for _ in range(300000):

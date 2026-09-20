@@ -2,9 +2,9 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha1 boot milestone](STR8N_V2_BOOT_MILESTONE.md) now
-implements bank-independent startup, console/help, J0-J3, and RAM interrupt
-entries. Other commands and autostart are not yet implemented. Existing v1
+The independent [v2-alpha2 monitor milestone](STR8N_V2_MONITOR_MILESTONE.md)
+implements bank-independent startup, B/D/M/G, console/help, J0-J3, and RAM
+interrupt entries. F/L/I, configuration, and autostart are not yet implemented. Existing v1
 sources and normal release targets retain their v1.35 behavior.
 
 ## Core boundary
@@ -158,6 +158,11 @@ overwrite monitor-owned dispatch code. Preserve installed pointers through
 L/F/G. Multi-byte updates require an interrupt-aware publication procedure;
 SEI alone does not exclude NMI.
 
+The alpha2 M command gates its emulation NMI dispatch during the short RAM
+commit loop, acknowledging an NMI in that window with RTI. This prevents
+following a torn NMI pointer; it does not queue or replay that NMI. Software
+prompt entry clears the temporary gate while preserving installed pointers.
+
 Other payload banks own their hardware vectors. They may point directly to their own
 handlers or deliberately use the RAM entries. The RAM table does not
 automatically intercept interrupts when another flash bank is selected.
@@ -278,6 +283,7 @@ Examples of the intended vocabulary (final wording may be tightened):
 | --- | --- |
 | Invalid command | Unknown command |
 | Invalid hex input | Bad hex |
+| Unexpected control/non-ASCII input | Bad input |
 | Invalid bank | Bad bank |
 | Reversed or unsupported range | Bad range |
 | Write into protected storage | Protected address |
