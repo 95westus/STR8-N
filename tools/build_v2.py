@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha3.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha4.
 """
 from pathlib import Path
 import argparse
@@ -12,9 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a3'
-STEM = 'str8n-v2-alpha3'
-OUT = ROOT / 'BUILD/v2-alpha3'
+VERSION = '2.0a4'
+STEM = 'str8n-v2-alpha4'
+OUT = ROOT / 'BUILD/v2-alpha4'
 SOURCE = ROOT / 'src/v2'
 
 
@@ -92,15 +92,16 @@ def main():
         raise SystemExit('WDC02AS and WDCLN must be on PATH')
     (OUT / 'asm').mkdir(parents=True, exist_ok=True)
     # Invalidate only this build's named generated artifacts, including an old
-    # optional full-bank image and test receipts. Preserve all v1/alpha1 output.
-    for name in ('build.json', 'test-results.json', 'monitor-test-results.json', 'load-test-results.json',
+    # optional full-bank image and test receipts. Preserve earlier milestones.
+    for name in ('build.json', 'test-results.json', 'monitor-test-results.json',
+                 'load-test-results.json', 'flash-test-results.json',
                  f'{STEM}-e000-ffff.bin', f'{STEM}-e000-ffff.s19', f'{STEM}-8000-ffff.s19'):
         (OUT / name).unlink(missing_ok=True)
     worker_mem, worker_sym = assemble('str8n-v2-worker', 0x7900, assembler, linker)
     vector_mem, vector_sym = assemble('str8n-v2-vectors', 0x7E20, assembler, linker)
     worker = dense_image(worker_mem, 0x7900, worker_sym['V2W_END'])
     vectors = dense_image(vector_mem, 0x7E20, vector_sym['V2V_END'])
-    if not 0 < len(worker) < 256 or not 0 < len(vectors) <= 0xE0:
+    if not 0 < len(worker) <= 0x300 or not 0 < len(vectors) <= 0xE0:
         raise ValueError('Milestone RAM copy limit exceeded')
     include_bytes(OUT / 'asm/worker-image.inc', worker)
     include_bytes(OUT / 'asm/vectors-image.inc', vectors)
@@ -141,7 +142,7 @@ def main():
         assert dense_image(parsed, start, 65536) == payload
         assert entry == int.from_bytes(payload[-4:-2], 'little') == 0xF000
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    report = dict(milestone='ram-load-and-cancel', resident_bytes=len(code),
+    report = dict(milestone='flash-edit-and-install', resident_bytes=len(code),
                   worker_bytes=len(worker), vector_code_bytes=len(vectors),
                   free_before_vectors=0xFFE0-resident['V2_END'],
                   resident=resident, worker=worker_sym, vectors=vector_sym,

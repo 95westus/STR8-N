@@ -1,4 +1,4 @@
-; RAM-only bank handoff. No calls or data references into the flash window.
+; RAM-only bank access and flash mutation. No code/constants fetched from ROM.
                         MODULE  V2_WORKER
                         XDEF    START
                         XDEF    V2W_END
@@ -60,6 +60,7 @@ V2W_SELECT:
                         STA     V2_PCR
                         RTS
 V2W_BITS:               DB      $CC,$CE,$EC,$EE
+                        INCLUDE "str8n-v2-flash-worker.inc"
 V2W_END:
                         ENDMOD
                         END

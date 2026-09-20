@@ -207,7 +207,10 @@ def check_image_and_instructions():
     dis = Disassembler(cpu)
     worker = REPORT['worker']
     for start, end in [(0xF000, SYM['V2_BANNER']),
-                       (0x7900, worker['V2W_BITS']), (0x7E20, VSYM['V2V_END'])]:
+                       (0x7900, worker['V2W_BITS']),
+                       (worker['V2W_INIT'], worker['V2W_OK_TEXT']),
+                       (worker['V2W_PUTC'], worker['V2W_END']),
+                       (0x7E20, VSYM['V2V_END'])]:
         pc = start
         while pc < end:
             length, instruction = dis.instruction_at(pc)

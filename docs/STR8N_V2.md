@@ -2,9 +2,9 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha3 load/cancel milestone](STR8N_V2_LOAD_MILESTONE.md)
-implements bank-independent startup, B/D/M/G/L, safe Ctrl-C cancellation,
-console/help, J0-J3, and RAM interrupt entries. F/I, configuration, and
+The independent [v2-alpha4 flash milestone](STR8N_V2_FLASH_MILESTONE.md)
+implements bank-independent startup, B/D/M/G/L/F/I, safe Ctrl-C cancellation,
+console/help, J0-J3, and RAM interrupt entries. Configuration commands and
 autostart are not yet implemented. Existing v1
 sources and normal release targets retain their v1.35 behavior.
 
@@ -13,7 +13,7 @@ sources and normal release targets retain their v1.35 behavior.
 Ctrl-C cancels the current monitor operation at a safe boundary. Discard an
 unsubmitted command or incomplete load record; finish an already committing
 RAM edit or validated load record. Completed writes remain in place. For
-future F/I, finish the active flash mutation and verification from RAM before
+F/I, finish the active flash mutation and verification from RAM before
 honoring cancellation; never abandon an erased sector awaiting restoration.
 Once G/J transfers control, the application owns input and cancellation.
 
@@ -67,7 +67,7 @@ Addresses and byte values are hexadecimal. Share a compact hex parser.
 | `F addr bytes...` | Edit flash in the selected bank, subject to the flash contract below. |
 | `G addr` | Jump to existing code in the selected mapping, with no expected return. |
 | `L` | Load S19 into permitted RAM without running it; report the S9 entry for subsequent `G`. |
-| `I` | Install S19 into a selected legal flash bank/range without directory metadata or journal state. |
+| `I start end` | Install dense ascending S19 into a selected legal flash bank and inclusive sector-aligned range, without directory metadata or journal state. |
 | `J0`-`J2` | Boot the selected bank through its RESET vector after bank/vector validity checks. |
 | `J3` | Boot Bank 3 through its RESET vector; during guest-bank testing this starts v1.35, not v2. |
 | Configuration command (name pending) | Display/set autostart enable, flash bank, address, and delay; compute the integrity check and confirm before writing. |
