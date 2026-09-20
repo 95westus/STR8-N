@@ -33,19 +33,20 @@ def check_bank_and_display():
     cpu, mem = boot(0)
     mem.ram[0x200:0x223] = bytes(range(35))
     output = command(cpu, b'd 0200\r')
-    assert b'0200: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F' in output
+    assert b'0200: 00\r\n' in output
     assert b'0210:' not in output
     output = command(cpu, b'D 0200 0222\r')
     assert b'0210: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F' in output
     assert b'0220: 20 21 22\r\n' in output
-    for line in (b'D FFFF FFFF', b'D FFF0 FFFF', b'D FFF0'):
+    for line in (b'D FFFF FFFF', b'D FFF0 FFFF', b'D FFF0', b'D FFF1', b'D FFFF'):
         output = command(cpu, line + b'\r')
         assert b'Bad' not in output and b'0000:' not in output
-    assert b'Bad range' in command(cpu, b'D FFF1\r')
+    mem.ram[0x7EF8] = 0xA5
+    assert b'7EF8: A5\r\n' in command(cpu, b'D 7EF8\r')
     assert b'Bad range' in command(cpu, b'D 220 200\r')
-    for line in (b'D 7F00', b'D 7EF8', b'D 7EFF 8000', b'D 0000 FFFF'):
+    for line in (b'D 7F00', b'D 7EF8 7F07', b'D 7EFF 8000', b'D 0000 FFFF'):
         before = len(mem.io_reads)
-        assert b'Protected address' in command(cpu, line + b'\r')
+        assert b'Protected' in command(cpu, line + b'\r')
         # Only FT245 handshakes occur; no requested I/O-range read happens.
         assert set(mem.io_reads[before:]) <= {0x7FE0, 0x7FE1, 0x7FE3}
     CASES.append('B selection independent of resident; D selected-bank data, rows, boundaries, I/O preflight')
@@ -66,17 +67,17 @@ def check_modify():
         assert mem.ram[address] == 0xA5
     for address in (0x00E0, 0x00FF, 0x0100, 0x01FF, 0x6900, 0x7BFF, 0x7C00,
                     0x7D00, 0x7E0A, 0x7E0F, 0x7E1A, 0x7E20, 0x7EFF, 0x7F00, 0x8000, 0xFFFF):
-        assert b'Protected address' in command(cpu, f'M {address:04X} 00\r'.encode())
+        assert b'Protected' in command(cpu, f'M {address:04X} 00\r'.encode())
     for address in (0x00DF, 0x68FF, 0x7E09, 0x7E19):
         before = bytes(mem.ram[address:address+2])
-        assert b'Protected address' in command(cpu, f'M {address:04X} 00 01\r'.encode())
+        assert b'Protected' in command(cpu, f'M {address:04X} 00 01\r'.encode())
         assert mem.ram[address:address+2] == before
     before = bytes(mem.ram[0x0200:0x0210])
     for line in (b'M 200 AA GG', b'M 200 AA 100', b'M 200', b'M 200 AA :0',
                  b'M 200 AA 0G', b'M 200 AA /0', b'M 200 AA 00X'):
         assert b'Bad hex' in command(cpu, line + b'\r'), line
         assert mem.ram[0x0200:0x0210] == before
-    assert b'Line too long' in command(cpu, b'M 0200 ' + b'00 '*12 + b'\r')
+    assert b'Long line' in command(cpu, b'M 0200 ' + b'00 '*12 + b'\r')
     assert mem.ram[0x0200:0x0210] == before
     CASES.append('M exact writes, full-command preflight, zero-page/workspace/flash guards, pointer exceptions')
 
@@ -90,7 +91,7 @@ def check_hex_and_go():
     for line in (b'G 200 300', b'D 200 300 400'):
         assert b'Bad hex' in command(cpu, line + b'\r')
     for address in (0xE0, 0x100, 0x6900, 0x7E20, 0x7F00):
-        assert b'Protected address' in command(cpu, f'G {address:X}\r'.encode())
+        assert b'Protected' in command(cpu, f'G {address:X}\r'.encode())
     for resident in range(4):
         for target in range(4):
             for address in (0x0200, 0x9000):
@@ -106,7 +107,7 @@ def check_hex_and_go():
                 assert mem.ram[0x7FA0] == 0
     cpu, mem = boot(1)
     mem.ram[0x7E02:0x7E04] = b'\x00\x02'
-    assert b'STR8-N' in command(cpu, b'G F003\r')
+    assert b'STR8-N' in command(cpu, f'G {SYM["V2_PROMPT_ENTRY"]:04X}\r'.encode())
     assert mem.ram[0x7E02:0x7E04] == b'\x00\x02'
     CASES.append('shared hex rejection; 32 G bank/RAM/flash handoffs; G F003 preserves installed pointers')
 
@@ -155,14 +156,14 @@ def check_review_regressions():
     # Application scratch can be dirty on prompt reentry; vectors still survive.
     mem.ram[SYM['V2_NMI_HOLD']] = 1
     pointers = bytes(mem.ram[0x7E00:0x7E1A])
-    command(cpu, b'G F003\r')
+    command(cpu, f'G {SYM["V2_PROMPT_ENTRY"]:04X}\r'.encode())
     assert mem.ram[SYM['V2_NMI_HOLD']] == 0
     assert mem.ram[0x7E00:0x7E1A] == pointers
     exact = b'M 0200 01 02 03 04 05 06 07 08  '
     assert len(exact) == 32
     assert b'Bad' not in command(cpu, exact + b'\r')
     before = bytes(mem.ram[0x0200:0x0208])
-    assert b'Line too long' in command(cpu, exact + b' \r')
+    assert b'Long line' in command(cpu, exact + b' \r')
     assert mem.ram[0x0200:0x0208] == before
     command(cpu, b'M 02FE AA BB CC DD\r')
     assert mem.ram[0x02FE:0x0302] == b'\xAA\xBB\xCC\xDD'

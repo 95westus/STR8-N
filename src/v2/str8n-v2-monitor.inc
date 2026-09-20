@@ -33,20 +33,12 @@ V2_G_READY:            JMP     V2W_EXECUTE
 V2_COMMAND_D:          JSR     V2_GET_ADDRESS
                         BCC     V2_BAD_HEX
                         JSR     V2_SKIP_SPACES
-                        BEQ     V2_D_DEFAULT
+; VALUE still contains the start address: an omitted end displays one byte.
+                        BEQ     V2_D_END
                         JSR     V2_HEX_WORD
                         BCC     V2_BAD_HEX
                         JSR     V2_SKIP_SPACES
                         BNE     V2_BAD_HEX
-                        BRA     V2_D_END
-V2_D_DEFAULT:          LDA     V2_ADDR
-                        CLC
-                        ADC     #$0F
-                        STA     V2_VALUE
-                        LDA     V2_ADDR+1
-                        ADC     #$00
-                        STA     V2_VALUE+1
-                        BCS     V2_BAD_RANGE
 V2_D_END:              LDA     V2_VALUE
                         CMP     V2_ADDR
                         LDA     V2_VALUE+1
@@ -69,17 +61,15 @@ V2_D_CONTINUE:         LDA     #$10
                         LDA     V2_LAST
                         SEC
                         SBC     V2_ADDR
-                        PHA
+                        TAX
                         LDA     V2_LAST+1
                         SBC     V2_ADDR+1
-                        BNE     V2_D_FULL
-                        PLA
+                        BNE     V2_D_READ
+                        TXA
                         CMP     #$0F
                         BCS     V2_D_READ
                         INC     A
                         STA     V2_COUNT
-                        BRA     V2_D_READ
-V2_D_FULL:             PLA
 ; RAM reads do not need a snapshot or a bank switch. In particular, copying
 ; a RAM range that overlaps BYTES would corrupt the very data being displayed.
 V2_D_READ:             LDA     V2_ADDR+1
@@ -168,9 +158,10 @@ V2_M_COMMIT:
                         JMP     V2_PROMPT
 ; M/L share the gated, non-cancellable copy of a fully checked unit.
 ; IN X=source offset in LINE, ADDR=destination, COUNT=length (nonzero).
-V2_COPY_BYTES:         LDA     #$01
-                        STA     V2_NMI_HOLD
-                        LDY     #$00
+; Set the gate with Y, then decrement Y to the first destination offset.
+V2_COPY_BYTES:         LDY     #$01
+                        STY     V2_NMI_HOLD
+                        DEY
 V2_M_WRITE:
 V2_LOAD_COPY:          LDA     V2_LINE,X
                         STA     (V2_ADDR),Y
@@ -229,30 +220,28 @@ V2_HEX_PARSE:          STA     V2_DIGIT_LIMIT
                         STZ     V2_VALUE
                         STZ     V2_VALUE+1
                         JSR     V2_SKIP_SPACES
-                        LDY     #$00
+                        BEQ     V2_HEX_FAIL
 V2_HEX_NEXT:           LDA     V2_LINE,X
                         BEQ     V2_HEX_END
                         CMP     #' '
                         BEQ     V2_HEX_END
-                        CPY     V2_DIGIT_LIMIT
-                        BCS     V2_HEX_FAIL
+                        DEC     V2_DIGIT_LIMIT
+                        BMI     V2_HEX_FAIL
                         JSR     V2_HEX_NIBBLE
                         BCC     V2_HEX_FAIL
-V2_HEX_DIGIT:          PHA
-                        PHX
-                        LDX     #$04
+; Remaining digits live in DIGIT_LIMIT. Y shifts the value, leaving both
+; the decoded nibble in A and the line position in X intact.
+V2_HEX_DIGIT:          LDY     #$04
 V2_HEX_SHIFT:         ASL     V2_VALUE
                         ROL     V2_VALUE+1
-                        DEX
+                        DEY
                         BNE     V2_HEX_SHIFT
-                        PLX
-                        PLA
                         ORA     V2_VALUE
                         STA     V2_VALUE
                         INX
-                        INY
                         BRA     V2_HEX_NEXT
-V2_HEX_END:            CPY     #$01
+; Empty tokens were rejected before the loop; reaching here means success.
+V2_HEX_END:            SEC
                         RTS
 V2_HEX_FAIL:           CLC
                         RTS

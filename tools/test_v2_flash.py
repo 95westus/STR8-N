@@ -78,7 +78,7 @@ class FlashMemory(Memory):
 
 def boot_flash(bank=0):
     mem = FlashMemory(bank)
-    cpu = MPU(memory=mem, pc=0xF000)
+    cpu = MPU(memory=mem, pc=SYM['START'])
     mem.cpu = cpu
     hold(cpu)
     return cpu, mem
@@ -113,15 +113,15 @@ def check_f():
         mem.events.clear()
         output = send(cpu, b'F 8123 FF\rY\r')
         expected = bytearray(before); expected[0x123] = 255
-        assert bytes(mem.banks[bank]) == expected and b'Erase/rewrite' in output
+        assert bytes(mem.banks[bank]) == expected and b'Erase+write' in output
         assert mem.events[0][0] == 'erase' and mem.bank == 0
         mem.events.clear()
         assert b'Done' in send(cpu, b'F 8123 FF\rY\r') and not mem.events
-        for bad, error in [(b'F 8FFF 00 00\r', b'Crosses sector'),
-                           (b'F FFFF 00 00\r', b'Crosses sector'),
-                           (b'F 7FFF 00\r', b'Protected address'),
+        for bad, error in [(b'F 8FFF 00 00\r', b'Sector span'),
+                           (b'F FFFF 00 00\r', b'Sector span'),
+                           (b'F 7FFF 00\r', b'Protected'),
                            (b'F 8000 GG\r', b'Bad hex'),
-                           (b'F 8000 00\rN\r', b'Cancelled')]:
+                           (b'F 8000 00\rN\r', b'Canceled')]:
             assert error in send(cpu, bad)
             assert not mem.events
     CASES.append('F all banks: direct/no-op/erase edits, neighbor preservation, previews, confirmation and full preflight')
@@ -132,7 +132,7 @@ def check_f_boundaries():
     command(cpu, b'B3\r')
     before = bytes(mem.banks[3])
     output = send(cpu, b'F FFFF 00\rY\r')
-    assert b'Recovery' in output and b'STR8-N edit' not in output
+    assert b'Recovery' in output and b'Self edit' not in output
     assert mem.banks[3][:-1] == before[:-1] and mem.banks[3][-1] == 0
     output = send(cpu, b'F EFF0 00\rY\r')
     assert b'Done' in output and mem.banks[3][0x6FF0] == 0
@@ -180,23 +180,25 @@ def check_install_rejections():
         for target in (resident, 3):
             cpu, mem = boot_flash(resident)
             command(cpu, f'B{target}\r'.encode())
-            assert b'Protected address' in send(cpu, b'I E000 FFFF\r')
+            assert b'Protected' in send(cpu, b'I E000 FFFF\r')
             assert not mem.events
     cpu, mem = boot_flash()
     for line in (b'I 8001 8FFF\r', b'I 8000 8FFE\r', b'I 7000 8FFF\r', b'I 9000 8FFF\r'):
         assert b'Bad range' in send(cpu, line)
         assert not mem.events
     command(cpu, b'B1\r')
-    for stream in (records(0x8001, b'X'), records(0x8000, b'X')+finish(),
-                   records(0x8000, b'X')+records(0x8000, b'X'),
-                   records(0x8000, b'X')[:-4]+b'00\r\n', b'\x03'):
+    for stream, error in ((records(0x8001, b'X'), b'Bad S19'),
+                          (records(0x8000, b'X')+finish(), b'Bad S19'),
+                          (records(0x8000, b'X')+records(0x8000, b'X'), b'Bad S19'),
+                          (records(0x8000, b'X')[:-4]+b'00\r\n', b'Bad checksum'),
+                          (b'\x03', b'Canceled')):
         output = send(cpu, b'I 8000 8FFF\rY\r' + stream)
-        assert b'Bad S19' in output or b'Cancelled' in output, output
+        assert error in output, output
         assert not mem.events
     # Early complete sectors stay committed when a later record fails.
     stream = records(0x8000, b'\x55'*4096) + records(0x9001, b'X')
     output = send(cpu, b'I 8000 9FFF\rY\r' + stream)
-    assert b'Bad S19 record' in output
+    assert b'Bad S19' in output
     assert mem.banks[1][:4096] == b'\x55'*4096
     assert mem.banks[1][4096:8192] == b'\xff'*4096
     CASES.append('I own/recovery protection, alignment/order/checksum/completeness rejection, prior committed sectors retained')
@@ -224,7 +226,7 @@ def check_install_image_and_failure():
 
 def check_cancellation():
     cpu, mem = boot_flash()
-    assert b'Cancelled' in send(cpu, b'F 8000 00\r\x03') and not mem.events
+    assert b'Canceled' in send(cpu, b'F 8000 00\r\x03') and not mem.events
     # Cancellation while an erase/rewrite is active must restore all neighbors.
     mem.banks[0][:4096] = b'\x33'*4096
     mem.rx.extend(b'F 8123 FF\rY\r')
@@ -233,7 +235,7 @@ def check_cancellation():
     mem.rx.extend(b'\x03')
     run(cpu, lambda: waiting(cpu), limit=2000000)
     expected = bytearray(b'\x33'*4096); expected[0x123] = 255
-    assert mem.banks[0][:4096] == expected and b'Cancelled' in mem.tx
+    assert mem.banks[0][:4096] == expected and b'Canceled' in mem.tx
     cpu, mem = boot_flash()
     command(cpu, b'B1\r')
     # Supply exactly one sector and inject cancel while it is programmed.
@@ -243,12 +245,12 @@ def check_cancellation():
     run(cpu, lambda: waiting(cpu), limit=2000000)
     assert mem.banks[1][:4096] == b'\x11'*4096
     assert mem.banks[1][4096:8192] == b'\xff'*4096
-    assert b'Cancelled' in mem.tx and mem.bank == 0
+    assert b'Canceled' in mem.tx and mem.bank == 0
     CASES.append('Ctrl-C before confirmation and during F/I mutation: current sector finishes, next sector untouched')
 
 
 def check_failures_and_self():
-    for fault, text in [('timeout', b'Flash timeout'), ('verify', b'Verify failed'), ('erase_verify', b'Verify failed')]:
+    for fault, text in [('timeout', b'Flash timeout'), ('verify', b'Verify fail'), ('erase_verify', b'Verify fail')]:
         cpu, mem = boot_flash()
         command(cpu, b'B1\r')
         mem.fault = fault
@@ -276,16 +278,16 @@ def check_failures_and_self():
     for resident in range(4):
         for value in (0, 255):
             cpu, mem = boot_flash(resident)
-            mem.rx.extend(f'F F000 {value:02X}\rY\r'.encode())
+            mem.rx.extend(f'F {SYM["START"]:04X} {value:02X}\rY\r'.encode())
             run(cpu, lambda: cpu.pc == W['V2W_HOLD'], limit=2000000)
-            assert b'STR8-N edit' in mem.tx and b'Done; reset' in mem.tx
-            assert mem.banks[resident][0x7000] == value
+            assert b'Self edit' in mem.tx and b'OK; reset' in mem.tx
+            assert mem.banks[resident][SYM['START']-0x8000] == value
             assert mem.bank == resident and cpu.pc < 0x8000
     cpu, mem = boot_flash()
     mem.fault = 'timeout'
-    mem.rx.extend(b'F F000 00\rY\r')
+    mem.rx.extend(f'F {SYM["START"]:04X} 00\rY\r'.encode())
     run(cpu, lambda: cpu.pc == W['V2W_HOLD'], limit=3000000)
-    assert b'Flash failed; reset' in mem.tx
+    assert b'Flash fail; reset' in mem.tx
     cpu, mem = boot_flash()
     command(cpu, b'B1\r')
     mem.banks[1][0] = 0

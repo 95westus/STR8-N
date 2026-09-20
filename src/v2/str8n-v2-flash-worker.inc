@@ -104,15 +104,17 @@ V2W_SELF_OK:           LDA     V2W_OK_TEXT,X
                         INX
                         BRA     V2W_SELF_OK
 V2W_HOLD:              BRA     V2W_HOLD
-V2W_OK_TEXT:           DB      $0D,$0A,"Done; reset",$00
-V2W_FAIL_TEXT:         DB      $0D,$0A,"Flash failed; reset",$00
+V2W_OK_TEXT:           DB      $0D,$0A,"OK; reset",$00
+V2W_FAIL_TEXT:         DB      $0D,$0A,"Flash fail; reset",$00
 V2W_PUTC:              PHA
                         STZ     V2_DDRA
                         LDA     #$01
 V2W_TX_WAIT:           BIT     V2_CTRL
                         BNE     V2W_TX_WAIT
                         PLA
-                        STA     V2_DATA
+; IN A=byte, output ready and DDRA=0. X/Y preserved; A clobbered.
+; Also called by the resident console after its cancellable ready wait.
+V2W_SEND:              STA     V2_DATA
                         NOP
                         NOP
                         LDA     #$04
@@ -131,21 +133,33 @@ V2W_UNLOCK:            LDA     #$F0
                         LDA     #$55
                         STA     $AAAA
                         RTS
-V2W_WAIT:              STA     V2_TIMEOUT+2
-                        STZ     V2_TIMEOUT
-                        STZ     V2_TIMEOUT+1
+; A counts blocks of 65536 polls (2 program / 8 erase). Preserve that count
+; on the stack, using X/Y for the lower counters. Mutation callers do not
+; require X/Y; I saves its record position around the complete mutation.
+V2W_WAIT:              PHA
+                        LDX     #$00
+                        LDY     #$00
 V2W_POLL:              LDA     (V2_FLASH_PTR)
                         CMP     V2_FLASH_DATA
                         BEQ     V2W_POLL_OK
-                        DEC     V2_TIMEOUT
+; BIT is intentional three-cycle padding: BIT zp + DEX/DEY takes the same
+; five cycles as DEC zp, so freeing scratch does not shorten these counters.
+                        BIT     V2_FLASH_DATA
+                        DEX
                         BNE     V2W_POLL
-                        DEC     V2_TIMEOUT+1
+                        BIT     V2_FLASH_DATA
+                        DEY
                         BNE     V2W_POLL
-                        DEC     V2_TIMEOUT+2
-                        BNE     V2W_POLL
+                        PLA
+                        DEC     A
+                        BEQ     V2W_TIMEOUT
+                        PHA
+                        BRA     V2W_POLL
+V2W_TIMEOUT:
                         LDA     #$01
                         STA     V2_FLASH_ERROR
                         CLC
                         RTS
-V2W_POLL_OK:           SEC
+; The equal comparison above already set carry for successful completion.
+V2W_POLL_OK:           PLA
                         RTS

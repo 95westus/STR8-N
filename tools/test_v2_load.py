@@ -37,17 +37,17 @@ def check_load():
 
 def check_rejections():
     bad_checksum = rec('1', 0x0200, b'ABC')[:-4] + b'00\r\n'
-    cases = [(bad_checksum, b'Bad S19 checksum'),
-             (b'S1030200FA\r', b'Bad S19 record'),  # empty S1
-             (rec('9', 0x0200, b'X'), b'Bad S19 record'),
-             (rec('9', 0x0200)[:-4] + b'00\r\n', b'Bad S19 checksum'),
-             (b'S2030200FA\r', b'Bad S19 record'),
-             (b'S1020200\r', b'Bad S19 record'),
-             (b'S1040200GG00\r', b'Bad S19 record'),
-             (rec('1', 0x0200, b'X').rstrip() + b'X\r', b'Bad S19 record')]
+    cases = [(bad_checksum, b'Bad checksum'),
+             (b'S1030200FA\r', b'Bad S19'),  # empty S1
+             (rec('9', 0x0200, b'X'), b'Bad S19'),
+             (rec('9', 0x0200)[:-4] + b'00\r\n', b'Bad checksum'),
+             (b'S2030200FA\r', b'Bad S19'),
+             (b'S1020200\r', b'Bad S19'),
+             (b'S1040200GG00\r', b'Bad S19'),
+             (rec('1', 0x0200, b'X').rstrip() + b'X\r', b'Bad S19')]
     for address, data in [(0, b'X'), (0x1FF, b'XY'), (0x68FF, b'XY'),
                           (0x6900, b'X'), (0x7E00, b'X'), (0x8000, b'X'), (0xFFFF, b'XY')]:
-        cases.append((rec('1', address, data), b'Protected address'))
+        cases.append((rec('1', address, data), b'Protected'))
     for stream, expected in cases:
         cpu, mem = boot(0)
         before = bytes(mem.ram[0x0200:0x6900])
@@ -57,7 +57,7 @@ def check_rejections():
         assert mem.bank == 0
     cpu, mem = boot(0)
     output = command(cpu, b'L\r' + rec('1', 0x0200, b'OK') + bad_checksum)
-    assert b'Bad S19 checksum' in output and mem.ram[0x0200:0x0203] == b'OKZ'
+    assert b'Bad checksum' in output and mem.ram[0x0200:0x0203] == b'OKZ'
     assert b'Bad hex' in command(cpu, b'L 200\r')
     CASES.append('malformed/checksum/range rejection before writes; transfer tail drained; prior records retained')
 
@@ -66,7 +66,7 @@ def check_cancel_load():
     cpu, mem = boot(0)
     command(cpu, b'L\rS106020041')
     output = command(cpu, b'\x03' + rec('1', 0x0200, b'BAD'))
-    assert b'Cancelled' in output and mem.ram[0x0200:0x0203] == b'ZZZ'
+    assert b'Canceled' in output and mem.ram[0x0200:0x0203] == b'ZZZ'
     # Cancel in the middle of an accepted record's copy: finish that record.
     command(cpu, b'L\r')
     mem.rx.extend(rec('1', 0x0200, b'COMPLETE'))
@@ -76,7 +76,7 @@ def check_cancel_load():
     assert mem.ram[0x0200:0x0208] == b'COMPLETE'
     assert mem.ram[0x0300:0x0302] == b'ZZ'
     assert mem.ram[SYM['V2_NMI_HOLD']] == 0
-    assert b'Cancelled' in mem.tx
+    assert b'Canceled' in mem.tx
     CASES.append('partial record cancellation writes nothing; mid-copy cancellation completes only the accepted record')
 
 
@@ -84,11 +84,11 @@ def check_cancel_commands():
     for line in (b'M 0200 FF\r', b'G 0200\r', b'J1\r', b'B1\r'):
         cpu, mem = boot(0)
         output = command(cpu, line + b'\x03')
-        assert b'Cancelled' in output, output
+        assert b'Canceled' in output, output
         assert mem.ram[0x0200] == 0x5A and mem.bank == 0
         assert mem.ram[SYM['V2_SELECTED']] == 0
     cpu, mem = boot(0)
-    assert b'Cancelled' in command(cpu, b'M 0200 FF\x03')
+    assert b'Canceled' in command(cpu, b'M 0200 FF\x03')
     mem.rx.extend(b'M 7E00 00 02\r')
     run(cpu, lambda: cpu.pc == SYM['V2_M_WRITE'] and cpu.y == 1)
     mem.rx.extend(b'\x03')
@@ -101,7 +101,7 @@ def check_cancel_commands():
     run(cpu, lambda: cpu.pc == SYM['V2_D_ROW'] and len(mem.tx) > start + 130)
     mem.rx.extend(b'\x03')
     hold(cpu)
-    assert b'Cancelled' in mem.tx[start:] and len(mem.tx) - start < 400
+    assert b'Canceled' in mem.tx[start:] and len(mem.tx) - start < 400
     assert mem.bank == 0 and mem.ram[SYM['V2_SELECTED']] == 1
     CASES.append('line/display cancellation, pre-write/pre-jump cancellation, atomic M pointer completion')
 
@@ -122,7 +122,7 @@ def check_backpressure_and_queue():
     assert mem.bank == 0
     mem.tx_blocked = False
     hold(cpu)
-    assert b'Cancelled' in mem.tx
+    assert b'Canceled' in mem.tx
     # Overflow while echo is blocked: even a valid prefix must not execute.
     mem.rx.extend(b'M 0400 FF' + b' ' * 80 + b'\r')
     mem.tx_blocked = True

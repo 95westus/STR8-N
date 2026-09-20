@@ -2,10 +2,12 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha8 size milestone](STR8N_V2_SCRATCH_MILESTONE.md)
+The independent [v2-alpha9 layout milestone](STR8N_V2_PAGE_MILESTONE.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
-The required command set is implemented; hardware qualification remains.
+The required command set is implemented; alpha9 builds at 3303 resident bytes
+and passes all five host regression suites (33 test groups). Hardware
+qualification remains.
 Existing v1
 sources and normal release targets retain their v1.35 behavior.
 
@@ -63,7 +65,7 @@ Addresses and byte values are hexadecimal. Share a compact hex parser.
 | Command | Contract |
 | --- | --- |
 | `B0`-`B3` | Select the bank used by monitor access without executing its payload. |
-| `D addr [end]` | Display memory, defaulting to 16 bytes. Ordinary display avoids memory-mapped I/O reads with side effects. |
+| `D addr [end]` | Display one byte, or the inclusive range when end is supplied. Ordinary display avoids memory-mapped I/O reads with side effects. |
 | `M addr bytes...` | Modify ordinary RAM, protecting the monitor's live workspace. |
 | `F addr bytes...` | Edit flash in the selected bank, subject to the flash contract below. |
 | `G addr` | Jump to existing code in the selected mapping, with no expected return. |
@@ -88,8 +90,8 @@ bytes from the BRK opcode. On the 816, handoff remains in emulation mode with
 direct page $0000, data bank $00, and program bank $00. User code manages
 subsequent native-mode entry and extended addressing.
 
-Provide a fixed software monitor-entry address, assigned when the ABI is
-laid out. It bypasses autostart and holds at the prompt. A software caller
+The fixed software monitor-entry address is $F003. It bypasses autostart
+and holds at the prompt. A software caller
 must already have the resident monitor bank visible and establish the common CPU contract:
 on the 816, emulation mode, direct page $0000, data bank $00, and execution
 in CPU bank $00. Switch flash mappings from RAM before entering. The entry
@@ -97,6 +99,42 @@ disables IRQs, clears decimal mode, and establishes the monitor stack; it is
 not a callable return or a debugger resume operation. Preserve installed
 handler pointers on this software entry; hardware/reset-style initialization
 establishes defaults. J3 remains reset-style entry, distinct from prompt entry.
+
+### Public call entries
+
+Public entries are consecutive three-byte absolute JMP instructions. Internal
+routine addresses can move; applications use the constants in
+[`str8n-v2-public.inc`](../src/v2/str8n-v2-public.inc). The builder checks every
+entry address and target. The alpha9 build and boot suite verify this table.
+
+| Address | Entry | Calling contract |
+| --- | --- | --- |
+| $F000 | RESET | JMP; initializes monitor/vectors and considers autostart; no return |
+| $F003 | HOLD | JMP; preserves handler pointers and holds at prompt; no return |
+| $F006 | CON_INIT | JSR; initializes console hardware; preserves X/Y |
+| $F009 | PUTC | JSR; outputs A, preserving A/X/Y; pending Ctrl-C suppresses output |
+| $F00C | GETC | JSR; buffered blocking input in A, Ctrl-C as 03; preserves X/Y |
+| $F00F | RAW_POLL | JSR; hardware-only nonblocking read, C=1/A=byte, C=0 empty; preserves X/Y |
+| $F012 | CHECK_CANCEL | JSR; bounded input service, C=1 if cancellation pending; preserves X/Y |
+| $F015 | RX_RESET | JSR; clears software queue/error/cancel state; preserves A/X/Y |
+| $F018 | READ_LINE | JSR; echoed uppercase line in $7C00, maximum 32 characters plus NUL; C=1 valid, C=0/Y=1 long, 2 invalid, 3 cancelled |
+| $F01B | HEX_OUT | JSR; prints A as two hexadecimal digits; preserves X/Y |
+| $F01E | NEWLINE | JSR; prints CR/LF; preserves X/Y |
+| $F021 | HEX_NIBBLE | JSR; ASCII hex in A, C=1/A=0..15 when valid, C=0 invalid; preserves X/Y |
+
+For returning calls, the monitor bank must remain mapped, monitor RAM and its
+copied worker must be intact, IRQ must be disabled, and decimal mode must be
+clear. On 816 enter with E=1, D=0, DBR=0, PBR=0. These routines are not
+reentrant and do not switch to the monitor bank for the caller. Registers and
+flags not listed as preserved/results are unspecified. CON_INIT alone does
+not initialize the queue or copy the worker; these calls assume prior monitor
+startup. RAW_POLL bypasses queued input, while RX_RESET does not drain hardware.
+Use GETC/READ_LINE for buffered input. CHECK_CANCEL leaves a pending cancel
+latched; GETC consumes it as 03, and RX_RESET clears it.
+
+Command handlers, parsers, packed message ordinals, flash workers, and other
+internal helpers are not public call entries. Internal calls continue to use
+their direct targets; the table adds only one JMP for application calls.
 
 Banked accesses must remain executable while the resident bank is hidden. Use RAM
 routines for the necessary access/selection operations and restore the monitor
@@ -135,6 +173,13 @@ permits. Extended 816 RAM and EDU serial SRAM belong to applications and are
 not required for monitor operation.
 
 ## Vector ownership and reset
+
+Reserve $FE00-$FEFF as a full blank flash page above the resident code and
+stored RAM images. The builder rejects an image extending beyond $FDFF and
+leaves this page erased ($FF). Entries remain at $F000 (reset/start) and
+$F003 (held prompt). Every byte from the end of the resident image through
+$FFDF is filled with $FF. The latest source changes are pending rebuild. These bytes
+share the F sector with the monitor; the page is not independently erasable.
 
 Reserve the resident bank's $FFE0-$FFFF for the complete 816 vector area, including
 reserved locations; the v1 configuration pocket at $FFF0 cannot carry over.
@@ -294,20 +339,20 @@ Examples of the intended vocabulary (final wording may be tightened):
 
 | Condition | Message |
 | --- | --- |
-| Invalid command | Bad command |
+| Invalid command | Bad cmd |
 | Invalid hex input | Bad hex |
 | Unexpected control/non-ASCII input | Bad input |
 | Invalid bank | Bad bank |
 | Reversed or unsupported range | Bad range |
-| Write into protected storage | Protected address |
-| F edit crosses a sector | Crosses sector |
-| Invalid S-record checksum | Bad S19 checksum |
-| Invalid S-record structure | Bad S19 record |
+| Write into protected storage | Protected |
+| F edit crosses a sector | Sector span |
+| Invalid S-record checksum | Bad checksum |
+| Invalid S-record structure | Bad S19 |
 | Invalid execution vector | Bad vector |
 | Flash operation exceeds its bound | Flash timeout |
-| Readback differs from requested data | Verify mismatch |
-| User cancels an operation | Cancelled |
-| Erased/invalid autostart configuration | Autostart disabled |
+| Readback differs from requested data | Verify fail |
+| User cancels an operation | Canceled |
+| Erased/invalid autostart configuration | No config |
 
 Include bank/address or expected/actual bytes only when they help identify
 the failure, using the shared hex-output routines. Keep success output and
