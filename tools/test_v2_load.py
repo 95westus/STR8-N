@@ -19,7 +19,7 @@ def check_load():
         stream = rec('0', 0, b'test') + rec('1', 0x02FE, data)
         stream += rec('1', 0x68FC, bytes(range(252, 256))) + rec('9', 0x02FE)
         output = command(cpu, b'L\r\n' + stream.lower())
-        assert b'Loaded; entry 02FE' in output, output
+        assert b'Entry 02FE' in output, output
         assert mem.ram[0x02FE:0x03FA] == data
         assert mem.ram[0x68FC:0x6900] == bytes(range(252, 256))
         assert mem.bank == bank and not mem.bank_changes
@@ -27,7 +27,7 @@ def check_load():
     # The have-data flag must not wrap after 256 records.
     mem.rx.extend(b'L\r' + rec('1', 0x0200, b'X') * 256 + rec('9', 0xFFFF))
     run(cpu, lambda: waiting(cpu), limit=2000000)
-    assert b'Loaded; entry FFFF' in mem.tx
+    assert b'Entry FFFF' in mem.tx
     CASES.append('all banks, maximum-size/lowercase/page-crossing records, all byte values, 256 records, no execution')
 
 

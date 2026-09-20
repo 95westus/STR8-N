@@ -5,8 +5,7 @@ V2_COMMAND_L:          LDX     #$01
                         BEQ     V2_LOAD_BEGIN
                         JMP     V2_BAD_HEX
 V2_LOAD_BEGIN:         STZ     V2_LOAD_HAVE_DATA
-                        LDX     #<V2_S19_TEXT
-                        LDY     #>V2_S19_TEXT
+                        LDX     #V2_S19_TEXT
                         JSR     V2_PRINT
 V2_LOAD_NEXT:          JSR     V2_SREC
                         BCC     V2_LOAD_ERROR
@@ -41,8 +40,7 @@ V2_LOAD_COPY:          LDA     V2_LINE,Y
                         BRA     V2_LOAD_NEXT
 V2_LOAD_DONE:          LDA     V2_LOAD_HAVE_DATA
                         BEQ     V2_LOAD_FORMAT
-                        LDX     #<V2_LOADED_TEXT
-                        LDY     #>V2_LOADED_TEXT
+                        LDX     #V2_LOADED_TEXT
                         JSR     V2_PRINT
                         LDA     V2_ADDR+1
                         JSR     V2_HEX_OUT
@@ -63,11 +61,9 @@ V2_LOAD_NOT_CANCEL:    CMP     #$04
                         JMP     V2_PROTECTED
 V2_LOAD_NOT_RANGE:     CMP     #$02
                         BEQ     V2_LOAD_CHECKSUM
-                        LDX     #<V2_S19_BAD_TEXT
-                        LDY     #>V2_S19_BAD_TEXT
+                        LDX     #V2_S19_BAD_TEXT
                         JMP     V2_MESSAGE
-V2_LOAD_CHECKSUM:      LDX     #<V2_S19_SUM_TEXT
-                        LDY     #>V2_S19_SUM_TEXT
+V2_LOAD_CHECKSUM:      LDX     #V2_S19_SUM_TEXT
                         JMP     V2_MESSAGE
 
 ; Discard transfer tail until 8192 consecutive empty hardware polls.

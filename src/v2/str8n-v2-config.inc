@@ -5,8 +5,7 @@ V2_COMMAND_C:          LDX     #$01
                         BNE     V2_C_SET
                         JSR     V2_CONFIG_READ
                         BCS     V2_C_SHOW
-                        LDX     #<V2_NO_CONFIG_TEXT
-                        LDY     #>V2_NO_CONFIG_TEXT
+                        LDX     #V2_NO_CONFIG_TEXT
                         JMP     V2_MESSAGE
 V2_C_SHOW:             JSR     V2_CONFIG_SHOW
                         JMP     V2_PROMPT
@@ -72,10 +71,7 @@ V2_C_WRITE:            JSR     V2W_MUTATE
                         STA     V2_SELECTED
                         BCC     V2_C_DONE
                         JMP     V2_FLASH_FAILED
-V2_C_DONE:             JSR     V2_CHECK_CANCEL
-                        BCC     V2_C_SUCCESS
-                        JMP     V2_CANCELLED
-V2_C_SUCCESS:          JMP     V2_FLASH_DONE
+V2_C_DONE:             JMP     V2_FLASH_COMPLETE
 
 V2_CONFIG_READ:        LDX     #$0F
 V2_CONFIG_COPY:        LDA     $EFF0,X
@@ -158,8 +154,7 @@ V2_AUTOSTART:          JSR     V2_CONFIG_READ
                         BEQ     V2_AUTO_RETURN
                         JSR     V2_NEWLINE
                         JSR     V2_CONFIG_SHOW
-                        LDX     #<V2_HOLD_TEXT
-                        LDY     #>V2_HOLD_TEXT
+                        LDX     #V2_HOLD_TEXT
                         JSR     V2_PRINT
                         LDA     V2_CONFIG+5
                         STA     V2_TICKS
@@ -184,8 +179,7 @@ V2_AUTO_POLL:          JSR     V2_AUTO_KEY
                         STA     V2_VECTOR+1
                         JMP     V2W_EXECUTE
 V2_AUTO_STOP:          JSR     V2_RX_RESET
-                        LDX     #<V2_CANCEL_TEXT
-                        LDY     #>V2_CANCEL_TEXT
+                        LDX     #V2_CANCEL_TEXT
                         JMP     V2_PRINT
 V2_AUTO_RETURN:        RTS
 ; Consume startup input without blocking; queued S and Ctrl-C are honored.

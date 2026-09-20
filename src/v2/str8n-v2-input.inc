@@ -28,13 +28,12 @@ V2_RX_LINE_END:        STZ     V2_RX_DROP
 V2_RX_QUEUE_BYTE:      LDA     V2_RX_COUNT
                         CMP     #V2_RX_SIZE
                         BCS     V2_RX_OVERFLOW
-                        LDX     V2_RX_TAIL
+                        LDA     V2_RX_TAIL
+                        AND     #(V2_RX_SIZE-1)
+                        TAX
                         LDA     V2_RX_CHAR
                         STA     V2_RX_QUEUE,X
-                        INX
-                        TXA
-                        AND     #(V2_RX_SIZE-1)
-                        STA     V2_RX_TAIL
+                        INC     V2_RX_TAIL
                         INC     V2_RX_COUNT
 V2_RX_CONSUMED:        PLX
                         SEC
@@ -62,15 +61,12 @@ V2_GETC_QUEUE:         LDA     V2_RX_COUNT
                         BNE     V2_GETC_POP
                         JSR     V2_RX_SERVICE
                         BRA     V2_GETC_WAIT
-V2_GETC_POP:           LDX     V2_RX_HEAD
-                        LDA     V2_RX_QUEUE,X
-                        PHA
-                        INX
-                        TXA
+V2_GETC_POP:           LDA     V2_RX_HEAD
                         AND     #(V2_RX_SIZE-1)
-                        STA     V2_RX_HEAD
+                        TAX
+                        LDA     V2_RX_QUEUE,X
+                        INC     V2_RX_HEAD
                         DEC     V2_RX_COUNT
-                        PLA
                         PLX
                         RTS
 

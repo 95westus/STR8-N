@@ -7,27 +7,10 @@ V2_F_ADDRESS:          LDA     V2_ADDR+1
 V2_F_PROTECTED:        JMP     V2_PROTECTED
 V2_F_BEGIN:            AND     #$F0
                         STA     V2_SECTOR
-                        STZ     V2_EDIT_COUNT
-V2_F_PARSE:            JSR     V2_HEX_BYTE
-                        BCC     V2_F_HEX
-                        LDA     V2_ADDR+1
-                        AND     #$F0
-                        CMP     V2_SECTOR
-                        BNE     V2_F_CROSS
-                        LDY     V2_EDIT_COUNT
-                        LDA     V2_VALUE
-                        STA     V2_BYTES,Y
-                        INC     V2_EDIT_COUNT
-                        INC     V2_ADDR
-                        BNE     V2_F_NEXT
-                        INC     V2_ADDR+1
-V2_F_NEXT:             JSR     V2_SKIP_SPACES
-                        BNE     V2_F_PARSE
-                        JSR     V2_CHECK_CANCEL
-                        BCC     V2_F_SNAPSHOT
-                        JMP     V2_CANCELLED
-V2_F_CROSS:            LDX     #<V2_CROSS_TEXT
-                        LDY     #>V2_CROSS_TEXT
+                        LDA     #$01
+                        STA     V2_EDIT_FLASH
+                        JMP     V2_EDIT_BEGIN
+V2_F_CROSS:            LDX     #V2_CROSS_TEXT
                         JMP     V2_MESSAGE
 V2_F_SNAPSHOT:         JSR     V2W_SNAPSHOT
                         JSR     V2_FLASH_BANK
@@ -39,14 +22,12 @@ V2_F_SNAPSHOT:         JSR     V2W_SNAPSHOT
                         CMP     V2_RESIDENT
                         BNE     V2_F_RECOVERY
                         INC     V2_SELF
-                        LDX     #<V2_SELF_TEXT
-                        LDY     #>V2_SELF_TEXT
+                        LDX     #V2_SELF_TEXT
                         JSR     V2_PRINT
 V2_F_RECOVERY:         LDA     V2_SELECTED
                         CMP     #$03
                         BNE     V2_F_PREVIEW
-                        LDX     #<V2_RECOVERY_TEXT
-                        LDY     #>V2_RECOVERY_TEXT
+                        LDX     #V2_RECOVERY_TEXT
                         JSR     V2_PRINT
 V2_F_PREVIEW:          LDA     V2_VECTOR
                         STA     V2_ADDR
@@ -75,7 +56,7 @@ V2_F_PREVIEW_BYTE:     JSR     V2_PRINT_ADDR
                         INC     V2_ADDR+1
                         INC     V2_BUF_PTR+1
 V2_F_PREVIEW_NEXT:     INX
-                        CPX     V2_EDIT_COUNT
+                        CPX     V2_COUNT
                         BNE     V2_F_PREVIEW_BYTE
                         JSR     V2W_ANALYZE
                         JSR     V2_FLASH_MODE
@@ -84,19 +65,17 @@ V2_F_PREVIEW_NEXT:     INX
                         JMP     V2_CANCELLED
 V2_F_COMMIT:           JSR     V2W_MUTATE
                         BCS     V2_FLASH_FAILED
+V2_FLASH_COMPLETE:
                         JSR     V2_CHECK_CANCEL
                         BCC     V2_FLASH_DONE
                         JMP     V2_CANCELLED
-V2_FLASH_DONE:         LDX     #<V2_DONE_TEXT
-                        LDY     #>V2_DONE_TEXT
+V2_FLASH_DONE:         LDX     #V2_DONE_TEXT
                         JMP     V2_MESSAGE
-V2_FLASH_FAILED:       LDX     #<V2_VERIFY_TEXT
-                        LDY     #>V2_VERIFY_TEXT
+V2_FLASH_FAILED:       LDX     #V2_VERIFY_TEXT
                         LDA     V2_FLASH_ERROR
                         CMP     #$01
                         BNE     V2_FLASH_MESSAGE
-                        LDX     #<V2_TIMEOUT_TEXT
-                        LDY     #>V2_TIMEOUT_TEXT
+                        LDX     #V2_TIMEOUT_TEXT
 V2_FLASH_MESSAGE:      JMP     V2_MESSAGE
 
 V2_FLASH_BANK:         LDA     #'B'
@@ -113,8 +92,7 @@ V2_NEWLINE:            LDA     #$0D
                         JSR     V2_PUTC
                         LDA     #$0A
                         JMP     V2_PUTC
-V2_CONFIRM:            LDX     #<V2_CONFIRM_TEXT
-                        LDY     #>V2_CONFIRM_TEXT
+V2_CONFIRM:            LDX     #V2_CONFIRM_TEXT
                         JSR     V2_PRINT
                         JSR     V2_READ_LINE
                         BCC     V2_CONFIRM_NO
@@ -177,8 +155,7 @@ V2_I_ALLOWED:          LDA     V2_ADDR+1
                         JSR     V2_HEX_OUT
                         LDA     #$FF
                         JSR     V2_HEX_OUT
-                        LDX     #<V2_INSTALL_TEXT
-                        LDY     #>V2_INSTALL_TEXT
+                        LDX     #V2_INSTALL_TEXT
                         JSR     V2_PRINT
                         JSR     V2_CONFIRM
                         BCS     V2_I_BEGIN
@@ -189,8 +166,7 @@ V2_I_PROTECTED:        JMP     V2_PROTECTED
 V2_I_BEGIN:            STZ     V2_SELF
                         STZ     V2_INSTALL_DONE
                         JSR     V2_I_BUFFER
-                        LDX     #<V2_S19_TEXT
-                        LDY     #>V2_S19_TEXT
+                        LDX     #V2_S19_TEXT
                         JSR     V2_PRINT
 V2_I_RECORD:           JSR     V2_SREC
                         BCS     V2_I_TYPE
@@ -295,10 +271,8 @@ V2_I_CANCEL_PENDING:   LDA     V2_CANCEL_REQUEST
                         RTS
 
 V2_FLASH_MODE:
-                        LDX     #<V2_PROGRAM_TEXT
-                        LDY     #>V2_PROGRAM_TEXT
+                        LDX     #V2_PROGRAM_TEXT
                         LDA     V2_ERASE
                         BEQ     V2_MODE_PRINT
-                        LDX     #<V2_ERASE_TEXT
-                        LDY     #>V2_ERASE_TEXT
+                        LDX     #V2_ERASE_TEXT
 V2_MODE_PRINT:         JMP     V2_PRINT

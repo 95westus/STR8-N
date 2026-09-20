@@ -12,7 +12,7 @@ V2_TIMEOUT              EQU     $F1
 V2_INSTALL_NEXT         EQU     $7D20
 V2_INSTALL_END          EQU     $7D22
 V2_INSTALL_DONE         EQU     $7D24
-V2_EDIT_COUNT           EQU     $F5
+V2_EDIT_FLASH           EQU     $F5
 V2_RESIDENT             EQU     $7D00
 V2_SELECTED             EQU     $7D01
 V2_TARGET               EQU     $7D02

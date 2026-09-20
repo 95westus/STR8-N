@@ -2,7 +2,7 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha5 configuration milestone](STR8N_V2_CONFIG_MILESTONE.md)
+The independent [v2-alpha6 compact monitor milestone](STR8N_V2_COMPACT_MILESTONE.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
 The required command set is implemented; hardware qualification remains.
@@ -293,7 +293,7 @@ Examples of the intended vocabulary (final wording may be tightened):
 
 | Condition | Message |
 | --- | --- |
-| Invalid command | Unknown command |
+| Invalid command | Bad command |
 | Invalid hex input | Bad hex |
 | Unexpected control/non-ASCII input | Bad input |
 | Invalid bank | Bad bank |

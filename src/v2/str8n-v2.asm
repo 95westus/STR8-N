@@ -1,4 +1,4 @@
-; v2-alpha5: required monitor commands, configuration and held autostart.
+; v2-alpha6: required monitor commands, configuration and held autostart.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    START
@@ -6,6 +6,7 @@
                         XDEF    V2_END
                         INCLUDE "str8n-v2-eq.inc"
                         INCLUDE "vectors-symbols.inc"
+                        INCLUDE "text-ids.inc"
                         CODE
 START:                 JMP     V2_RESET
 V2_PROMPT_ENTRY:        JMP     V2_REENTER
@@ -87,8 +88,7 @@ V2_WORKER_COPIED:
                         LDA     #$01
                         STA     V2_LED
                         JSR     V2_CON_INIT
-                        LDX     #<V2_BANNER
-                        LDY     #>V2_BANNER
+                        LDX     #V2_BANNER
                         JSR     V2_PRINT
                         LDA     V2_RESIDENT
                         ORA     #'0'
@@ -97,8 +97,7 @@ V2_WORKER_COPIED:
                         BEQ     V2_PROMPT
                         JSR     V2_AUTOSTART
 V2_PROMPT:
-                        LDX     #<V2_PROMPT_TEXT
-                        LDY     #>V2_PROMPT_TEXT
+                        LDX     #V2_PROMPT_TEXT
                         JSR     V2_PRINT
                         JSR     V2_READ_LINE
                         BCS     V2_DISPATCH
@@ -111,42 +110,22 @@ V2_LINE_NOT_CANCEL:
                         JMP     V2_BAD_INPUT
 V2_LINE_OVERFLOW:
                         JMP     V2_LINE_LONG
-V2_DISPATCH:
-                        LDA     V2_LINE
+V2_DISPATCH:           LDA     V2_LINE
                         BEQ     V2_PROMPT
-                        CMP     #'?'
-                        BNE     V2_DISPATCH_COMMAND
-                        LDA     V2_LINE+1
-                        BEQ     V2_SHOW_HELP
+                        LDX     #$09
+V2_DISPATCH_FIND:      CMP     V2_COMMAND_KEYS,X
+                        BEQ     V2_DISPATCH_GO
+                        DEX
+                        BPL     V2_DISPATCH_FIND
                         JMP     V2_UNKNOWN
-V2_SHOW_HELP:
-                        LDX     #<V2_HELP
-                        LDY     #>V2_HELP
+V2_DISPATCH_GO:        TXA
+                        ASL     A
+                        TAX
+                        JMP     (V2_COMMAND_TABLE,X)
+V2_SHOW_HELP:          LDA     V2_LINE+1
+                        BNE     V2_UNKNOWN
+                        LDX     #V2_HELP
                         JMP     V2_MESSAGE
-V2_DISPATCH_COMMAND:
-                        CMP     #'B'
-                        BEQ     V2_COMMAND_B
-                        CMP     #'D'
-                        BNE     V2_TRY_M
-                        JMP     V2_COMMAND_D
-V2_TRY_M:              CMP     #'M'
-                        BNE     V2_TRY_G
-                        JMP     V2_COMMAND_M
-V2_TRY_G:              CMP     #'G'
-                        BNE     V2_TRY_L
-                        JMP     V2_COMMAND_G
-V2_TRY_L:              CMP     #'L'
-                        BNE     V2_TRY_F
-                        JMP     V2_COMMAND_L
-V2_TRY_F:              CMP     #'F'
-                        BNE     V2_TRY_I
-                        JMP     V2_COMMAND_F
-V2_TRY_I:              CMP     #'I'
-                        BNE     V2_TRY_C
-                        JMP     V2_COMMAND_I
-V2_TRY_C:              CMP     #'C'
-                        BNE     V2_COMMAND_J
-                        JMP     V2_COMMAND_C
 V2_COMMAND_B:          JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
                         PHA
@@ -163,8 +142,6 @@ V2_B_READY:            PLA
                         JSR     V2_PUTC
                         JMP     V2_PROMPT
 V2_COMMAND_J:
-                        CMP     #'J'
-                        BNE     V2_UNKNOWN
                         JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
                         STA     V2_TARGET
@@ -173,35 +150,29 @@ V2_COMMAND_J:
                         JMP     V2_CANCELLED
 V2_J_READY:
                         JSR     V2_WORKER
-                        LDX     #<V2_BAD_VECTOR_TEXT
-                        LDY     #>V2_BAD_VECTOR_TEXT
+                        LDX     #V2_BAD_VECTOR_TEXT
                         BRA     V2_MESSAGE
-V2_BAD_BANK:           LDX     #<V2_BAD_BANK_TEXT
-                        LDY     #>V2_BAD_BANK_TEXT
+V2_BAD_BANK:           LDX     #V2_BAD_BANK_TEXT
                         BRA     V2_MESSAGE
-V2_LINE_LONG:          LDX     #<V2_LONG_TEXT
-                        LDY     #>V2_LONG_TEXT
+V2_LINE_LONG:          LDX     #V2_LONG_TEXT
                         BRA     V2_MESSAGE
-V2_BAD_INPUT:          LDX     #<V2_BAD_INPUT_TEXT
-                        LDY     #>V2_BAD_INPUT_TEXT
+V2_BAD_INPUT:          LDX     #V2_BAD_INPUT_TEXT
                         BRA     V2_MESSAGE
-V2_UNKNOWN:            LDX     #<V2_UNKNOWN_TEXT
-                        LDY     #>V2_UNKNOWN_TEXT
+V2_UNKNOWN:            LDX     #V2_UNKNOWN_TEXT
 V2_MESSAGE:            JSR     V2_PRINT
                         JMP     V2_PROMPT
 V2_CANCELLED:          STZ     V2_CANCEL_REQUEST
                         JSR     V2_NEWLINE
-                        LDX     #<V2_CANCEL_TEXT
-                        LDY     #>V2_CANCEL_TEXT
+                        LDX     #V2_CANCEL_TEXT
                         JMP     V2_MESSAGE
 
-V2_PARSE_BANK:         LDA     V2_LINE+2
-                        BNE     V2_BANK_FAIL
-                        LDA     V2_LINE+1
+V2_PARSE_BANK:         LDA     V2_LINE+1
                         CMP     #'0'
                         BCC     V2_BANK_FAIL
                         CMP     #'4'
                         BCS     V2_BANK_FAIL
+                        LDY     V2_LINE+2
+                        BNE     V2_BANK_FAIL
                         AND     #$03
                         SEC
                         RTS
@@ -239,10 +210,6 @@ V2_CAPTURE_DONE:       STX     V2_RESIDENT
 V2_READ_LINE:
                         LDX     #$00
                         LDY     #$00
-                        LDA     V2_RX_BAD
-                        BEQ     V2_LINE_BYTE
-                        STZ     V2_RX_BAD
-                        LDY     #$02
 V2_LINE_BYTE:          JSR     V2_GETC
                         PHA
                         LDA     V2_RX_BAD
@@ -305,9 +272,6 @@ V2_BACKSPACE:          CPX     #$00
 V2_CANCEL:             LDX     #$00
                         LDY     #$03
 V2_LINE_END:           STZ     V2_LINE,X
-; Clear stale suffixes so J with a missing argument cannot reuse an old bank.
-                        INX
-                        STZ     V2_LINE,X
                         JSR     V2_NEWLINE
                         CPY     #$01
                         BCS     V2_LINE_FAIL
@@ -316,15 +280,35 @@ V2_LINE_END:           STZ     V2_LINE,X
 V2_LINE_FAIL:          CLC
                         RTS
 
-V2_PRINT:              STX     V2_PTR
-                        STY     V2_PTR+1
+ ; IN X=message ordinal. Preserve X; speed is secondary to ROM space.
+V2_PRINT:              PHX
+                        LDA     #<V2_TEXT
+                        STA     V2_PTR
+                        LDA     #>V2_TEXT
+                        STA     V2_PTR+1
                         LDY     #$00
-V2_PRINT_NEXT:         LDA     (V2_PTR),Y
-                        BEQ     V2_PRINT_END
-                        JSR     V2_PUTC
+                        CPX     #$00
+                        BEQ     V2_PRINT_NEXT
+V2_PRINT_SCAN:         LDA     (V2_PTR),Y
                         INY
+                        BNE     V2_PRINT_SCAN_TEST
+                        INC     V2_PTR+1
+V2_PRINT_SCAN_TEST:    CMP     #$80
+                        BCC     V2_PRINT_SCAN
+                        DEX
+                        BNE     V2_PRINT_SCAN
+V2_PRINT_NEXT:         LDA     (V2_PTR),Y
+                        PHA
+                        AND     #$7F
+                        JSR     V2_PUTC
+                        PLA
+                        BMI     V2_PRINT_END
+                        INY
+                        BNE     V2_PRINT_NEXT
+                        INC     V2_PTR+1
                         BRA     V2_PRINT_NEXT
-V2_PRINT_END:          RTS
+V2_PRINT_END:          PLX
+                        RTS
 
 ; Direct FT245/VIA routines derived from the v1.35 board-tested sequences.
 ; Preserve X/Y; initialization never changes bank-select PCR bits.
@@ -381,25 +365,11 @@ V2_TX_CANCEL:
                         PLA
                         RTS
 
-V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a5 B",$00
-V2_PROMPT_TEXT:        DB      $0D,$0A,"> ",$00
-V2_HELP:               DB      "B0-B3 D addr [end] M/F addr bytes G addr L I start end C [on bank addr delay] J0-J3 ?",$00
-V2_BAD_BANK_TEXT:      DB      "Bad bank",$00
-V2_BAD_VECTOR_TEXT:    DB      "Bad vector",$00
-V2_LONG_TEXT:          DB      "Line too long",$00
-V2_UNKNOWN_TEXT:       DB      "Unknown command",$00
-V2_BAD_INPUT_TEXT:     DB      "Bad input",$00
-V2_BAD_HEX_TEXT:       DB      "Bad hex",$00
-V2_BAD_RANGE_TEXT:     DB      "Bad range",$00
-V2_PROTECTED_TEXT:     DB      "Protected address",$00
-V2_CANCEL_TEXT:        DB      "Cancelled",$00
-V2_S19_TEXT:           DB      "S19",$0D,$0A,$00
-V2_S19_BAD_TEXT:       DB      "Bad S19 record",$00
-V2_S19_SUM_TEXT:       DB      "Bad S19 checksum",$00
-V2_LOADED_TEXT:        DB      "Loaded; entry ",$00
-                        INCLUDE "str8n-v2-flash-text.inc"
-V2_NO_CONFIG_TEXT:     DB      "No config",$00
-V2_HOLD_TEXT:          DB      "S/Ctrl-C hold",$0D,$0A,$00
+V2_COMMAND_KEYS:      DB      "BDMGLFICJ?"
+V2_COMMAND_TABLE:     DW      V2_COMMAND_B,V2_COMMAND_D,V2_COMMAND_M,V2_COMMAND_G
+                        DW      V2_COMMAND_L,V2_COMMAND_F,V2_COMMAND_I,V2_COMMAND_C
+                        DW      V2_COMMAND_J,V2_SHOW_HELP
+                        INCLUDE "text-image.inc"
 V2_WORKER_IMAGE:
                         INCLUDE "worker-image.inc"
 V2_VECTOR_IMAGE:
