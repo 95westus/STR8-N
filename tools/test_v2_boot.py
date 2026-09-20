@@ -43,6 +43,7 @@ class Memory:
         self.ram[0x7FE0] = 0x0C
         self.ram[0x7FE3] = 0
         self.rx, self.tx = deque(), bytearray()
+        self.tx_blocked = False
         self.writes = []
         self.bank_changes = []
         self.io_reads = []
@@ -55,7 +56,7 @@ class Memory:
         if address >= 0x8000:
             return self.banks[self.bank][address-0x8000]
         if address == 0x7FE0:
-            return (self.ram[address] & ~3) | (0 if self.rx else 2) | 0x20
+            return (self.ram[address] & ~3) | (0 if self.rx else 2) | 0x20 | int(self.tx_blocked)
         if address == 0x7FE1 and not self.ram[0x7FE3]:
             return self.rx[0] if self.rx else 0
         return self.ram[address]
@@ -86,8 +87,14 @@ def run(cpu, stop, limit=100000):
     raise AssertionError(f'Execution limit at B{cpu.memory.bank}:{cpu.pc:04X}')
 
 
+def waiting(cpu):
+    return (cpu.pc in (SYM['V2_GETC'], SYM['V2_GETC_WAIT'])
+            and not cpu.memory.rx and not cpu.memory.ram[0x7D0F]
+            and not cpu.memory.ram[0x7D10])
+
+
 def hold(cpu):
-    run(cpu, lambda: cpu.pc == SYM['V2_GETC'] and not cpu.memory.rx)
+    run(cpu, lambda: waiting(cpu), limit=300000)
 
 
 def boot(bank, reset_pcr=False):

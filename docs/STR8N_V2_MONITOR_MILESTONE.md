@@ -1,5 +1,8 @@
 # STR8-N v2-alpha2 monitor milestone
 
+Historical milestone. The current build is
+[v2-alpha3 with L and safe Ctrl-C](STR8N_V2_LOAD_MILESTONE.md).
+
 Adds B/D/M/G to the bank-independent boot baseline. One binary serves all
 flash overlays and both CPUs, with the 816 in emulation mode. No physical
 board installation or testing has been performed. F/L/I, configuration, and

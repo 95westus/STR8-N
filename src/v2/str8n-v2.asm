@@ -1,4 +1,4 @@
-; v2-alpha2: B/D/M/G and J0-J3. No automatic execution or flash writes.
+; v2-alpha3: B/D/M/G/L and J0-J3; safe Ctrl-C cancellation. No flash writes.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    START
@@ -52,6 +52,7 @@ V2_REENTER:
 V2_ENTER:
                         STZ     V2_SKIP_LF
                         STZ     V2_NMI_HOLD
+                        JSR     V2_RX_RESET
                         LDX     #$00
 V2_COPY_WORKER:        LDA     V2_WORKER_IMAGE,X
                         STA     V2_WORKER,X
@@ -80,6 +81,10 @@ V2_PROMPT:
                         JSR     V2_PRINT
                         JSR     V2_READ_LINE
                         BCS     V2_DISPATCH
+                        CPY     #$03
+                        BNE     V2_LINE_NOT_CANCEL
+                        JMP     V2_CANCELLED
+V2_LINE_NOT_CANCEL:
                         CPY     #$02
                         BNE     V2_LINE_OVERFLOW
                         JMP     V2_BAD_INPUT
@@ -107,10 +112,19 @@ V2_TRY_M:              CMP     #'M'
                         BNE     V2_TRY_G
                         JMP     V2_COMMAND_M
 V2_TRY_G:              CMP     #'G'
-                        BNE     V2_COMMAND_J
+                        BNE     V2_TRY_L
                         JMP     V2_COMMAND_G
+V2_TRY_L:              CMP     #'L'
+                        BNE     V2_COMMAND_J
+                        JMP     V2_COMMAND_L
 V2_COMMAND_B:          JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
+                        PHA
+                        JSR     V2_CHECK_CANCEL
+                        BCC     V2_B_READY
+                        PLA
+                        JMP     V2_CANCELLED
+V2_B_READY:            PLA
                         STA     V2_SELECTED
                         LDA     #'B'
                         JSR     V2_PUTC
@@ -124,6 +138,10 @@ V2_COMMAND_J:
                         JSR     V2_PARSE_BANK
                         BCC     V2_BAD_BANK
                         STA     V2_TARGET
+                        JSR     V2_CHECK_CANCEL
+                        BCC     V2_J_READY
+                        JMP     V2_CANCELLED
+V2_J_READY:
                         JSR     V2_WORKER
                         LDX     #<V2_BAD_VECTOR_TEXT
                         LDY     #>V2_BAD_VECTOR_TEXT
@@ -141,6 +159,14 @@ V2_UNKNOWN:            LDX     #<V2_UNKNOWN_TEXT
                         LDY     #>V2_UNKNOWN_TEXT
 V2_MESSAGE:            JSR     V2_PRINT
                         JMP     V2_PROMPT
+V2_CANCELLED:          STZ     V2_CANCEL_REQUEST
+                        LDA     #$0D
+                        JSR     V2_PUTC
+                        LDA     #$0A
+                        JSR     V2_PUTC
+                        LDX     #<V2_CANCEL_TEXT
+                        LDY     #>V2_CANCEL_TEXT
+                        JMP     V2_MESSAGE
 
 V2_PARSE_BANK:         LDA     V2_LINE+2
                         BNE     V2_BANK_FAIL
@@ -156,6 +182,8 @@ V2_BANK_FAIL:          CLC
                         RTS
 
                         INCLUDE "str8n-v2-monitor.inc"
+                        INCLUDE "str8n-v2-load.inc"
+                        INCLUDE "str8n-v2-input.inc"
 
 V2_CAPTURE_BANK:
                         LDX     #$00
@@ -182,7 +210,17 @@ V2_CAPTURE_DONE:       STX     V2_RESIDENT
 V2_READ_LINE:
                         LDX     #$00
                         LDY     #$00
+                        LDA     V2_RX_BAD
+                        BEQ     V2_LINE_BYTE
+                        STZ     V2_RX_BAD
+                        LDY     #$02
 V2_LINE_BYTE:          JSR     V2_GETC
+                        PHA
+                        LDA     V2_RX_BAD
+                        BEQ     V2_LINE_INPUT_OK
+                        STZ     V2_RX_BAD
+                        LDY     #$02
+V2_LINE_INPUT_OK:      PLA
                         CMP     #$0A
                         BNE     V2_NOT_LF
                         LDA     V2_SKIP_LF
@@ -236,7 +274,7 @@ V2_BACKSPACE:          CPX     #$00
                         JSR     V2_PUTC
                         BRA     V2_LINE_BYTE
 V2_CANCEL:             LDX     #$00
-                        LDY     #$00
+                        LDY     #$03
 V2_LINE_END:           STZ     V2_LINE,X
 ; Clear stale suffixes so J with a missing argument cannot reuse an old bank.
                         INX
@@ -269,10 +307,10 @@ V2_CON_INIT:           LDA     #$0C
                         STA     V2_DDRB
                         STZ     V2_DDRA
                         RTS
-V2_GETC:               STZ     V2_DDRA
+V2_RAW_POLL:           STZ     V2_DDRA
                         LDA     #$02
                         BIT     V2_CTRL
-                        BNE     V2_GETC
+                        BNE     V2_RAW_EMPTY
                         LDA     #$08
                         TRB     V2_CTRL
                         NOP
@@ -282,15 +320,29 @@ V2_GETC:               STZ     V2_DDRA
                         LDA     #$08
                         TSB     V2_CTRL
                         PLA
+                        SEC
+                        RTS
+V2_RAW_EMPTY:          CLC
                         RTS
 V2_PUTC:               PHA
+                        LDA     V2_CANCEL_REQUEST
+                        BNE     V2_TX_CANCEL
                         STZ     V2_DDRA
+                        LDA     #$01
+V2_TX_WAIT:            BIT     V2_CTRL
+                        BEQ     V2_TX_READY
+; Poll input while output is blocked. Drop this byte on cancel; the caller
+; unwinds normally and stops at its next safe boundary.
+                        JSR     V2_RX_SERVICE
+                        LDA     V2_CANCEL_REQUEST
+                        BNE     V2_TX_CANCEL
+                        LDA     #$01
+                        BRA     V2_TX_WAIT
+V2_TX_READY:           PLA
+                        PHA
                         STA     V2_DATA
                         NOP
                         NOP
-                        LDA     #$01
-V2_TX_WAIT:            BIT     V2_CTRL
-                        BNE     V2_TX_WAIT
                         LDA     #$04
                         TSB     V2_CTRL
                         DEC     V2_DDRA
@@ -299,12 +351,13 @@ V2_TX_WAIT:            BIT     V2_CTRL
                         LDA     #$04
                         TRB     V2_CTRL
                         STZ     V2_DDRA
+V2_TX_CANCEL:
                         PLA
                         RTS
 
-V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a2 B",$00
+V2_BANNER:             DB      $0D,$0A,"STR8-N 2.0a3 B",$00
 V2_PROMPT_TEXT:        DB      $0D,$0A,"> ",$00
-V2_HELP:               DB      "B0-B3 D addr [end] M addr bytes G addr J0-J3 ?",$00
+V2_HELP:               DB      "B0-B3 D addr [end] M addr bytes G addr L J0-J3 ?",$00
 V2_BAD_BANK_TEXT:      DB      "Bad bank",$00
 V2_BAD_VECTOR_TEXT:    DB      "Bad vector",$00
 V2_LONG_TEXT:          DB      "Line too long",$00
@@ -313,6 +366,11 @@ V2_BAD_INPUT_TEXT:     DB      "Bad input",$00
 V2_BAD_HEX_TEXT:       DB      "Bad hex",$00
 V2_BAD_RANGE_TEXT:     DB      "Bad range",$00
 V2_PROTECTED_TEXT:     DB      "Protected address",$00
+V2_CANCEL_TEXT:        DB      "Cancelled",$00
+V2_S19_TEXT:           DB      "S19",$0D,$0A,$00
+V2_S19_BAD_TEXT:       DB      "Bad S19 record",$00
+V2_S19_SUM_TEXT:       DB      "Bad S19 checksum",$00
+V2_LOADED_TEXT:        DB      "Loaded; entry ",$00
 V2_WORKER_IMAGE:
                         INCLUDE "worker-image.inc"
 V2_VECTOR_IMAGE:

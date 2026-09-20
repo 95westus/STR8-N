@@ -4,7 +4,7 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-On the `v2` branch, the independent [v2 monitor milestone](docs/STR8N_V2_MONITOR_MILESTONE.md)
+On the `v2` branch, the independent [v2 load/cancel milestone](docs/STR8N_V2_LOAD_MILESTONE.md)
 is under development and **has not been tested on physical hardware**.
 Use `make v2-check` for its build and host execution checks. The v1 firmware
 sources and normal release targets remain unchanged; the description below
