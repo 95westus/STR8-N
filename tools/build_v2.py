@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha8.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha9.
 """
 from pathlib import Path
 import argparse
@@ -12,10 +12,20 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a8'
-STEM = 'str8n-v2-alpha8'
-OUT = ROOT / 'BUILD/v2-alpha8'
+VERSION = '2.0a9'
+STEM = 'str8n-v2-alpha9'
+OUT = ROOT / 'BUILD/v2-alpha9'
 SOURCE = ROOT / 'src/v2'
+RESIDENT_START = 0xF000
+BLANK_PAGE_START = 0xFE00
+BLANK_PAGE_SIZE = 0x100
+PUBLIC_CALLS = (
+    ('STR8V2_RESET', 'START', 'V2_RESET'),
+    ('STR8V2_HOLD', 'V2_PROMPT_ENTRY', 'V2_REENTER'),
+    *((f'STR8V2_{name}', f'V2_{name}_ENTRY', f'V2_{name}') for name in (
+        'CON_INIT', 'PUTC', 'GETC', 'RAW_POLL', 'CHECK_CANCEL', 'RX_RESET',
+        'READ_LINE', 'HEX_OUT', 'NEWLINE', 'HEX_NIBBLE')),
+)
 
 
 def read_s19(path):
@@ -100,10 +110,19 @@ def main():
     # One ordinal per message; bit 7 marks the last character. No ROM pointer
     # table or terminator bytes. Keep editable text readable in the source JSON.
     messages = json.loads((SOURCE / 'str8n-v2-text.json').read_text())
+    # Leading error messages share the prefix emitted by V2_MESSAGE. Keep
+    # their complete human-readable wording in JSON, but store each tail once.
+    bad_prefix = next(i for i, m in enumerate(messages) if m['name'] == 'V2_BAD_PREFIX')
+    if (messages[bad_prefix]['text'] != 'Bad ' or
+            any(not m['text'].startswith('Bad ') for m in messages[:bad_prefix]) or
+            any(m['text'].startswith('Bad ') for m in messages[bad_prefix+1:])):
+        raise ValueError('Bad-prefix messages must precede V2_BAD_PREFIX')
     ids, pool, names = [], bytearray(), set()
     for index, message in enumerate(messages):
         name = message['name']
         raw = bytearray(message['text'].replace('{version}', VERSION).encode('ascii'))
+        if index < bad_prefix:
+            raw = raw[4:]
         if index > 255 or name in names or not raw or any(b == 0 or b >= 128 for b in raw):
             raise ValueError('Invalid or duplicate monitor message')
         names.add(name)
@@ -144,12 +163,21 @@ def main():
         if name.startswith(('V2V_', 'V2W_'))) +
         f'V2_WORKER_SIZE          EQU     ${len(worker):02X}\n' +
         f'V2_VECTOR_SIZE          EQU     ${len(vectors):02X}\n', encoding='ascii')
-    memory, resident = assemble('str8n-v2', 0xF000, assembler, linker)
-    code = dense_image(memory, 0xF000, resident['V2_END'])
-    if resident['V2_END'] > 0xFFE0:
-        raise ValueError('Resident overlaps 816 vectors')
+    memory, resident = assemble('str8n-v2', RESIDENT_START, assembler, linker)
+    code = dense_image(memory, RESIDENT_START, resident['V2_END'])
+    for index, (public, entry_label, target) in enumerate(PUBLIC_CALLS):
+        address = RESIDENT_START + 3*index
+        if resident[public] != address or resident[entry_label] != address:
+            raise ValueError(f'Public entry moved: {public}')
+        if bytes(memory[a] for a in range(address, address+3)) != b'\x4c' + resident[target].to_bytes(2, 'little'):
+            raise ValueError(f'Public entry is not the expected JMP: {public}')
+    if resident['V2_END'] > BLANK_PAGE_START:
+        raise ValueError('Resident overlaps reserved blank page $FE00-$FEFF')
     image = bytearray(b'\xff' * 8192)
-    image[0x1000:0x1000+len(code)] = code
+    offset = RESIDENT_START - 0xE000
+    image[offset:offset+len(code)] = code
+    # Keep the complete unused tail erased, up to the hardware vector area.
+    assert image[resident['V2_END']-0xE000:0x1FE0] == b'\xff' * (0xFFE0-resident['V2_END'])
     # Factory configuration remains erased, so a fresh image holds.
     # Reserved vector words remain FF on both CPUs.
     hardware = {0xFFE4: 'V2V_NATIVE_COP', 0xFFE6: 'V2V_NATIVE_BRK',
@@ -173,14 +201,18 @@ def main():
         path.write_text('\n'.join(lines) + '\n', encoding='ascii')
         parsed, entry = read_s19(path)
         assert dense_image(parsed, start, 65536) == payload
-        assert entry == int.from_bytes(payload[-4:-2], 'little') == 0xF000
+        assert entry == int.from_bytes(payload[-4:-2], 'little') == RESIDENT_START
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    report = dict(milestone='shared-scratch', resident_bytes=len(code),
-                  resident_code_bytes=resident['V2_COMMAND_KEYS']-0xF000,
+    report = dict(milestone='compact-resident', resident_bytes=len(code),
+                  resident_start=RESIDENT_START,
+                  public_calls={public: resident[public] for public, _, _ in PUBLIC_CALLS},
+                  resident_code_bytes=resident['V2_COMMAND_KEYS']-RESIDENT_START,
                   command_table_bytes=resident['V2_TEXT']-resident['V2_COMMAND_KEYS'],
                   text_bytes=len(pool),
                   worker_bytes=len(worker), vector_code_bytes=len(vectors),
                   free_before_vectors=0xFFE0-resident['V2_END'],
+                  reserved_blank_page_start=BLANK_PAGE_START,
+                  reserved_blank_page_bytes=BLANK_PAGE_SIZE,
                   resident=resident, worker=worker_sym, vectors=vector_sym,
                   artifacts=artifacts, board_tested=False,
                   source_sha256={p.name: hashlib.sha256(p.read_bytes()).hexdigest()

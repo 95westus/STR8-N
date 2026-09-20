@@ -10,16 +10,17 @@ V2_ERASE                EQU     $EF
 V2_SELF                 EQU     $F5      ; V2_EDIT_FLASH after preflight
 V2_FLASH_ERROR          EQU     $F6      ; V2_CFG_SUM during mutation
 V2_FLASH_DATA           EQU     $F0
-V2_TIMEOUT              EQU     $F1
+; Flash polling keeps its three counters in X, Y and one stack byte.
+; These persistent console/bank bytes therefore remain live during polling.
 V2_INSTALL_NEXT         EQU     $FE      ; V2_VECTOR during I
 V2_INSTALL_END          EQU     $E9      ; parsed end high byte; low is always FF
 V2_INSTALL_DONE         EQU     $E8      ; parsed end low byte after confirmation
 V2_EDIT_FLASH           EQU     $F5
 V2_RESIDENT             EQU     $7D00
-V2_SELECTED             EQU     $7D01
-V2_TARGET               EQU     $7D02
+V2_SELECTED             EQU     $F3
+V2_TARGET               EQU     $FB      ; V2_REC_SUM outside S19 transfers
 V2_VECTOR               EQU     $FE
-V2_SKIP_LF              EQU     $EC
+V2_SKIP_LF              EQU     $EC      ; boolean 0/1, consumed with LSR
 V2_LAST                 EQU     $E8      ; D retains the parsed end in VALUE
 V2_VALUE                EQU     $E8
 V2_COUNT                EQU     $EA
@@ -28,9 +29,9 @@ V2_NMI_HOLD             EQU     $F4
 V2_RX_HEAD              EQU     $FD
 V2_RX_TAIL              EQU     $FA
 V2_RX_COUNT             EQU     $F9
-V2_CANCEL_REQUEST       EQU     $F8
-V2_RX_DROP              EQU     $7D11
-V2_RX_BAD               EQU     $7D12
+V2_CANCEL_REQUEST       EQU     $F8      ; boolean 0/1, consumed by GETC
+V2_RX_DROP              EQU     $F2
+V2_RX_BAD               EQU     $F1      ; boolean 0/1, consumed by readers
 V2_REC_TYPE             EQU     $EB      ; V2_DIGIT_LIMIT during S19 input
 V2_REC_SUM              EQU     $FB
 V2_REC_HEX              EQU     $FC
@@ -54,5 +55,5 @@ V2_PIA_CRA              EQU     $7FA1
 V2_CFG_SUM              EQU     $F6
 V2_CFG_SUM2             EQU     $F7
 V2_AUTO                 EQU     $7D26
-V2_TICKS                EQU     $7D27
+V2_TICKS                EQU     $F7      ; V2_CFG_SUM2 after config validation
 V2_CONFIG               EQU     $7D80

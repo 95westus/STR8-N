@@ -15,12 +15,7 @@ V2_LOAD_NEXT:          JSR     V2_SREC
                         LDA     V2_ADDR+1
                         CMP     #$02
                         BCC     V2_LOAD_RANGE
-                        LDA     V2_COUNT
-                        DEC     A
-                        CLC
-                        ADC     V2_ADDR
-                        LDA     V2_ADDR+1
-                        ADC     #$00
+                        JSR     V2_RECORD_END
                         BCS     V2_LOAD_RANGE
                         CMP     #$69
                         BCS     V2_LOAD_RANGE
@@ -38,14 +33,8 @@ V2_LOAD_ERROR:         PHA
                         CMP     #$03
                         BNE     V2_LOAD_NOT_CANCEL
                         JMP     V2_CANCELLED
-V2_LOAD_NOT_CANCEL:    CMP     #$04
-                        BNE     V2_LOAD_NOT_RANGE
-                        JMP     V2_PROTECTED
-V2_LOAD_NOT_RANGE:     CMP     #$02
-                        BEQ     V2_LOAD_CHECKSUM
-                        LDX     #V2_S19_BAD_TEXT
-                        JMP     V2_MESSAGE
-V2_LOAD_CHECKSUM:      LDX     #V2_S19_SUM_TEXT
+V2_LOAD_NOT_CANCEL:    TAY
+                        LDX     V2_LOAD_ERROR_TEXTS-1,Y
                         JMP     V2_MESSAGE
 
 ; Discard transfer tail until 8192 consecutive empty hardware polls.
@@ -60,6 +49,15 @@ V2_DRAIN_POLL:         JSR     V2_RAW_POLL
                         BNE     V2_DRAIN_POLL
                         DEY
                         BNE     V2_DRAIN_POLL
+                        RTS
+
+; Inclusive record end high byte in A; carry set on 16-bit wrap. COUNT > 0.
+V2_RECORD_END:         LDA     V2_COUNT
+                        DEC     A
+                        CLC
+                        ADC     V2_ADDR
+                        LDA     V2_ADDR+1
+                        ADC     #$00
                         RTS
 
 ; C=1 complete record; C=0 A=1 format, 2 checksum, 3 Ctrl-C.
@@ -77,11 +75,10 @@ V2_SREC_FIRST:
                         BNE     V2_SREC_BAD
                         JSR     V2_SREC_CHAR
                         BCC     V2_SREC_RETURN
-                        SEC
+; SREC_CHAR returns carry set on success. Accept types 0/1 together.
                         SBC     #'0'
-                        BEQ     V2_SREC_TYPE_OK
-                        CMP     #$01
-                        BEQ     V2_SREC_TYPE_OK
+                        CMP     #$02
+                        BCC     V2_SREC_TYPE_OK
                         CMP     #$09
                         BNE     V2_SREC_BAD
 V2_SREC_TYPE_OK:       STA     V2_REC_TYPE
@@ -127,7 +124,8 @@ V2_SREC_CHECK:         JSR     V2_SREC_BYTE
                         CMP     #$0D
                         BNE     V2_SREC_BAD
                         INC     V2_SKIP_LF
-V2_SREC_OK:            SEC
+; Either matching delimiter comparison already set carry; INC preserves it.
+V2_SREC_OK:
 V2_SREC_RETURN:        RTS
 V2_SREC_SUM_BAD:       LDA     #$02
                         CLC
@@ -139,13 +137,10 @@ V2_SREC_BAD:           LDA     #$01
 V2_SREC_CHAR:          JSR     V2_GETC
                         CMP     #$03
                         BEQ     V2_SREC_CHAR_FAIL
-                        PHA
-                        LDA     V2_RX_BAD
-                        BEQ     V2_SREC_CHAR_OK
-                        PLA
-                        BRA     V2_SREC_BAD
-V2_SREC_CHAR_OK:       PLA
-                        SEC
+; A receive error immediately aborts the record; drain resets all RX state.
+                        LSR     V2_RX_BAD
+                        BCS     V2_SREC_BAD
+V2_SREC_CHAR_OK:       SEC
                         RTS
 V2_SREC_CHAR_FAIL:     CLC
                         RTS

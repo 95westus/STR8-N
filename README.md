@@ -4,8 +4,10 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-On the `v2` branch, the independent [v2 size milestone](docs/STR8N_V2_SCRATCH_MILESTONE.md)
-is under development and **has not been tested on physical hardware**.
+On the `v2` branch, the independent [v2 layout milestone](docs/STR8N_V2_PAGE_MILESTONE.md)
+is under development. A [Bank 1 COM4 smoke test](docs/STR8N_V2_BOARD_TEST_2026-09-19.md)
+passed; full hardware qualification remains.
+The alpha9 build and all five host regression suites pass (33 test groups).
 Use `make v2-check` for its build and host execution checks. The v1 firmware
 sources and normal release targets remain unchanged; the description below
 documents the v1 product, not the full planned v2 command set.

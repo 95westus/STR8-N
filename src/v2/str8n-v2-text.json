@@ -1,17 +1,5 @@
 [
   {
-    "name": "V2_BANNER",
-    "text": "\r\nSTR8-N {version} B"
-  },
-  {
-    "name": "V2_PROMPT_TEXT",
-    "text": "\r\n> "
-  },
-  {
-    "name": "V2_HELP",
-    "text": "B0-B3 D M F G L I C J0-J3 ?"
-  },
-  {
     "name": "V2_BAD_BANK_TEXT",
     "text": "Bad bank"
   },
@@ -20,12 +8,8 @@
     "text": "Bad vector"
   },
   {
-    "name": "V2_LONG_TEXT",
-    "text": "Line too long"
-  },
-  {
     "name": "V2_UNKNOWN_TEXT",
-    "text": "Bad command"
+    "text": "Bad cmd"
   },
   {
     "name": "V2_BAD_INPUT_TEXT",
@@ -40,24 +24,44 @@
     "text": "Bad range"
   },
   {
+    "name": "V2_S19_BAD_TEXT",
+    "text": "Bad S19"
+  },
+  {
+    "name": "V2_S19_SUM_TEXT",
+    "text": "Bad checksum"
+  },
+  {
+    "name": "V2_BAD_PREFIX",
+    "text": "Bad "
+  },
+  {
+    "name": "V2_BANNER",
+    "text": "\r\nSTR8-N {version} B"
+  },
+  {
+    "name": "V2_PROMPT_TEXT",
+    "text": "\r\n> "
+  },
+  {
+    "name": "V2_HELP",
+    "text": "B0-B3 D M F G L I C J0-J3 ?"
+  },
+  {
+    "name": "V2_LONG_TEXT",
+    "text": "Long line"
+  },
+  {
     "name": "V2_PROTECTED_TEXT",
-    "text": "Protected address"
+    "text": "Protected"
   },
   {
     "name": "V2_CANCEL_TEXT",
-    "text": "Cancelled"
+    "text": "Canceled"
   },
   {
     "name": "V2_S19_TEXT",
     "text": "S19\r\n"
-  },
-  {
-    "name": "V2_S19_BAD_TEXT",
-    "text": "Bad S19 record"
-  },
-  {
-    "name": "V2_S19_SUM_TEXT",
-    "text": "Bad S19 checksum"
   },
   {
     "name": "V2_LOADED_TEXT",
@@ -65,11 +69,11 @@
   },
   {
     "name": "V2_CROSS_TEXT",
-    "text": "Crosses sector"
+    "text": "Sector span"
   },
   {
     "name": "V2_SELF_TEXT",
-    "text": "STR8-N edit; reset\r\n"
+    "text": "Self edit; reset\r\n"
   },
   {
     "name": "V2_RECOVERY_TEXT",
@@ -81,11 +85,11 @@
   },
   {
     "name": "V2_ERASE_TEXT",
-    "text": "Erase/rewrite"
+    "text": "Erase+write"
   },
   {
     "name": "V2_CONFIRM_TEXT",
-    "text": " Y? "
+    "text": " Y?"
   },
   {
     "name": "V2_INSTALL_TEXT",
@@ -97,7 +101,7 @@
   },
   {
     "name": "V2_VERIFY_TEXT",
-    "text": "Verify failed"
+    "text": "Verify fail"
   },
   {
     "name": "V2_TIMEOUT_TEXT",

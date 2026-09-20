@@ -17,10 +17,11 @@ START:
                         LDA     $FFFD
                         STA     V2_VECTOR+1
                         BPL     V2W_RESTORE
-                        CMP     #$FF
+; INC A tests for FF by wrapping to zero; the stored vector is unchanged.
+                        INC     A
                         BNE     V2W_GO
                         LDA     V2_VECTOR
-                        CMP     #$FF
+                        INC     A
                         BEQ     V2W_RESTORE
 V2W_GO:
                         CLD

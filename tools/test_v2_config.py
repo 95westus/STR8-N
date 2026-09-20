@@ -24,7 +24,7 @@ def startup(data, bank=0, keys=b''):
     mem = Memory(bank)
     mem.banks[bank][0x6FF0:0x7000] = data
     mem.rx.extend(keys)
-    cpu = MPU(memory=mem, pc=0xF000)
+    cpu = MPU(memory=mem, pc=SYM['START'])
     return cpu, mem
 
 
@@ -46,7 +46,7 @@ def check_config_command():
         assert b'C 01 02 9000 0A' in command(cpu, b'C\r')
         # Replace a programmed config, requiring erase; preserve all neighbors.
         output = send(cpu, b'C 0 3 F000 FF\rY\r')
-        assert b'Erase/rewrite' in output
+        assert b'Erase+write' in output
         assert mem.banks[resident][0x6FF0:0x7000] == config(0, 3, 0xF000, 255)
         assert mem.banks[resident][:0x6FF0] == before[resident][:0x6FF0]
         assert mem.banks[resident][0x7000:] == before[resident][0x7000:]
@@ -65,8 +65,8 @@ def check_rejection_and_failure():
                            (b'C 1 0 9000 09\r', b'Bad range'),
                            (b'C 1 0 7F00 0A\r', b'Bad range'),
                            (b'C 1 0 0100 0A\r', b'Bad range'),
-                           (b'C 1 0 9000 0A\rN\r', b'Cancelled'),
-                           (b'C 1 0 9000 0A\r\x03', b'Cancelled')]:
+                           (b'C 1 0 9000 0A\rN\r', b'Canceled'),
+                           (b'C 1 0 9000 0A\r\x03', b'Canceled')]:
         output = send(cpu, line)
         assert expected in output, (line, output)
         assert not mem.events and mem.ram[SYM['V2_SELECTED']] == 2 and mem.bank == 0
@@ -80,7 +80,7 @@ def check_rejection_and_failure():
     run(cpu, lambda: cpu.pc == W['V2W_PROGRAM'], limit=300000)
     mem.rx.extend(b'\x03')
     run(cpu, lambda: waiting(cpu), limit=1000000)
-    assert b'Cancelled' in mem.tx and mem.banks[0][0x6FF0:0x7000] == config()
+    assert b'Canceled' in mem.tx and mem.banks[0][0x6FF0:0x7000] == config()
     assert mem.ram[SYM['V2_SELECTED']] == 2
     CASES.append('C syntax/range/confirmation rejection, flash failure, atomic cancellation, bank restoration on every exit')
 
@@ -105,7 +105,7 @@ def check_validity():
     for index in range(6, 14):
         cpu, mem = startup(config(**{str(index): 255}), keys=b'S')
         hold(cpu)
-        assert b'S/Ctrl-C hold' in mem.tx and b'Cancelled' in mem.tx
+        assert b'S/Ctrl-C hold' in mem.tx and b'Canceled' in mem.tx
         assert mem.bank == 0
     CASES.append('erased/disabled/unknown/malformed configs hold; all 128 single-bit corruptions rejected; unsafe targets rejected')
 
@@ -141,27 +141,27 @@ def check_stop_keys():
     for key in (b'S', b's', b'\x03'):
         cpu, mem = startup(config(), keys=key)
         hold(cpu)
-        assert b'Cancelled' in mem.tx and mem.bank == 0
+        assert b'Canceled' in mem.tx and mem.bank == 0
         # Stop keys already queued while the banner is blocked must survive.
         cpu, mem = startup(config(), keys=key)
         mem.tx_blocked = True
         run(cpu, lambda: not mem.rx and (mem.ram[SYM['V2_RX_COUNT']] or mem.ram[SYM['V2_CANCEL_REQUEST']]))
         mem.tx_blocked = False
         hold(cpu)
-        assert b'Cancelled' in mem.tx and mem.bank == 0
+        assert b'Canceled' in mem.tx and mem.bank == 0
         # Arriving during the window, after unrelated input.
         cpu, mem = startup(config(), keys=b'xyz\r')
         run(cpu, lambda: cpu.pc == SYM['V2_AUTO_TICK'])
         cpu.step()
         mem.rx.extend(key)
         hold(cpu)
-        assert b'Cancelled' in mem.tx and mem.bank == 0
+        assert b'Canceled' in mem.tx and mem.bank == 0
     cpu, mem = startup(config(), keys=b'x'*100)
     mem.tx_blocked = True
     run(cpu, lambda: not mem.rx and cpu.pc == SYM['V2_TX_WAIT'])
     mem.tx_blocked = False
     hold(cpu)
-    assert b'Cancelled' in mem.tx and mem.bank == 0
+    assert b'Canceled' in mem.tx and mem.bank == 0
     CASES.append('S/s/Ctrl-C hold from queued or live input, blocked banner and overflow; unrelated input cannot bypass hold')
 
 
@@ -192,7 +192,7 @@ def check_command_transitions():
     assert b'0200: 12 34' in command(cpu, b'D 0200 0201\r')
     output = send(cpu, b'L\r' + records(0x0201, b'\xef\xbe') + finish(0x0200))
     assert b'Entry 0200' in output and mem.ram[0x0200:0x0203] == b'\x12\xef\xbe'
-    assert b'Cancelled' in send(cpu, b'I 9000 9FFF\rN\r')
+    assert b'Canceled' in send(cpu, b'I 9000 9FFF\rN\r')
     assert not mem.events
     payload = bytes(range(256)) * 16
     output = send(cpu, b'I 9000 9FFF\rY\r' + records(0x9000, payload) + finish(0x9000))

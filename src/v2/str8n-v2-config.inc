@@ -79,7 +79,7 @@ V2_CONFIG_COPY:        LDA     $EFF0,X
                         DEX
                         BPL     V2_CONFIG_COPY
 V2_CONFIG_CHECK:       LDA     V2_CONFIG
-                        CMP     #$01
+                        DEC     A
                         BNE     V2_CONFIG_BAD
                         LDA     V2_CONFIG+1
                         CMP     #$02
@@ -151,8 +151,8 @@ V2_AUTOSTART:          JSR     V2_CONFIG_READ
                         JSR     V2_PRINT
                         LDA     V2_CONFIG+5
                         STA     V2_TICKS
-; Linked 65C02 idle path: about 0.102 s per tick at 8 MHz. Input extends it.
-V2_AUTO_TICK:          LDY     #$31
+; Nominal tenths at 8 MHz; linked timing is checked by the config suite.
+V2_AUTO_TICK:          LDY     #$32
                         LDX     #$00
 V2_AUTO_POLL:          JSR     V2_AUTO_KEY
                         BCS     V2_AUTO_STOP

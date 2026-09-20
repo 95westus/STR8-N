@@ -1,15 +1,36 @@
-; v2-alpha8: required monitor commands, configuration and held autostart.
+; v2-alpha9: resident at F000, held prompt at F003, erased tail to vectors.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    START
                         XDEF    V2_PROMPT_ENTRY
+                        XDEF    V2_CON_INIT_ENTRY
+                        XDEF    V2_PUTC_ENTRY
+                        XDEF    V2_GETC_ENTRY
+                        XDEF    V2_RAW_POLL_ENTRY
+                        XDEF    V2_CHECK_CANCEL_ENTRY
+                        XDEF    V2_RX_RESET_ENTRY
+                        XDEF    V2_READ_LINE_ENTRY
+                        XDEF    V2_HEX_OUT_ENTRY
+                        XDEF    V2_NEWLINE_ENTRY
+                        XDEF    V2_HEX_NIBBLE_ENTRY
                         XDEF    V2_END
                         INCLUDE "str8n-v2-eq.inc"
+                        INCLUDE "str8n-v2-public.inc"
                         INCLUDE "vectors-symbols.inc"
                         INCLUDE "text-ids.inc"
                         CODE
 START:                 JMP     V2_RESET
 V2_PROMPT_ENTRY:        JMP     V2_REENTER
+V2_CON_INIT_ENTRY:      JMP     V2_CON_INIT
+V2_PUTC_ENTRY:          JMP     V2_PUTC
+V2_GETC_ENTRY:          JMP     V2_GETC
+V2_RAW_POLL_ENTRY:      JMP     V2_RAW_POLL
+V2_CHECK_CANCEL_ENTRY:  JMP     V2_CHECK_CANCEL
+V2_RX_RESET_ENTRY:      JMP     V2_RX_RESET
+V2_READ_LINE_ENTRY:     JMP     V2_READ_LINE
+V2_HEX_OUT_ENTRY:       JMP     V2_HEX_OUT
+V2_NEWLINE_ENTRY:       JMP     V2_NEWLINE
+V2_HEX_NIBBLE_ENTRY:    JMP     V2_HEX_NIBBLE
 
 V2_RESET:
                         SEI
@@ -28,17 +49,16 @@ V2_COPY_VECTORS:       LDA     V2_VECTOR_IMAGE,X
                         INX
                         CPX     #V2_VECTOR_SIZE
                         BNE     V2_COPY_VECTORS
-                        LDX     #$00
+                        LDX     #$08
 V2_INIT_POINTERS:      LDA     #<V2V_DEFAULT
                         STA     V2_POINTERS,X
                         STA     V2_NATIVE_POINTERS,X
                         LDA     #>V2V_DEFAULT
                         STA     V2_POINTERS+1,X
                         STA     V2_NATIVE_POINTERS+1,X
-                        INX
-                        INX
-                        CPX     #$0A
-                        BNE     V2_INIT_POINTERS
+                        DEX
+                        DEX
+                        BPL     V2_INIT_POINTERS
                         INC     V2_AUTO
                         BRA     V2_ENTER
 
@@ -136,7 +156,14 @@ V2_LINE_LONG:          LDX     #V2_LONG_TEXT
 V2_BAD_INPUT:          LDX     #V2_BAD_INPUT_TEXT
                         BRA     V2_MESSAGE
 V2_UNKNOWN:            LDX     #V2_UNKNOWN_TEXT
-V2_MESSAGE:            JSR     V2_PRINT
+; The leading error ordinals share one stored "Bad " prefix.
+V2_MESSAGE:            CPX     #V2_BAD_PREFIX
+                        BCS     V2_MESSAGE_BODY
+                        PHX
+                        LDX     #V2_BAD_PREFIX
+                        JSR     V2_PRINT
+                        PLX
+V2_MESSAGE_BODY:       JSR     V2_PRINT
                         JMP     V2_PROMPT
 V2_CANCELLED:          STZ     V2_CANCEL_REQUEST
                         JSR     V2_NEWLINE
@@ -144,13 +171,12 @@ V2_CANCELLED:          STZ     V2_CANCEL_REQUEST
                         BRA     V2_MESSAGE
 
 V2_PARSE_BANK:         LDA     V2_LINE+1
-                        CMP     #'0'
-                        BCC     V2_BANK_FAIL
-                        CMP     #'4'
+                        SEC
+                        SBC     #'0'
+                        CMP     #$04
                         BCS     V2_BANK_FAIL
                         LDY     V2_LINE+2
                         BNE     V2_BANK_FAIL
-                        AND     #$03
                         SEC
                         RTS
 V2_BANK_FAIL:          CLC
@@ -188,17 +214,14 @@ V2_READ_LINE:
                         LDX     #$00
                         LDY     #$00
 V2_LINE_BYTE:          JSR     V2_GETC
-                        PHA
-                        LDA     V2_RX_BAD
-                        BEQ     V2_LINE_INPUT_OK
-                        STZ     V2_RX_BAD
+; RX_BAD is boolean: shift it into carry and clear it without changing A.
+                        LSR     V2_RX_BAD
+                        BCC     V2_LINE_INPUT_OK
                         LDY     #$02
-V2_LINE_INPUT_OK:      PLA
-                        CMP     #$0A
+V2_LINE_INPUT_OK:      CMP     #$0A
                         BNE     V2_NOT_LF
-                        LDA     V2_SKIP_LF
-                        BEQ     V2_LINE_END
-                        STZ     V2_SKIP_LF
+                        LSR     V2_SKIP_LF
+                        BCC     V2_LINE_END
                         BRA     V2_LINE_BYTE
 V2_NOT_LF:             STZ     V2_SKIP_LF
                         CMP     #$0D
@@ -236,7 +259,7 @@ V2_OVERFLOW:           INY
                         BRA     V2_LINE_BYTE
 V2_INVALID_BYTE:       LDY     #$02
                         BRA     V2_LINE_BYTE
-V2_BACKSPACE:          CPX     #$00
+V2_BACKSPACE:          TXA
                         BEQ     V2_LINE_BYTE
                         DEX
                         LDA     #$08
@@ -264,7 +287,7 @@ V2_PRINT:              PHX
                         LDA     #>V2_TEXT
                         STA     V2_PTR+1
                         LDY     #$00
-                        CPX     #$00
+                        TXA
                         BEQ     V2_PRINT_NEXT
 V2_PRINT_SCAN:         LDA     (V2_PTR),Y
                         INY
@@ -327,17 +350,9 @@ V2_TX_WAIT:            BIT     V2_CTRL
                         BRA     V2_TX_WAIT
 V2_TX_READY:           PLA
                         PHA
-                        STA     V2_DATA
-                        NOP
-                        NOP
-                        LDA     #$04
-                        TSB     V2_CTRL
-                        DEC     V2_DDRA
-                        NOP
-                        NOP
-                        LDA     #$04
-                        TRB     V2_CTRL
-                        STZ     V2_DDRA
+; Input polling/cancellation stays here; the identical hardware transaction
+; is shared with the RAM-only self-edit reporter. Preserve A on the stack.
+                        JSR     V2W_SEND
 V2_TX_CANCEL:
                         PLA
                         RTS
@@ -346,6 +361,9 @@ V2_COMMAND_KEYS:      DB      "BDMGLFICJ?"
 V2_COMMAND_TABLE:     DW      V2_COMMAND_B,V2_COMMAND_D,V2_COMMAND_M,V2_COMMAND_G
                         DW      V2_COMMAND_L,V2_COMMAND_F,V2_COMMAND_I,V2_COMMAND_C
                         DW      V2_COMMAND_J,V2_SHOW_HELP
+; S19 errors 1..4; cancellation uses its existing cleanup path.
+V2_LOAD_ERROR_TEXTS:   DB      V2_S19_BAD_TEXT,V2_S19_SUM_TEXT
+                        DB      V2_CANCEL_TEXT,V2_PROTECTED_TEXT
                         INCLUDE "text-image.inc"
 V2_WORKER_IMAGE:
                         INCLUDE "worker-image.inc"

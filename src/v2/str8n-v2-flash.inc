@@ -7,7 +7,7 @@ V2_F_ADDRESS:          LDA     V2_ADDR+1
 V2_F_PROTECTED:        JMP     V2_PROTECTED
 V2_F_BEGIN:            AND     #$F0
                         STA     V2_SECTOR
-                        LDA     #$01
+; A flash sector base is already nonzero, which marks the F preflight.
                         STA     V2_EDIT_FLASH
                         JMP     V2_EDIT_BEGIN
 V2_F_CROSS:            LDX     #V2_CROSS_TEXT
@@ -73,7 +73,7 @@ V2_FLASH_DONE:         LDX     #V2_DONE_TEXT
                         JMP     V2_MESSAGE
 V2_FLASH_FAILED:       LDX     #V2_VERIFY_TEXT
                         LDA     V2_FLASH_ERROR
-                        CMP     #$01
+                        DEC     A
                         BNE     V2_FLASH_MESSAGE
                         LDX     #V2_TIMEOUT_TEXT
 V2_FLASH_MESSAGE:      JMP     V2_MESSAGE
@@ -123,16 +123,16 @@ V2_COMMAND_I:          JSR     V2_GET_ADDRESS
                         AND     #$0F
                         BNE     V2_I_RANGE
                         LDA     V2_VALUE
-                        CMP     #$FF
+                        INC     A
                         BNE     V2_I_RANGE
                         LDA     V2_VALUE+1
+                        INC     A
                         AND     #$0F
-                        CMP     #$0F
                         BNE     V2_I_RANGE
                         LDA     V2_VALUE+1
                         CMP     V2_ADDR+1
                         BCC     V2_I_RANGE
-                        CMP     #$FF
+                        INC     A
                         BNE     V2_I_ALLOWED
                         LDA     V2_SELECTED
                         CMP     #$03
@@ -185,12 +185,7 @@ V2_I_DATA:             LDA     V2_INSTALL_DONE
                         LDA     V2_ADDR+1
                         CMP     V2_INSTALL_NEXT+1
                         BNE     V2_I_FORMAT
-                        LDA     V2_COUNT
-                        DEC     A
-                        CLC
-                        ADC     V2_ADDR
-                        LDA     V2_ADDR+1
-                        ADC     #$00
+                        JSR     V2_RECORD_END
                         BCS     V2_I_FORMAT
                         CMP     V2_INSTALL_END
                         BCC     V2_I_STAGE
@@ -240,8 +235,8 @@ V2_I_CONTINUE:         LDA     V2_SECTOR
                         ORA     #$0F
                         CMP     V2_INSTALL_END
                         BEQ     V2_I_COMPLETE
+; A nonfinal sector is below the checked end, so CMP left carry clear.
                         LDA     V2_SECTOR
-                        CLC
                         ADC     #$10
                         STA     V2_SECTOR
                         PHY
@@ -264,7 +259,7 @@ V2_I_CANCEL_POLL:      LDA     V2_RX_COUNT
                         BNE     V2_I_CANCEL_PENDING
                         JMP     V2_CHECK_CANCEL
 V2_I_CANCEL_PENDING:   LDA     V2_CANCEL_REQUEST
-                        CMP     #$01
+                        LSR     A
                         RTS
 
 V2_FLASH_MODE:

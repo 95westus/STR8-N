@@ -11,7 +11,7 @@ import json
 import os
 import sys
 
-from build_v2 import OUT, ROOT, STEM, VERSION, read_s19, symbols
+from build_v2 import OUT, ROOT, STEM, VERSION, RESIDENT_START, PUBLIC_CALLS, read_s19, symbols
 
 for directory in reversed([
     *(Path(p) for key in ('STR8_TEST_DEPS', 'PY65_PATH')
@@ -102,10 +102,11 @@ def boot(bank, reset_pcr=False):
     if reset_pcr:
         assert bank == 3
         memory.ram[0x7FEC] = 0
-    cpu = MPU(memory=memory, pc=0xF000)
+    cpu = MPU(memory=memory, pc=RESIDENT_START)
     cpu.p |= cpu.DECIMAL
     hold(cpu)
-    assert memory.bank == bank and memory.ram[0x7D00:0x7D03] == bytes([bank]*3)
+    assert memory.bank == bank
+    assert all(memory.ram[SYM[name]] == bank for name in ('V2_RESIDENT', 'V2_SELECTED', 'V2_TARGET'))
     assert f'STR8-N {VERSION} B{bank}\r\n> '.encode() in memory.tx
     assert not memory.bank_changes
     assert memory.ram[:0xE0] == bytes([0x5A])*0xE0
@@ -133,11 +134,11 @@ def check_boot_and_input():
     for bank in range(4):
         cpu, mem = boot(bank)
         for line, expected in [(b'?\r\n', b'J0-J3 ?'),
-                               (b'X\n', b'Bad command'),
+                               (b'X\n', b'Bad cmd'),
                                (b'J4\r', b'Bad bank'),
                                (b'J\r', b'Bad bank'),
                                (b'J0X\r', b'Bad bank'),
-                               (b'J0' + b'X'*40 + b'\r', b'Line too long'),
+                               (b'J0' + b'X'*40 + b'\r', b'Long line'),
                                (b'?\x08?\r', b'J0-J3 ?')]:
             output = command(cpu, line)
             assert expected in output, (line, output)
@@ -202,15 +203,24 @@ def check_vectors():
 
 def check_image_and_instructions():
     memory, entry = read_s19(OUT / f'{STEM}-e000-ffff.s19')
-    assert entry == 0xF000 and set(memory) == set(range(0xE000, 0x10000))
+    assert entry == RESIDENT_START and set(memory) == set(range(0xE000, 0x10000))
+    assert SYM['START'] == RESIDENT_START and SYM['V2_PROMPT_ENTRY'] == RESIDENT_START + 3
+    for index, (public, label, target) in enumerate(PUBLIC_CALLS):
+        address = RESIDENT_START + 3*index
+        assert SYM[public] == SYM[label] == address
+        assert bytes(memory[a] for a in range(address, address+3)) == b'\x4c' + SYM[target].to_bytes(2, 'little')
+    assert bytes(memory[a] for a in range(0xF000, RESIDENT_START)) == b'\xff' * (RESIDENT_START - 0xF000)
     assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
     assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
+    assert SYM['V2_END'] <= 0xFE00
+    assert bytes(memory[a] for a in range(0xFE00, 0xFF00)) == b'\xff'*256
+    assert bytes(memory[a] for a in range(SYM['V2_END'], 0xFFE0)) == b'\xff' * (0xFFE0-SYM['V2_END'])
     for address in (0xFFE0, 0xFFE2, 0xFFEC, 0xFFF0, 0xFFF2, 0xFFF6):
         assert bytes(memory[a] for a in range(address, address+2)) == b'\xff\xff'
     cpu, mem = boot(3)
     dis = Disassembler(cpu)
     worker = REPORT['worker']
-    for start, end in [(0xF000, SYM['V2_COMMAND_KEYS']),
+    for start, end in [(RESIDENT_START, SYM['V2_COMMAND_KEYS']),
                        (0x7900, worker['V2W_BITS']),
                        (worker['V2W_BEGIN'], worker['V2W_OK_TEXT']),
                        (worker['V2W_PUTC'], worker['V2W_END']),
@@ -276,12 +286,14 @@ def check_compact_messages():
         cpu.pc = SYM['V2_PRINT']
         run(cpu, lambda: cpu.pc == 0x0200)
         expected = message['text'].replace('{version}', VERSION).encode('ascii')
+        if index < SYM['V2_BAD_PREFIX']:
+            expected = expected[4:]  # V2_MESSAGE emits the shared prefix.
         assert mem.tx[start:] == expected, (index, message)
         assert cpu.x == index and cpu.sp == 255
     cpu, mem = boot(0)
     output = command(cpu, b'B1\rB\rJ\r?X\r?\r')
     assert output.count(b'Bad bank') == 2
-    assert b'Bad command' in output and b'J0-J3 ?' in output
+    assert b'Bad cmd' in output and b'J0-J3 ?' in output
     assert mem.bank == 0 and mem.ram[SYM['V2_SELECTED']] == 1
     CASES.append('all packed messages print exactly across page boundaries; stale bank suffixes and table dispatch stay safe')
 

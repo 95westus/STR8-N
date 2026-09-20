@@ -46,14 +46,13 @@ V2_RX_OVERFLOW:        STZ     V2_RX_HEAD
                         STA     V2_RX_BAD
                         BRA     V2_RX_DELIMITER
 V2_RX_CANCEL:          JSR     V2_RX_RESET
-                        LDA     #$01
-                        STA     V2_CANCEL_REQUEST
+                        INC     V2_CANCEL_REQUEST
                         BRA     V2_RX_CONSUMED
 
 V2_GETC:               PHX
-V2_GETC_WAIT:          LDA     V2_CANCEL_REQUEST
-                        BEQ     V2_GETC_QUEUE
-                        STZ     V2_CANCEL_REQUEST
+; Consume the boolean cancel latch; an absent request remains zero.
+V2_GETC_WAIT:          LSR     V2_CANCEL_REQUEST
+                        BCC     V2_GETC_QUEUE
                         LDA     #$03
                         PLX
                         RTS
@@ -81,6 +80,6 @@ V2_CANCEL_POLL:        LDA     V2_CANCEL_REQUEST
                         DEX
                         BNE     V2_CANCEL_POLL
 V2_CANCEL_POLL_DONE:   LDA     V2_CANCEL_REQUEST
-                        CMP     #$01
+                        LSR     A
                         PLX
                         RTS
