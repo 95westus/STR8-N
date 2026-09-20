@@ -30,6 +30,19 @@ journal-based interrupted-installation recovery from v2. Remove their tooling
 and packaging dependencies from the v2 product. Preserve v1 implementations
 in the v1.35 baseline; existing v1 directory tools are not v2 interfaces.
 
+## One binary for both processors
+
+Build one STR8-N binary for W65C02SXB/EDU and W65C816SXB/EDU. The 816 runs
+the monitor in emulation mode. Use only instructions with compatible behavior
+on both CPUs; exclude the 65C02-only RMB/SMB/BBR/BBS instructions. Do not add
+CPU-specific binaries, native-mode monitor execution, or an EDU-only buffer
+relocation. Applications own native mode and extended memory.
+
+All monitor RAM and execution remain in CPU bank $00. Flash overlays B0-B3
+are a separate concept from 816 CPU address banks. Reserve the full 816
+hardware vector area and RAM space for both native and emulation handlers.
+Reserved space does not imply a native-mode dispatch implementation.
+
 ## Agreed monitor commands
 
 Addresses and byte values are hexadecimal. Share a compact hex parser.
@@ -45,6 +58,7 @@ Addresses and byte values are hexadecimal. Share a compact hex parser.
 | `I` | Install S19 into a selected legal flash bank/range without directory metadata or journal state. |
 | `J0`-`J2` | Boot the selected bank through its RESET vector after bank/vector validity checks. |
 | `J3` | Restart STR8-N through Bank 3's RESET vector. |
+| Configuration command (name pending) | Display/set autostart enable, flash bank, address, and delay; compute the integrity check and confirm before writing. |
 
 Initial scope excludes an assembler, disassembler, register editor, and
 debugger. The operator may install their own BRK/IRQ handling and use `F`
@@ -57,7 +71,19 @@ jumps without a return contract. Preserve operator RAM and installed handler
 vectors outside explicitly reserved monitor workspace; establish that memory
 map before implementation. Targets enable IRQs themselves when ready. BRK
 still executes with IRQs disabled, and its saved return address advances two
-bytes from the BRK opcode.
+bytes from the BRK opcode. On the 816, handoff remains in emulation mode with
+direct page $0000, data bank $00, and program bank $00. User code manages
+subsequent native-mode entry and extended addressing.
+
+Provide a fixed software monitor-entry address, assigned when the ABI is
+laid out. It bypasses autostart and holds at the prompt. A software caller
+must already have Bank 3 visible and establish the common CPU contract:
+on the 816, emulation mode, direct page $0000, data bank $00, and execution
+in CPU bank $00. Switch flash mappings from RAM before entering. The entry
+disables IRQs, clears decimal mode, and establishes the monitor stack; it is
+not a callable return or a debugger resume operation. Preserve installed
+handler pointers on this software entry; hardware/reset-style initialization
+establishes defaults. J3 remains reset-style entry, distinct from prompt entry.
 
 Banked accesses must remain executable while Bank 3 is hidden. Use RAM
 routines for the necessary access/selection operations and restore the monitor
@@ -68,7 +94,75 @@ Reserve and document monitor scratch RAM, worker storage, stack usage, and
 the sector buffer. Loads and edits must not overwrite live monitor storage;
 flash operations must not silently consume space promised to an operator's
 handler. Hardware vector ownership and the exact generic handoff ABI must
-be resolved against that map.
+be resolved against that map. Preservation applies to application RAM and
+installed handler pointers, not monitor scratch, stack contents, or an exact
+CPU snapshot.
+
+## Proposed RAM map
+
+These addresses are provisional until the first linked implementation and
+workspace audit. Freeze public addresses only after measuring actual use.
+
+| Address | Size | Ownership |
+| --- | --- | --- |
+| $0000-$00DF | 224 bytes | Application zero page |
+| $00E0-$00FF | 32 bytes | Monitor fast scratch and pointers |
+| $0100-$01FF | 256 bytes | Hardware stack; contents are not preserved |
+| $0200-$68FF | 25.75 KiB | Contiguous application RAM, including user handlers |
+| $6900-$78FF | 4 KiB | Shared F/I sector buffer |
+| $7900-$7BFF | 768 bytes | RAM worker and bank-access code budget |
+| $7C00-$7CFF | 256 bytes | Shared command/S-record data buffer |
+| $7D00-$7DFF | 256 bytes | State, parameters, and configuration copy |
+| $7E00-$7EFF | 256 bytes | Handler pointers and RAM interrupt entry space |
+| $7F00-$7FFF | 256 bytes | I/O; excluded from ordinary D/M/L access |
+
+The sector buffer is page-aligned and occupies sixteen pages; it need not
+start on a $x000 boundary. Reduce worker/state reservations if measured size
+permits. Extended 816 RAM and EDU serial SRAM belong to applications and are
+not required for monitor operation.
+
+## Vector ownership and reset
+
+Reserve Bank 3 $FFE0-$FFFF for the complete 816 vector area, including
+reserved locations; the v1 configuration pocket at $FFF0 cannot carry over.
+Bank 3's implemented emulation interrupt vectors lead to RAM entry routines.
+The 65C02/emulation IRQ-BRK entry distinguishes BRK using stacked status and
+dispatches directly through the appropriate RAM pointer.
+
+Proposed 16-bit, little-endian RAM handler pointer slots:
+
+| Address | Pointer |
+| --- | --- |
+| $7E00-$7E01 | Emulation/65C02 NMI |
+| $7E02-$7E03 | Emulation/65C02 BRK |
+| $7E04-$7E05 | Emulation/65C02 IRQ |
+| $7E06-$7E07 | 816 emulation COP |
+| $7E08-$7E09 | 816 emulation ABORT |
+| $7E10-$7E19 | Native COP, BRK, ABORT, NMI, IRQ, two bytes each |
+| $7E20-$7EFF | Entry code, defaults, and reserved handler-entry space |
+
+Native vectors must never route through the emulation dispatcher. User code
+owns native entry routines and their different stack/register requirements.
+Use bank-zero entry stubs if a native handler resides in another CPU bank.
+Separate user-installable slots/stubs from monitor-owned dispatch code before
+freezing this page's detailed layout. Define deterministic reset defaults for
+unused native entries without assuming an emulation stack frame.
+
+M may deliberately update documented handler-pointer/user-stub locations;
+this is an exception to protection of live monitor workspace. L must not
+overwrite monitor-owned dispatch code. Preserve installed pointers through
+L/F/G. Multi-byte updates require an interrupt-aware publication procedure;
+SEI alone does not exclude NMI.
+
+Banks 0-2 own their hardware vectors. They may point directly to their own
+handlers or deliberately use the RAM entries. The RAM table does not
+automatically intercept interrupts when another flash bank is selected.
+
+Verify physical RESET and bank-select behavior on the supported boards;
+do not assume pressing RESET always selects Bank 3. Audit each bank's RESET
+vector and distinguish power-on, physical reset, J3, and software prompt entry.
+Executing a worker from RAM does not make NMI vector fetching safe while
+flash is busy. Flash-operation interrupt behavior remains a hardware test gate.
 
 ## Flash edit contract
 
@@ -88,8 +182,23 @@ an interruption during erase/rewrite can destroy the affected sector.
 Use a small fixed configuration location for enabled/disabled state, bank,
 execution address, and delay. Place it outside the protected STR8-N code
 sector so `F` can edit it; configuration edits preserve neighboring contents
-under the same sector-edit contract. Exact location and encoding remain to
-be assigned. Erased or invalid settings stay at the monitor prompt.
+under the same sector-edit contract. Erased or invalid settings stay at the
+monitor prompt. The configuration command computes the integrity check so
+ordinary configuration changes do not require manual checksum calculation;
+F remains a raw editing facility.
+
+Propose Bank 3 $EFF0-$EFFF as a single 16-byte configuration block: format at
++0, enable at +1, flash overlay at +2, little-endian start address at +3/+4,
+delay in tenths of a second at +5, reserved bytes at +6 through +13, and an
+integrity check at +14/+15. Exact encodings and check algorithm remain open.
+There is no record history, journal, or rollback.
+
+This allocation shares sector $E000-$EFFF with payload bytes. F and the
+configuration command preserve neighboring contents during erase/rewrite;
+I explicitly preserves the configuration reservation. Interrupted rewrites
+can lose that sector. The alternative is dedicating a full sector, at a
+4 KiB payload cost. The shared-sector location remains provisional with the
+rest of the address map. Keep Bank 3 $F000-$FFFF protected from F/I.
 
 On reset, initialize STR8-N, display a valid configured target, and provide
 a minimum interrupt window whenever autostart is enabled. Recognize `S`
@@ -100,7 +209,8 @@ the configured bank/address, without payload recognition or signatures.
 ## Implementation sequence
 
 1. Establish a v2 build identity and validation path without overwriting
-   the v1.35 baseline artifacts.
+   the v1.35 baseline artifacts. Enforce the common CPU instruction subset
+   and one-binary emulation-mode contract.
 2. Remove directory gating from guest boot, retaining bank and RESET-vector
    validity checks. Verify that boot does not read or depend on the former
    directory storage, regardless of its contents. Remove HIMON-specific boot
@@ -111,13 +221,24 @@ the configured bank/address, without payload recognition or signatures.
 4. Remove unused worker modes, directory storage reservations, and helpers;
    relink and measure actual ROM savings. Audit public ABI and RAM contracts,
    including handler ownership and reserved monitor/sector-buffer storage.
-   Implement B/D/M/F/G, load-only L, and configurable interruptible autostart
-   against those contracts; measure the resulting footprint again.
+   Implement B/D/M/F/G, load-only L, the configuration command, software
+   prompt entry, and configurable interruptible autostart against those
+   contracts; measure the resulting footprint again before freezing addresses.
 5. Update host checks, operator documentation, image composition, and packaging
    for the new behavior. Exercise malformed input, protected-range rejection,
-   flash failures, and successful load/install/handoff paths.
+   flash failures, and successful load/install/handoff paths. Check RAM/vector
+   preservation, configuration preservation and invalid-config hold behavior,
+   reset versus software entry, and compatibility on both CPUs.
 6. Validate on hardware before declaring v2 release-ready. Direct boot does
    not establish that a payload survived an interrupted installation.
+
+## Hardware references
+
+- [W65C02SXB memory map](https://www.westerndesigncenter.com/wdc/documentation/W65C02SXB.pdf)
+- [W65C816SXB memory map](https://www.westerndesigncenter.com/wdc/documentation/W65C816SXB.pdf)
+- [W65C816 CPU and vector tables](https://www.westerndesigncenter.com/wdc/documentation/w65c816s.pdf)
+- [W65C02EDU](https://www.wdc65xx.com/wdc/documentation/W65C02EDU.pdf)
+- [W65C816EDU](https://www.wdc65xx.com/wdc/documentation/W65C816EDU.pdf)
 
 ## Documentation artifacts
 
