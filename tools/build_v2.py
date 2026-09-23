@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha9.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha10.
 """
 from pathlib import Path
 import argparse
@@ -12,11 +12,12 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a9'
-STEM = 'str8n-v2-alpha9'
-OUT = ROOT / 'BUILD/v2-alpha9'
+VERSION = '2.0a10'
+STEM = 'str8n-v2-alpha10'
+OUT = ROOT / 'BUILD/v2-alpha10'
 SOURCE = ROOT / 'src/v2'
 RESIDENT_START = 0xF000
+SIGNATURE_SIZE = 4
 BLANK_PAGE_START = 0xFE00
 BLANK_PAGE_SIZE = 0x100
 PUBLIC_CALLS = (
@@ -25,6 +26,8 @@ PUBLIC_CALLS = (
     *((f'STR8V2_{name}', f'V2_{name}_ENTRY', f'V2_{name}') for name in (
         'CON_INIT', 'PUTC', 'GETC', 'RAW_POLL', 'CHECK_CANCEL', 'RX_RESET',
         'READ_LINE', 'HEX_OUT', 'NEWLINE', 'HEX_NIBBLE')),
+    *((f'STR8V2_RESERVED{index}', f'V2_RESERVED{index}_ENTRY', 'V2_RESERVED')
+      for index in range(4)),
 )
 
 
@@ -166,7 +169,7 @@ def main():
     memory, resident = assemble('str8n-v2', RESIDENT_START, assembler, linker)
     code = dense_image(memory, RESIDENT_START, resident['V2_END'])
     for index, (public, entry_label, target) in enumerate(PUBLIC_CALLS):
-        address = RESIDENT_START + 3*index
+        address = RESIDENT_START + SIGNATURE_SIZE + 3*index
         if resident[public] != address or resident[entry_label] != address:
             raise ValueError(f'Public entry moved: {public}')
         if bytes(memory[a] for a in range(address, address+3)) != b'\x4c' + resident[target].to_bytes(2, 'little'):
@@ -201,7 +204,7 @@ def main():
         path.write_text('\n'.join(lines) + '\n', encoding='ascii')
         parsed, entry = read_s19(path)
         assert dense_image(parsed, start, 65536) == payload
-        assert entry == int.from_bytes(payload[-4:-2], 'little') == RESIDENT_START
+        assert entry == int.from_bytes(payload[-4:-2], 'little') == resident['START']
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
     report = dict(milestone='compact-resident', resident_bytes=len(code),
                   resident_start=RESIDENT_START,

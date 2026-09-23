@@ -4,10 +4,12 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-On the `v2` branch, the independent [v2 layout milestone](docs/STR8N_V2_PAGE_MILESTONE.md)
-is under development. A [Bank 1 COM4 smoke test](docs/STR8N_V2_BOARD_TEST_2026-09-19.md)
-passed; full hardware qualification remains.
-The alpha9 build and all five host regression suites pass (33 test groups).
+On the `v2` branch, the independent [v2 alpha10 interaction milestone](docs/STR8N_V2_ALPHA10_INTERACTION.md)
+is under development. A [Bank 1 COM3 board test](docs/STR8N_V2_ALPHA10_BOARD_TEST_2026-09-23.md)
+on the board marked 2205 passed installation, interaction checks, software
+restart, Bank 3 return, and exact 8 KiB readback; full hardware qualification
+remains.
+The alpha10 build and all five host regression suites pass (33 test groups).
 Use `make v2-check` for its build and host execution checks. The v1 firmware
 sources and normal release targets remain unchanged; the description below
 documents the v1 product, not the full planned v2 command set.

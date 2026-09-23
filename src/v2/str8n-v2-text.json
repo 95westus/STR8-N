@@ -32,6 +32,10 @@
     "text": "Bad checksum"
   },
   {
+    "name": "V2_VERIFY_TEXT",
+    "text": "Bad verify"
+  },
+  {
     "name": "V2_BAD_PREFIX",
     "text": "Bad "
   },
@@ -41,11 +45,11 @@
   },
   {
     "name": "V2_PROMPT_TEXT",
-    "text": "\r\n> "
+    "text": "\r\nB"
   },
   {
     "name": "V2_HELP",
-    "text": "B0-B3 D M F G L I C J0-J3 ?"
+    "text": "B0-B3 select flash bank\r\nD addr [end]\r\nM/F addr bytes\r\nG addr  L  I start end\r\nC [on bank addr delay]\r\nJ0-J3 boot  ? help"
   },
   {
     "name": "V2_LONG_TEXT",
@@ -73,11 +77,15 @@
   },
   {
     "name": "V2_SELF_TEXT",
-    "text": "Self edit; reset\r\n"
+    "text": "Self edit\r\n"
   },
   {
     "name": "V2_RECOVERY_TEXT",
-    "text": "Recovery\r\n"
+    "text": "Bank 3 edit\r\n"
+  },
+  {
+    "name": "V2_RISK_TEXT",
+    "text": "May not boot/function\r\nType B"
   },
   {
     "name": "V2_PROGRAM_TEXT",
@@ -98,10 +106,6 @@
   {
     "name": "V2_DONE_TEXT",
     "text": "Done"
-  },
-  {
-    "name": "V2_VERIFY_TEXT",
-    "text": "Verify fail"
   },
   {
     "name": "V2_TIMEOUT_TEXT",

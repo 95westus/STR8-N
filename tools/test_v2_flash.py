@@ -105,18 +105,19 @@ def check_f():
     for bank in range(4):
         cpu, mem = boot_flash()
         command(cpu, f'B{bank}\r'.encode())
-        output = send(cpu, b'F 8123 00 F0\rY\r')
+        confirm = b'Y\rB3\r' if bank == 3 else b'Y\r'
+        output = send(cpu, b'F 8123 00 F0\r' + confirm)
         assert b'8123 FF>00' in output and b'Program Y?' in output and b'Done' in output, output
         assert mem.banks[bank][0x123:0x125] == b'\x00\xf0'
         assert [e[0] for e in mem.events] == ['program', 'program']
         before = bytes(mem.banks[bank])
         mem.events.clear()
-        output = send(cpu, b'F 8123 FF\rY\r')
+        output = send(cpu, b'F 8123 FF\r' + confirm)
         expected = bytearray(before); expected[0x123] = 255
         assert bytes(mem.banks[bank]) == expected and b'Erase+write' in output
         assert mem.events[0][0] == 'erase' and mem.bank == 0
         mem.events.clear()
-        assert b'Done' in send(cpu, b'F 8123 FF\rY\r') and not mem.events
+        assert b'Done' in send(cpu, b'F 8123 FF\r' + confirm) and not mem.events
         for bad, error in [(b'F 8FFF 00 00\r', b'Sector span'),
                            (b'F FFFF 00 00\r', b'Sector span'),
                            (b'F 7FFF 00\r', b'Protected'),
@@ -131,18 +132,26 @@ def check_f_boundaries():
     cpu, mem = boot_flash()
     command(cpu, b'B3\r')
     before = bytes(mem.banks[3])
-    output = send(cpu, b'F FFFF 00\rY\r')
-    assert b'Recovery' in output and b'Self edit' not in output
+    output = send(cpu, b'F FFFF 00\rY\rB3\r')
+    assert b'Bank 3 edit' in output and b'Self edit' not in output
+    assert b'May not boot/function' in output and b'Type B3>' in output
     assert mem.banks[3][:-1] == before[:-1] and mem.banks[3][-1] == 0
-    output = send(cpu, b'F EFF0 00\rY\r')
+    output = send(cpu, b'F EFF0 00\rY\rB3\r')
     assert b'Done' in output and mem.banks[3][0x6FF0] == 0
-    output = send(cpu, b'F 80FE 01 02 03 04\rY\r')
+    output = send(cpu, b'F 80FE 01 02 03 04\rY\rB3\r')
     assert b'8101 FF>04' in output and mem.banks[3][0xFE:0x102] == b'\x01\x02\x03\x04'
     # Multi-byte preflight failure and rejected confirmation never write a prefix.
     mem.events.clear()
     for line in (b'F 8000 00 GG\r', b'F 8000 00\rYES\r', b'F 8000 00\rY\x03'):
         send(cpu, line)
         assert not mem.events
+    send(cpu, b'F 8000 00\rY\rB2\r')
+    assert not mem.events
+    # Sector F requires the exact selected bank even outside Bank 3.
+    cpu, mem = boot_flash()
+    command(cpu, b'B2\r')
+    send(cpu, b'F FFFF 00\rY\rB1\r')
+    assert not mem.events and mem.banks[2][-1] == 0xFF
     CASES.append('F recovery vectors/FFFF, raw configuration, page crossing, malformed suffix and confirmation rejection')
 
 
@@ -250,7 +259,7 @@ def check_cancellation():
 
 
 def check_failures_and_self():
-    for fault, text in [('timeout', b'Flash timeout'), ('verify', b'Verify fail'), ('erase_verify', b'Verify fail')]:
+    for fault, text in [('timeout', b'Flash timeout'), ('verify', b'Bad verify'), ('erase_verify', b'Bad verify')]:
         cpu, mem = boot_flash()
         command(cpu, b'B1\r')
         mem.fault = fault
@@ -278,23 +287,34 @@ def check_failures_and_self():
     for resident in range(4):
         for value in (0, 255):
             cpu, mem = boot_flash(resident)
-            mem.rx.extend(f'F {SYM["START"]:04X} {value:02X}\rY\r'.encode())
-            run(cpu, lambda: cpu.pc == W['V2W_HOLD'], limit=2000000)
-            assert b'Self edit' in mem.tx and b'OK; reset' in mem.tx
+            mem.rx.extend(f'F {SYM["START"]:04X} {value:02X}\rY\rB{resident}\r'.encode())
+            run(cpu, lambda: cpu.pc == W['V2W_RESET_WAIT'], limit=2000000)
+            assert b'Self edit' in mem.tx and b'May not boot/function' in mem.tx
+            assert b'OK; press Y to soft reset' in mem.tx
             assert mem.banks[resident][SYM['START']-0x8000] == value
             assert mem.bank == resident and cpu.pc < 0x8000
     cpu, mem = boot_flash()
     mem.fault = 'timeout'
-    mem.rx.extend(f'F {SYM["START"]:04X} 00\rY\r'.encode())
-    run(cpu, lambda: cpu.pc == W['V2W_HOLD'], limit=3000000)
-    assert b'Flash fail; reset' in mem.tx
+    mem.rx.extend(f'F {SYM["START"]:04X} 00\rY\rB0\r'.encode())
+    run(cpu, lambda: cpu.pc == W['V2W_RESET_WAIT'], limit=3000000)
+    assert b'Flash fail; press Y to soft reset' in mem.tx
+    # A harmless no-op self edit proves the RAM-only prompt can initiate a
+    # CPU-level reset and return through the newly written fixed F000 entry.
+    cpu, mem = boot_flash(1)
+    safe = SYM['V2_END']
+    mem.rx.extend(f'F {safe:04X} FF\rY\rB1\r'.encode())
+    run(cpu, lambda: cpu.pc == W['V2W_RESET_WAIT'], limit=2000000)
+    mem.rx.extend(b'Y')
+    run(cpu, lambda: waiting(cpu), limit=1000000)
+    assert mem.tx.count(f'STR8-N {VERSION} B1'.encode()) == 2
+    assert bytes(mem.tx).endswith(b'B1> ')
     cpu, mem = boot_flash()
     command(cpu, b'B1\r')
     mem.banks[1][0] = 0
     mem.fault = 'timeout'
     output = send(cpu, b'F 8000 FF\rY\r', limit=6000000)
     assert b'Flash timeout' in output and mem.bank == 0 and not mem.busy
-    CASES.append('bounded program timeout, erase/full-sector verify failures, bank restoration; all-bank self edits hold entirely in RAM')
+    CASES.append('bounded timeout/verify failures, bank restoration; risky confirmations and RAM-only self-edit soft reset')
 
 
 def main():

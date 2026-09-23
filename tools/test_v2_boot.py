@@ -102,12 +102,12 @@ def boot(bank, reset_pcr=False):
     if reset_pcr:
         assert bank == 3
         memory.ram[0x7FEC] = 0
-    cpu = MPU(memory=memory, pc=RESIDENT_START)
+    cpu = MPU(memory=memory, pc=SYM['START'])
     cpu.p |= cpu.DECIMAL
     hold(cpu)
     assert memory.bank == bank
     assert all(memory.ram[SYM[name]] == bank for name in ('V2_RESIDENT', 'V2_SELECTED', 'V2_TARGET'))
-    assert f'STR8-N {VERSION} B{bank}\r\n> '.encode() in memory.tx
+    assert f'STR8-N {VERSION} B{bank}\r\nB{bank}> '.encode() in memory.tx
     assert not memory.bank_changes
     assert memory.ram[:0xE0] == bytes([0x5A])*0xE0
     assert memory.ram[0x0200:0x6900] == bytes([0x5A])*0x6700
@@ -133,13 +133,13 @@ def command(cpu, text):
 def check_boot_and_input():
     for bank in range(4):
         cpu, mem = boot(bank)
-        for line, expected in [(b'?\r\n', b'J0-J3 ?'),
+        for line, expected in [(b'?\r\n', b'J0-J3 boot  ? help'),
                                (b'X\n', b'Bad cmd'),
                                (b'J4\r', b'Bad bank'),
                                (b'J\r', b'Bad bank'),
                                (b'J0X\r', b'Bad bank'),
                                (b'J0' + b'X'*40 + b'\r', b'Long line'),
-                               (b'?\x08?\r', b'J0-J3 ?')]:
+                               (b'?\x08?\r', b'J0-J3 boot  ? help')]:
             output = command(cpu, line)
             assert expected in output, (line, output)
             assert mem.bank == bank and not mem.bank_changes
@@ -203,13 +203,13 @@ def check_vectors():
 
 def check_image_and_instructions():
     memory, entry = read_s19(OUT / f'{STEM}-e000-ffff.s19')
-    assert entry == RESIDENT_START and set(memory) == set(range(0xE000, 0x10000))
-    assert SYM['START'] == RESIDENT_START and SYM['V2_PROMPT_ENTRY'] == RESIDENT_START + 3
+    assert entry == SYM['START'] and set(memory) == set(range(0xE000, 0x10000))
+    assert bytes(memory[a] for a in range(0xF000, 0xF004)) == b'SN\x02\x00'
+    assert SYM['START'] == RESIDENT_START + 4 and SYM['V2_PROMPT_ENTRY'] == RESIDENT_START + 7
     for index, (public, label, target) in enumerate(PUBLIC_CALLS):
-        address = RESIDENT_START + 3*index
+        address = RESIDENT_START + 4 + 3*index
         assert SYM[public] == SYM[label] == address
         assert bytes(memory[a] for a in range(address, address+3)) == b'\x4c' + SYM[target].to_bytes(2, 'little')
-    assert bytes(memory[a] for a in range(0xF000, RESIDENT_START)) == b'\xff' * (RESIDENT_START - 0xF000)
     assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
     assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
     assert SYM['V2_END'] <= 0xFE00
@@ -220,10 +220,10 @@ def check_image_and_instructions():
     cpu, mem = boot(3)
     dis = Disassembler(cpu)
     worker = REPORT['worker']
-    for start, end in [(RESIDENT_START, SYM['V2_COMMAND_KEYS']),
+    for start, end in [(SYM['START'], SYM['V2_COMMAND_KEYS']),
                        (0x7900, worker['V2W_BITS']),
                        (worker['V2W_BEGIN'], worker['V2W_OK_TEXT']),
-                       (worker['V2W_PUTC'], worker['V2W_END']),
+                       (worker['V2W_GETC'], worker['V2W_END']),
                        (0x7E20, VSYM['V2V_END'])]:
         pc = start
         while pc < end:
@@ -293,7 +293,7 @@ def check_compact_messages():
     cpu, mem = boot(0)
     output = command(cpu, b'B1\rB\rJ\r?X\r?\r')
     assert output.count(b'Bad bank') == 2
-    assert b'Bad cmd' in output and b'J0-J3 ?' in output
+    assert b'Bad cmd' in output and b'J0-J3 boot  ? help' in output
     assert mem.bank == 0 and mem.ram[SYM['V2_SELECTED']] == 1
     CASES.append('all packed messages print exactly across page boundaries; stale bank suffixes and table dispatch stay safe')
 
