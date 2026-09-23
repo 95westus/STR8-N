@@ -102,9 +102,11 @@ def main():
     parser.add_argument('--full-bank', action='store_true',
                         help='also emit explicit FF-filled 8-F image; destroys lower payload on install')
     args = parser.parse_args()
-    assembler, linker = shutil.which('wdc02as'), shutil.which('wdcln')
-    if not assembler or not linker:
-        raise SystemExit('WDC02AS and WDCLN must be on PATH')
+    assembler = shutil.which('wdc02as')
+    native_assembler = shutil.which('wdc816as')
+    linker = shutil.which('wdcln')
+    if not assembler or not native_assembler or not linker:
+        raise SystemExit('WDC02AS, WDC816AS and WDCLN must be on PATH')
     (OUT / 'asm').mkdir(parents=True, exist_ok=True)
     # Invalidate only this build's named generated artifacts, including an old
     # optional full-bank image and test receipts. Preserve earlier milestones.
@@ -244,6 +246,22 @@ def main():
     assert dense_image(parsed_nmi, 0x2000, 0x2000+len(nmi_probe)) == nmi_probe
     assert nmi_entry == 0x2000
     artifacts[nmi_path.name] = hashlib.sha256(nmi_path.read_bytes()).hexdigest()
+    native_source_name = 'str8n-v2-native-probe-2000'
+    native_name = f'{STEM}-native-probe-2000'
+    native_memory, native_symbols = assemble(
+        native_source_name, 0x2000, native_assembler, linker, INTERRUPT_PROBE_SOURCE)
+    native_probe = dense_image(native_memory, 0x2000, native_symbols['PROBE_END'])
+    native_path = OUT / f'{native_name}.s19'
+    native_lines = [record('0', 0, f'STR8-N {VERSION} 816N'.encode('ascii'))]
+    native_lines.extend(record('1', address,
+                               native_probe[address-0x2000:address-0x2000+32])
+                        for address in range(0x2000, 0x2000+len(native_probe), 32))
+    native_lines.append(record('9', 0x2000))
+    native_path.write_text('\n'.join(native_lines) + '\n')
+    parsed_native, native_entry = read_s19(native_path)
+    assert dense_image(parsed_native, 0x2000, 0x2000+len(native_probe)) == native_probe
+    assert native_entry == 0x2000
+    artifacts[native_path.name] = hashlib.sha256(native_path.read_bytes()).hexdigest()
     report = dict(milestone='compact-resident', resident_bytes=len(code),
                   resident_start=RESIDENT_START,
                   public_calls={public: resident[public] for public, _, _ in PUBLIC_CALLS},
@@ -253,6 +271,7 @@ def main():
                   worker_bytes=len(worker), vector_code_bytes=len(vectors),
                   interrupt_probe_bytes=len(probe), interrupt_probe=probe_symbols,
                   nmi_probe_bytes=len(nmi_probe), nmi_probe=nmi_symbols,
+                  native_probe_bytes=len(native_probe), native_probe=native_symbols,
                   free_before_vectors=0xFFE0-resident['V2_END'],
                   expansion_reserve_start=EXPANSION_RESERVE_START,
                   expansion_reserve_bytes=EXPANSION_RESERVE_SIZE,

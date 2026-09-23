@@ -35,3 +35,20 @@ STR8V2_CAPS_LENGTH      EQU     $04
 
 STR8V2_LINE             EQU     $7C00
 STR8V2_LINE_LIMIT       EQU     $20
+
+; RAM interrupt handler pointers. Each is a 16-bit bank-$00 address.
+STR8V2_EMU_NMI_PTR      EQU     $7E00
+STR8V2_EMU_BRK_PTR      EQU     $7E02
+STR8V2_EMU_IRQ_PTR      EQU     $7E04
+STR8V2_EMU_COP_PTR      EQU     $7E06
+STR8V2_EMU_ABORT_PTR    EQU     $7E08
+STR8V2_NATIVE_COP_PTR   EQU     $7E10
+STR8V2_NATIVE_BRK_PTR   EQU     $7E12
+STR8V2_NATIVE_ABORT_PTR EQU     $7E14
+STR8V2_NATIVE_NMI_PTR   EQU     $7E16
+STR8V2_NATIVE_IRQ_PTR   EQU     $7E18
+
+; Publish native NMI pointers while E=1: increment this gate, write both
+; pointer bytes, then clear it. Native handlers own their register widths,
+; direct page/data bank requirements, interrupt source, frame, and RTI.
+STR8V2_NMI_GATE         EQU     $00F4

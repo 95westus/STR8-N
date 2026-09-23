@@ -209,7 +209,7 @@ The resident bank's implemented emulation interrupt vectors lead to RAM entry ro
 The 65C02/emulation IRQ-BRK entry distinguishes BRK using stacked status and
 dispatches directly through the appropriate RAM pointer.
 
-Proposed 16-bit, little-endian RAM handler pointer slots:
+Fixed 16-bit, little-endian RAM handler pointer slots:
 
 | Address | Pointer |
 | --- | --- |
@@ -218,15 +218,24 @@ Proposed 16-bit, little-endian RAM handler pointer slots:
 | $7E04-$7E05 | Emulation/65C02 IRQ |
 | $7E06-$7E07 | 816 emulation COP |
 | $7E08-$7E09 | 816 emulation ABORT |
-| $7E10-$7E19 | Native COP, BRK, ABORT, NMI, IRQ, two bytes each |
+| $7E10-$7E11 | 816 native COP |
+| $7E12-$7E13 | 816 native BRK |
+| $7E14-$7E15 | 816 native ABORT |
+| $7E16-$7E17 | 816 native NMI |
+| $7E18-$7E19 | 816 native IRQ |
 | $7E20-$7EFF | Entry code, defaults, and reserved handler-entry space |
 
 Native vectors must never route through the emulation dispatcher. User code
 owns native entry routines and their different stack/register requirements.
 Use bank-zero entry stubs if a native handler resides in another CPU bank.
-Separate user-installable slots/stubs from monitor-owned dispatch code before
-freezing this page's detailed layout. Define deterministic reset defaults for
-unused native entries without assuming an emulation stack frame.
+Reset initializes every slot to a mode-correct `RTI` default.
+
+Publish or restore the native NMI pointer while the CPU is in emulation mode:
+increment the byte at `$00F4`, write both bytes at `$7E16-$7E17`, then clear
+`$00F4`. An NMI during that window follows the emulation NMI gate and returns
+without using a torn pointer. Once native mode is active, the completed native
+pointer must remain stable. SEI is sufficient for the other native slots when
+their interrupt source cannot fire; BRK and COP are synchronous.
 
 M may deliberately update documented handler-pointer/user-stub locations;
 this is an exception to protection of live monitor workspace. L must not
@@ -238,6 +247,10 @@ The alpha2 M command gates its emulation NMI dispatch during the short RAM
 commit loop, acknowledging an NMI in that window with RTI. This prevents
 following a torn NMI pointer; it does not queue or replay that NMI. Software
 prompt entry clears the temporary gate while preserving installed pointers.
+
+The build emits a 479-byte RAM-only native BRK/NMI acceptance probe. Its board
+procedure and pass criteria are in
+[STR8N_V2_816_NATIVE_ACCEPTANCE.md](STR8N_V2_816_NATIVE_ACCEPTANCE.md).
 
 Other payload banks own their hardware vectors. They may point directly to their own
 handlers or deliberately use the RAM entries. The RAM table does not
