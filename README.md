@@ -15,6 +15,9 @@ real VIA1 Timer-1 IRQ and physical NMI. Full hardware qualification remains.
 Physical RESET selection was also captured: board 2205 selects Bank 3 and
 enters the preserved STR8-N 1.35 recovery path.
 The alpha12 build and all six host regression suites pass (35 test groups).
+It also emits a RAM-only W65C816 native BRK/NMI acceptance probe for the
+incoming board; that probe is assembled and structurally checked but awaits
+native-mode hardware execution.
 Use `make v2-check` for its build and host execution checks. The v1 firmware
 sources and normal release targets remain unchanged; the description below
 documents the v1 product, not the full planned v2 command set.

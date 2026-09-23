@@ -1,4 +1,4 @@
-"""Model-check the alpha11 RAM-only BRK/VIA1 IRQ hardware probe."""
+"""Model-check 65C02 probes and audit the assembled 816-native probe."""
 import json
 
 from build_v2 import OUT, STEM, read_s19
@@ -10,6 +10,8 @@ PROBE = REPORT['interrupt_probe']
 PROBE_PATH = OUT / f'{STEM}-interrupt-probe-2000.s19'
 NMI = REPORT['nmi_probe']
 NMI_PATH = OUT / f'{STEM}-nmi-probe-2000.s19'
+NATIVE = REPORT['native_probe']
+NATIVE_PATH = OUT / f'{STEM}-native-probe-2000.s19'
 
 
 class ProbeMemory(Memory):
@@ -126,12 +128,30 @@ def run_nmi_mode(mode):
     print('nmi-' + mode, result)
 
 
+def check_native_probe():
+    image, entry = read_s19(NATIVE_PATH)
+    assert entry == 0x2000
+    assert set(image) == set(range(0x2000, NATIVE['PROBE_END']))
+    data = lambda start, end: bytes(image[a] for a in range(start, end))
+    # CLC/XCE/SEP #$30 enters native 8-bit mode. SEI/SEC/XCE returns to
+    # emulation before monitor calls. Both native handlers end in RTI.
+    assert data(NATIVE['ENTER_NATIVE'], NATIVE['ENTER_NATIVE']+5) == b'\x18\xfb\xe2\x30\xa9'
+    assert data(NATIVE['NATIVE_DONE'], NATIVE['NATIVE_DONE']+3) == b'\x78\x38\xfb'
+    assert data(NATIVE['SAFE'], NATIVE['SAFE']+2) == b'\xa2\x05'
+    assert data(NATIVE['CLEANUP']+3, NATIVE['CLEANUP']+5) == b'\xa2\x05'
+    assert image[NATIVE['NATIVE_NMI_HANDLER']-1] == 0x40
+    assert image[NATIVE['SAVED_POINTERS']-1] == 0x40
+    assert b'V2 816N BRK/NMI / A-X-Y / FRAME / RTI: PASS' in data(0x2000, NATIVE['PROBE_END'])
+    print('816-native static', 'assembled entry/exit, BRK/NMI handlers and RTI: PASS')
+
+
 def main():
     for mode in ('success', 'timeout', 'busy'):
         run_mode(mode)
     for mode in ('success', 'timeout', 'busy'):
         run_nmi_mode(mode)
-    print('PASS: RAM-only BRK/IRQ/NMI probe routing, frame/register checks, cleanup and refusal paths')
+    check_native_probe()
+    print('PASS: RAM-only BRK/IRQ/NMI probes, native probe structure, cleanup and refusal paths')
 
 
 if __name__ == '__main__':
