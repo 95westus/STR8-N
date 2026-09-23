@@ -1,6 +1,7 @@
-; v2-alpha9: resident at F000, held prompt at F003, erased tail to vectors.
+; v2-alpha10: signature at F000, public RESET at F004, erased tail to vectors.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
+                        XDEF    V2_SIGNATURE
                         XDEF    START
                         XDEF    V2_PROMPT_ENTRY
                         XDEF    V2_CON_INIT_ENTRY
@@ -13,12 +14,19 @@
                         XDEF    V2_HEX_OUT_ENTRY
                         XDEF    V2_NEWLINE_ENTRY
                         XDEF    V2_HEX_NIBBLE_ENTRY
+                        XDEF    V2_RESERVED0_ENTRY
+                        XDEF    V2_RESERVED1_ENTRY
+                        XDEF    V2_RESERVED2_ENTRY
+                        XDEF    V2_RESERVED3_ENTRY
                         XDEF    V2_END
                         INCLUDE "str8n-v2-eq.inc"
                         INCLUDE "str8n-v2-public.inc"
                         INCLUDE "vectors-symbols.inc"
                         INCLUDE "text-ids.inc"
                         CODE
+; Product signature, major ABI and signature-format revision. This deliberately
+; differs from v1's SR/02/03 parser-service signature.
+V2_SIGNATURE:          DB      "SN",$02,$00
 START:                 JMP     V2_RESET
 V2_PROMPT_ENTRY:        JMP     V2_REENTER
 V2_CON_INIT_ENTRY:      JMP     V2_CON_INIT
@@ -31,6 +39,11 @@ V2_READ_LINE_ENTRY:     JMP     V2_READ_LINE
 V2_HEX_OUT_ENTRY:       JMP     V2_HEX_OUT
 V2_NEWLINE_ENTRY:       JMP     V2_NEWLINE
 V2_HEX_NIBBLE_ENTRY:    JMP     V2_HEX_NIBBLE
+V2_RESERVED0_ENTRY:     JMP     V2_RESERVED
+V2_RESERVED1_ENTRY:     JMP     V2_RESERVED
+V2_RESERVED2_ENTRY:     JMP     V2_RESERVED
+V2_RESERVED3_ENTRY:     JMP     V2_RESERVED
+V2_RESERVED:            RTS
 
 V2_RESET:
                         SEI
@@ -99,6 +112,13 @@ V2_WORKER_COPIED:
 V2_PROMPT:
                         LDX     #V2_PROMPT_TEXT
                         JSR     V2_PRINT
+                        LDA     V2_SELECTED
+                        ORA     #'0'
+                        JSR     V2_PUTC
+                        LDA     #'>'
+                        JSR     V2_PUTC
+                        LDA     #' '
+                        JSR     V2_PUTC
                         JSR     V2_READ_LINE
                         BCS     V2_DISPATCH
                         CPY     #$03
@@ -133,11 +153,6 @@ V2_COMMAND_B:          JSR     V2_PARSE_BANK
                         BRA     V2_CANCELLED
 V2_B_READY:            PLA
                         STA     V2_SELECTED
-                        LDA     #'B'
-                        JSR     V2_PUTC
-                        LDA     V2_SELECTED
-                        ORA     #'0'
-                        JSR     V2_PUTC
                         BRA     V2_PROMPT
 V2_COMMAND_J:
                         JSR     V2_PARSE_BANK

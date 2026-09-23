@@ -17,7 +17,8 @@ def check_bank_and_display():
         cpu, mem = boot(resident)
         for target in range(4):
             before = len(mem.bank_changes)
-            assert f'B{target}'.encode() in command(cpu, f'B{target}\r'.encode())
+            output = command(cpu, f'B{target}\r'.encode())
+            assert output.endswith(f'B{target}> '.encode())
             assert mem.bank == resident and len(mem.bank_changes) == before
             assert mem.ram[SYM['V2_SELECTED']] == target
             assert mem.ram[SYM['V2_RESIDENT']] == resident
@@ -109,7 +110,7 @@ def check_hex_and_go():
     mem.ram[0x7E02:0x7E04] = b'\x00\x02'
     assert b'STR8-N' in command(cpu, f'G {SYM["V2_PROMPT_ENTRY"]:04X}\r'.encode())
     assert mem.ram[0x7E02:0x7E04] == b'\x00\x02'
-    CASES.append('shared hex rejection; 32 G bank/RAM/flash handoffs; G F003 preserves installed pointers')
+    CASES.append('shared hex rejection; 32 G bank/RAM/flash handoffs; G HOLD preserves installed pointers')
 
 
 def check_nmi_publication():

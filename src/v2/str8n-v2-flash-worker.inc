@@ -93,19 +93,42 @@ V2W_FINISH:            LDA     #$F0
                         LDA     V2_FLASH_ERROR
                         CMP     #$01
                         RTS
-; Never return through old ROM, including on failure or an unchanged edit.
+; Never return through old ROM. Offer a deliberate CPU-level restart from
+; RAM; this jumps to the fixed public RESET entry and does not pulse RESET.
 V2W_SELF_RESULT:       LDX     #$00
                         LDA     V2_FLASH_ERROR
                         BEQ     V2W_SELF_OK
                         LDX     #(V2W_FAIL_TEXT-V2W_OK_TEXT)
 V2W_SELF_OK:           LDA     V2W_OK_TEXT,X
-                        BEQ     V2W_HOLD
+                        BEQ     V2W_RESET_WAIT
                         JSR     V2W_PUTC
                         INX
                         BRA     V2W_SELF_OK
-V2W_HOLD:              BRA     V2W_HOLD
-V2W_OK_TEXT:           DB      $0D,$0A,"OK; reset",$00
-V2W_FAIL_TEXT:         DB      $0D,$0A,"Flash fail; reset",$00
+V2W_RESET_WAIT:        JSR     V2W_GETC
+                        AND     #$DF
+                        CMP     #'Y'
+                        BNE     V2W_RESET_WAIT
+                        SEI
+                        CLD
+                        LDX     #$FF
+                        TXS
+                        JMP     $F004
+V2W_OK_TEXT:           DB      $0D,$0A,"OK; press Y to soft reset",$00
+V2W_FAIL_TEXT:         DB      $0D,$0A,"Flash fail; press Y to soft reset",$00
+V2W_GETC:              STZ     V2_DDRA
+                        LDA     #$02
+V2W_RX_WAIT:            BIT     V2_CTRL
+                        BNE     V2W_RX_WAIT
+                        LDA     #$08
+                        TRB     V2_CTRL
+                        NOP
+                        NOP
+                        LDA     V2_DATA
+                        PHA
+                        LDA     #$08
+                        TSB     V2_CTRL
+                        PLA
+                        RTS
 V2W_PUTC:              PHA
                         STZ     V2_DDRA
                         LDA     #$01

@@ -134,7 +134,7 @@ def check_handoffs_and_reentry():
     hold(cpu)
     assert mem.bank == 0 and b'S/Ctrl-C hold' not in mem.tx
     assert mem.ram[0x7E00:0x7F00] == pointers
-    CASES.append('16 generic autostart handoffs, allowed RAM/flash endpoints; F003 always holds and preserves user vectors')
+    CASES.append('16 generic autostart handoffs, allowed RAM/flash endpoints; HOLD always preserves user vectors')
 
 
 def check_stop_keys():
@@ -172,7 +172,9 @@ def check_timing():
     run(cpu, lambda: cpu.pc == 0x9000, limit=4000000)
     cycles = cpu.processorCycles - start
     print(f'Window cycles: {cycles}; at 8 MHz: {cycles/8000000:.6f}s', flush=True)
-    assert 8000000 <= cycles <= 8240000, cycles
+    # The RAM worker grew to include the post-self-edit software-reset prompt;
+    # startup still guarantees at least one second at the nominal 8 MHz.
+    assert 8000000 <= cycles <= 8400000, cycles
     cpu, mem = startup(config(delay=255))
     run(cpu, lambda: cpu.pc == SYM['V2_AUTO_TICK'])
     assert mem.ram[SYM['V2_TICKS']] == 255

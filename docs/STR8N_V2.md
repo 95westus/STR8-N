@@ -2,12 +2,14 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha9 layout milestone](STR8N_V2_PAGE_MILESTONE.md)
+The independent [v2-alpha10 interaction milestone](STR8N_V2_ALPHA10_INTERACTION.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
-The required command set is implemented; alpha9 builds at 3303 resident bytes
-and passes all five host regression suites (33 test groups). Hardware
-qualification remains.
+The required command set is implemented; alpha10 builds at 3584 resident bytes
+and passes all five host regression suites (33 test groups). The
+[2026-09-23 COM3 board test](STR8N_V2_ALPHA10_BOARD_TEST_2026-09-23.md) passed
+installation, interaction checks, software restart, Bank 3 return, and exact
+8 KiB readback. Full hardware qualification remains.
 Existing v1
 sources and normal release targets retain their v1.35 behavior.
 
@@ -90,7 +92,7 @@ bytes from the BRK opcode. On the 816, handoff remains in emulation mode with
 direct page $0000, data bank $00, and program bank $00. User code manages
 subsequent native-mode entry and extended addressing.
 
-The fixed software monitor-entry address is $F003. It bypasses autostart
+The fixed software monitor-entry address is $F007. It bypasses autostart
 and holds at the prompt. A software caller
 must already have the resident monitor bank visible and establish the common CPU contract:
 on the 816, emulation mode, direct page $0000, data bank $00, and execution
@@ -102,25 +104,29 @@ establishes defaults. J3 remains reset-style entry, distinct from prompt entry.
 
 ### Public call entries
 
-Public entries are consecutive three-byte absolute JMP instructions. Internal
+Bytes $F000-$F003 are the `SN`, `$02`, `$00` product/major-ABI/format
+signature. It deliberately differs from v1's `SR/02/03` parser-service
+signature because v2 does not publish that parser ABI. Public entries follow
+as consecutive three-byte absolute JMP instructions. Internal
 routine addresses can move; applications use the constants in
 [`str8n-v2-public.inc`](../src/v2/str8n-v2-public.inc). The builder checks every
-entry address and target. The alpha9 build and boot suite verify this table.
+entry address and target. The alpha10 build and boot suite verify this table.
 
 | Address | Entry | Calling contract |
 | --- | --- | --- |
-| $F000 | RESET | JMP; initializes monitor/vectors and considers autostart; no return |
-| $F003 | HOLD | JMP; preserves handler pointers and holds at prompt; no return |
-| $F006 | CON_INIT | JSR; initializes console hardware; preserves X/Y |
-| $F009 | PUTC | JSR; outputs A, preserving A/X/Y; pending Ctrl-C suppresses output |
-| $F00C | GETC | JSR; buffered blocking input in A, Ctrl-C as 03; preserves X/Y |
-| $F00F | RAW_POLL | JSR; hardware-only nonblocking read, C=1/A=byte, C=0 empty; preserves X/Y |
-| $F012 | CHECK_CANCEL | JSR; bounded input service, C=1 if cancellation pending; preserves X/Y |
-| $F015 | RX_RESET | JSR; clears software queue/error/cancel state; preserves A/X/Y |
-| $F018 | READ_LINE | JSR; echoed uppercase line in $7C00, maximum 32 characters plus NUL; C=1 valid, C=0/Y=1 long, 2 invalid, 3 cancelled |
-| $F01B | HEX_OUT | JSR; prints A as two hexadecimal digits; preserves X/Y |
-| $F01E | NEWLINE | JSR; prints CR/LF; preserves X/Y |
-| $F021 | HEX_NIBBLE | JSR; ASCII hex in A, C=1/A=0..15 when valid, C=0 invalid; preserves X/Y |
+| $F004 | RESET | JMP; initializes monitor/vectors and considers autostart; no return |
+| $F007 | HOLD | JMP; preserves handler pointers and holds at prompt; no return |
+| $F00A | CON_INIT | JSR; initializes console hardware; preserves X/Y |
+| $F00D | PUTC | JSR; outputs A, preserving A/X/Y; pending Ctrl-C suppresses output |
+| $F010 | GETC | JSR; buffered blocking input in A, Ctrl-C as 03; preserves X/Y |
+| $F013 | RAW_POLL | JSR; hardware-only nonblocking read, C=1/A=byte, C=0 empty; preserves X/Y |
+| $F016 | CHECK_CANCEL | JSR; bounded input service, C=1 if cancellation pending; preserves X/Y |
+| $F019 | RX_RESET | JSR; clears software queue/error/cancel state; preserves A/X/Y |
+| $F01C | READ_LINE | JSR; echoed uppercase line in $7C00, maximum 32 characters plus NUL; C=1 valid, C=0/Y=1 long, 2 invalid, 3 cancelled |
+| $F01F | HEX_OUT | JSR; prints A as two hexadecimal digits; preserves X/Y |
+| $F022 | NEWLINE | JSR; prints CR/LF; preserves X/Y |
+| $F025 | HEX_NIBBLE | JSR; ASCII hex in A, C=1/A=0..15 when valid, C=0 invalid; preserves X/Y |
+| $F028-$F031 | RESERVED0-3 | JSR; currently JMP to a shared RTS stub; reserved for compatible expansion. |
 
 For returning calls, the monitor bank must remain mapped, monitor RAM and its
 copied worker must be intact, IRQ must be disabled, and decimal mode must be
@@ -176,9 +182,9 @@ not required for monitor operation.
 
 Reserve $FE00-$FEFF as a full blank flash page above the resident code and
 stored RAM images. The builder rejects an image extending beyond $FDFF and
-leaves this page erased ($FF). Entries remain at $F000 (reset/start) and
-$F003 (held prompt). Every byte from the end of the resident image through
-$FFDF is filled with $FF. The latest source changes are pending rebuild. These bytes
+leaves this page erased ($FF). The signature begins at $F000; entries begin at
+$F004 (reset/start) and $F007 (held prompt). Every byte from the end of the
+resident image through $FFDF is filled with $FF. These bytes
 share the F sector with the monitor; the page is not independently erasable.
 
 Reserve the resident bank's $FFE0-$FFFF for the complete 816 vector area, including
@@ -239,12 +245,17 @@ bank, including the resident monitor's $F000-$FFFF and Bank 3's code and
 hardware vectors. No top-sector prohibition applies to F. I protects the
 resident monitor's top sector and Bank 3's recovery top sector.
 
-Before a resident-bank top-sector edit, identify that STR8-N itself is being changed
-in the confirmation. The full mutation, verification, and completion/failure
+Before a resident-bank top-sector edit, identify that STR8-N itself is being changed.
+Before any sector-F edit, or any F edit anywhere in Bank 3, warn that the bank
+may not boot or function correctly. After the ordinary exact `Y`, require the
+operator to type the exact selected bank, such as `B3`, before mutation.
+The full mutation, verification, and completion/failure
 path must execute from RAM with no dependency on code or constants in the
 sector being changed. Do not return through old ROM addresses after such an
-edit. Define a RAM-resident completion path that reports the result and holds
-for explicit reset/recovery. Reassess the worker-size target for this path.
+edit. The RAM-resident completion path reports the result, asks the operator
+to press `Y`, and then attempts a CPU-level restart at the fixed `$F004` RESET
+entry. It does not pulse the electrical RESET line. Until `Y`, and after any
+other input, it remains in RAM. Reassess the worker-size target for this path.
 An edit may make STR8-N or its vectors unusable; recovery can require an
 external programmer. This is part of F's operator-controlled capability.
 
@@ -283,7 +294,7 @@ unrelated target banks merely because their addresses match.
 On reset, initialize STR8-N, display a valid configured target, and provide
 a minimum one-second input window at nominal 8 MHz whenever autostart is enabled. Recognize `S` or Ctrl-C
 immediately, including buffered input, to cancel automatic execution for
-that boot and hold at the prompt. Software prompt entry at $F003 always holds.
+that boot and hold at the prompt. Software prompt entry at $F007 always holds.
 Timeout uses the generic `G` handoff to
 the configured bank/address, without payload recognition or signatures.
 
@@ -350,14 +361,15 @@ Examples of the intended vocabulary (final wording may be tightened):
 | Invalid S-record structure | Bad S19 |
 | Invalid execution vector | Bad vector |
 | Flash operation exceeds its bound | Flash timeout |
-| Readback differs from requested data | Verify fail |
+| Readback differs from requested data | Bad verify |
 | User cancels an operation | Canceled |
 | Erased/invalid autostart configuration | No config |
 
 Include bank/address or expected/actual bytes only when they help identify
 the failure, using the shared hex-output routines. Keep success output and
-prompts minimal. Mutation confirmation must still identify bank, address or
-range, proposed changes, and erase requirement as required by the F contract.
+prompts minimal. The normal `Bn> ` prompt continuously identifies the selected
+flash bank. Mutation confirmation must still identify bank, address or range,
+proposed changes, and erase requirement as required by the F contract.
 
 Reuse identical strings and useful common fragments where this reduces the
 total linked code/data size. Avoid long banners, repeated explanations, and

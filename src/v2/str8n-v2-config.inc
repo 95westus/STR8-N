@@ -140,7 +140,7 @@ V2_CONFIG_BYTE:        JSR     V2_HEX_OUT
                         BNE     V2_CONFIG_FIELD
                         JMP     V2_NEWLINE
 
-; Only reset entry autostarts. F003 always holds and preserves user pointers.
+; Only reset entry autostarts. F007 always holds and preserves user pointers.
 V2_AUTOSTART:          JSR     V2_CONFIG_READ
                         BCC     V2_AUTO_RETURN
                         LDA     V2_CONFIG+1

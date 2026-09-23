@@ -61,7 +61,10 @@ V2_F_PREVIEW_NEXT:     INX
                         JSR     V2W_ANALYZE
                         JSR     V2_FLASH_MODE
                         JSR     V2_CONFIRM
+                        BCC     V2_F_CANCEL
+                        JSR     V2_F_RISK_CONFIRM
                         BCS     V2_F_COMMIT
+V2_F_CANCEL:
                         JMP     V2_CANCELLED
 V2_F_COMMIT:           JSR     V2W_MUTATE
                         BCS     V2_FLASH_FAILED
@@ -106,6 +109,41 @@ V2_CONFIRM:            LDX     #V2_CONFIRM_TEXT
                         SEC
                         RTS
 V2_CONFIRM_NO:         CLC
+                        RTS
+
+; Sector F in any bank can destroy that bank's boot path. Any Bank 3 edit can
+; damage the board's recovery/application image. After the ordinary Y, require
+; the operator to type the exact selected bank (for example B3).
+V2_F_RISK_CONFIRM:     LDA     V2_SECTOR
+                        CMP     #$F0
+                        BEQ     V2_F_RISK
+                        LDA     V2_SELECTED
+                        CMP     #$03
+                        BNE     V2_F_RISK_OK
+V2_F_RISK:             LDX     #V2_RISK_TEXT
+                        JSR     V2_PRINT
+                        LDA     V2_SELECTED
+                        ORA     #'0'
+                        JSR     V2_PUTC
+                        LDA     #'>'
+                        JSR     V2_PUTC
+                        LDA     #' '
+                        JSR     V2_PUTC
+                        JSR     V2_READ_LINE
+                        BCC     V2_F_RISK_NO
+                        LDA     V2_LINE
+                        CMP     #'B'
+                        BNE     V2_F_RISK_NO
+                        LDA     V2_LINE+1
+                        SEC
+                        SBC     #'0'
+                        CMP     V2_SELECTED
+                        BNE     V2_F_RISK_NO
+                        LDA     V2_LINE+2
+                        BNE     V2_F_RISK_NO
+V2_F_RISK_OK:          SEC
+                        RTS
+V2_F_RISK_NO:          CLC
                         RTS
 
 ; I start end: complete aligned sectors, dense ascending S1 stream. S9 ends.
