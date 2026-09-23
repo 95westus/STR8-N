@@ -88,6 +88,14 @@ They did not form part of the installation.
   `J1` was allowed to expire; it jumped to `$F007`, printed a fresh alpha10
   banner, and reached `B1> `. Thus both cancellation and timeout branches were
   exercised with a live configuration.
+- The compact forms proposed for the corrected help were then exercised on
+  alpha10. `C 0 1 F007 7E` disabled autostart and `J1` held immediately at the
+  normal prompt. `C 1 1 F007 7E` re-enabled it; the hold window expired and
+  entered `$F007`. Delays `$01` and `$06` were rejected with `Bad range`, while
+  the minimum `$0A` was accepted and timed out through `$F007`. These tests
+  prove that alpha10 already accepts one-digit enable and bank fields; alpha11
+  changes only the misleading help text. The board was left configured as
+  `C 01 01 F007 0A`.
 - Invalid and incomplete `C` and `F` forms returned `Bad cmd` or `Bad hex`
   without mutation.
 - `J3` returned to the intact STR8-N 1.35 recovery monitor both before and

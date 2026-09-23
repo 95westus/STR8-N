@@ -2,14 +2,15 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-The independent [v2-alpha10 interaction milestone](STR8N_V2_ALPHA10_INTERACTION.md)
+Alpha11 corrects the compact `C` syntax displayed by help. The independent
+[v2-alpha10 interaction milestone](STR8N_V2_ALPHA10_INTERACTION.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
-The required command set is implemented; alpha10 builds at 3584 resident bytes
-and passes all five host regression suites (33 test groups). The
-[2026-09-23 COM3 board test](STR8N_V2_ALPHA10_BOARD_TEST_2026-09-23.md) passed
-installation, interaction checks, software restart, Bank 3 return, and exact
-8 KiB readback. Full hardware qualification remains.
+The required command set is implemented; alpha11 builds at 3584 resident bytes
+and passes all six host regression suites (34 test groups). The
+[alpha11 COM3 board test](STR8N_V2_ALPHA11_BOARD_TEST_2026-09-23.md) passed
+installation, exact 8 KiB readback, BRK dispatch, a real VIA1 Timer-1 IRQ, and
+physical NMI dispatch. Full hardware qualification remains.
 Existing v1
 sources and normal release targets retain their v1.35 behavior.
 
@@ -75,7 +76,7 @@ Addresses and byte values are hexadecimal. Share a compact hex parser.
 | `I start end` | Install dense ascending S19 into a selected legal flash bank and inclusive sector-aligned range, without directory metadata or journal state. |
 | `J0`-`J2` | Boot the selected bank through its RESET vector after bank/vector validity checks. |
 | `J3` | Boot Bank 3 through its RESET vector; during guest-bank testing this starts v1.35, not v2. |
-| `C [on bank addr delay]` | Show/set the resident bank's autostart configuration, compute its integrity check, and confirm before writing. All values are hex; delay is $0A-$FF tenths at nominal 8 MHz. |
+| `C [0|1 0-3 addr delay]` | Show/set the resident bank's autostart configuration, compute its integrity check, and confirm before writing. All values are hex; delay is $0A-$FF tenths at nominal 8 MHz. One- or two-digit forms are accepted for enable and bank. |
 
 Initial scope excludes an assembler, disassembler, register editor, and
 debugger. The operator may install their own BRK/IRQ handling and use `F`

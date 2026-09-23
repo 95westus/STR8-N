@@ -133,13 +133,13 @@ def command(cpu, text):
 def check_boot_and_input():
     for bank in range(4):
         cpu, mem = boot(bank)
-        for line, expected in [(b'?\r\n', b'J0-J3 boot  ? help'),
+        for line, expected in [(b'?\r\n', b'C [0|1 0-3 addr delay]'),
                                (b'X\n', b'Bad cmd'),
                                (b'J4\r', b'Bad bank'),
                                (b'J\r', b'Bad bank'),
                                (b'J0X\r', b'Bad bank'),
                                (b'J0' + b'X'*40 + b'\r', b'Long line'),
-                               (b'?\x08?\r', b'J0-J3 boot  ? help')]:
+                               (b'?\x08?\r', b'C [0|1 0-3 addr delay]')]:
             output = command(cpu, line)
             assert expected in output, (line, output)
             assert mem.bank == bank and not mem.bank_changes

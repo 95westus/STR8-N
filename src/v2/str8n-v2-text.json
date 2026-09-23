@@ -49,7 +49,7 @@
   },
   {
     "name": "V2_HELP",
-    "text": "B0-B3 select flash bank\r\nD addr [end]\r\nM/F addr bytes\r\nG addr  L  I start end\r\nC [on bank addr delay]\r\nJ0-J3 boot  ? help"
+    "text": "B0-B3 select flash bank\r\nD addr [end]\r\nM/F addr bytes\r\nG addr  L  I start end\r\nC [0|1 0-3 addr delay]\r\nJ0-J3 boot  ? help"
   },
   {
     "name": "V2_LONG_TEXT",

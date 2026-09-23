@@ -1,4 +1,4 @@
-; v2-alpha10: signature at F000, public RESET at F004, erased tail to vectors.
+; v2-alpha11: accurate compact C syntax in help; public RESET at F004.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE
