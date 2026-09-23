@@ -51,7 +51,8 @@ def check_config_command():
         assert mem.banks[resident][:0x6FF0] == before[resident][:0x6FF0]
         assert mem.banks[resident][0x7000:] == before[resident][0x7000:]
         events = len(mem.events)
-        send(cpu, b'C 0 3 F000 FF\rY\r')
+        # Zero-padded enable/bank fields remain accepted for compatibility.
+        send(cpu, b'C 00 03 F000 FF\rY\r')
         assert len(mem.events) == events
     CASES.append('C show/set in all resident banks, exact integrity bytes, neighbor preservation, selected bank restored, no-op writes skipped')
 

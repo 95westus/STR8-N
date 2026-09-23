@@ -1,4 +1,4 @@
-; C [enable bank address delay]. All fields hex; delay $0A-$FF tenths.
+; C [0|1 0-3 address delay]. All fields hex; delay $0A-$FF tenths.
 ; Config belongs to the resident bank, independent of selected target bank.
 V2_COMMAND_C:          LDX     #$01
                         JSR     V2_SKIP_SPACES

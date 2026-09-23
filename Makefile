@@ -520,7 +520,7 @@ help:
 	@echo make bank-maint - build and validate the STR8-N $(VERSION_TEXT) RAM bank-maintenance S19
 	@echo make bank-maint-menu - build menu Bank Maintenance with guarded B3:F update and ASM-F2 .a carrier
 	@echo make console-abi-test - build the L-loadable raw console ABI hardware probe
-	@echo make irq-test - build the RAM-only VIA1 Timer 1 interrupt probe
+	@echo make irq-test - build the v1 RAM-only VIA1 Timer 1 interrupt probe
 	@echo make board-probe-check - build and model-check IRQ and B2:9 flash probes; requires py65
 	@echo make led-worker-test - build the guarded L-loadable LED and production-worker probe
 	@echo make top-update - build the guarded L-loadable Bank-3 sector-F updater
@@ -543,9 +543,12 @@ clean:
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "if (Test-Path -LiteralPath '$(BUILD_DIR)') { Remove-Item -LiteralPath '$(BUILD_DIR)' -Recurse -Force }"
 
 # V2 is an independent milestone; these targets never rebuild v1 artifacts.
-.PHONY: v2 v2-check
+.PHONY: v2 v2-check v2-interrupt-probe-check
 v2:
 	python tools/build_v2.py
+
+v2-interrupt-probe-check: v2
+	python tools/test_v2_interrupt_probe.py
 
 v2-check: v2
 	python tools/test_v2_boot.py
@@ -553,3 +556,4 @@ v2-check: v2
 	python tools/test_v2_load.py
 	python tools/test_v2_flash.py
 	python tools/test_v2_config.py
+	python tools/test_v2_interrupt_probe.py

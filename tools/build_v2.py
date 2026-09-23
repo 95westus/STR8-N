@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha10.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha11.
 """
 from pathlib import Path
 import argparse
@@ -12,10 +12,11 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a10'
-STEM = 'str8n-v2-alpha10'
-OUT = ROOT / 'BUILD/v2-alpha10'
+VERSION = '2.0a11'
+STEM = 'str8n-v2-alpha11'
+OUT = ROOT / 'BUILD/v2-alpha11'
 SOURCE = ROOT / 'src/v2'
+INTERRUPT_PROBE_SOURCE = ROOT / 'tools/v2-interrupt-test'
 RESIDENT_START = 0xF000
 SIGNATURE_SIZE = 4
 BLANK_PAGE_START = 0xFE00
@@ -75,12 +76,12 @@ def dense_image(memory, start, end):
     return bytes(memory[a] for a in range(start, end))
 
 
-def assemble(name, address, assembler, linker):
+def assemble(name, address, assembler, linker, source=SOURCE):
     stage = OUT / 'asm'
     # Never let a failed external tool leave us reading a previous link result.
     for suffix in ('.obj', '.map', '.s19'):
         (stage / (name + suffix)).unlink(missing_ok=True)
-    shutil.copyfile(SOURCE / (name + '.asm'), stage / (name + '.asm'))
+    shutil.copyfile(source / (name + '.asm'), stage / (name + '.asm'))
     subprocess.run([assembler, '-G', '-L', '-S', '-W', '-I', str(SOURCE),
                     name + '.asm'], cwd=stage, check=True)
     linked = stage / (name + '.s19')
@@ -206,6 +207,37 @@ def main():
         assert dense_image(parsed, start, 65536) == payload
         assert entry == int.from_bytes(payload[-4:-2], 'little') == resident['START']
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    probe_source_name = 'str8n-v2-interrupt-probe-2000'
+    probe_name = f'{STEM}-interrupt-probe-2000'
+    probe_memory, probe_symbols = assemble(
+        probe_source_name, 0x2000, assembler, linker, INTERRUPT_PROBE_SOURCE)
+    probe = dense_image(probe_memory, 0x2000, probe_symbols['PROBE_END'])
+    probe_path = OUT / f'{probe_name}.s19'
+    probe_lines = [record('0', 0, f'STR8-N {VERSION} IRQ'.encode('ascii'))]
+    probe_lines.extend(record('1', address, probe[address-0x2000:address-0x2000+32])
+                       for address in range(0x2000, 0x2000+len(probe), 32))
+    probe_lines.append(record('9', 0x2000))
+    probe_path.write_text('\n'.join(probe_lines) + '\n')
+    parsed_probe, probe_entry = read_s19(probe_path)
+    assert dense_image(parsed_probe, 0x2000, 0x2000+len(probe)) == probe
+    assert probe_entry == 0x2000
+    artifacts[probe_path.name] = hashlib.sha256(probe_path.read_bytes()).hexdigest()
+    nmi_source_name = 'str8n-v2-nmi-probe-2000'
+    nmi_name = f'{STEM}-nmi-probe-2000'
+    nmi_memory, nmi_symbols = assemble(
+        nmi_source_name, 0x2000, assembler, linker, INTERRUPT_PROBE_SOURCE)
+    nmi_probe = dense_image(nmi_memory, 0x2000, nmi_symbols['PROBE_END'])
+    nmi_path = OUT / f'{nmi_name}.s19'
+    nmi_lines = [record('0', 0, f'STR8-N {VERSION} NMI'.encode('ascii'))]
+    nmi_lines.extend(record('1', address,
+                            nmi_probe[address-0x2000:address-0x2000+32])
+                     for address in range(0x2000, 0x2000+len(nmi_probe), 32))
+    nmi_lines.append(record('9', 0x2000))
+    nmi_path.write_text('\n'.join(nmi_lines) + '\n')
+    parsed_nmi, nmi_entry = read_s19(nmi_path)
+    assert dense_image(parsed_nmi, 0x2000, 0x2000+len(nmi_probe)) == nmi_probe
+    assert nmi_entry == 0x2000
+    artifacts[nmi_path.name] = hashlib.sha256(nmi_path.read_bytes()).hexdigest()
     report = dict(milestone='compact-resident', resident_bytes=len(code),
                   resident_start=RESIDENT_START,
                   public_calls={public: resident[public] for public, _, _ in PUBLIC_CALLS},
@@ -213,6 +245,8 @@ def main():
                   command_table_bytes=resident['V2_TEXT']-resident['V2_COMMAND_KEYS'],
                   text_bytes=len(pool),
                   worker_bytes=len(worker), vector_code_bytes=len(vectors),
+                  interrupt_probe_bytes=len(probe), interrupt_probe=probe_symbols,
+                  nmi_probe_bytes=len(nmi_probe), nmi_probe=nmi_symbols,
                   free_before_vectors=0xFFE0-resident['V2_END'],
                   reserved_blank_page_start=BLANK_PAGE_START,
                   reserved_blank_page_bytes=BLANK_PAGE_SIZE,
