@@ -89,6 +89,28 @@ flash writes. Its S19 SHA-256 is
 
 The host model passes NMI success, shortened timeout, and busy-gate refusal.
 
+## Physical RESET bank selection
+
+With alpha11 running in Bank 1 and receive capture already active, the operator
+pressed the board's physical RESET button once. Hardware selected Bank 3, not
+the previously running Bank 1, and the capture showed:
+
+```text
+RST H
+
+STR8-N 1.35
+0-2 C W S:
+BOOT WARM
+
+HIMON V 00.0915(2324)
+>
+```
+
+HIMON's `STR8` handoff returned to STR8-N 1.35 with `RST S`. Its shell then
+launched `J1`, returning to `STR8-N 2.0a11 B1` and `B1> `. No flash write was
+performed. This establishes board 2205's physical-reset selection and recovery
+behavior independently from `J3` and software reset.
+
 ## Evidence and remaining coverage
 
 Local generated evidence is under `BUILD/v2-alpha11`:
@@ -98,7 +120,8 @@ Local generated evidence is under `BUILD/v2-alpha11`:
   `com3-2205-alpha11-readback-result.json`;
 - `com3-2205-alpha11-interrupt-probe.raw` and its event log;
 - `com3-2205-alpha11-nmi-probe.raw` and its event log.
+- `com3-2205-alpha11-physical-reset.raw` and its event log.
 
 These files are ignored build evidence, not committed source artifacts.
-Flash-busy interrupt behavior, v2 `I`, injected flash failures, physical-reset
-bank selection, and native-mode W65C816 paths remain to be qualified.
+Flash-busy interrupt behavior, v2 `I`, injected flash failures, and native-mode
+W65C816 paths remain to be qualified.

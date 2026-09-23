@@ -1,4 +1,4 @@
-; v2-alpha11: accurate compact C syntax in help; public RESET at F004.
+; v2-alpha12: visible CPU/ABI capabilities and public query at F028.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE
@@ -14,10 +14,11 @@
                         XDEF    V2_HEX_OUT_ENTRY
                         XDEF    V2_NEWLINE_ENTRY
                         XDEF    V2_HEX_NIBBLE_ENTRY
-                        XDEF    V2_RESERVED0_ENTRY
+                        XDEF    V2_CAPS_QUERY_ENTRY
                         XDEF    V2_RESERVED1_ENTRY
                         XDEF    V2_RESERVED2_ENTRY
                         XDEF    V2_RESERVED3_ENTRY
+                        XDEF    V2_CAPS_DATA
                         XDEF    V2_END
                         INCLUDE "str8n-v2-eq.inc"
                         INCLUDE "str8n-v2-public.inc"
@@ -39,11 +40,18 @@ V2_READ_LINE_ENTRY:     JMP     V2_READ_LINE
 V2_HEX_OUT_ENTRY:       JMP     V2_HEX_OUT
 V2_NEWLINE_ENTRY:       JMP     V2_NEWLINE
 V2_HEX_NIBBLE_ENTRY:    JMP     V2_HEX_NIBBLE
-V2_RESERVED0_ENTRY:     JMP     V2_RESERVED
+V2_CAPS_QUERY_ENTRY:    JMP     V2_CAPS_QUERY
 V2_RESERVED1_ENTRY:     JMP     V2_RESERVED
 V2_RESERVED2_ENTRY:     JMP     V2_RESERVED
 V2_RESERVED3_ENTRY:     JMP     V2_RESERVED
 V2_RESERVED:            RTS
+; Fixed, ROM-readable descriptor: magic, format, capability flags.
+V2_CAPS_DATA:           DB      "CA",STR8V2_CAPS_FORMAT,STR8V2_CAPS_FLAGS
+V2_CAPS_QUERY:          LDA     #STR8V2_CAPS_FORMAT
+                        LDX     #STR8V2_CAPS_FLAGS
+                        LDY     #STR8V2_CAPS_LENGTH
+                        SEC
+                        RTS
 
 V2_RESET:
                         SEI
@@ -106,6 +114,8 @@ V2_WORKER_COPIED:
                         LDA     V2_RESIDENT
                         ORA     #'0'
                         JSR     V2_PUTC
+                        LDX     #V2_ABI_HEADER
+                        JSR     V2_PRINT
                         LDA     V2_AUTO
                         BEQ     V2_PROMPT
                         JSR     V2_AUTOSTART

@@ -44,6 +44,10 @@
     "text": "\r\nSTR8-N {version} B"
   },
   {
+    "name": "V2_ABI_HEADER",
+    "text": "\r\nABI 65C02 | 816E | 816N-VEC"
+  },
+  {
     "name": "V2_PROMPT_TEXT",
     "text": "\r\nB"
   },

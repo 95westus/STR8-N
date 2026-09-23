@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha11.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha12.
 """
 from pathlib import Path
 import argparse
@@ -12,23 +12,24 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a11'
-STEM = 'str8n-v2-alpha11'
-OUT = ROOT / 'BUILD/v2-alpha11'
+VERSION = '2.0a12'
+STEM = 'str8n-v2-alpha12'
+OUT = ROOT / 'BUILD/v2-alpha12'
 SOURCE = ROOT / 'src/v2'
 INTERRUPT_PROBE_SOURCE = ROOT / 'tools/v2-interrupt-test'
 RESIDENT_START = 0xF000
 SIGNATURE_SIZE = 4
-BLANK_PAGE_START = 0xFE00
-BLANK_PAGE_SIZE = 0x100
+EXPANSION_RESERVE_START = 0xFE40
+EXPANSION_RESERVE_SIZE = 0xC0
 PUBLIC_CALLS = (
     ('STR8V2_RESET', 'START', 'V2_RESET'),
     ('STR8V2_HOLD', 'V2_PROMPT_ENTRY', 'V2_REENTER'),
     *((f'STR8V2_{name}', f'V2_{name}_ENTRY', f'V2_{name}') for name in (
         'CON_INIT', 'PUTC', 'GETC', 'RAW_POLL', 'CHECK_CANCEL', 'RX_RESET',
         'READ_LINE', 'HEX_OUT', 'NEWLINE', 'HEX_NIBBLE')),
+    ('STR8V2_CAPS_QUERY', 'V2_CAPS_QUERY_ENTRY', 'V2_CAPS_QUERY'),
     *((f'STR8V2_RESERVED{index}', f'V2_RESERVED{index}_ENTRY', 'V2_RESERVED')
-      for index in range(4)),
+      for index in range(1, 4)),
 )
 
 
@@ -175,8 +176,13 @@ def main():
             raise ValueError(f'Public entry moved: {public}')
         if bytes(memory[a] for a in range(address, address+3)) != b'\x4c' + resident[target].to_bytes(2, 'little'):
             raise ValueError(f'Public entry is not the expected JMP: {public}')
-    if resident['V2_END'] > BLANK_PAGE_START:
-        raise ValueError('Resident overlaps reserved blank page $FE00-$FEFF')
+    descriptor = b'CA\x01\x07'
+    if resident['STR8V2_CAPS_DATA'] != 0xF035 or resident['V2_CAPS_DATA'] != 0xF035:
+        raise ValueError('Capability descriptor moved')
+    if bytes(memory[a] for a in range(0xF035, 0xF035+len(descriptor))) != descriptor:
+        raise ValueError('Capability descriptor changed')
+    if resident['V2_END'] > EXPANSION_RESERVE_START:
+        raise ValueError('Resident overlaps reserved expansion tail $FE40-$FEFF')
     image = bytearray(b'\xff' * 8192)
     offset = RESIDENT_START - 0xE000
     image[offset:offset+len(code)] = code
@@ -248,8 +254,8 @@ def main():
                   interrupt_probe_bytes=len(probe), interrupt_probe=probe_symbols,
                   nmi_probe_bytes=len(nmi_probe), nmi_probe=nmi_symbols,
                   free_before_vectors=0xFFE0-resident['V2_END'],
-                  reserved_blank_page_start=BLANK_PAGE_START,
-                  reserved_blank_page_bytes=BLANK_PAGE_SIZE,
+                  expansion_reserve_start=EXPANSION_RESERVE_START,
+                  expansion_reserve_bytes=EXPANSION_RESERVE_SIZE,
                   resident=resident, worker=worker_sym, vectors=vector_sym,
                   artifacts=artifacts, board_tested=False,
                   source_sha256={p.name: hashlib.sha256(p.read_bytes()).hexdigest()

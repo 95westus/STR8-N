@@ -2,15 +2,18 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-Alpha11 corrects the compact `C` syntax displayed by help. The independent
+Alpha12 displays `ABI 65C02 | 816E | 816N-VEC` at startup and publishes the
+same contract through a fixed capability descriptor and query. The independent
 [v2-alpha10 interaction milestone](STR8N_V2_ALPHA10_INTERACTION.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
-The required command set is implemented; alpha11 builds at 3584 resident bytes
-and passes all six host regression suites (34 test groups). The
+The required command set is implemented; alpha12 builds at 3630 resident bytes
+and passes all six host regression suites (35 test groups). Alpha12 has not yet
+been installed on hardware. The preceding
 [alpha11 COM3 board test](STR8N_V2_ALPHA11_BOARD_TEST_2026-09-23.md) passed
 installation, exact 8 KiB readback, BRK dispatch, a real VIA1 Timer-1 IRQ, and
-physical NMI dispatch. Full hardware qualification remains.
+physical NMI dispatch. Physical RESET selected Bank 3 and entered the preserved
+v1.35 recovery path. Full hardware qualification remains.
 Existing v1
 sources and normal release targets retain their v1.35 behavior.
 
@@ -54,7 +57,9 @@ Build one STR8-N binary for W65C02SXB/EDU and W65C816SXB/EDU. The 816 runs
 the monitor in emulation mode. Use only instructions with compatible behavior
 on both CPUs; exclude the 65C02-only RMB/SMB/BBR/BBS instructions. Do not add
 CPU-specific binaries, native-mode monitor execution, or an EDU-only buffer
-relocation. Applications own native mode and extended memory.
+relocation. Applications own native mode and extended memory. Native-mode
+interrupt vectors dispatch through the five pointers at `$7E10-$7E19`; this is
+a vector ABI, not a native-mode calling convention for monitor services.
 
 All monitor RAM and execution remain in CPU bank $00. Flash overlays B0-B3
 are a separate concept from 816 CPU address banks. Reserve the full 816
@@ -127,7 +132,15 @@ entry address and target. The alpha10 build and boot suite verify this table.
 | $F01F | HEX_OUT | JSR; prints A as two hexadecimal digits; preserves X/Y |
 | $F022 | NEWLINE | JSR; prints CR/LF; preserves X/Y |
 | $F025 | HEX_NIBBLE | JSR; ASCII hex in A, C=1/A=0..15 when valid, C=0 invalid; preserves X/Y |
-| $F028-$F031 | RESERVED0-3 | JSR; currently JMP to a shared RTS stub; reserved for compatible expansion. |
+| $F028 | CAPS_QUERY | JSR; returns A=descriptor format, X=capability flags, Y=descriptor length, C=1 |
+| $F02B-$F031 | RESERVED1-3 | JSR; currently JMP to a shared RTS stub; reserved for compatible expansion. |
+
+The four-byte capability descriptor at `$F035` is `"CA", $01, $07`:
+format 1 with W65C02 execution (bit 0), W65C816 emulation-mode execution
+(bit 1), and the W65C816 native vector ABI (bit 2). Bit 3 would advertise a
+native-mode callable monitor-service gateway and is clear. `CAPS_QUERY` returns
+the same format and flags with a descriptor length of four. The startup line is
+a human-readable rendering of these flags; it does not detect the installed CPU.
 
 For returning calls, the monitor bank must remain mapped, monitor RAM and its
 copied worker must be intact, IRQ must be disabled, and decimal mode must be
@@ -181,12 +194,14 @@ not required for monitor operation.
 
 ## Vector ownership and reset
 
-Reserve $FE00-$FEFF as a full blank flash page above the resident code and
-stored RAM images. The builder rejects an image extending beyond $FDFF and
-leaves this page erased ($FF). The signature begins at $F000; entries begin at
-$F004 (reset/start) and $F007 (held prompt). Every byte from the end of the
-resident image through $FFDF is filled with $FF. These bytes
-share the F sector with the monitor; the page is not independently erasable.
+Reserve `$FE40-$FEFF` as an aligned 192-byte expansion tail above the resident
+code and stored RAM images. Alpha12 uses 46 bytes of the formerly blank
+`$FE00-$FEFF` page for the capability ABI and its visible header. The builder
+rejects an image extending into the remaining tail and leaves it erased
+(`$FF`). The signature begins at `$F000`; entries begin at `$F004`
+(reset/start) and `$F007` (held prompt). Every byte from the end of the resident
+image through `$FFDF` is filled with `$FF`. These bytes share the F sector with
+the monitor; the tail is not independently erasable.
 
 Reserve the resident bank's $FFE0-$FFFF for the complete 816 vector area, including
 reserved locations; the v1 configuration pocket at $FFF0 cannot carry over.

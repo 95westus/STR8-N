@@ -107,7 +107,8 @@ def boot(bank, reset_pcr=False):
     hold(cpu)
     assert memory.bank == bank
     assert all(memory.ram[SYM[name]] == bank for name in ('V2_RESIDENT', 'V2_SELECTED', 'V2_TARGET'))
-    assert f'STR8-N {VERSION} B{bank}\r\nB{bank}> '.encode() in memory.tx
+    assert (f'STR8-N {VERSION} B{bank}\r\n'
+            f'ABI 65C02 | 816E | 816N-VEC\r\nB{bank}> '.encode()) in memory.tx
     assert not memory.bank_changes
     assert memory.ram[:0xE0] == bytes([0x5A])*0xE0
     assert memory.ram[0x0200:0x6900] == bytes([0x5A])*0x6700
@@ -210,17 +211,20 @@ def check_image_and_instructions():
         address = RESIDENT_START + 4 + 3*index
         assert SYM[public] == SYM[label] == address
         assert bytes(memory[a] for a in range(address, address+3)) == b'\x4c' + SYM[target].to_bytes(2, 'little')
+    assert SYM['STR8V2_CAPS_DATA'] == SYM['V2_CAPS_DATA'] == 0xF035
+    assert bytes(memory[a] for a in range(0xF035, 0xF039)) == b'CA\x01\x07'
     assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
     assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
-    assert SYM['V2_END'] <= 0xFE00
-    assert bytes(memory[a] for a in range(0xFE00, 0xFF00)) == b'\xff'*256
+    assert SYM['V2_END'] <= 0xFE40
+    assert bytes(memory[a] for a in range(0xFE40, 0xFF00)) == b'\xff'*192
     assert bytes(memory[a] for a in range(SYM['V2_END'], 0xFFE0)) == b'\xff' * (0xFFE0-SYM['V2_END'])
     for address in (0xFFE0, 0xFFE2, 0xFFEC, 0xFFF0, 0xFFF2, 0xFFF6):
         assert bytes(memory[a] for a in range(address, address+2)) == b'\xff\xff'
     cpu, mem = boot(3)
     dis = Disassembler(cpu)
     worker = REPORT['worker']
-    for start, end in [(SYM['START'], SYM['V2_COMMAND_KEYS']),
+    for start, end in [(SYM['START'], SYM['V2_CAPS_DATA']),
+                       (SYM['V2_CAPS_QUERY'], SYM['V2_COMMAND_KEYS']),
                        (0x7900, worker['V2W_BITS']),
                        (worker['V2W_BEGIN'], worker['V2W_OK_TEXT']),
                        (worker['V2W_GETC'], worker['V2W_END']),
@@ -232,7 +236,23 @@ def check_image_and_instructions():
             assert mnemonic != '???' and not mnemonic.startswith(('RMB', 'SMB', 'BBR', 'BBS'))
             pc += length
         assert pc == end
-    CASES.append('dense S19, disabled config, reserved vectors, common-instruction audit')
+    CASES.append('dense S19, disabled config, expansion reserve, reserved vectors, common-instruction audit')
+
+
+def check_capability_abi():
+    for bank in range(4):
+        cpu, mem = boot(bank)
+        cpu.sp = 255
+        cpu.stPushWord(0x01FF)
+        cpu.a, cpu.x, cpu.y = 0xA5, 0x39, 0xC7
+        cpu.p &= ~cpu.CARRY
+        cpu.pc = SYM['STR8V2_CAPS_QUERY']
+        run(cpu, lambda: cpu.pc == 0x0200)
+        assert (cpu.a, cpu.x, cpu.y) == (1, 7, 4)
+        assert cpu.p & cpu.CARRY and cpu.sp == 255
+        assert cpu.x & 0x07 == 0x07
+        assert not cpu.x & 0x08
+    CASES.append('public capability query and fixed descriptor match the visible CPU/ABI contract')
 
 
 def check_v135_roundtrip():
@@ -300,7 +320,8 @@ def check_compact_messages():
 
 def main():
     for test in (check_boot_and_input, check_handoffs, check_vectors,
-                 check_image_and_instructions, check_v135_roundtrip, check_compact_messages):
+                 check_image_and_instructions, check_capability_abi,
+                 check_v135_roundtrip, check_compact_messages):
         test()
         print('PASS:', CASES[-1])
     (OUT / 'test-results.json').write_text(json.dumps({
