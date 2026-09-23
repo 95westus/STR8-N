@@ -4,11 +4,17 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-On the `v2` branch, alpha11 corrects the compact configuration syntax shown by
-`?`. Its [Bank 1 COM3 board test](docs/STR8N_V2_ALPHA11_BOARD_TEST_2026-09-23.md)
+On the `v2` branch, alpha12 displays its CPU/ABI contract at startup and exports
+a machine-readable capability query at `$F028`. The query advertises W65C02,
+W65C816 emulation-mode execution, and the W65C816 native vector ABI; it does
+not advertise native-mode monitor calls. Alpha12 is host-tested but has not yet
+been installed on hardware. The preceding
+[alpha11 Bank 1 COM3 board test](docs/STR8N_V2_ALPHA11_BOARD_TEST_2026-09-23.md)
 on the board marked 2205 passed installation, exact 8 KiB readback, BRK, and a
 real VIA1 Timer-1 IRQ and physical NMI. Full hardware qualification remains.
-The alpha11 build and all six host regression suites pass (34 test groups).
+Physical RESET selection was also captured: board 2205 selects Bank 3 and
+enters the preserved STR8-N 1.35 recovery path.
+The alpha12 build and all six host regression suites pass (35 test groups).
 Use `make v2-check` for its build and host execution checks. The v1 firmware
 sources and normal release targets remain unchanged; the description below
 documents the v1 product, not the full planned v2 command set.
