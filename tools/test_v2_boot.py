@@ -164,13 +164,13 @@ def command(cpu, text):
 def check_boot_and_input():
     for bank in range(4):
         cpu, mem = boot(bank)
-        for line, expected in [(b'?\r\n', b'C [0|1 0-3 addr delay]'),
+        for line, expected in [(b'?\r\n', b'C 0|1 0-3 addr|V delay'),
                                (b'X\n', b'Bad cmd'),
                                (b'J4\r', b'Bad bank'),
                                (b'J\r', b'Bad bank'),
                                (b'J0X\r', b'Bad bank'),
                                (b'J0' + b'X'*40 + b'\r', b'Long line'),
-                               (b'?\x08?\r', b'C [0|1 0-3 addr delay]')]:
+                               (b'?\x08?\r', b'C 0|1 0-3 addr|V delay')]:
             output = command(cpu, line)
             assert expected in output, (line, output)
             assert mem.bank == bank and not mem.bank_changes
@@ -410,7 +410,7 @@ def check_board_query_and_acia():
         start = len(mem.acia_tx)
         mem.acia_rx.extend(b'?\r')
         hold(cpu)
-        assert b'J0-J3 boot  ? help' in mem.acia_tx[start:] and not mem.tx
+        assert b'J0-3 boot' in mem.acia_tx[start:] and not mem.tx
 
         cpu.a = cpu.x = cpu.y = 0
         cpu.p &= ~cpu.CARRY
@@ -520,7 +520,7 @@ def check_compact_messages():
     cpu, mem = boot(0)
     output = command(cpu, b'B1\rB\rJ\r?X\r?\r')
     assert output.count(b'Bad bank') == 2
-    assert b'Bad cmd' in output and b'J0-J3 boot  ? help' in output
+    assert b'Bad cmd' in output and b'J0-3 boot' in output
     assert mem.bank == 0 and mem.ram[SYM['V2_SELECTED']] == 1
     CASES.append('all packed messages print exactly across page boundaries; stale bank suffixes and table dispatch stay safe')
 

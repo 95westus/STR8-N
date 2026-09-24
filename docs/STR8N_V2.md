@@ -2,6 +2,11 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
+Alpha19 adds `C 0|1 0-3 ADDR|V DELAY`. `V` stores a vector mode and reads the
+selected bank's RESET vector when autostart expires. Explicit addresses and
+existing configurations retain their prior behavior. The alpha19 build and
+host checks pass. The [alpha19 board test](STR8N_V2_ALPHA19_VECTOR_BOARD_TEST_2026-09-24.md)
+accepted the vector autostart path on board 2205; broader hardware qualification remains.
 Alpha18 detects and displays the installed CPU, retains
 `ABI 65C02 | 816E | 816N-VEC`, and publishes both the actual board state and
 supported execution contract through fixed queries. The independent
@@ -138,7 +143,12 @@ Addresses and byte values are hexadecimal. Share a compact hex parser.
 | `I start end` | Install dense ascending S19 into a selected legal flash bank and inclusive sector-aligned range, without directory metadata or journal state. |
 | `J0`-`J2` | Boot the selected bank through its RESET vector after bank/vector validity checks. |
 | `J3` | Boot Bank 3 through its RESET vector; during guest-bank testing this starts v1.35, not v2. |
-| `C [0|1 0-3 addr delay]` | Show/set the resident bank's autostart configuration, compute its integrity check, and confirm before writing. All values are hex; delay is $0A-$FF tenths at nominal 8 MHz. One- or two-digit forms are accepted for enable and bank. |
+| `C [0|1 0-3 addr|V delay]` | Show/set the resident bank's autostart configuration, compute its integrity check, and confirm before writing. `V` reads the selected bank's RESET vector at handoff; `addr` is a fixed override. Numeric values are hex; delay is $0A-$FF tenths at nominal 8 MHz. |
+
+For example, `C 1 2 V 0A` starts Bank 2 through its current RESET vector
+after the minimum hold window. A later `C 1 2 9000 0A` switches to the fixed
+address `$9000`; `C 0 2 V 0A` disables autostart. Bare `C` displays either
+`V` or the fixed address. Each change requires the existing flash confirmation.
 
 Initial scope excludes an assembler, disassembler, register editor, and
 debugger. The operator may install their own BRK/IRQ handling and use `F`
@@ -378,9 +388,10 @@ F remains a raw editing facility.
 
 Use the resident bank's $EFF0-$EFFF as a single 16-byte configuration block: format at
 +0, enable at +1, flash overlay at +2, little-endian start address at +3/+4,
-delay in tenths of a second at +5, reserved bytes at +6 through +13, and an
-integrity check at +14/+15. Format is 1; enable is 0/1, bank 0-3, delay
-$0A-$FF. C writes zero reserved bytes; readers ignore their values but still
+delay in tenths of a second at +5, mode at +6 (0 = fixed address, 1 = RESET
+vector), reserved bytes at +7 through +13, and an integrity check at +14/+15.
+`V` writes zero to +3/+4; mode 0 preserves the old configuration format. Format
+is 1; enable is 0/1, bank 0-3, delay $0A-$FF. C writes zero reserved bytes; readers ignore their values but still
 include them in the integrity check. The two integrity bytes are accumulated
 8-bit sums modulo 256 over bytes 0-13, as detailed in the alpha5 guide.
 There is no record history, journal, or rollback.
@@ -398,8 +409,11 @@ On reset, initialize STR8-N, display a valid configured target, and provide
 a minimum one-second input window at nominal 8 MHz whenever autostart is enabled. Recognize `S` or Ctrl-C
 immediately, including buffered input, to cancel automatic execution for
 that boot and hold at the prompt. Software prompt entry at $F007 always holds.
-Timeout uses the generic `G` handoff to
-the configured bank/address, without payload recognition or signatures.
+Timeout uses the generic `G` handoff for a fixed address. In `V` mode it reads
+the selected bank's RESET vector after the hold window and applies the same
+vector validity check as `J`; an invalid vector returns to the resident prompt.
+The vector address is not copied into the configuration pocket, so replacing a
+bank changes the target used on the next autostart.
 
 ## Installation and testing alongside v1.35
 

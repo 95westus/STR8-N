@@ -1,4 +1,4 @@
-; v2-alpha18: operation-level S19 and flash LED activity.
+; v2-alpha19: configurable RESET-vector autostart.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE

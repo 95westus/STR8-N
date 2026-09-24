@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha18.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha19.
 """
 from pathlib import Path
 import argparse
@@ -12,9 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a18'
-STEM = 'str8n-v2-alpha18'
-OUT = ROOT / 'BUILD/v2-alpha18'
+VERSION = '2.0a19'
+STEM = 'str8n-v2-alpha19'
+OUT = ROOT / 'BUILD/v2-alpha19'
 SOURCE = ROOT / 'src/v2'
 INTERRUPT_PROBE_SOURCE = ROOT / 'tools/v2-interrupt-test'
 ACIA_TEST_SOURCE = ROOT / 'tools/v2-acia-test'

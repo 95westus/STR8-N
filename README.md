@@ -4,7 +4,11 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-On the `v2` branch, alpha18 detects W65C02/W65C816, exports CPU and console
+On the `v2` branch, alpha19 adds `C 0|1 0-3 ADDR|V DELAY`: `V` follows the
+selected bank's RESET vector when autostart runs, while an explicit address
+remains fixed. Alpha19 passes the host checks and its vector autostart path was
+accepted on board 2205; see the [alpha19 board test](docs/STR8N_V2_ALPHA19_VECTOR_BOARD_TEST_2026-09-24.md).
+The board-tested alpha18 detects W65C02/W65C816, exports CPU and console
 state through `BOARD_QUERY` at `$F02B`, and selects either the primary FT245 or
 backup W65C51N console at initialization. Alpha18 provides an initialized RAM ABI
 at `$7E60`, so applications can use console, discovery, formatting, HOLD, and
@@ -16,7 +20,7 @@ Bank 0 and R-YORS/HIMON in Bank 1; see the
 The earlier physical FT245, W65C02 detection, and direct ACIA transmit checks
 are in the [alpha13 board test](docs/STR8N_V2_ALPHA13_BOARD_TEST_2026-09-23.md);
 ACIA receive on that board remains suspect.
-The alpha18 build and host regression suites pass. It also emits RAM-only
+The alpha19 build and host regression suites pass. It also emits RAM-only
 cross-bank ABI and
 W65C816 native BRK/NMI acceptance probe for the incoming board; that probe is
 assembled and structurally checked but awaits native-mode hardware execution.
