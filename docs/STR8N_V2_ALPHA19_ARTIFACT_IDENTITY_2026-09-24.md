@@ -19,6 +19,15 @@ It contains exactly 8192 data bytes at `$E000-$FFFF`, with no missing or
 out-of-range addresses, and S9 entry `$F004`. Decoding its data in address order
 produces the frozen E-F BIN byte for byte.
 
+The frozen full-bank `str8n-v2-alpha19-8000-ffff.s19` passed the same parser.
+Its 1026 records contain exactly 32768 data bytes, covering `$8000-$FFFF`
+without gaps or addresses outside that range. Its S9 entry is `$F004`, and its
+decoded data equals `str8n-v2-alpha19-8000-ffff.bin` byte for byte. The upper
+8192 bytes also equal the E-F install BIN. The lower 24576 bytes are all `$FF`
+and differ from board 2512's retained Bank 1 lower sectors. This full-bank
+image would erase that existing lower-sector content if installed there; it is
+not a board-preserving recovery image for that board.
+
 This verifies retained candidate identity and the board readbacks from that
 session. It does not qualify a later build or current board state. Release
 package verification and the remaining hardware matrix are still pending.
