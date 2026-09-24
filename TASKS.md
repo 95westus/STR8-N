@@ -10,6 +10,11 @@ Defects and hardware investigations are indexed in the
 
 ## Deferred v2 hardware issue
 
+- [x] Package the unchanged alpha21 image as a scoped
+  [STR8-N 2.0 RC1](docs/STR8N_V2_RC1_2026-09-24.md), with exact artifact and
+  board top-sector hash verification. The remaining hardware qualifications
+  are disclosed in the RC decision.
+
 - [ ] [W65C51N ACIA receive on boards 2205 and 2512](docs/issues/ACIA_RX_2512_2205.md):
   resume only with meter, logic probe, or scope measurements of the receive
   signal, clock, handshake, supply, and ground. The backup-console

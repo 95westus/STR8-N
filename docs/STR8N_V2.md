@@ -2,6 +2,14 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
+Alpha21 moves the reset-only delay before `CON_INIT` samples FT245 host
+presence. The wait is approximately 6.58 seconds at 8 MHz and applies to
+both eventual console choices on reset. Software HOLD remains immediate.
+The [alpha20 board test](STR8N_V2_ALPHA20_2512_INSTALL_2026-09-24.md) found
+that delaying after console selection did not capture the cold USB banner.
+The RAM worker occupies 765 of 768 bytes, and the reserved flash expansion
+tail is `$FF20-$FFDF`. Alpha21 is a new candidate and does not inherit
+alpha19 or alpha20 hardware qualification.
 Alpha19 adds `C 0|1 0-3 ADDR|V DELAY`. `V` stores a vector mode and reads the
 selected bank's RESET vector when autostart expires. Explicit addresses and
 existing configurations retain their prior behavior. The alpha19 build and
@@ -123,6 +131,35 @@ returned to emulation mode immediately; a W65C02 treats the byte as its unused
 NOP. The detected identity is stored at `$7D01` (`$02` or `$16`) and displayed
 after the resident bank in the startup banner.
 
+### Reset and console call flow
+
+The arrows summarize the current alpha21 control flow. The startup delay runs
+on reset, while software prompt reentry skips it. The ACIA selection path is
+implemented but its receive behavior remains an open hardware qualification.
+
+```mermaid
+flowchart TD
+    R[RESET entry at F004] --> S[Capture resident flash bank]
+    S --> T[Detect CPU; initialize RAM state and vectors]
+    T --> U[Copy RAM worker]
+    H[HOLD or prompt reentry at F007] --> U
+    U --> V{Reset entry?}
+    V -- Yes --> W[RAM startup delay]
+    V -- No --> X[CON_INIT samples PWE#]
+    W --> X
+    X --> Y{PWE# asserted?}
+    Y -- Yes --> F[FT245 USB console]
+    Y -- No --> A[W65C51N ACIA console]
+    F --> B[Print banner and ABI]
+    A --> B
+    B --> C{Autostart enabled?}
+    C -- Yes --> D[Autostart hold window]
+    C -- No --> P[Prompt: read line and dispatch command]
+    D -- S or invalid target --> P
+    D -- Valid target --> G[Guest RESET-vector handoff]
+    P --> P
+```
+
 ## Primary and backup consoles
 
 FT245 USB remains the primary console. `CON_INIT` configures the VIA interface
@@ -131,6 +168,47 @@ including USB power without a configured data host, selects the W65C51N ACIA.
 The choice is stored at `$7D02` and remains fixed until reset, monitor reentry,
 or an explicit `CON_INIT` call. STR8-N never broadcasts output or combines
 input from the two transports.
+
+### Supported host-connected operating scope
+
+For the current W65C02SXB qualification claim, connect the board's USB FT245
+port to a powered data host before using the monitor. The host may be a PC or
+a computer such as a Raspberry Pi, UDOO, or Atomic Pi, provided it enumerates
+the FT245 interface and runs a compatible terminal or transfer program. Keep
+the host connection and 5 V board power stable throughout the session.
+The same image is intended for W65C02SXB and W65C816SXB with or without their
+matching EDU daughterboards. The first W65C816SXB/EDU hardware qualification
+is recorded separately; optional EDU hardware is not required for core boot,
+FT245 console, or board-management commands.
+
+**Do not unplug the USB cable, remove power, press RESET, or press NMI during
+an S19 transfer, flash erase/program/verify operation, or guarded top update.**
+If an operation is interrupted, its destination or active configuration
+sector may be incomplete. STR8-N manages board configuration, bank selection,
+and flash writes, but those operations can also change the board into a state
+that cannot boot the intended image. A wrong configuration or damaged flash
+sector may require external reflashing. Preserve a verified recovery image and
+inspect the board state before retrying. STR8-N does not provide atomic
+installation, automatic rollback, or guaranteed recovery from power loss.
+An ordinary power-off after a command or ASM/HIMON session has finished is
+within the operating scope; the restriction applies while an operation is
+active. The current qualification excludes deliberate host, USB FT245/VIA
+interface, or power disconnection during an active operation. We make no
+interruption-recovery claim because the interrupted state has not been
+qualified and the firmware has no persistent transaction record or rollback
+mechanism to restore a known image automatically.
+
+STR8-N's responsibility is board management and recovery access. A guest in
+the separate 8-xxx layer owns its application behavior, including displays,
+LED patterns, and sounds. Those guest behaviors are not v2 release claims.
+
+The supported console claim is FT245 with an already connected and enumerated
+host. The W65C51N ACIA path remains implemented but its physical receive and
+fallback operation are unqualified under
+[STR8N-001](issues/ACIA_RX_2512_2205.md). A USB-power-only setup without a
+configured data host is outside this FT245 claim. The alpha21 reset wait gives
+the host time to enumerate before console selection; it does not make an
+unplugged or unstable host connection safe during an operation.
 
 The backup ACIA uses `$7F80-$7F83`, the stock 1.8432 MHz clock, and 19200 8N1.
 It initializes control `$1F` and command `$0B`, receives through RDRF, and does
@@ -271,6 +349,22 @@ Command handlers, parsers, packed message ordinals, flash workers, and other
 internal helpers are not public call entries. Internal calls continue to use
 their direct targets; the table adds only one JMP for application calls.
 
+The two public entry routes have different bank requirements:
+
+```mermaid
+flowchart LR
+    APP[Application in CPU bank 00] --> CH{Visible flash bank?}
+    CH -- Resident bank visible --> ROM[Flash JMP facade at F004-F031]
+    CH -- Any flash bank --> RAM[RAM ABI at 7E60-7E8A]
+    ROM --> SRV[Monitor service]
+    RAM --> SRV
+    SRV --> RET[Return with documented registers and flags]
+```
+
+`RESET` and `HOLD` are the exceptions to the return arrow: both enter the
+monitor and do not return. The RAM signature must be checked before using its
+entries, and the shared CPU and RAM preconditions above still apply.
+
 Banked accesses must remain executable while the resident bank is hidden. Use RAM
 routines for the necessary access/selection operations and restore the monitor
 mapping before returning to its flash code. Keep the operator-selected bank
@@ -310,9 +404,30 @@ start on a $x000 boundary. Reduce worker/state reservations if measured size
 permits. Extended 816 RAM and EDU serial SRAM belong to applications and are
 not required for monitor operation.
 
+The address and flash-overlay relationship is:
+
+```mermaid
+flowchart LR
+    CPU[CPU bank 00 address space] --> LO[0000-7EFF: SRAM]
+    CPU --> IO[7F00-7FFF: board I/O]
+    CPU --> HI[8000-FFFF: selected 32 KiB flash overlay]
+    LO --> APP[Application RAM 0200-68FF]
+    LO --> BUF[Sector buffer 6900-78FF]
+    LO --> WORK[Worker and monitor state 7900-7EFF]
+    HI --> SEL{Selected overlay}
+    SEL --> B0[Physical flash Bank 0]
+    SEL --> B1[Physical flash Bank 1]
+    SEL --> B2[Physical flash Bank 2]
+    SEL --> B3[Physical flash Bank 3]
+```
+
+Physical flash banks B0-B3 are overlays in CPU bank `$00`; they are not W65C816
+CPU address banks. The resident image occupies `$F000-$FFFF` in whichever flash
+bank contains it. The exact SRAM ownership boundaries are in the table above.
+
 ## Vector ownership and reset
 
-Reserve `$FF00-$FFDF` as an aligned 224-byte expansion tail above the resident
+Reserve `$FF20-$FFDF` as a 192-byte expansion tail above the resident
 code and stored RAM images. The builder rejects an image extending into this
 tail and leaves it erased (`$FF`). The signature begins at `$F000`; entries begin at `$F004`
 (reset/start) and `$F007` (held prompt). Every byte from the end of the resident

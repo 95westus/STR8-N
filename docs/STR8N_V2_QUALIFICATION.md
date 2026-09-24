@@ -5,6 +5,41 @@ Candidate frozen on 2026-09-24: `2.0a19`, branch `v2`, source commit
 [the freeze manifest](STR8N_V2_ALPHA19_FREEZE.json)). This is a qualification
 candidate, not a completed release qualification.
 
+The later [alpha20 freeze](STR8N_V2_ALPHA20_FREEZE.md) has a different
+firmware identity. The hardware results below remain alpha19 results until
+alpha20 is installed and tested separately.
+
+## Current release scope decision
+
+The [2.0 RC1 decision](STR8N_V2_RC1_2026-09-24.md) accepts the frozen alpha21
+image for a scoped W65C02SXB/FT245 release candidate. This matrix preserves
+the earlier alpha19 evidence and does not relabel it as alpha21 board testing.
+
+For a W65C02SXB release claim, require a USB FT245 data host connected and
+enumerated at startup and stable 5 V board power during operation. The
+[alpha21 board session](STR8N_V2_ALPHA21_2512_INSTALL_2026-09-24.md)
+demonstrated the cold USB reconnect banner and configured Bank 1 handoff on
+board 2512. Users must keep the USB cable connected and avoid RESET, NMI, and
+power interruption during transfers and flash mutation. Power-loss recovery
+and automatic rollback are outside this operating claim; interruption can
+leave a partial image. Normal power-off after a completed monitor or ASM/HIMON
+session is allowed. Deliberate FT245/VIA cable, host, power, and active-flash
+fault injection are excluded from this release gate. No interruption-recovery
+claim is made: an interrupted write or configuration change can leave an
+incomplete image or an unbootable board, and external reflashing may be needed.
+V2 has no persistent transaction record or automatic rollback, and the
+interrupted states have not been qualified. Previously tested rejection and
+cancellation paths retain only their recorded scope.
+
+V2 is the board management layer. Application displays, LED patterns, and
+sounds belong to separately installed 8-xxx guests and are outside this
+release claim.
+
+ACIA receive and automatic fallback are outside the FT245-only console claim
+and remain deferred under [STR8N-001](issues/ACIA_RX_2512_2205.md). This
+scope decision does not qualify ACIA or close its issue. W65C816 and EDU LED
+claims require their separate hardware evidence before they can be advertised.
+
 Freeze the firmware, public ABI, memory map, command behavior, and build inputs
 at these identities. Documentation and qualification evidence may be added.
 A firmware fix requires a new candidate identity, fresh host checks, and a
@@ -47,6 +82,12 @@ startup observed. Bank 1 now holds v1.35 with HIMON and ASM-F2, and Bank 2 is
 erased. This establishes a new live candidate location; the remaining behavior
 gates are still open.
 
+The [no-EDU reset and cold-power session](STR8N_V2_2512_NO_EDU_RESET_2026-09-24.md)
+confirmed Bank 3 alpha19 startup, active Bank 1 vector autostart, timed `S`
+cancellation, FT245 selection, CPU identity, and ROM signature. A later full
+power cycle reached Bank 1 HIMON; early Bank 3 boot bytes were missed during
+COM4 re-enumeration. The ACIA adapter was absent.
+
 ## Qualification matrix
 
 Record board identity, CPU, console, candidate hashes, initial configuration,
@@ -58,18 +99,18 @@ for each hardware session. Mark a gate passed only when evidence supports it.
 | Rebuild and all eight `make v2-check` host suites | See freeze manifest and retained log |
 | Alpha19 identity on board 2205 | Existing exact B3:F readback in linked report; re-establish live identity before further tests |
 | Recovery preparation | 2512: verified four-bank backups, B1 authorized disposable, B3 recovery retained |
-| Cold power-on, physical/software reset, HOLD | 2512: physical recovery reset, software restart, HOLD and guest relaunch passed; cold power-cycle pending |
+| Cold power-on, physical/software reset, HOLD | 2512: physical recovery reset, software restart, HOLD and guest relaunch passed; no-EDU B3 physical reset, Bank 1 autostart and timed S cancellation passed; cold power cycle reached Bank 1 HIMON, with early B3 bytes missed during COM4 re-enumeration |
 | B/D/M/G/J and input rejection | 2512: four-bank dumps, RAM edit/restore, guarded rejection and handoffs passed; broader boundaries pending |
-| L transfers | 2512: frozen probes loaded/read back exactly and executed with G; failure/cancel/transfer-tail cases pending |
-| F and I flash operations | 2512 B1:E: direct program, erase/rewrite, dense install, full-sector readback and restoration passed; broader cancel/error/self-edit cases pending |
+| L transfers | 2512: frozen probes loaded/read back exactly and executed with G; deliberate malformed/cancel/transfer-tail stress cases remain unqualified and are excluded from the stable-host release gate |
+| F and I flash operations | 2512 B1:E: direct program, erase/rewrite, dense install, full-sector readback and restoration passed; deliberate interruption/fault injection excluded. Broader resident self-edit behavior remains unqualified and must not be claimed without separate evidence |
 | Configuration and autostart | 2512: fixed-address HOLD, vector B3 handoff, S cancellation, disabled restart and config restoration passed; invalid config/vector and broader timing matrix pending |
 | Public ROM and cross-bank RAM ABI | 2512 cross-bank RAM ABI probe and HOLD return passed; broader public entry coverage pending |
 | W65C02 interrupts | 2512 physical NMI, VIA1 timer IRQ, BRK, register/stack/RTI probes passed |
-| FT245 console and operation LEDs | 2512 command/transfer/load/flash/handoff passed; visual LED observations pending |
-| W65C51N backup console | Deferred: 2512 direct timed TX passed; RX and Q return failed to demonstrate reception ($70 status). Cause, fallback selection and transfer tests remain open |
+| FT245 console and operation LEDs | 2512 command/transfer/load/flash/handoff passed; no-EDU FT245 selection read back as $00; visual EDU LED observations pending |
+| W65C51N backup console | Deferred under the [ACIA RX issue](issues/ACIA_RX_2512_2205.md) until meter/probe/scope measurements are available: 2512 direct timed TX passed; RX and Q return failed to demonstrate reception ($70 status). Cause, fallback selection and transfer tests remain open |
 | W65C816 | Pending board availability, detection, emulation and native interrupt/RAM ABI probe execution |
-| Failure and recovery | Pending controlled failure cases and demonstrated recovery; host fault injection alone is insufficient |
-| Final release | Frozen candidate artifact identity and E-F/full-bank S19 validation passed; matrix disposition, documentation, final hashes and package verification remain pending |
+| Failure and recovery | Deliberate cable/host/power and active-flash fault injection excluded from the stable FT245 operating claim; no interruption-recovery or automatic-rollback claim. Existing guard/cancellation evidence is limited to the linked board tests |
+| RC1 package | Frozen alpha21 artifact identities, exact board 2512 Bank 3 F match, and ZIP file hashes verified; scoped RC decision recorded. Public final-release disposition remains separate |
 
 Start hardware qualification with live identity and backup collection, then
 reset/console and read-only monitor checks. Establish scratch ranges and recovery

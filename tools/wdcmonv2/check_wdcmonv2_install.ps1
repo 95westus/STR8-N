@@ -4,7 +4,8 @@ param(
     [string]$MapPath = 'BUILD/v1.35/map/str8n-v1.35-wdcmonv2-install-2000.map',
     [string]$TopBinPath = 'BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin',
     [string]$CandidateBinPath = 'BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin',
-    [string]$VersionText = '1.35'
+    [string]$VersionText = '1.35',
+    [switch]$V2Signature
 )
 
 Set-StrictMode -Version Latest
@@ -132,12 +133,16 @@ for ($i = 0; $i -lt $top.Length; $i++) {
         throw ('External candidate BIN differs from canonical top at offset ${0:X3}' -f $i)
     }
 }
-if ($top[0] -ne 0x4C -or ($top[0x0FFC] -eq 0xFF -and $top[0x0FFD] -eq 0xFF)) {
-    throw 'External STR8-N top lacks its JMP face or RESET vector'
+if (($V2Signature -and ($top[0] -ne 0x53 -or $top[1] -ne 0x4E -or $top[2] -ne 0x02 -or $top[3] -ne 0x00)) -or
+    (-not $V2Signature -and $top[0] -ne 0x4C) -or
+    ($top[0x0FFC] -eq 0xFF -and $top[0x0FFD] -eq 0xFF)) {
+    throw 'External STR8-N top lacks its expected signature or RESET vector'
 }
-for ($offset = 0x0FB0; $offset -le 0x0FEF; $offset++) {
-    if ($candidate[$offset] -ne 0xFF) {
-        throw ('Canonical top must leave the Bank-3 directory empty at ${0:X4}' -f (0xF000 + $offset))
+if (-not $V2Signature) {
+    for ($offset = 0x0FB0; $offset -le 0x0FEF; $offset++) {
+        if ($candidate[$offset] -ne 0xFF) {
+            throw ('Canonical top must leave the Bank-3 directory empty at ${0:X4}' -f (0xF000 + $offset))
+        }
     }
 }
 

@@ -235,8 +235,12 @@ W2I_RETRY_CANDIDATE:
                         LDY             #>W2I_MSG_INSTALLED
                         JSR             W2I_PUTS
                         JSR             W2I_LED_RELEASE
+                        IF              STR8_V2_RC1
+W2I_V2_RESET_WAIT:      BRA             W2I_V2_RESET_WAIT
+                        ELSE
                         JSR             W2I_ARM_SOFT_RESET
                         JMP             ($FFFC)
+                        ENDIF
 
 W2I_RECOVERY:
                         LDA             #$03
@@ -1133,12 +1137,17 @@ W2I_CRLF:
 W2I_BANK_BITS:          DB              $CC,$CE,$EC,$EE
 W2I_FNV_OFFSET:         DB              $C5,$9D,$1C,$81
 
+                        IF              STR8_V2_RC1
+W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 2.0a21 RC1 MIGRATION",$0D,$0A
+                        DB              "B3 STOCK -> B0; STR8-N 2.0a21 -> B3:F",$0D,$0A
+                        ELSE
                         IF              STR8_IN65_VERSION_135
 W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.35 MIGRATION",$0D,$0A
                         DB              "B3 STOCK -> B0; STR8-N 1.35 -> B3:F",$0D,$0A
                         ELSE
 W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.33 MIGRATION",$0D,$0A
                         DB              "B3 STOCK -> B0; STR8-N 1.33 -> B3:F",$0D,$0A
+                        ENDIF
                         ENDIF
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0",$0D,$0A,0
 W2I_MSG_ID_OK:          DB              "FLASH ID=",0
@@ -1155,15 +1164,23 @@ W2I_MSG_B0_OK:          DB              "B0 == ORIGINAL B3 VERIFIED",$0D,$0A,0
 W2I_MSG_SEND_CANDIDATE: DB              "SEND STR8-N TOP BIN; 4096 BYTES; START $F000",$0D,$0A,0
 W2I_MSG_CANDIDATE_RX:   DB              "STR8-N TOP RECEIVED",$0D,$0A,0
 W2I_MSG_CANDIDATE_BAD:  DB              "RECEIVED STR8-N TOP CHECK FAILED",$0D,$0A,0
+                        IF              STR8_V2_RC1
+W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 2.0a21> ",0
+                        ELSE
                         IF              STR8_IN65_VERSION_135
 W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 1.35> ",0
                         ELSE
 W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 1.33> ",0
                         ENDIF
+                        ENDIF
 W2I_MSG_INSTALL_CANCEL: DB              "CANCELLED: INSTALL TEXT DID NOT MATCH",$0D,$0A,0
 W2I_MSG_INSTALLING:     DB              "ERASING/PROGRAMMING B3:F",$0D,$0A,0
+                        IF              STR8_V2_RC1
+W2I_MSG_INSTALLED:      DB              "MIGRATION VERIFIED; PRESS PHYSICAL RESET",$0D,$0A,0
+                        ELSE
 W2I_MSG_INSTALLED:      DB              "MIGRATION VERIFIED; STARTING STR8-N",$0D,$0A
                         DB              "NEXT: CONNECT ANY 115200 8N1 SERIAL TERMINAL",$0D,$0A,0
+                        ENDIF
 W2I_MSG_RECOVERY:       DB              "B3:F FAIL: R=RETRY STR8 O=RESTORE OLD> ",0
 W2I_MSG_OLD_RESTORED:   DB              "OLD B3:F RESTORED FROM B0:F; RESET",$0D,$0A,0
 W2I_MSG_CANCEL:         DB              "CANCELLED; NOTHING FURTHER WRITTEN",$0D,$0A,0
@@ -1199,10 +1216,14 @@ W2R_MSG_BOOT:           DB              "BOOT STOCK B3",$0D,$0A,0
                         ENDIF
 
 W2I_TOKEN_COPY:         DB              "COPY B3 TO B0",0
+                        IF              STR8_V2_RC1
+W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 2.0a21",0
+                        ELSE
                         IF              STR8_IN65_VERSION_135
 W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.35",0
                         ELSE
 W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.33",0
+                        ENDIF
                         ENDIF
 W2I_ARCHIVE_TOKEN:      DB              "ARCHIVE ",0,0,0,0,0,0,0,0,0
                         IF              W2I_RESTORE_STOCK
@@ -1246,6 +1267,9 @@ W2R_RESET_HI:           DB              $00
                         ENDIF
                         ENDIF
                         ELSE
+                        IF              STR8_V2_RC1
+                        INCLUDE         "str8n-v2-rc1-wdcmonv2-install-image.inc"
+                        ELSE
                         IF              STR8_IN65_VERSION_135
                         INCLUDE         "str8n-v1.35-wdcmonv2-install-image.inc"
                         ELSE
@@ -1253,6 +1277,7 @@ W2R_RESET_HI:           DB              $00
                         INCLUDE         "str8n-v1.33-wdcmonv2-install-image.inc"
                         ELSE
                         INCLUDE         "str8n-v1.23-wdcmonv2-install-image.inc"
+                        ENDIF
                         ENDIF
                         ENDIF
                         ENDIF
