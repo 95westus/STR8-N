@@ -1,7 +1,12 @@
 # STR8-N v2
 
-**A small board monitor and guarded loader for the WDC SXB.** V2 grew from
-STR8-N v1.3x by keeping the essential console, RAM/S19 loading, flash editing,
+**Board monitor and guarded loader for WDC SXB.**
+
+[Read the v2 announcement](docs/STR8N_V2_ANNOUNCEMENT.md) and join its
+[GitHub discussion](https://github.com/95westus/STR8-N/discussions).
+Report reproducible defects in [GitHub Issues](https://github.com/95westus/STR8-N/issues).
+
+V2 grew from STR8-N v1.3x by keeping the essential console, RAM/S19 loading, flash editing,
 bank selection, and boot handoff, while removing the directory, enrollment,
 journal, and HIMON-specific policy. You choose what each flash bank holds,
 which image to load, and when to boot it. STR8-N checks addresses, asks for
