@@ -1,4 +1,4 @@
-; C [0|1 0-3 address delay]. All fields hex; delay $0A-$FF tenths.
+; C [0|1 0-3 address|V delay]. Numeric fields hex; delay $0A-$FF tenths.
 ; Config belongs to the resident bank, independent of selected target bank.
 V2_COMMAND_C:          LDX     #$01
                         JSR     V2_SKIP_SPACES
@@ -23,12 +23,22 @@ V2_C_CLEAR:            STZ     V2_CONFIG,X
                         BCC     V2_C_HEX
                         LDA     V2_VALUE
                         STA     V2_CONFIG+2
+                        JSR     V2_SKIP_SPACES
+                        CMP     #'V'
+                        BEQ     V2_C_VECTOR
                         JSR     V2_HEX_WORD
                         BCC     V2_C_HEX
                         LDA     V2_VALUE
                         STA     V2_CONFIG+3
                         LDA     V2_VALUE+1
                         STA     V2_CONFIG+4
+                        BRA     V2_C_DELAY
+V2_C_VECTOR:            INX
+                        LDA     V2_LINE,X
+                        CMP     #' '
+                        BNE     V2_C_HEX
+                        INC     V2_CONFIG+6
+V2_C_DELAY:
                         JSR     V2_HEX_BYTE
                         BCC     V2_C_HEX
                         LDA     V2_VALUE
@@ -90,6 +100,11 @@ V2_CONFIG_CHECK:       LDA     V2_CONFIG
                         LDA     V2_CONFIG+5
                         CMP     #$0A
                         BCC     V2_CONFIG_BAD
+                        LDA     V2_CONFIG+6
+                        CMP     #$02
+                        BCS     V2_CONFIG_BAD
+                        DEC     A
+                        BEQ     V2_CONFIG_ADDRESS
                         LDA     V2_CONFIG+3
                         STA     V2_ADDR
                         LDA     V2_CONFIG+4
@@ -130,12 +145,20 @@ V2_CONFIG_FIELD:       LDA     #' '
                         LDA     V2_CONFIG,X
                         CPX     #$03
                         BNE     V2_CONFIG_BYTE
+                        LDA     V2_CONFIG+6
+                        BEQ     V2_CONFIG_ADDRESS_OUT
+                        LDA     #'V'
+                        JSR     V2_PUTC
+                        LDX     #$05
+                        BRA     V2_CONFIG_NEXT
+V2_CONFIG_ADDRESS_OUT:
                         LDA     V2_CONFIG+4
                         JSR     V2_HEX_OUT
                         LDA     V2_CONFIG+3
                         INX
 V2_CONFIG_BYTE:        JSR     V2_HEX_OUT
                         INX
+V2_CONFIG_NEXT:
                         CPX     #$06
                         BNE     V2_CONFIG_FIELD
                         JMP     V2_NEWLINE
@@ -164,7 +187,12 @@ V2_AUTO_POLL:          JSR     V2_AUTO_KEY
                         BNE     V2_AUTO_TICK
                         JSR     V2_AUTO_KEY
                         BCS     V2_AUTO_STOP
+                        LDA     V2_CONFIG+6
+                        BEQ     V2_AUTO_ADDRESS
                         LDA     V2_CONFIG+2
+                        STA     V2_TARGET
+                        JMP     V2_J_READY
+V2_AUTO_ADDRESS:        LDA     V2_CONFIG+2
                         STA     V2_SELECTED
                         LDA     V2_CONFIG+3
                         STA     V2_VECTOR

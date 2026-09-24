@@ -8,8 +8,8 @@ from test_v2_flash import boot_flash, send, records, finish
 CASES = []
 
 
-def config(enable=1, bank=1, address=0x9000, delay=10, **changes):
-    data = bytearray([1, enable, bank, address & 255, address >> 8, delay] + [0]*10)
+def config(enable=1, bank=1, address=0x9000, delay=10, mode=0, **changes):
+    data = bytearray([1, enable, bank, address & 255, address >> 8, delay, mode] + [0]*9)
     for key, value in changes.items():
         data[int(key)] = value
     a = b = 0
@@ -54,6 +54,12 @@ def check_config_command():
         # Zero-padded enable/bank fields remain accepted for compatibility.
         send(cpu, b'C 00 03 F000 FF\rY\r')
         assert len(mem.events) == events
+        output = send(cpu, b'C 1 2 V 0A\rY\r')
+        assert b'C 01 02 V 0A' in output and b'Done' in output, output
+        assert mem.banks[resident][0x6FF0:0x7000] == config(bank=2, address=0, mode=1)
+        assert b'C 01 02 V 0A' in command(cpu, b'C\r')
+        output = send(cpu, b'C 1 2 9000 0A\rY\r')
+        assert b'Done' in output and mem.banks[resident][0x6FF0:0x7000] == config(bank=2)
     CASES.append('C show/set in all resident banks, exact integrity bytes, neighbor preservation, selected bank restored, no-op writes skipped')
 
 
@@ -61,6 +67,9 @@ def check_rejection_and_failure():
     cpu, mem = boot_flash()
     command(cpu, b'B2\r')
     for line, expected in [(b'C 1\r', b'Bad hex'), (b'C 1 0 9000 0A x\r', b'Bad hex'),
+                           (b'C 1 0 VX 0A\r', b'Bad hex'),
+                           (b'C 1 0 V0A\r', b'Bad hex'),
+                           (b'C 1 0 V\r', b'Bad hex'),
                            (b'C 2 0 9000 0A\r', b'Bad range'),
                            (b'C 1 4 9000 0A\r', b'Bad range'),
                            (b'C 1 0 9000 09\r', b'Bad range'),
@@ -97,13 +106,14 @@ def check_validity():
             assert mem.bank == 0 and b'S/Ctrl-C hold' not in mem.tx
     for data in [b'\xff'*16, b'\0'*16, config(enable=0),
                  config(enable=2), config(bank=4), config(delay=0), config(delay=9),
+                 config(mode=2),
                  config(**{'0': 2}),
                  *(config(address=a) for a in (0xE0, 0x100, 0x1FF, 0x6900, 0x7E00, 0x7FFF))]:
         cpu, mem = startup(data)
         hold(cpu)
         assert mem.bank == 0 and b'S/Ctrl-C hold' not in mem.tx
     # Reserved bytes are ignored semantically, but still covered by integrity.
-    for index in range(6, 14):
+    for index in range(7, 14):
         cpu, mem = startup(config(**{str(index): 255}), keys=b'S')
         hold(cpu)
         assert b'S/Ctrl-C hold' in mem.tx and b'Canceled' in mem.tx
@@ -136,6 +146,27 @@ def check_handoffs_and_reentry():
     assert mem.bank == 0 and b'S/Ctrl-C hold' not in mem.tx
     assert mem.ram[0x7E00:0x7F00] == pointers
     CASES.append('16 generic autostart handoffs, allowed RAM/flash endpoints; HOLD always preserves user vectors')
+
+
+def check_vector_autostart():
+    for resident in range(4):
+        for target in range(4):
+            cpu, mem = startup(config(bank=target, address=0, mode=1), resident)
+            mem.banks[target][0x7FFC:0x7FFE] = b'\x23\xA1'
+            run(cpu, lambda: cpu.pc == SYM['V2_AUTO_TICK'])
+            assert b'C 01' in mem.tx and b' V 0A' in mem.tx
+            mem.ram[SYM['V2_TICKS']] = 1
+            cpu.pc = SYM['V2_AUTO_POLL']; cpu.x = cpu.y = 1
+            run(cpu, lambda: cpu.pc == 0xA123)
+            assert mem.bank == target and cpu.sp == 255
+    # An erased target vector holds at the monitor rather than jumping to $FFFF.
+    cpu, mem = startup(config(bank=1, address=0, mode=1), bank=0)
+    run(cpu, lambda: cpu.pc == SYM['V2_AUTO_TICK'])
+    mem.ram[SYM['V2_TICKS']] = 1
+    cpu.pc = SYM['V2_AUTO_POLL']; cpu.x = cpu.y = 1
+    hold(cpu)
+    assert mem.bank == 0 and b'Bad vector' in mem.tx
+    CASES.append('V follows the selected bank RESET vector at handoff; bad vector returns to resident prompt')
 
 
 def check_stop_keys():
@@ -219,7 +250,8 @@ def check_command_transitions():
 
 def main():
     for test in (check_config_command, check_rejection_and_failure, check_validity,
-                 check_handoffs_and_reentry, check_stop_keys, check_timing,
+                 check_handoffs_and_reentry, check_vector_autostart,
+                 check_stop_keys, check_timing,
                  check_command_transitions):
         test()
         print('PASS:', CASES[-1], flush=True)
