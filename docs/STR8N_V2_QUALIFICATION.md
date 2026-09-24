@@ -36,6 +36,11 @@ The [frozen artifact identity and image checks](STR8N_V2_ALPHA19_ARTIFACT_IDENTI
 passed for all 103 candidate files, the dense E-F and full-bank S19 files, and
 the Bank 1 board 2512 install/readback.
 
+On the [currently attached board marked 2512](STR8N_V2_ATTACHED_BOARD_B0_READBACK_2026-09-24.md),
+a read-only full Bank 0 readback matches the retained WDCMONv2 image. Bank 1
+currently differs from the frozen alpha19 image, so further hardware runs on
+that installed image do not qualify the frozen candidate.
+
 ## Qualification matrix
 
 Record board identity, CPU, console, candidate hashes, initial configuration,
