@@ -5,6 +5,16 @@ project. Check an item only when its artifact hashes, host checks, board
 transcript, and final flash readback agree. Keep owner-local WDCMONv2 images
 out of published release artifacts.
 
+Defects and hardware investigations are indexed in the
+[repo issue tracker](ISSUES.md).
+
+## Deferred v2 hardware issue
+
+- [ ] [W65C51N ACIA receive on boards 2205 and 2512](docs/issues/ACIA_RX_2512_2205.md):
+  resume only with meter, logic probe, or scope measurements of the receive
+  signal, clock, handshake, supply, and ground. The backup-console
+  qualification gate remains open.
+
 ## v1.34 release
 
 The current source is a 120-byte size reduction from the accepted v1.33
