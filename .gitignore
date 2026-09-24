@@ -7,6 +7,3 @@ __pycache__/
 /local-books/
 /output/
 /tmp/
-
-# Owner-local print/sign checklist; keep completed forms and template out of Git.
-/docs/STR8N_V2_RC1_816_QUALIFICATION_CHECKLIST.md
