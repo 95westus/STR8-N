@@ -58,7 +58,7 @@ def main():
     run('TU_BACKUP_CONFIRMED', 'TU_BACKUP_SUM_HI_OK')
     assert mem.bank == 2 and bytes(mem.banks[2][0x7000:]) == old_top
     led_values = [value for address, value in mem.events if address == LED]
-    assert 0xF0 in led_values and led_values[-1] == 0x01
+    assert 0xF0 in led_values and 0xF1 in led_values and led_values[-1] == 0x01
     backup_count = len(mem.mutations)
     run('TU_FINAL_CONFIRMED', 'TU_SUCCESS', recovery=True)
     assert mem.bank == 3 and bytes(mem.banks[3][0x7000:]) == top

@@ -1,7 +1,7 @@
 # STR8-N cross-bank RAM ABI test
 
-Build alpha17 with `make v2`, then load
-`BUILD/v2-alpha17/str8n-v2-alpha17-ram-abi-test-2000.s19` with `L` and run
+Build alpha18 with `make v2`, then load
+`BUILD/v2-alpha18/str8n-v2-alpha18-ram-abi-test-2000.s19` with `L` and run
 `G 2000`. The test changes no flash.
 
 It checks the fixed RAM descriptor, prints through the RAM PUTC entry while

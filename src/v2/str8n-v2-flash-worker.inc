@@ -145,7 +145,9 @@ V2W_ACIA_DELAY_INNER:  DEX
                         BNE     V2W_ACIA_DELAY_OUTER
                         PLX
                         RTS
-V2W_UNLOCK:            LDA     #V2_LED_FLASH
+V2W_UNLOCK:            LDA     V2_FLASH_PTR+1
+                        AND     #$01
+                        ORA     #V2_LED_FLASH
                         STA     V2_LED
                         LDA     #$AA
                         STA     $D555

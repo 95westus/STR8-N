@@ -35,6 +35,26 @@ def check_load():
     CASES.append('all banks, maximum-size/lowercase/page-crossing records, all byte values, 256 records, no execution')
 
 
+def check_s19_led_activity():
+    cpu, mem = boot(0)
+    assert mem.ram[0x7FA0] == 0x01
+    mem.rx.extend(b'L\r' + rec('0', 0, b'led'))
+    run(cpu, lambda: cpu.pc == SYM['V2_LOAD_NEXT'] and mem.ram[0x7FA0] == 0x05)
+    mem.rx.extend(rec('1', 0x0200, b'X'))
+    run(cpu, lambda: cpu.pc == SYM['V2_LOAD_NEXT'] and mem.ram[0x7FA0] == 0x01)
+    mem.rx.extend(rec('9', 0x0200))
+    hold(cpu)
+    assert mem.ram[0x0200] == ord('X')
+    assert mem.ram[0x7FA0] == 0x01
+    assert mem.led_events[-4:] == [0x05, 0x01, 0x05, 0x01]
+    cpu, mem = boot(0)
+    start = len(mem.led_events)
+    assert b'Bad S19' in command(cpu, b'L\rS1030200FA\r')
+    assert 0x05 not in mem.led_events[start:]
+    assert mem.ram[0x7FA0] == 0x01
+    CASES.append('each valid S-record toggles RX activity; rejection and prompt restore running state')
+
+
 def check_acia_load_and_cancel():
     cpu, mem = boot(0, ft245_present=False)
     start = len(mem.acia_tx)
@@ -149,7 +169,7 @@ def check_backpressure_and_queue():
 
 
 def main():
-    for test in (check_load, check_acia_load_and_cancel, check_rejections, check_cancel_load,
+    for test in (check_load, check_s19_led_activity, check_acia_load_and_cancel, check_rejections, check_cancel_load,
                  check_cancel_commands, check_backpressure_and_queue):
         test()
         print('PASS:', CASES[-1])

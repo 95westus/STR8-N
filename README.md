@@ -4,19 +4,19 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-On the `v2` branch, alpha17 detects W65C02/W65C816, exports CPU and console
+On the `v2` branch, alpha18 detects W65C02/W65C816, exports CPU and console
 state through `BOARD_QUERY` at `$F02B`, and selects either the primary FT245 or
-backup W65C51N console at initialization. Alpha17 provides an initialized RAM ABI
+backup W65C51N console at initialization. Alpha18 provides an initialized RAM ABI
 at `$7E60`, so applications can use console, discovery, formatting, HOLD, and
-RESET services while any flash bank is visible. Its concise EDU LED contract
-shows running, flash-safety, and application-handoff states without spending
-resident bytes on per-character animation. Board 2205 retains WDCMONv2 in
+RESET services while any flash bank is visible. Its EDU LED contract toggles
+valid S-record activity, shows flash page progress with all red LEDs asserted,
+and clears at application handoff. Board 2205 retains WDCMONv2 in
 Bank 0 and R-YORS/HIMON in Bank 1; see the
-[alpha17 optimization board test](docs/STR8N_V2_ALPHA17_OPTIMIZATION_BOARD_TEST_2026-09-23.md).
+[alpha18 operation LED board test](docs/STR8N_V2_ALPHA18_OPERATION_LED_BOARD_TEST_2026-09-23.md).
 The earlier physical FT245, W65C02 detection, and direct ACIA transmit checks
 are in the [alpha13 board test](docs/STR8N_V2_ALPHA13_BOARD_TEST_2026-09-23.md);
 ACIA receive on that board remains suspect.
-The alpha17 build and host regression suites pass. It also emits RAM-only
+The alpha18 build and host regression suites pass. It also emits RAM-only
 cross-bank ABI and
 W65C816 native BRK/NMI acceptance probe for the incoming board; that probe is
 assembled and structurally checked but awaits native-mode hardware execution.

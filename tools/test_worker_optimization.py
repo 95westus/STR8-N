@@ -139,7 +139,8 @@ class FlashMemory:
             raise AssertionError(('invalid flash command sequence', state, bank, address, value))
 
     def begin(self, kind, bank, address, value, fail=False):
-        assert self.ram[LED] == 0xF0, 'flash mutation without the red LED latch'
+        # Low bits may carry operation progress; every red LED must remain on.
+        assert self.ram[LED] & 0xF0 == 0xF0, 'flash mutation without the red LED latch'
         assert self.pending is None, 'new mutation before the preceding operation completed'
         self.mutations.append((kind, bank, address, value))
         self.pending = dict(kind=kind, bank=bank, address=address, value=value,
