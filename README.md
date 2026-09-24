@@ -4,6 +4,11 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
+**Looking for STR8-N v2?** The new guarded board monitor and loader is on the
+[v2 branch](https://github.com/95westus/STR8-N/tree/v2). Read the
+[v2 RC1 announcement](https://github.com/95westus/STR8-N/discussions/2)
+for its scope and to leave comments. The v1.3x release material follows below.
+
 # STR8-N v1.34
 
 STR8-N is a reset supervisor, recovery console, and guarded flash installer for
