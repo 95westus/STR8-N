@@ -27,6 +27,15 @@ TU_FTDI_RD              EQU             $08
 TU_PCR                   EQU             $7FEC
 TU_BACKUP_BANK           EQU             $EC
 TU_BANK3                 EQU             $EE
+                        IF              STR8_V2_TOP_IMAGE
+TU_LED                   EQU             $7FA0
+TU_LED_CRA               EQU             $7FA1
+TU_LED_RUNNING           EQU             $01
+TU_LED_WAIT              EQU             $43
+TU_LED_RX                EQU             $07
+TU_LED_TX                EQU             $0B
+TU_LED_FLASH             EQU             $F0
+                        ENDIF
 
 TU_STATUS                EQU             $7C00
 TU_FAIL_LO               EQU             $7C01
@@ -57,11 +66,39 @@ START:                  SEI
                         TXS
                         STZ             TU_STATUS
                         STZ             TU_ACTIVE
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #$30
+                        STA             TU_LED_CRA
+                        LDA             #$FF
+                        STA             TU_LED
+                        LDA             #$34
+                        STA             TU_LED_CRA
+                        LDA             #TU_LED_RUNNING
+                        STA             TU_LED
+                        ENDIF
                         LDX             #<TU_MSG_TITLE
                         LDY             #>TU_MSG_TITLE
                         JSR             TU_PUTS
                         LDA             #TU_BANK3
                         JSR             TU_SELECT
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             $F000
+                        CMP             #'S'
+                        BEQ             TU_PF_V2_SIG0_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_V2_SIG0_OK:      LDA             $F001
+                        CMP             #'N'
+                        BEQ             TU_PF_V2_SIG1_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_V2_SIG1_OK:      LDA             $F002
+                        CMP             #$02
+                        BEQ             TU_PF_V2_SIG2_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_V2_SIG2_OK:      LDA             $F003
+                        CMP             #$00
+                        BEQ             TU_PF_SIGNATURE_OK
+                        JMP             TU_PREFLIGHT_FAIL
+                        ELSE
                         LDA             $F000
                         CMP             #$4C
                         BEQ             TU_PF_HEAD_OK
@@ -74,9 +111,10 @@ TU_PF_HEAD_OK:
 TU_PF_SIG0_OK:
                         LDA             $F00D
                         CMP             #'R'
-                        BEQ             TU_PF_SIG1_OK
+                        BEQ             TU_PF_SIGNATURE_OK
                         JMP             TU_PREFLIGHT_FAIL
-TU_PF_SIG1_OK:
+                        ENDIF
+TU_PF_SIGNATURE_OK:
                         JSR             TU_SUM_CANDIDATE
                         LDA             TU_SUM_LO
                         CMP             #<TU_CANDIDATE_SUM
@@ -317,7 +355,11 @@ TU_ERASE_POLL:          LDA             (TU_DST_LO),Y
                         BNE             TU_ERASE_POLL
                         LDA             #$E1
                         STA             TU_STATUS
+                        IF              STR8_V2_TOP_IMAGE
+                        JMP             TU_FLASH_FAIL
+                        ELSE
                         BRA             TU_FLASH_FAIL
+                        ENDIF
 TU_ERASED:              STZ             TU_SRC_LO
                         LDA             #$0A
                         STA             TU_SRC_HI
@@ -365,6 +407,10 @@ TU_PROGRAM_NEXT:        INC             TU_SRC_LO
                         STA             TU_STATUS
                         LDA             #$F0
                         STA             $D555
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_RUNNING
+                        STA             TU_LED
+                        ENDIF
                         SEC
                         RTS
 TU_PROGRAM_FAIL:       LDA             #$E2
@@ -378,6 +424,10 @@ TU_RECORD_FAIL:        LDA             TU_DST_LO
                         STA             TU_FAIL_HI
 TU_FLASH_FAIL:         LDA             #$F0
                         STA             $D555
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_RUNNING
+                        STA             TU_LED
+                        ENDIF
                         CLC
                         RTS
 
@@ -431,7 +481,12 @@ TU_V_FAIL:             TYA
                         CLC
                         RTS
 
-TU_UNLOCK:             LDA             #$AA
+TU_UNLOCK:
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_FLASH
+                        STA             TU_LED
+                        ENDIF
+                        LDA             #$AA
                         STA             $D555
                         LDA             #$55
                         STA             $AAAA
@@ -536,6 +591,12 @@ TU_HEX_DIGIT:          ADC             #'0'
                         JMP             TU_OUT
 
 TU_OUT:                PHA
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_TX
+                        STA             TU_LED
+                        PLA
+                        PHA
+                        ENDIF
                         STZ             TU_FTDI_DDRA
                         STA             TU_FTDI_DATA
 TU_OUT_READY:          LDA             #TU_FTDI_TXE
@@ -551,7 +612,12 @@ TU_OUT_READY:          LDA             #TU_FTDI_TXE
                         PLA
                         RTS
 
-TU_IN:                 STZ             TU_FTDI_DDRA
+TU_IN:
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_WAIT
+                        STA             TU_LED
+                        ENDIF
+                        STZ             TU_FTDI_DDRA
 TU_IN_READY:           LDA             #TU_FTDI_RXF
                         BIT             TU_FTDI_CTRL
                         BNE             TU_IN_READY
@@ -564,10 +630,16 @@ TU_IN_READY:           LDA             #TU_FTDI_RXF
                         LDA             #TU_FTDI_RD
                         TSB             TU_FTDI_CTRL
                         PLA
+                        IF              STR8_V2_TOP_IMAGE
+                        PHA
+                        LDA             #TU_LED_RX
+                        STA             TU_LED
+                        PLA
+                        ENDIF
                         RTS
 
                         IF              STR8_V2_TOP_IMAGE
-TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 2.0a13 B3 INSTALL",$0D,$0A
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 2.0a14 B3 INSTALL",$0D,$0A
                         ELSE
                         IF              STR8_DIRECTORY_REFRESH
                         IF              STR8_IN65_VERSION_135
@@ -593,7 +665,7 @@ TU_MSG_BACKUP_OK:      DB              "BACKUP VERIFIED",$0D,$0A,0
 TU_MSG_RECEIPT:        DB              "SAFE PHY $17000-$17FFF; TARGET PHY "
                         DB              "$1F000-$1FFFF; SUM=$",0
                         IF              STR8_V2_TOP_IMAGE
-TU_MSG_FINAL:          DB              "TYPE STR8-N 2.0a13> ",0
+TU_MSG_FINAL:          DB              "TYPE STR8-N 2.0a14> ",0
                         ELSE
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_FINAL:          DB              "TYPE ERASE DIRECTORY> ",0
@@ -612,7 +684,7 @@ TU_MSG_FINAL:          DB              "TYPE STR8-N 1.23> ",0
 TU_MSG_ERASE:          DB              "ERASING B3:F - NO RESET/NMI/POWER",$0D,$0A,0
 TU_MSG_RECOVERY:       DB              "WRITE FAIL: R=RETRY O=RESTORE OLD> ",0
                         IF              STR8_V2_TOP_IMAGE
-TU_MSG_OK:             DB              "STR8-N 2.0a13 VERIFIED; RESET",$0D,$0A,0
+TU_MSG_OK:             DB              "STR8-N 2.0a14 VERIFIED; RESET",$0D,$0A,0
                         ELSE
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_OK:             DB              "DIRECTORY EMPTY; STR8-N VERIFIED; RESET",$0D,$0A,0
@@ -640,7 +712,7 @@ TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE TOP UPDATE",$0D,$0A,0
                         ENDIF
 TU_CONFIRM_BACKUP:     DB              "BACKUP B2F",0
                         IF              STR8_V2_TOP_IMAGE
-TU_CONFIRM_FINAL:      DB              "STR8-N 2.0A13",0
+TU_CONFIRM_FINAL:      DB              "STR8-N 2.0A14",0
                         ELSE
                         IF              STR8_DIRECTORY_REFRESH
 TU_CONFIRM_FINAL:      DB              "ERASE DIRECTORY",0
@@ -668,7 +740,7 @@ TU_CONFIRM_FINAL:      DB              "STR8-N 1.23",0
                         ORG             $4000
 TU_CANDIDATE_IMAGE:
                         IF              STR8_V2_TOP_IMAGE
-                        INCLUDE         "str8n-v2-alpha13-top-image.inc"
+                        INCLUDE         "str8n-v2-alpha14-top-image.inc"
                         ELSE
                         IF              STR8_IN65_TOP_IMAGE
                         IF              STR8_IN65_VERSION_135

@@ -2,7 +2,7 @@
 import hashlib
 import json
 
-from build_v2 import OUT, STEM, read_s19
+from build_v2 import OUT, STEM, VERSION, read_s19
 from test_v2_boot import MPU, boot, hold, run, waiting
 
 
@@ -35,7 +35,7 @@ def main():
     mem.acia_rx.extend(b'q')
     run(cpu, lambda: waiting(cpu), limit=800000)
     assert bytes(mem.acia_tx).endswith(b'\r\nACIA EXIT\r\n')
-    assert b'STR8-N 2.0a13 B0 65C02' in mem.tx
+    assert f'STR8-N {VERSION} B0 65C02'.encode() in mem.tx
 
     (OUT / 'acia-probe-test-results.json').write_text(json.dumps({
         'passed': ['direct ACIA init/banner, timed TX, FT245 RX reports, echo, Q return through HOLD'],

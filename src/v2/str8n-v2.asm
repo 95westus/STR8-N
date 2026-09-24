@@ -1,4 +1,4 @@
-; v2-alpha13: actual CPU identity and a latched FT245/ACIA console.
+; v2-alpha14: visible console activity and guarded V2-to-V2 updates.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE
@@ -31,8 +31,8 @@ V2_SIGNATURE:          DB      "SN",$02,$00
 START:                 JMP     V2_RESET
 V2_PROMPT_ENTRY:        JMP     V2_REENTER
 V2_CON_INIT_ENTRY:      JMP     V2_CON_INIT
-V2_PUTC_ENTRY:          JMP     V2_PUTC
-V2_GETC_ENTRY:          JMP     V2_GETC
+V2_PUTC_ENTRY:          JMP     V2_PUTC_RAW
+V2_GETC_ENTRY:          JMP     V2_GETC_RAW
 V2_RAW_POLL_ENTRY:      JMP     V2_RAW_POLL
 V2_CHECK_CANCEL_ENTRY:  JMP     V2_CHECK_CANCEL
 V2_RX_RESET_ENTRY:      JMP     V2_RX_RESET
@@ -127,7 +127,7 @@ V2_WORKER_COPIED:
                         STA     V2_LED
                         LDA     #$34
                         STA     V2_PIA_CRA
-                        LDA     #$01
+                        LDA     #V2_LED_RUNNING
                         STA     V2_LED
                         JSR     V2_CON_INIT
                         LDX     #V2_BANNER
@@ -413,7 +413,13 @@ V2_ACIA_RAW_POLL:      LDA     #V2_ACIA_RDRF
                         LDA     V2_ACIA_DATA
                         SEC
                         RTS
+; Monitor-owned I/O publishes activity. The public PUTC entry jumps directly
+; to V2_PUTC_RAW so applications retain ownership of their LED display.
 V2_PUTC:               PHA
+                        LDA     #V2_LED_TX
+                        STA     V2_LED
+                        PLA
+V2_PUTC_RAW:           PHA
                         LDA     V2_CANCEL_REQUEST
                         BNE     V2_TX_CANCEL
                         LDA     V2_CONSOLE

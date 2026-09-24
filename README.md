@@ -4,14 +4,19 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-On the `v2` branch, alpha13 detects W65C02/W65C816, exports CPU and console
+On the `v2` branch, alpha14 detects W65C02/W65C816, exports CPU and console
 state through `BOARD_QUERY` at `$F02B`, and selects either the primary FT245 or
-backup W65C51N console at initialization. Board 2205 now boots alpha13 from
+backup W65C51N console at initialization. It also restores visible monitor
+wait, receive, transmit, flash, and handoff states on the EDU LEDs while
+keeping public character I/O LED-neutral. Board 2205 now boots alpha14 from
 Bank 3, retains WDCMONv2 in Bank 0 and R-YORS/HIMON in Bank 1, and has a fully
-erased Bank 2. Its physical FT245 path, W65C02 detection, and direct ACIA
-transmit test passed; ACIA receive on that board remains suspect. See the
-[alpha13 board test](docs/STR8N_V2_ALPHA13_BOARD_TEST_2026-09-23.md).
-The alpha13 build and host regression suites pass. It also emits a RAM-only
+erased Bank 2. Its V2-to-V2 guarded update and LED-state paths ran live over
+COM3; see the
+[alpha14 board test](docs/STR8N_V2_ALPHA14_LED_BOARD_TEST_2026-09-23.md).
+The earlier physical FT245, W65C02 detection, and direct ACIA transmit checks
+are in the [alpha13 board test](docs/STR8N_V2_ALPHA13_BOARD_TEST_2026-09-23.md);
+ACIA receive on that board remains suspect.
+The alpha14 build and host regression suites pass. It also emits a RAM-only
 W65C816 native BRK/NMI acceptance probe for the incoming board; that probe is
 assembled and structurally checked but awaits native-mode hardware execution.
 Use `make v2-check` for its build and host execution checks. The v1 firmware
