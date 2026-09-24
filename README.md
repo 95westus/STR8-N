@@ -4,6 +4,9 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
+Unresolved defects and hardware investigations are listed in the
+[repo issue tracker](ISSUES.md).
+
 The current qualification candidate is frozen as v2-alpha19; see the
 [freeze record and qualification matrix](docs/STR8N_V2_QUALIFICATION.md).
 The [2512 board session](docs/STR8N_V2_ALPHA19_2512_BOARD_TEST_2026-09-24.md)
@@ -50,9 +53,10 @@ the W65C02SXB/EDU with four 32K flash banks. It occupies the protected Bank 3
 top sector at CPU `$F000-$FFFF` and provides a small, dependable layer beneath
 the systems installed on the board.
 
-STR8-N is a standalone product. R-YORS, HIMON, ASM-F2, OIL, AP, and guest
-systems are separate payloads; STR8-N can start compatible payloads without
-making them part of STR8-N.
+STR8-N is a standalone board management product. R-YORS, HIMON, ASM-F2, OIL,
+AP, and 8-xxx guest systems are separate payloads; STR8-N can start compatible
+payloads without making them part of STR8-N. Displays, LED patterns, sounds,
+and other application behavior belong to those guests.
 
 The name is pronounced *straighten*: its job is to return the machine to a
 known, bootable state. `8` refers to the 8-bit platform, and `STR` reverses the
