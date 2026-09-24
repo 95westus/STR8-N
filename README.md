@@ -3,7 +3,7 @@
 **Board monitor and guarded loader for WDC SXB.**
 
 [Read the v2 announcement](docs/STR8N_V2_ANNOUNCEMENT.md) and join its
-[GitHub discussion](https://github.com/95westus/STR8-N/discussions).
+[GitHub discussion](https://github.com/95westus/STR8-N/discussions/2).
 Report reproducible defects in [GitHub Issues](https://github.com/95westus/STR8-N/issues).
 
 V2 grew from STR8-N v1.3x by keeping the essential console, RAM/S19 loading, flash editing,
