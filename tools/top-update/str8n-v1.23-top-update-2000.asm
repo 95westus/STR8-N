@@ -268,8 +268,12 @@ TU_FAIL_SAFE:           STA             TU_STATUS
                         IF              STR8_TOP_EMBED
                         JMP             BM_MAIN
                         ELSE
+                        IF              STR8_V2_TOP_IMAGE
+                        JMP             $F007
+                        ELSE
                         JSR             TU_ARM_SOFT_RESET
                         JMP             $F000
+                        ENDIF
                         ENDIF
 
 ; Save the live directory $FFB0-$FFEF before using the staging tray. The
