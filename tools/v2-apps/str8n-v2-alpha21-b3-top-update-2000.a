@@ -1,6 +1,6 @@
 ; STR8N-V2-ALPHA21-B3-TOP-UPDATE-2000.A
 ; ASM-F2 ORG/DB image carrier for the public R-YORS 00.0915(2324) assembler.
-; Guarded B3:F update; v2 cancel enters HOLD at $F007, not signature $F000.
+; Guarded B3:F update; v2 cancel enters RESET at $F004, not signature $F000.
 ; ASM NEW; send complete file; require END/SEAL with no ERR; enter .; G 2000.
 ; Source bytes are checked against the matching RC1 S19; do not edit DB rows.
 
@@ -56,7 +56,7 @@
         DB $80,$06,$A9,$E5,$80,$02,$A9,$E0
         DB $8D,$00,$7C,$A9,$EE,$20,$1E,$23
         DB $A2,$43,$A0,$25,$20,$9F,$23,$4C
-        DB $07,$F0,$A2,$00,$BD,$B0,$FF,$9D
+        DB $04,$F0,$A2,$00,$BD,$B0,$FF,$9D
         DB $40,$7C,$E8,$E0,$40,$D0,$F5,$60
         DB $64,$C8,$A9,$40,$85,$C9,$64,$CA
         DB $A9,$0A,$85,$CB,$A2,$10,$A0,$00

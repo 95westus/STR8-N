@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SNAPSHOT = ROOT / "output/qualification/v2-alpha21-2026-09-24/candidate"
-ASM_TOP_SHA256 = "61d7541bbe21989c39a00e4ed771b93dfd6d00cfd0f4c5d35da1bd41f8a00583"
+ASM_TOP_SHA256 = "e99c1dbe2472980d15e06206f3da635728f1a50162aafbd467e1ee575bc3c9b3"
 BUILD = ROOT / "BUILD/v2-rc1-apps"
 APPS = ROOT / "tools/v2-apps"
 TOP_S19 = ROOT / "BUILD/v2-alpha21/str8n-v2-alpha21-b3-top-update-2000.s19"
@@ -104,7 +104,7 @@ def main() -> None:
     INFO_S19.write_text("\n".join(lines) + "\n", encoding="ascii")
     make_carrier(s19_bytes(TOP_S19)[0],
                  APPS / "str8n-v2-alpha21-b3-top-update-2000.a",
-                 "Guarded B3:F update; v2 cancel enters HOLD at $F007, not signature $F000.")
+                 "Guarded B3:F update; v2 cancel enters RESET at $F004, not signature $F000.")
     make_carrier(s19_bytes(INFO_S19)[0],
                  APPS / "str8n-v2-bank3-id-2000.a",
                  "Read-only Bank 3 top header/vector; restores the caller's flash overlay.")

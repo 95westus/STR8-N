@@ -20,6 +20,21 @@ Defects and hardware investigations are indexed in the
   signal, clock, handshake, supply, and ground. The backup-console
   qualification gate remains open.
 
+## Next v2 layer: public R-YORS integration
+
+Keep this work on `v2`; the v1.34/v1.35 release line stays separate. The
+[interface map and ordered proof](docs/STR8N_V2_RYORS_NEXT_LAYER.md) records
+the public HIMON/ASM-F2 `00.0915(2324)` boundaries.
+
+- [ ] Adapt HIMON `STR8` return to detect v2 and enter `$F004` after selecting
+  the resident bank; retain the existing v1 route for v1 boards.
+- [ ] Give HIMON `L` a v2-compatible, HIMON-owned parser or a clear refusal;
+  the v1 `SR` record service is absent from v2.
+- [ ] Validate RAM-only HIMON/ASM-F2/AP paths before any AP flash install or
+  bank-policy changes. Do not reuse v1 directory/WORK/backup assumptions.
+- [ ] Record public-release host checks, then authorize and capture a separate
+  W65C02SXB board run before claiming integrated v2 compatibility.
+
 ## v1.34 release
 
 The current source is a 120-byte size reduction from the accepted v1.33

@@ -34,8 +34,11 @@ permission to continue with a flash update.
 `APPLICATIONS/str8n-v2-alpha21-b3-top-update-2000.a` is a 12,288-byte
 carrier at `$2000-$4FFF`; `$4000-$4FFF` is the exact frozen alpha21 top BIN.
 Its matching `FIRMWARE/str8n-v2-alpha21-b3-top-update-2000.s19` has the same
-bytes. This RC1 adjunct corrects the pre-erase cancel path to enter v2 HOLD
-at `$F007`; `$F000` is v2's `SN` signature and cannot be executed. The
+bytes. This RC1 adjunct corrects the pre-erase cancel path to enter v2 RESET
+at `$F004`; `$F000` is v2's `SN` signature and cannot be executed. HIMON can
+clear v2 RAM before launching the updater, so the HOLD entry at `$F007` is
+not a safe return from that session. After cancellation, allow the normal
+startup hold and send `S` if you want to remain at the v2 prompt. The
 firmware top BIN itself remains the frozen, board-read-back alpha21 image.
 
 Run this updater only on an identified board with compatible STR8-N v2 in
