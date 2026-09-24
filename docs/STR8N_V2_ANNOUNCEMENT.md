@@ -1,6 +1,6 @@
-# STR8-N v2 RC1: A guarded board monitor and loader for WDC SXB
+# STR8-N v2 RC1: A guarded monitor for WDC W65C02SXB
 
-STR8-N v2 is a small resident monitor for WDC SXB boards. It gives the operator
+STR8-N v2 is a 4 KB resident monitor for WDC W65C02SXB boards. It gives the operator
 console access, RAM and S19 loading, bank selection, guarded flash editing, and
 boot handoff. It grew from the v1.3x line with a simpler role: you decide what
 each bank holds and when to run an image. Applications such as HIMON, ASM-F2,
