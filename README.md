@@ -4,20 +4,16 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
-On the `v2` branch, alpha12 displays its CPU/ABI contract at startup and exports
-a machine-readable capability query at `$F028`. The query advertises W65C02,
-W65C816 emulation-mode execution, and the W65C816 native vector ABI; it does
-not advertise native-mode monitor calls. Alpha12 is host-tested but has not yet
-been installed on hardware. The preceding
-[alpha11 Bank 1 COM3 board test](docs/STR8N_V2_ALPHA11_BOARD_TEST_2026-09-23.md)
-on the board marked 2205 passed installation, exact 8 KiB readback, BRK, and a
-real VIA1 Timer-1 IRQ and physical NMI. Full hardware qualification remains.
-Physical RESET selection was also captured: board 2205 selects Bank 3 and
-enters the preserved STR8-N 1.35 recovery path.
-The alpha12 build and all six host regression suites pass (35 test groups).
-It also emits a RAM-only W65C816 native BRK/NMI acceptance probe for the
-incoming board; that probe is assembled and structurally checked but awaits
-native-mode hardware execution.
+On the `v2` branch, alpha13 detects W65C02/W65C816, exports CPU and console
+state through `BOARD_QUERY` at `$F02B`, and selects either the primary FT245 or
+backup W65C51N console at initialization. Board 2205 now boots alpha13 from
+Bank 3, retains WDCMONv2 in Bank 0 and R-YORS/HIMON in Bank 1, and has a fully
+erased Bank 2. Its physical FT245 path, W65C02 detection, and direct ACIA
+transmit test passed; ACIA receive on that board remains suspect. See the
+[alpha13 board test](docs/STR8N_V2_ALPHA13_BOARD_TEST_2026-09-23.md).
+The alpha13 build and host regression suites pass. It also emits a RAM-only
+W65C816 native BRK/NMI acceptance probe for the incoming board; that probe is
+assembled and structurally checked but awaits native-mode hardware execution.
 Use `make v2-check` for its build and host execution checks. The v1 firmware
 sources and normal release targets remain unchanged; the description below
 documents the v1 product, not the full planned v2 command set.

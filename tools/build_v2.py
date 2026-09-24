@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha12.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha13.
 """
 from pathlib import Path
 import argparse
@@ -12,15 +12,17 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a12'
-STEM = 'str8n-v2-alpha12'
-OUT = ROOT / 'BUILD/v2-alpha12'
+VERSION = '2.0a13'
+STEM = 'str8n-v2-alpha13'
+OUT = ROOT / 'BUILD/v2-alpha13'
 SOURCE = ROOT / 'src/v2'
 INTERRUPT_PROBE_SOURCE = ROOT / 'tools/v2-interrupt-test'
+ACIA_TEST_SOURCE = ROOT / 'tools/v2-acia-test'
+TOP_UPDATE_SOURCE = ROOT / 'tools/top-update/str8n-v1.23-top-update-2000.asm'
 RESIDENT_START = 0xF000
 SIGNATURE_SIZE = 4
-EXPANSION_RESERVE_START = 0xFE40
-EXPANSION_RESERVE_SIZE = 0xC0
+EXPANSION_RESERVE_START = 0xFF00
+EXPANSION_RESERVE_SIZE = 0xE0
 PUBLIC_CALLS = (
     ('STR8V2_RESET', 'START', 'V2_RESET'),
     ('STR8V2_HOLD', 'V2_PROMPT_ENTRY', 'V2_REENTER'),
@@ -28,8 +30,9 @@ PUBLIC_CALLS = (
         'CON_INIT', 'PUTC', 'GETC', 'RAW_POLL', 'CHECK_CANCEL', 'RX_RESET',
         'READ_LINE', 'HEX_OUT', 'NEWLINE', 'HEX_NIBBLE')),
     ('STR8V2_CAPS_QUERY', 'V2_CAPS_QUERY_ENTRY', 'V2_CAPS_QUERY'),
+    ('STR8V2_BOARD_QUERY', 'V2_BOARD_QUERY_ENTRY', 'V2_BOARD_QUERY'),
     *((f'STR8V2_RESERVED{index}', f'V2_RESERVED{index}_ENTRY', 'V2_RESERVED')
-      for index in range(1, 4)),
+      for index in range(2, 4)),
 )
 
 
@@ -77,17 +80,25 @@ def dense_image(memory, start, end):
     return bytes(memory[a] for a in range(start, end))
 
 
-def assemble(name, address, assembler, linker, source=SOURCE):
+def assemble(name, address, assembler, linker, source=SOURCE, source_file=None,
+             include_dirs=(), defines=()):
     stage = OUT / 'asm'
     # Never let a failed external tool leave us reading a previous link result.
     for suffix in ('.obj', '.map', '.s19'):
         (stage / (name + suffix)).unlink(missing_ok=True)
-    shutil.copyfile(source / (name + '.asm'), stage / (name + '.asm'))
-    subprocess.run([assembler, '-G', '-L', '-S', '-W', '-I', str(SOURCE),
-                    name + '.asm'], cwd=stage, check=True)
+    shutil.copyfile(source_file or source / (name + '.asm'), stage / (name + '.asm'))
+    command = [assembler, '-G', '-L', '-S', '-W', '-I', str(SOURCE)]
+    for directory in include_dirs:
+        command.extend(('-I', str(directory)))
+    command.extend(f'-D{name}={value}' for name, value in defines)
+    command.append(name + '.asm')
+    subprocess.run(command, cwd=stage, check=True)
     linked = stage / (name + '.s19')
-    subprocess.run([linker, '-g', '-s', '-t', f'-c{address:04X}', '-hm19',
-                    '-j', '-o', linked.name, name + '.obj'], cwd=stage, check=True)
+    link_command = [linker, '-g', '-s', '-t']
+    if address is not None:
+        link_command.append(f'-c{address:04X}')
+    link_command.extend(('-hm19', '-j', '-o', linked.name, name + '.obj'))
+    subprocess.run(link_command, cwd=stage, check=True)
     return read_s19(linked)[0], symbols(stage / (name + '.map'))
 
 
@@ -112,7 +123,9 @@ def main():
     # optional full-bank image and test receipts. Preserve earlier milestones.
     for name in ('build.json', 'test-results.json', 'monitor-test-results.json',
                  'load-test-results.json', 'flash-test-results.json', 'config-test-results.json',
-                 f'{STEM}-e000-ffff.bin', f'{STEM}-e000-ffff.s19', f'{STEM}-8000-ffff.s19'):
+                 f'{STEM}-e000-ffff.bin', f'{STEM}-e000-ffff.s19',
+                 f'{STEM}-8000-ffff.bin', f'{STEM}-8000-ffff.s19',
+                 f'{STEM}-b3-top-update-2000.s19'):
         (OUT / name).unlink(missing_ok=True)
     # One ordinal per message; bit 7 marks the last character. No ROM pointer
     # table or terminator bytes. Keep editable text readable in the source JSON.
@@ -184,7 +197,7 @@ def main():
     if bytes(memory[a] for a in range(0xF035, 0xF035+len(descriptor))) != descriptor:
         raise ValueError('Capability descriptor changed')
     if resident['V2_END'] > EXPANSION_RESERVE_START:
-        raise ValueError('Resident overlaps reserved expansion tail $FE40-$FEFF')
+        raise ValueError('Resident overlaps reserved expansion tail $FF00-$FFDF')
     image = bytearray(b'\xff' * 8192)
     offset = RESIDENT_START - 0xE000
     image[offset:offset+len(code)] = code
@@ -205,6 +218,8 @@ def main():
     artifacts = {}
     for start in starts:
         payload = b'\xff' * (0xE000-start) + image
+        if start == 0x8000:
+            (OUT / f'{STEM}-8000-ffff.bin').write_bytes(payload)
         path = OUT / f'{STEM}-{start:04x}-ffff.s19'
         lines = [record('0', 0, f'STR8-N {VERSION}'.encode('ascii'))]
         lines.extend(record('1', address, payload[address-start:address-start+32])
@@ -215,6 +230,47 @@ def main():
         assert dense_image(parsed, start, 65536) == payload
         assert entry == int.from_bytes(payload[-4:-2], 'little') == resident['START']
         artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    # Guarded RAM updater for the final B3:F transition. B2:F holds a verified
+    # recovery copy of the old top while the new clean V2 top is programmed.
+    top = bytes(image[-4096:])
+    top_include = OUT / 'asm' / f'{STEM}-top-image.inc'
+    top_sum = sum(top) & 0xFFFF
+    top_include.write_text(f'TU_CANDIDATE_SUM        EQU             ${top_sum:04X}\n',
+                           encoding='ascii')
+    with top_include.open('a', encoding='ascii') as stream:
+        stream.write(''.join('                        DB              ' +
+            ','.join(f'${v:02X}' for v in top[i:i+16]) + '\n'
+            for i in range(0, len(top), 16)))
+    updater_name = f'{STEM}-b3-top-update-2000'
+    updater_mem, updater_symbols = assemble(
+        updater_name, None, assembler, linker, source_file=TOP_UPDATE_SOURCE,
+        include_dirs=(OUT / 'asm',), defines=(
+            ('STR8_TOP_EMBED', 0), ('STR8_DIRECTORY_REFRESH', 1),
+            ('STR8_V2_TOP_IMAGE', 1), ('STR8_IN65_TOP_IMAGE', 0),
+            ('STR8_IN65_VERSION_135', 0), ('STR8_IN65_VERSION_133', 0)))
+    candidate = updater_symbols['TU_CANDIDATE_IMAGE']
+    assert candidate == 0x4000
+    assert bytes(updater_mem[a] for a in range(candidate, candidate+4096)) == top
+    code_addresses = sorted(a for a in updater_mem if a < candidate)
+    assert code_addresses == list(range(0x2000, code_addresses[-1]+1))
+    updater_path = OUT / f'{updater_name}.s19'
+    updater_lines = [record('0', 0, f'STR8-N {VERSION} B3'.encode('ascii'))]
+    ordered = sorted(updater_mem)
+    index = 0
+    while index < len(ordered):
+        address = ordered[index]
+        run = [updater_mem[address]]
+        index += 1
+        while (index < len(ordered) and len(run) < 32 and
+               ordered[index] == address + len(run)):
+            run.append(updater_mem[ordered[index]])
+            index += 1
+        updater_lines.append(record('1', address, bytes(run)))
+    updater_lines.append(record('9', 0x2000))
+    updater_path.write_text('\n'.join(updater_lines) + '\n', encoding='ascii')
+    parsed_updater, updater_entry = read_s19(updater_path)
+    assert parsed_updater == updater_mem and updater_entry == 0x2000
+    artifacts[updater_path.name] = hashlib.sha256(updater_path.read_bytes()).hexdigest()
     probe_source_name = 'str8n-v2-interrupt-probe-2000'
     probe_name = f'{STEM}-interrupt-probe-2000'
     probe_memory, probe_symbols = assemble(
@@ -262,6 +318,22 @@ def main():
     assert dense_image(parsed_native, 0x2000, 0x2000+len(native_probe)) == native_probe
     assert native_entry == 0x2000
     artifacts[native_path.name] = hashlib.sha256(native_path.read_bytes()).hexdigest()
+    acia_source_name = 'str8n-v2-acia-test-2000'
+    acia_name = f'{STEM}-acia-test-2000'
+    acia_memory, acia_symbols = assemble(
+        acia_source_name, 0x2000, assembler, linker, ACIA_TEST_SOURCE)
+    acia_probe = dense_image(acia_memory, 0x2000, acia_symbols['PROBE_END'])
+    acia_path = OUT / f'{acia_name}.s19'
+    acia_lines = [record('0', 0, f'STR8-N {VERSION} ACIA'.encode('ascii'))]
+    acia_lines.extend(record('1', address,
+                             acia_probe[address-0x2000:address-0x2000+32])
+                      for address in range(0x2000, 0x2000+len(acia_probe), 32))
+    acia_lines.append(record('9', 0x2000))
+    acia_path.write_text('\n'.join(acia_lines) + '\n')
+    parsed_acia, acia_entry = read_s19(acia_path)
+    assert dense_image(parsed_acia, 0x2000, 0x2000+len(acia_probe)) == acia_probe
+    assert acia_entry == 0x2000
+    artifacts[acia_path.name] = hashlib.sha256(acia_path.read_bytes()).hexdigest()
     report = dict(milestone='compact-resident', resident_bytes=len(code),
                   resident_start=RESIDENT_START,
                   public_calls={public: resident[public] for public, _, _ in PUBLIC_CALLS},
@@ -272,6 +344,8 @@ def main():
                   interrupt_probe_bytes=len(probe), interrupt_probe=probe_symbols,
                   nmi_probe_bytes=len(nmi_probe), nmi_probe=nmi_symbols,
                   native_probe_bytes=len(native_probe), native_probe=native_symbols,
+                  acia_probe_bytes=len(acia_probe), acia_probe=acia_symbols,
+                  b3_top_update=updater_symbols,
                   free_before_vectors=0xFFE0-resident['V2_END'],
                   expansion_reserve_start=EXPANSION_RESERVE_START,
                   expansion_reserve_bytes=EXPANSION_RESERVE_SIZE,

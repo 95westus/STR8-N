@@ -2,14 +2,19 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-Alpha12 displays `ABI 65C02 | 816E | 816N-VEC` at startup and publishes the
-same contract through a fixed capability descriptor and query. The independent
+Alpha13 detects and displays the installed CPU, retains
+`ABI 65C02 | 816E | 816N-VEC`, and publishes both the actual board state and
+supported execution contract through fixed queries. The independent
 [v2-alpha10 interaction milestone](STR8N_V2_ALPHA10_INTERACTION.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
-The required command set is implemented; alpha12 builds at 3630 resident bytes
-and passes all six host regression suites (35 test groups). Alpha12 has not yet
-been installed on hardware. The preceding
+The required command set is implemented; alpha13 builds at 3810 resident bytes,
+including a 541-byte RAM worker. The
+[alpha13 board test](STR8N_V2_ALPHA13_BOARD_TEST_2026-09-23.md) installed the
+final image in Bank 3 and verified the W65C02 banner and primary FT245
+selection; the direct RAM probe also passed physical ACIA transmit at 19200
+8N1 through an adapter attached to a second PC. Physical ACIA receive and
+W65C816 checks remain. The preceding
 [alpha11 COM3 board test](STR8N_V2_ALPHA11_BOARD_TEST_2026-09-23.md) passed
 installation, exact 8 KiB readback, BRK dispatch, a real VIA1 Timer-1 IRQ, and
 physical NMI dispatch. Physical RESET selected Bank 3 and entered the preserved
@@ -65,6 +70,30 @@ All monitor RAM and execution remain in CPU bank $00. Flash overlays B0-B3
 are a separate concept from 816 CPU address banks. Reserve the full 816
 hardware vector area and RAM space for both native and emulation handlers.
 Reserved space does not imply a native-mode dispatch implementation.
+
+Reset distinguishes the CPUs with one isolated `$FB`/XCE probe. A W65C816 is
+returned to emulation mode immediately; a W65C02 treats the byte as its unused
+NOP. The detected identity is stored at `$7D01` (`$02` or `$16`) and displayed
+after the resident bank in the startup banner.
+
+## Primary and backup consoles
+
+FT245 USB remains the primary console. `CON_INIT` configures the VIA interface
+and samples active-low PWE#. An asserted PWE# selects FT245; a deasserted PWE#,
+including USB power without a configured data host, selects the W65C51N ACIA.
+The choice is stored at `$7D02` and remains fixed until reset, monitor reentry,
+or an explicit `CON_INIT` call. STR8-N never broadcasts output or combines
+input from the two transports.
+
+The backup ACIA uses `$7F80-$7F83`, the stock 1.8432 MHz clock, and 19200 8N1.
+It initializes control `$1F` and command `$0B`, receives through RDRF, and does
+not use TDRE or transmit interrupts. Each write is followed by a fixed delay
+of at least one 10-bit frame. VIA timers remain application-owned.
+
+Connect the ACIA to a 5 V-compatible USB-to-TTL UART adapter with TX and RX
+crossed, a common ground, and CTS held active-low. Do not connect a true
+voltage-level RS-232 adapter. If CTS is inactive, output may be lost, but the
+fixed-delay driver does not wait indefinitely.
 
 ## Agreed monitor commands
 
@@ -122,7 +151,7 @@ entry address and target. The alpha10 build and boot suite verify this table.
 | --- | --- | --- |
 | $F004 | RESET | JMP; initializes monitor/vectors and considers autostart; no return |
 | $F007 | HOLD | JMP; preserves handler pointers and holds at prompt; no return |
-| $F00A | CON_INIT | JSR; initializes console hardware; preserves X/Y |
+| $F00A | CON_INIT | JSR; resamples PWE#, latches and initializes FT245 or ACIA, clearing software RX state if selection changes; preserves X/Y |
 | $F00D | PUTC | JSR; outputs A, preserving A/X/Y; pending Ctrl-C suppresses output |
 | $F010 | GETC | JSR; buffered blocking input in A, Ctrl-C as 03; preserves X/Y |
 | $F013 | RAW_POLL | JSR; hardware-only nonblocking read, C=1/A=byte, C=0 empty; preserves X/Y |
@@ -133,21 +162,27 @@ entry address and target. The alpha10 build and boot suite verify this table.
 | $F022 | NEWLINE | JSR; prints CR/LF; preserves X/Y |
 | $F025 | HEX_NIBBLE | JSR; ASCII hex in A, C=1/A=0..15 when valid, C=0 invalid; preserves X/Y |
 | $F028 | CAPS_QUERY | JSR; returns A=descriptor format, X=capability flags, Y=descriptor length, C=1 |
-| $F02B-$F031 | RESERVED1-3 | JSR; currently JMP to a shared RTS stub; reserved for compatible expansion. |
+| $F02B | BOARD_QUERY | JSR; returns A=1, X=detected CPU, Y=transport state flags, C=1 |
+| $F02E-$F031 | RESERVED2-3 | JSR; currently JMP to a shared RTS stub; reserved for compatible expansion. |
 
 The four-byte capability descriptor at `$F035` is `"CA", $01, $07`:
 format 1 with W65C02 execution (bit 0), W65C816 emulation-mode execution
 (bit 1), and the W65C816 native vector ABI (bit 2). Bit 3 would advertise a
 native-mode callable monitor-service gateway and is clear. `CAPS_QUERY` returns
-the same format and flags with a descriptor length of four. The startup line is
-a human-readable rendering of these flags; it does not detect the installed CPU.
+the same format and flags with a descriptor length of four.
+
+`BOARD_QUERY` returns X=`$02` for W65C02 or `$16` for W65C816. Y bit 0 reports
+FT245 support, bit 1 ACIA support, bit 2 the required timed-transmit workaround,
+bit 3 an ACIA selection, and bit 4 an asserted FT245 PWE# at the most recent
+selection. Bits 5-7 are zero. This is a runtime snapshot; it is not a peripheral
+manifest.
 
 For returning calls, the monitor bank must remain mapped, monitor RAM and its
 copied worker must be intact, IRQ must be disabled, and decimal mode must be
 clear. On 816 enter with E=1, D=0, DBR=0, PBR=0. These routines are not
 reentrant and do not switch to the monitor bank for the caller. Registers and
-flags not listed as preserved/results are unspecified. CON_INIT alone does
-not initialize the queue or copy the worker; these calls assume prior monitor
+flags not listed as preserved/results are unspecified. CON_INIT does not copy
+the worker; these calls assume prior monitor
 startup. RAW_POLL bypasses queued input, while RX_RESET does not drain hardware.
 Use GETC/READ_LINE for buffered input. CHECK_CANCEL leaves a pending cancel
 latched; GETC consumes it as 03, and RX_RESET clears it.
@@ -183,7 +218,7 @@ workspace audit. Freeze public addresses only after measuring actual use.
 | $6900-$78FF | 4 KiB | Shared F/I sector buffer |
 | $7900-$7BFF | 768 bytes | RAM worker and bank-access code budget |
 | $7C00-$7CFF | 256 bytes | Shared command/S-record data buffer |
-| $7D00-$7DFF | 256 bytes | State, parameters, and configuration copy |
+| $7D00-$7DFF | 256 bytes | State, including CPU at $7D01, console at $7D02, parameters, queue, and configuration copy |
 | $7E00-$7EFF | 256 bytes | Handler pointers and RAM interrupt entry space |
 | $7F00-$7FFF | 256 bytes | I/O; excluded from ordinary D/M/L access |
 
@@ -194,11 +229,9 @@ not required for monitor operation.
 
 ## Vector ownership and reset
 
-Reserve `$FE40-$FEFF` as an aligned 192-byte expansion tail above the resident
-code and stored RAM images. Alpha12 uses 46 bytes of the formerly blank
-`$FE00-$FEFF` page for the capability ABI and its visible header. The builder
-rejects an image extending into the remaining tail and leaves it erased
-(`$FF`). The signature begins at `$F000`; entries begin at `$F004`
+Reserve `$FF00-$FFDF` as an aligned 224-byte expansion tail above the resident
+code and stored RAM images. The builder rejects an image extending into this
+tail and leaves it erased (`$FF`). The signature begins at `$F000`; entries begin at `$F004`
 (reset/start) and `$F007` (held prompt). Every byte from the end of the resident
 image through `$FFDF` is filled with `$FF`. These bytes share the F sector with
 the monitor; the tail is not independently erasable.
@@ -476,6 +509,7 @@ size and runtime behavior before claiming any optimization savings.
 
 ## Hardware references
 
+- [W65C51N ACIA datasheet](https://www.westerndesigncenter.com/wdc/documentation/w65c51n.pdf)
 - [W65C02SXB memory map](https://www.westerndesigncenter.com/wdc/documentation/W65C02SXB.pdf)
 - [W65C816SXB memory map](https://www.westerndesigncenter.com/wdc/documentation/W65C816SXB.pdf)
 - [W65C816 CPU and vector tables](https://www.westerndesigncenter.com/wdc/documentation/w65c816s.pdf)

@@ -44,6 +44,14 @@
     "text": "\r\nSTR8-N {version} B"
   },
   {
+    "name": "V2_CPU_02_TEXT",
+    "text": " 65C02"
+  },
+  {
+    "name": "V2_CPU_816_TEXT",
+    "text": " 65C816"
+  },
+  {
     "name": "V2_ABI_HEADER",
     "text": "\r\nABI 65C02 | 816E | 816N-VEC"
   },

@@ -115,7 +115,9 @@ V2W_RESET_WAIT:        JSR     V2W_GETC
                         JMP     $F004
 V2W_OK_TEXT:           DB      $0D,$0A,"OK; press Y to soft reset",$00
 V2W_FAIL_TEXT:         DB      $0D,$0A,"Flash fail; press Y to soft reset",$00
-V2W_GETC:              STZ     V2_DDRA
+V2W_GETC:              LDA     V2_CONSOLE
+                        BNE     V2W_ACIA_GETC
+                        STZ     V2_DDRA
                         LDA     #$02
 V2W_RX_WAIT:            BIT     V2_CTRL
                         BNE     V2W_RX_WAIT
@@ -129,7 +131,14 @@ V2W_RX_WAIT:            BIT     V2_CTRL
                         TSB     V2_CTRL
                         PLA
                         RTS
+V2W_ACIA_GETC:         LDA     #V2_ACIA_RDRF
+                        BIT     V2_ACIA_STATUS
+                        BEQ     V2W_ACIA_GETC
+                        LDA     V2_ACIA_DATA
+                        RTS
 V2W_PUTC:              PHA
+                        LDA     V2_CONSOLE
+                        BNE     V2W_ACIA_PUTC
                         STZ     V2_DDRA
                         LDA     #$01
 V2W_TX_WAIT:           BIT     V2_CTRL
@@ -148,6 +157,22 @@ V2W_SEND:              STA     V2_DATA
                         LDA     #$04
                         TRB     V2_CTRL
                         STZ     V2_DDRA
+                        RTS
+V2W_ACIA_PUTC:         PLA
+; W65C51N TDRE is not usable. Pace every write by more than one 10-bit frame
+; at 19200 baud. At 8 MHz this loop is at least 4,184 cycles (523 us), while
+; preserving X/Y for the public console contract and RAM self-edit strings.
+V2W_ACIA_SEND:         STA     V2_ACIA_DATA
+                        PHX
+                        PHY
+                        LDY     #$04
+V2W_ACIA_DELAY_OUTER:  LDX     #$D0
+V2W_ACIA_DELAY_INNER:  DEX
+                        BNE     V2W_ACIA_DELAY_INNER
+                        DEY
+                        BNE     V2W_ACIA_DELAY_OUTER
+                        PLY
+                        PLX
                         RTS
 V2W_UNLOCK:            LDA     #$F0
                         STA     V2_LED
