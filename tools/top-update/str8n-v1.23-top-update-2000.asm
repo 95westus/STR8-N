@@ -269,7 +269,7 @@ TU_FAIL_SAFE:           STA             TU_STATUS
                         JMP             BM_MAIN
                         ELSE
                         IF              STR8_V2_TOP_IMAGE
-                        JMP             $F007
+                        JMP             $F004
                         ELSE
                         JSR             TU_ARM_SOFT_RESET
                         JMP             $F000
