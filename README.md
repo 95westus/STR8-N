@@ -6,6 +6,9 @@
 
 The current qualification candidate is frozen as v2-alpha19; see the
 [freeze record and qualification matrix](docs/STR8N_V2_QUALIFICATION.md).
+The [2512 board session](docs/STR8N_V2_ALPHA19_2512_BOARD_TEST_2026-09-24.md)
+passed FTDI, RAM ABI, interrupts, flash and autostart checks; ACIA receive
+remains unresolved.
 
 On the `v2` branch, alpha19 adds `C 0|1 0-3 ADDR|V DELAY`: `V` follows the
 selected bank's RESET vector when autostart runs, while an explicit address
