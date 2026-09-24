@@ -1,6 +1,9 @@
 # STR8-N v2
 
-**Board monitor and guarded loader for WDC SXB.**
+**4 KB guarded board monitor and loader for WDC W65C02SXB.** It supports
+bank selection, RAM/S19 loading, verified flash writes, and boot handoff.
+W65C816SXB and matching EDU boards are intended targets; their RC1 hardware
+qualification is still in progress.
 
 [Read the v2 announcement](docs/STR8N_V2_ANNOUNCEMENT.md) and join its
 [GitHub discussion](https://github.com/95westus/STR8-N/discussions/2).
