@@ -4,6 +4,9 @@
 > methods, and engineering judgment. Unless explicitly stated otherwise, all
 > code has been tested on physical hardware and approved by a human.
 
+The current qualification candidate is frozen as v2-alpha19; see the
+[freeze record and qualification matrix](docs/STR8N_V2_QUALIFICATION.md).
+
 On the `v2` branch, alpha19 adds `C 0|1 0-3 ADDR|V DELAY`: `V` follows the
 selected bank's RESET vector when autostart runs, while an explicit address
 remains fixed. Alpha19 passes the host checks and its vector autostart path was
@@ -27,6 +30,15 @@ assembled and structurally checked but awaits native-mode hardware execution.
 Use `make v2-check` for its build and host execution checks. The v1 firmware
 sources and normal release targets remain unchanged; the description below
 documents the v1 product, not the full planned v2 command set.
+
+**V2 boot limitation:** A valid RESET vector does not prove that the payload
+is intact or will run successfully. S-record checksums check individual
+records; flash readback checks the programmed contents at verification time.
+Neither establishes successful application startup. V2 does not validate the
+whole payload at boot, track installation completion, or automatically roll
+back a failed boot. After an interrupted or failed install, verify or reinstall
+the intended image before booting; confirm its operation on the target board
+before relying on autostart. See the [v2 validation limits](docs/STR8N_V2.md#validation-limits-and-operator-responsibility).
 
 # STR8-N v1.34
 

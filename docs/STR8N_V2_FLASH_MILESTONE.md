@@ -71,6 +71,15 @@ checksum, ordering, transfer, or flash failure leaves previously committed
 sectors in place. An incomplete staged sector is discarded on cancellation
 or transfer failure. There is no journal, rollback, or all-image atomicity.
 
+`Done` does not mean the application has started or will work. S-record
+checksums validate individual records, and flash readback verifies the expected
+contents at that time. Neither proves successful application startup. A failed
+or interrupted installation may leave a RESET vector that still passes `J`'s
+address checks even though the payload is incomplete or damaged. Verify the
+intended image by readback or reinstall successfully before booting, then
+confirm application behavior on the target board. See the
+[v2 validation limits](STR8N_V2.md#validation-limits-and-operator-responsibility).
+
 ## Cancellation and failures
 
 Ctrl-C cancels before mutation or after the active sector's mutation and
