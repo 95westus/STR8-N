@@ -33,7 +33,9 @@ status.
 - [Read the W65C816SXB/EDU getting-started guide](https://github.com/95westus/STR8-N/blob/v2/docs/STR8N_V2_RC1_GETTING_STARTED_816.md)
 - [Review the RC1 package contents](https://github.com/95westus/STR8-N/blob/v2/docs/STR8N_V2_RC1_PACKAGE_README.md)
 
-Comments and questions are welcome in this discussion. Please use
+Comments and questions are welcome in the
+[announcement discussion](https://github.com/95westus/STR8-N/discussions/2).
+Please use
 [GitHub Issues](https://github.com/95westus/STR8-N/issues) for reproducible
 defects or a specific qualification result. Include the board type, firmware
 banner, host and cable, steps, and observed output; avoid posting private
