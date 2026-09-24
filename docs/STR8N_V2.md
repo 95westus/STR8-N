@@ -2,14 +2,19 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-Alpha15 detects and displays the installed CPU, retains
+Alpha16 detects and displays the installed CPU, retains
 `ABI 65C02 | 816E | 816N-VEC`, and publishes both the actual board state and
 supported execution contract through fixed queries. The independent
 [v2-alpha10 interaction milestone](STR8N_V2_ALPHA10_INTERACTION.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
-The required command set is implemented; alpha15 uses 3810 resident bytes,
-leaves 30 bytes before the reserved page, and includes a 541-byte RAM worker.
+The required command set is implemented; alpha16 uses 3820 resident bytes,
+ends at `$FEEB`, and includes a 767-byte RAM worker plus a 204-byte
+vector/public-entry image. The entire `$FF00-$FFDF` expansion page remains
+erased. Alpha16 also publishes a fixed RAM ABI callable with any flash bank
+visible.
+The [alpha16 RAM ABI board test](STR8N_V2_ALPHA16_RAM_ABI_BOARD_TEST_2026-09-23.md)
+installed the image on board 2205 and passed a real B0/B1/B2/B3 caller probe.
 The [alpha15 board test](STR8N_V2_ALPHA15_LEAN_LED_BOARD_TEST_2026-09-23.md)
 installed the image through the guarded V2-to-V2 path and preserved the final
 four-bank layout. The preceding
@@ -102,7 +107,7 @@ fixed-delay driver does not wait indefinitely.
 
 ## EDU LED states
 
-While the monitor owns the EDU display, alpha15 uses `$01` for running.
+While the monitor owns the EDU display, alpha16 uses `$01` for running.
 Flash unlock asserts `$F0` and keeps all four red LEDs on until mutation and
 verification finish. `G` and `J` clear the display before handing ownership
 to an application.
@@ -144,9 +149,9 @@ bytes from the BRK opcode. On the 816, handoff remains in emulation mode with
 direct page $0000, data bank $00, and program bank $00. User code manages
 subsequent native-mode entry and extended addressing.
 
-The fixed software monitor-entry address is $F007. It bypasses autostart
-and holds at the prompt. A software caller
-must already have the resident monitor bank visible and establish the common CPU contract:
+The fixed ROM software monitor-entry address is $F007. It bypasses autostart
+and holds at the prompt. A ROM-entry caller must already have the resident
+monitor bank visible and establish the common CPU contract:
 on the 816, emulation mode, direct page $0000, data bank $00, and execution
 in CPU bank $00. Switch flash mappings from RAM before entering. The entry
 disables IRQs, clears decimal mode, and establishes the monitor stack; it is
@@ -158,8 +163,9 @@ establishes defaults. J3 remains reset-style entry, distinct from prompt entry.
 
 Bytes $F000-$F003 are the `SN`, `$02`, `$00` product/major-ABI/format
 signature. It deliberately differs from v1's `SR/02/03` parser-service
-signature because v2 does not publish that parser ABI. Public entries follow
-as consecutive three-byte absolute JMP instructions. Internal
+signature because v2 does not publish that parser ABI. This table is a
+compatibility facade for callers that already have the resident bank visible.
+Entries follow as consecutive three-byte absolute JMP instructions. Internal
 routine addresses can move; applications use the constants in
 [`str8n-v2-public.inc`](../src/v2/str8n-v2-public.inc). The builder checks every
 entry address and target. The alpha10 build and boot suite verify this table.
@@ -174,7 +180,7 @@ entry address and target. The alpha10 build and boot suite verify this table.
 | $F013 | RAW_POLL | JSR; hardware-only nonblocking read, C=1/A=byte, C=0 empty; preserves X/Y |
 | $F016 | CHECK_CANCEL | JSR; bounded input service, C=1 if cancellation pending; preserves X/Y |
 | $F019 | RX_RESET | JSR; clears software queue/error/cancel state; preserves A/X/Y |
-| $F01C | READ_LINE | JSR; echoed uppercase line in $7C00, maximum 32 characters plus NUL; C=1 valid, C=0/Y=1 long, 2 invalid, 3 cancelled |
+| $F01C | RESERVED_LINE | JSR; reserved compatibility slot; currently returns |
 | $F01F | HEX_OUT | JSR; prints A as two hexadecimal digits; preserves X/Y |
 | $F022 | NEWLINE | JSR; prints CR/LF; preserves X/Y |
 | $F025 | HEX_NIBBLE | JSR; ASCII hex in A, C=1/A=0..15 when valid, C=0 invalid; preserves X/Y |
@@ -182,11 +188,12 @@ entry address and target. The alpha10 build and boot suite verify this table.
 | $F02B | BOARD_QUERY | JSR; returns A=1, X=detected CPU, Y=transport state flags, C=1 |
 | $F02E-$F031 | RESERVED2-3 | JSR; currently JMP to a shared RTS stub; reserved for compatible expansion. |
 
-The four-byte capability descriptor at `$F035` is `"CA", $01, $07`:
+The four-byte capability descriptor at `$F035` is `"CA", $01, $17`:
 format 1 with W65C02 execution (bit 0), W65C816 emulation-mode execution
 (bit 1), and the W65C816 native vector ABI (bit 2). Bit 3 would advertise a
-native-mode callable monitor-service gateway and is clear. `CAPS_QUERY` returns
-the same format and flags with a descriptor length of four.
+native-mode callable monitor-service gateway and is clear. Bit 4 advertises
+the bank-independent RAM ABI. `CAPS_QUERY` returns the same format and flags
+with a descriptor length of four.
 
 `BOARD_QUERY` returns X=`$02` for W65C02 or `$16` for W65C816. Y bit 0 reports
 FT245 support, bit 1 ACIA support, bit 2 the required timed-transmit workaround,
@@ -194,15 +201,23 @@ bit 3 an ACIA selection, and bit 4 an asserted FT245 PWE# at the most recent
 selection. Bits 5-7 are zero. This is a runtime snapshot; it is not a peripheral
 manifest.
 
-For returning calls, the monitor bank must remain mapped, monitor RAM and its
-copied worker must be intact, IRQ must be disabled, and decimal mode must be
-clear. On 816 enter with E=1, D=0, DBR=0, PBR=0. These routines are not
-reentrant and do not switch to the monitor bank for the caller. Registers and
-flags not listed as preserved/results are unspecified. CON_INIT does not copy
-the worker; these calls assume prior monitor
-startup. RAW_POLL bypasses queued input, while RX_RESET does not drain hardware.
-Use GETC/READ_LINE for buffered input. CHECK_CANCEL leaves a pending cancel
-latched; GETC consumes it as 03, and RX_RESET clears it.
+The application ABI begins with `"RA", $01, $0D` at `$7E60`, followed by
+thirteen three-byte JMP entries. RESET, HOLD, CON_INIT, PUTC, GETC, RAW_POLL,
+CHECK_CANCEL, RX_RESET, HEX_OUT, NEWLINE, HEX_NIBBLE, CAPS_QUERY, and
+BOARD_QUERY occupy `$7E64-$7E8A` in that order. Callers must check the RAM
+signature after STR8-N startup. All returning entries execute from RAM and
+preserve the caller's visible flash bank. RAM RESET and HOLD select the stored
+resident bank and do not return. Their public names and exact addresses are in
+[`str8n-v2-public.inc`](../src/v2/str8n-v2-public.inc).
+
+For either table, initialized monitor RAM and the copied worker must remain
+intact, IRQ must be disabled, and decimal mode must be clear. On 816 enter with
+E=1, D=0, DBR=0, PBR=0. The routines are not reentrant. Registers and flags not
+listed as preserved/results are unspecified. CON_INIT does not copy the worker;
+these calls assume prior monitor startup. RAW_POLL bypasses queued input, while
+RX_RESET does not drain hardware. Use GETC for buffered input. Line editing is
+monitor-private. CHECK_CANCEL leaves a pending cancel latched; GETC consumes it
+as 03, and RX_RESET clears it.
 
 Command handlers, parsers, packed message ordinals, flash workers, and other
 internal helpers are not public call entries. Internal calls continue to use
@@ -221,10 +236,10 @@ be resolved against that map. Preservation applies to application RAM and
 installed handler pointers, not monitor scratch, stack contents, or an exact
 CPU snapshot.
 
-## Proposed RAM map
+## RAM map
 
-These addresses are provisional until the first linked implementation and
-workspace audit. Freeze public addresses only after measuring actual use.
+The application and public-entry boundaries in this table are frozen for the
+alpha16 contract. Private state within the monitor-owned ranges may move.
 
 | Address | Size | Ownership |
 | --- | --- | --- |
@@ -233,10 +248,13 @@ workspace audit. Freeze public addresses only after measuring actual use.
 | $0100-$01FF | 256 bytes | Hardware stack; contents are not preserved |
 | $0200-$68FF | 25.75 KiB | Contiguous application RAM, including user handlers |
 | $6900-$78FF | 4 KiB | Shared F/I sector buffer |
-| $7900-$7BFF | 768 bytes | RAM worker and bank-access code budget |
+| $7900-$7BFF | 768 bytes | RAM worker, bank access, and console implementation; alpha16 uses 767 bytes |
 | $7C00-$7CFF | 256 bytes | Shared command/S-record data buffer |
 | $7D00-$7DFF | 256 bytes | State, including CPU at $7D01, console at $7D02, parameters, queue, and configuration copy |
-| $7E00-$7EFF | 256 bytes | Handler pointers and RAM interrupt entry space |
+| $7E00-$7E1F | 32 bytes | Handler pointers and NMI publication gate area |
+| $7E20-$7E5F | 64 bytes | RAM interrupt entry code and defaults |
+| $7E60-$7EEB | 140 bytes | Fixed RAM ABI table and implementations |
+| $7EEC-$7EFF | 20 bytes | Reserved |
 | $7F00-$7FFF | 256 bytes | I/O; excluded from ordinary D/M/L access |
 
 The sector buffer is page-aligned and occupies sixteen pages; it need not

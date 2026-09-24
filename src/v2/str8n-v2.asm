@@ -1,4 +1,4 @@
-; v2-alpha15: concise safety LEDs and guarded V2-to-V2 updates.
+; v2-alpha16: bank-independent public ABI in the reserved RAM pockets.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE
@@ -24,6 +24,21 @@
                         INCLUDE "str8n-v2-public.inc"
                         INCLUDE "vectors-symbols.inc"
                         INCLUDE "text-ids.inc"
+; Internal monitor calls and the resident compatibility facade share the
+; exact RAM implementations exposed to applications in every flash bank.
+V2_CON_INIT             EQU     V2W_CON_INIT
+V2_PUTC                 EQU     V2W_PUTC
+V2_TX_WAIT              EQU     V2W_TX_WAIT
+V2_GETC                 EQU     V2W_GETC
+V2_GETC_WAIT            EQU     V2W_GETC_WAIT
+V2_RAW_POLL             EQU     V2W_RAW_POLL
+V2_CHECK_CANCEL         EQU     V2W_CHECK_CANCEL
+V2_RX_RESET             EQU     V2W_RX_RESET
+V2_HEX_OUT              EQU     V2V_RAM_HEX_OUT
+V2_NEWLINE              EQU     V2V_RAM_NEWLINE
+V2_HEX_NIBBLE           EQU     V2V_RAM_HEX_NIBBLE
+V2_CAPS_QUERY           EQU     V2V_RAM_CAPS_QUERY
+V2_BOARD_QUERY          EQU     V2V_RAM_BOARD_QUERY
                         CODE
 ; Product signature, major ABI and signature-format revision. This deliberately
 ; differs from v1's SR/02/03 parser-service signature.
@@ -36,7 +51,7 @@ V2_GETC_ENTRY:          JMP     V2_GETC
 V2_RAW_POLL_ENTRY:      JMP     V2_RAW_POLL
 V2_CHECK_CANCEL_ENTRY:  JMP     V2_CHECK_CANCEL
 V2_RX_RESET_ENTRY:      JMP     V2_RX_RESET
-V2_READ_LINE_ENTRY:     JMP     V2_READ_LINE
+V2_READ_LINE_ENTRY:     JMP     V2_RESERVED
 V2_HEX_OUT_ENTRY:       JMP     V2_HEX_OUT
 V2_NEWLINE_ENTRY:       JMP     V2_NEWLINE
 V2_HEX_NIBBLE_ENTRY:    JMP     V2_HEX_NIBBLE
@@ -47,19 +62,6 @@ V2_RESERVED3_ENTRY:     JMP     V2_RESERVED
 V2_RESERVED:            RTS
 ; Fixed, ROM-readable descriptor: magic, format, capability flags.
 V2_CAPS_DATA:           DB      "CA",STR8V2_CAPS_FORMAT,STR8V2_CAPS_FLAGS
-V2_CAPS_QUERY:          LDA     #STR8V2_CAPS_FORMAT
-                        LDX     #STR8V2_CAPS_FLAGS
-                        LDY     #STR8V2_CAPS_LENGTH
-                        SEC
-                        RTS
-V2_BOARD_QUERY:         LDX     V2_CPU
-                        LDY     #(STR8V2_BOARD_FT245|STR8V2_BOARD_ACIA|STR8V2_BOARD_ACIA_TIMED|STR8V2_BOARD_FT245_PRESENT)
-                        LDA     V2_CONSOLE
-                        BEQ     V2_BOARD_QUERY_DONE
-                        LDY     #(STR8V2_BOARD_FT245|STR8V2_BOARD_ACIA|STR8V2_BOARD_ACIA_TIMED|STR8V2_BOARD_SELECTED_ACIA)
-V2_BOARD_QUERY_DONE:    LDA     #STR8V2_BOARD_FORMAT
-                        SEC
-                        RTS
 
 V2_RESET:
                         SEI
@@ -115,11 +117,11 @@ V2_REENTER:
 V2_ENTER:
                         STZ     V2_SKIP_LF
                         STZ     V2_NMI_HOLD
-                        JSR     V2_RX_RESET
 ; Build-sized absolute copies cover the worker exactly. The last 256-byte
 ; window can overlap the preceding one; no ROM padding or extra RAM is used.
                         INCLUDE "worker-copy.inc"
 V2_WORKER_COPIED:
+                        JSR     V2_RX_RESET
 ; Quiet the EDU buzzer and assert its running LED. No PCR write here.
                         LDA     #$30
                         STA     V2_PIA_CRA
@@ -236,7 +238,6 @@ V2_BANK_FAIL:          CLC
 
                         INCLUDE "str8n-v2-monitor.inc"
                         INCLUDE "str8n-v2-load.inc"
-                        INCLUDE "str8n-v2-input.inc"
                         INCLUDE "str8n-v2-flash.inc"
                         INCLUDE "str8n-v2-config.inc"
 
@@ -360,86 +361,6 @@ V2_PRINT_NEXT:         LDA     (V2_PTR),Y
                         INC     V2_PTR+1
                         BRA     V2_PRINT_NEXT
 V2_PRINT_END:          PLX
-                        RTS
-
-; Select one console per initialization. PWE# low means that the primary
-; FT245 USB interface is configured; high selects the backup W65C51N ACIA.
-; Preserve X/Y and never change bank-select PCR bits.
-V2_CON_INIT:           LDA     #$0C
-                        STA     V2_CTRL
-                        STA     V2_DDRB
-                        STZ     V2_DDRA
-                        LDA     V2_CTRL
-                        AND     #$20
-                        BEQ     V2_CON_FT245
-                        LDA     #V2_CONSOLE_ACIA
-                        BRA     V2_CON_SELECTED
-V2_CON_FT245:          LDA     #V2_CONSOLE_FT245
-V2_CON_SELECTED:       CMP     V2_CONSOLE
-                        BEQ     V2_CON_INITIALIZE
-                        STA     V2_CONSOLE
-                        JSR     V2_RX_RESET
-V2_CON_INITIALIZE:     LDA     V2_CONSOLE
-                        BEQ     V2_CON_READY
-                        STZ     V2_ACIA_STATUS
-                        LDA     #V2_ACIA_CONTROL_19200
-                        STA     V2_ACIA_CONTROL
-                        LDA     #V2_ACIA_COMMAND_19200
-                        STA     V2_ACIA_COMMAND
-V2_CON_READY:          RTS
-V2_RAW_POLL:           LDA     V2_CONSOLE
-                        BNE     V2_ACIA_RAW_POLL
-; Direct FT245/VIA routines derived from the v1.35 board-tested sequences.
-                        STZ     V2_DDRA
-                        LDA     #$02
-                        BIT     V2_CTRL
-                        BNE     V2_RAW_EMPTY
-                        LDA     #$08
-                        TRB     V2_CTRL
-                        NOP
-                        NOP
-                        LDA     V2_DATA
-                        PHA
-                        LDA     #$08
-                        TSB     V2_CTRL
-                        PLA
-                        SEC
-                        RTS
-V2_RAW_EMPTY:          CLC
-                        RTS
-V2_ACIA_RAW_POLL:      LDA     #V2_ACIA_RDRF
-                        BIT     V2_ACIA_STATUS
-                        BEQ     V2_RAW_EMPTY
-                        LDA     V2_ACIA_DATA
-                        SEC
-                        RTS
-V2_PUTC:               PHA
-                        LDA     V2_CANCEL_REQUEST
-                        BNE     V2_TX_CANCEL
-                        LDA     V2_CONSOLE
-                        BNE     V2_TX_ACIA
-                        STZ     V2_DDRA
-                        LDA     #$01
-V2_TX_WAIT:            BIT     V2_CTRL
-                        BEQ     V2_TX_READY
-; Poll input while output is blocked. Drop this byte on cancel; the caller
-; unwinds normally and stops at its next safe boundary.
-                        JSR     V2_RX_SERVICE
-                        LDA     V2_CANCEL_REQUEST
-                        BNE     V2_TX_CANCEL
-                        LDA     #$01
-                        BRA     V2_TX_WAIT
-V2_TX_READY:           PLA
-                        PHA
-; Input polling/cancellation stays here; the identical hardware transaction
-; is shared with the RAM-only self-edit reporter. Preserve A on the stack.
-                        JSR     V2W_SEND
-                        BRA     V2_TX_CANCEL
-V2_TX_ACIA:            PLA
-                        PHA
-                        JSR     V2W_ACIA_SEND
-V2_TX_CANCEL:
-                        PLA
                         RTS
 
 V2_COMMAND_KEYS:      DB      "BDMGLFICJ?"

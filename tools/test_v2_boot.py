@@ -11,7 +11,8 @@ import json
 import os
 import sys
 
-from build_v2 import OUT, ROOT, STEM, VERSION, RESIDENT_START, PUBLIC_CALLS, read_s19, symbols
+from build_v2 import (OUT, ROOT, STEM, VERSION, RESIDENT_START, PUBLIC_CALLS,
+                      RAM_PUBLIC_CALLS, read_s19, symbols)
 
 for directory in reversed([
     *(Path(p) for key in ('STR8_TEST_DEPS', 'PY65_PATH')
@@ -243,7 +244,7 @@ def check_image_and_instructions():
         assert SYM[public] == SYM[label] == address
         assert bytes(memory[a] for a in range(address, address+3)) == b'\x4c' + SYM[target].to_bytes(2, 'little')
     assert SYM['STR8V2_CAPS_DATA'] == SYM['V2_CAPS_DATA'] == 0xF035
-    assert bytes(memory[a] for a in range(0xF035, 0xF039)) == b'CA\x01\x07'
+    assert bytes(memory[a] for a in range(0xF035, 0xF039)) == b'CA\x01\x17'
     assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
     assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
     assert SYM['V2_END'] <= 0xFF00
@@ -255,11 +256,15 @@ def check_image_and_instructions():
     dis = Disassembler(cpu)
     worker = REPORT['worker']
     for start, end in [(SYM['START'], SYM['V2_CAPS_DATA']),
-                       (SYM['V2_CAPS_QUERY'], SYM['V2_COMMAND_KEYS']),
+                       (SYM['V2_RESET'], SYM['V2_COMMAND_KEYS']),
                        (0x7900, worker['V2W_BITS']),
                        (worker['V2W_BEGIN'], worker['V2W_OK_TEXT']),
-                       (worker['V2W_GETC'], worker['V2W_END']),
-                       (0x7E20, VSYM['V2V_END'])]:
+                       (worker['V2W_SEND'], worker['V2W_UNLOCK']),
+                       (worker['V2W_UNLOCK'], worker['V2W_RX_RESET']),
+                       (worker['V2W_RX_RESET'], worker['V2W_END']),
+                       (0x7E20, VSYM['V2V_DEFAULT']+1),
+                       (VSYM['V2V_RAM_RESET_ENTRY'], VSYM['V2V_RAM_RESET']),
+                       (VSYM['V2V_RAM_RESET'], VSYM['V2V_END'])]:
         pc = start
         while pc < end:
             if pc in (SYM['V2_CPU_XCE_PROBE'], SYM['V2_CPU_XCE_RESTORE']):
@@ -283,9 +288,9 @@ def check_capability_abi():
         cpu.p &= ~cpu.CARRY
         cpu.pc = SYM['STR8V2_CAPS_QUERY']
         run(cpu, lambda: cpu.pc == 0x0200)
-        assert (cpu.a, cpu.x, cpu.y) == (1, 7, 4)
+        assert (cpu.a, cpu.x, cpu.y) == (1, 0x17, 4)
         assert cpu.p & cpu.CARRY and cpu.sp == 255
-        assert cpu.x & 0x07 == 0x07
+        assert cpu.x & 0x17 == 0x17
         assert not cpu.x & 0x08
     CASES.append('public capability query and fixed descriptor match the visible CPU/ABI contract')
 
@@ -296,6 +301,100 @@ def call_public(cpu, entry):
     cpu.pc = entry
     run(cpu, lambda: cpu.pc == 0x0200, limit=600000)
     assert cpu.sp == 255
+
+
+def select_flash_bank(memory, bank):
+    memory[0x7FEC] = (memory.ram[0x7FEC] & 0x11) | PATTERNS[bank]
+
+
+def check_ram_abi_all_banks():
+    for resident in range(4):
+        cpu, mem = boot(resident)
+        assert bytes(mem.ram[0x7E60:0x7E64]) == b'RA\x01\x0d'
+        for index, (public, label, target) in enumerate(RAM_PUBLIC_CALLS):
+            address = 0x7E64 + 3*index
+            assert VSYM[public] == VSYM[label] == address
+            assert bytes(mem.ram[address:address+3]) == b'\x4c' + VSYM[target].to_bytes(2, 'little')
+
+        for caller in range(4):
+            select_flash_bank(mem, caller)
+            change_count = len(mem.bank_changes)
+
+            cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_CAPS_QUERY'])
+            assert (cpu.a, cpu.x, cpu.y) == (1, 0x17, 4) and cpu.p & cpu.CARRY
+
+            cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_BOARD_QUERY'])
+            assert (cpu.a, cpu.x, cpu.y) == (1, 0x02, 0x17) and cpu.p & cpu.CARRY
+
+            start = len(mem.tx)
+            cpu.a, cpu.x, cpu.y = ord('Z'), 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_PUTC'])
+            assert mem.tx[start:] == b'Z' and (cpu.a, cpu.x, cpu.y) == (ord('Z'), 0x39, 0xC7)
+
+            start = len(mem.tx)
+            cpu.a, cpu.x, cpu.y = 0xAF, 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_HEX_OUT'])
+            assert mem.tx[start:] == b'AF' and (cpu.x, cpu.y) == (0x39, 0xC7)
+            start = len(mem.tx)
+            call_public(cpu, VSYM['STR8V2_RAM_NEWLINE'])
+            assert mem.tx[start:] == b'\r\n'
+
+            cpu.a, cpu.x, cpu.y = ord('f'), 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_HEX_NIBBLE'])
+            assert (cpu.a, cpu.x, cpu.y) == (15, 0x39, 0xC7) and cpu.p & cpu.CARRY
+
+            mem.rx.append(ord('q'))
+            cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_RAW_POLL'])
+            assert (cpu.a, cpu.x, cpu.y) == (ord('q'), 0x39, 0xC7) and cpu.p & cpu.CARRY
+
+            mem.ram[SYM['V2_RX_QUEUE']] = ord('R')
+            mem.ram[SYM['V2_RX_HEAD']] = 0
+            mem.ram[SYM['V2_RX_COUNT']] = 1
+            cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_GETC'])
+            assert (cpu.a, cpu.x, cpu.y) == (ord('R'), 0x39, 0xC7)
+
+            cpu.p |= cpu.CARRY
+            call_public(cpu, VSYM['STR8V2_RAM_CHECK_CANCEL'])
+            assert not cpu.p & cpu.CARRY
+            mem.rx.append(3)
+            call_public(cpu, VSYM['STR8V2_RAM_CHECK_CANCEL'])
+            assert cpu.p & cpu.CARRY
+
+            cpu.a, cpu.x, cpu.y = 0xA5, 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_RX_RESET'])
+            assert (cpu.a, cpu.x, cpu.y) == (0xA5, 0x39, 0xC7)
+            assert not mem.ram[SYM['V2_CANCEL_REQUEST']]
+
+            cpu.a, cpu.x, cpu.y = 0xA5, 0x39, 0xC7
+            call_public(cpu, VSYM['STR8V2_RAM_CON_INIT'])
+            assert (cpu.x, cpu.y) == (0x39, 0xC7)
+            assert mem.bank == caller and len(mem.bank_changes) == change_count
+
+    for entry in ('STR8V2_RAM_HOLD', 'STR8V2_RAM_RESET'):
+        cpu, mem = boot(3)
+        select_flash_bank(mem, 1)
+        cpu.pc = VSYM[entry]
+        hold(cpu)
+        assert mem.bank == 3 and mem.ram[SYM['V2_RESIDENT']] == 3
+        assert f'STR8-N {VERSION} B3'.encode() in mem.tx
+
+    cpu, mem = boot(3, ft245_present=False)
+    select_flash_bank(mem, 0)
+    change_count = len(mem.bank_changes)
+    start = len(mem.acia_tx)
+    cpu.a, cpu.x, cpu.y = ord('A'), 0x39, 0xC7
+    call_public(cpu, VSYM['STR8V2_RAM_PUTC'])
+    assert mem.acia_tx[start:] == b'A' and (cpu.a, cpu.x, cpu.y) == (ord('A'), 0x39, 0xC7)
+    mem.acia_rx.append(ord('B'))
+    cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
+    call_public(cpu, VSYM['STR8V2_RAM_GETC'])
+    assert (cpu.a, cpu.x, cpu.y) == (ord('B'), 0x39, 0xC7)
+    assert mem.bank == 0 and len(mem.bank_changes) == change_count
+    CASES.append('RAM ABI signature/table and every returning service from all 16 resident/caller mappings')
 
 
 def check_board_query_and_acia():
@@ -429,7 +528,7 @@ def check_compact_messages():
 def main():
     for test in (check_boot_and_input, check_handoffs, check_vectors,
                  check_image_and_instructions, check_capability_abi,
-                 check_board_query_and_acia,
+                 check_ram_abi_all_banks, check_board_query_and_acia,
                  check_v135_roundtrip, check_compact_messages):
         test()
         print('PASS:', CASES[-1])

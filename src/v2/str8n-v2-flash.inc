@@ -86,15 +86,11 @@ V2_FLASH_BANK:         LDA     #'B'
                         LDA     V2_SELECTED
                         ORA     #'0'
                         JSR     V2_PUTC
-                        BRA     V2_NEWLINE
+                        JMP     V2_NEWLINE
 V2_PRINT_ADDR:         LDA     V2_ADDR+1
                         JSR     V2_HEX_OUT
                         LDA     V2_ADDR
                         JMP     V2_HEX_OUT
-V2_NEWLINE:            LDA     #$0D
-                        JSR     V2_PUTC
-                        LDA     #$0A
-                        JMP     V2_PUTC
 V2_CONFIRM:            LDX     #V2_CONFIRM_TEXT
                         JSR     V2_PRINT
                         JSR     V2_READ_LINE

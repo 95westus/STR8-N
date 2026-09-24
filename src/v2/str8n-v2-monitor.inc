@@ -245,33 +245,3 @@ V2_HEX_END:            SEC
                         RTS
 V2_HEX_FAIL:           CLC
                         RTS
-
-; Shared by command tokens and streaming S19. Accept either case; C=valid.
-V2_HEX_NIBBLE:         SEC
-                        SBC     #'0'
-                        BCC     V2_HEX_FAIL
-                        CMP     #$0A
-                        BCC     V2_HEX_NIBBLE_OK
-; After subtracting '0', A-F/a-f differ only in bit 5. CMP above supplies
-; the carry for subtraction; a valid letter leaves carry clear for ADC.
-                        ORA     #$20
-                        SBC     #('a'-'0')
-                        CMP     #$06
-                        BCS     V2_HEX_FAIL
-                        ADC     #$0A
-V2_HEX_NIBBLE_OK:      SEC
-                        RTS
-
-V2_HEX_OUT:            PHA
-                        LSR     A
-                        LSR     A
-                        LSR     A
-                        LSR     A
-                        JSR     V2_NIBBLE_OUT
-                        PLA
-                        AND     #$0F
-V2_NIBBLE_OUT:         CMP     #$0A
-                        BCC     V2_NIBBLE_ASCII
-                        ADC     #$06
-V2_NIBBLE_ASCII:       ADC     #'0'
-                        JMP     V2_PUTC

@@ -115,35 +115,6 @@ V2W_RESET_WAIT:        JSR     V2W_GETC
                         JMP     $F004
 V2W_OK_TEXT:           DB      $0D,$0A,"OK; press Y to soft reset",$00
 V2W_FAIL_TEXT:         DB      $0D,$0A,"Flash fail; press Y to soft reset",$00
-V2W_GETC:              LDA     V2_CONSOLE
-                        BNE     V2W_ACIA_GETC
-                        STZ     V2_DDRA
-                        LDA     #$02
-V2W_RX_WAIT:            BIT     V2_CTRL
-                        BNE     V2W_RX_WAIT
-                        LDA     #$08
-                        TRB     V2_CTRL
-                        NOP
-                        NOP
-                        LDA     V2_DATA
-                        PHA
-                        LDA     #$08
-                        TSB     V2_CTRL
-                        PLA
-                        RTS
-V2W_ACIA_GETC:         LDA     #V2_ACIA_RDRF
-                        BIT     V2_ACIA_STATUS
-                        BEQ     V2W_ACIA_GETC
-                        LDA     V2_ACIA_DATA
-                        RTS
-V2W_PUTC:              PHA
-                        LDA     V2_CONSOLE
-                        BNE     V2W_ACIA_PUTC
-                        STZ     V2_DDRA
-                        LDA     #$01
-V2W_TX_WAIT:           BIT     V2_CTRL
-                        BNE     V2W_TX_WAIT
-                        PLA
 ; IN A=byte, output ready and DDRA=0. X/Y preserved; A clobbered.
 ; Also called by the resident console after its cancellable ready wait.
 V2W_SEND:              STA     V2_DATA
@@ -158,7 +129,6 @@ V2W_SEND:              STA     V2_DATA
                         TRB     V2_CTRL
                         STZ     V2_DDRA
                         RTS
-V2W_ACIA_PUTC:         PLA
 ; W65C51N TDRE is not usable. Pace every write by more than one 10-bit frame
 ; at 19200 baud. At 8 MHz this loop is at least 4,184 cycles (523 us), while
 ; preserving X/Y for the public console contract and RAM self-edit strings.
