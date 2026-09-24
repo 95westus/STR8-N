@@ -75,6 +75,34 @@ journal-based interrupted-installation recovery from v2. Remove their tooling
 and packaging dependencies from the v2 product. Preserve v1 implementations
 in the v1.35 baseline; existing v1 directory tools are not v2 interfaces.
 
+### Validation limits and operator responsibility
+
+**A valid RESET vector does not prove that the payload is intact or will run
+successfully.** The checks serve different purposes:
+
+| Check | What it establishes | What it does not establish |
+| --- | --- | --- |
+| S-record checksum | An individual received record passes its checksum. | The complete intended image was received, is compatible with the board, or works. |
+| Flash readback | The verified flash contents match the expected result at verification time, including deliberately preserved bytes. | Application correctness, successful startup, or integrity at a later boot. |
+| RESET-vector validation (`J0`-`J3` and `V` autostart) | The selected bank's vector passes the monitor's address checks. | The target contains an intact, complete, compatible, or working payload. |
+
+A successful `I` completes and verifies the requested installation range; it
+does not execute or functionally test the application. V2 performs no whole-image
+integrity check at boot and records no persistent installation-complete or
+boot-success state. It provides no automatic failed-boot fallback or rollback.
+`G` and fixed-address autostart likewise do not validate the payload.
+
+An interrupted or failed installation can leave old and new sectors mixed,
+or a damaged sector, while retaining a RESET vector that passes validation.
+V2 may therefore attempt to boot an incomplete or damaged payload. After such
+an installation, the operator must verify the intended image by readback or
+reinstall it successfully before booting. Confirm startup and required behavior
+on the target board before relying on autostart. Use `S` or Ctrl-C during the
+autostart hold window to remain at the recovery prompt when needed.
+
+This is the boundary of an operator-managed recovery system. Passing transfer,
+programming, and vector checks does not establish successful application startup.
+
 ## One binary for both processors
 
 Build one STR8-N binary for W65C02SXB/EDU and W65C816SXB/EDU. The 816 runs
@@ -144,6 +172,10 @@ Addresses and byte values are hexadecimal. Share a compact hex parser.
 | `J0`-`J2` | Boot the selected bank through its RESET vector after bank/vector validity checks. |
 | `J3` | Boot Bank 3 through its RESET vector; during guest-bank testing this starts v1.35, not v2. |
 | `C [0|1 0-3 addr|V delay]` | Show/set the resident bank's autostart configuration, compute its integrity check, and confirm before writing. `V` reads the selected bank's RESET vector at handoff; `addr` is a fixed override. Numeric values are hex; delay is $0A-$FF tenths at nominal 8 MHz. |
+
+`J` and `V` autostart validate the RESET-vector address, not the payload.
+A damaged or incomplete image can still pass this check; see
+[validation limits and operator responsibility](#validation-limits-and-operator-responsibility).
 
 For example, `C 1 2 V 0A` starts Bank 2 through its current RESET vector
 after the minimum hold window. A later `C 1 2 9000 0A` switches to the fixed
@@ -414,6 +446,12 @@ the selected bank's RESET vector after the hold window and applies the same
 vector validity check as `J`; an invalid vector returns to the resident prompt.
 The vector address is not copied into the configuration pocket, so replacing a
 bank changes the target used on the next autostart.
+
+Neither autostart mode confirms that the application starts successfully.
+Vector mode does not add a whole-image integrity check, and a failed application
+does not trigger automatic fallback or rollback. Validate the installed payload
+on the target board before relying on autostart; the hold window provides the
+operator's opportunity to prevent handoff for that boot.
 
 ## Installation and testing alongside v1.35
 
