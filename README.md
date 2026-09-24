@@ -18,6 +18,18 @@ The [v2 command and memory guide](docs/STR8N_V2.md) describes the current
 interfaces and limits. The v1.34 material farther down this README describes
 the earlier release line.
 
+## V2 quick index
+
+| Start here | What it covers |
+| --- | --- |
+| [Getting started on W65C816SXB/EDU](docs/STR8N_V2_RC1_GETTING_STARTED_816.md) | Stock-board preflight, installation, and first verification; EDU is optional. |
+| [V2 command and memory guide](docs/STR8N_V2.md) | Monitor commands, memory map, host requirements, and operating limits. |
+| [RC1 package guide](docs/STR8N_V2_RC1_PACKAGE_README.md) | Which BIN, S19, `.a`, and host-tool files to use. |
+| [ASM-F2 application guide](docs/STR8N_V2_RC1_ASMF2_APPLICATIONS.md) | Using the two STR8-N `.a` utilities with public R-YORS ASM-F2. |
+| [Printable 816 qualification record](docs/STR8N_V2_RC1_816_QUALIFICATION_CHECKLIST.md) | Board checks, evidence, signatures, and questions/comments/concerns. |
+| [RC1 scope and evidence](docs/STR8N_V2_RC1_2026-09-24.md) | What the release candidate has passed and what awaits board testing. |
+| [R-YORS next-layer notes](docs/STR8N_V2_RYORS_NEXT_LAYER.md) | Planned HIMON/ASM/AP compatibility work beyond RC1. |
+
 > **AI Assistance & Human Validation**
 >
 > This project is developed with AI assistance and is grounded in human ideas,
