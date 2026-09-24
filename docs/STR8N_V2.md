@@ -2,19 +2,22 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-Alpha16 detects and displays the installed CPU, retains
+Alpha17 detects and displays the installed CPU, retains
 `ABI 65C02 | 816E | 816N-VEC`, and publishes both the actual board state and
 supported execution contract through fixed queries. The independent
 [v2-alpha10 interaction milestone](STR8N_V2_ALPHA10_INTERACTION.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
-The required command set is implemented; alpha16 uses 3820 resident bytes,
-ends at `$FEEB`, and includes a 767-byte RAM worker plus a 204-byte
+The required command set is implemented; alpha17 uses 3789 resident bytes,
+ends at `$FECC`, and includes a 744-byte RAM worker plus a 196-byte
 vector/public-entry image. The entire `$FF00-$FFDF` expansion page remains
-erased. Alpha16 also publishes a fixed RAM ABI callable with any flash bank
+erased. Alpha17 also publishes a fixed RAM ABI callable with any flash bank
 visible.
-The [alpha16 RAM ABI board test](STR8N_V2_ALPHA16_RAM_ABI_BOARD_TEST_2026-09-23.md)
-installed the image on board 2205 and passed a real B0/B1/B2/B3 caller probe.
+The [alpha17 optimization board test](STR8N_V2_ALPHA17_OPTIMIZATION_BOARD_TEST_2026-09-23.md)
+installed the compact image on board 2205 and passed a real B0/B1/B2/B3 caller
+probe. The preceding
+[alpha16 RAM ABI board test](STR8N_V2_ALPHA16_RAM_ABI_BOARD_TEST_2026-09-23.md)
+introduced the all-bank gateway.
 The [alpha15 board test](STR8N_V2_ALPHA15_LEAN_LED_BOARD_TEST_2026-09-23.md)
 installed the image through the guarded V2-to-V2 path and preserved the final
 four-bank layout. The preceding
@@ -107,7 +110,7 @@ fixed-delay driver does not wait indefinitely.
 
 ## EDU LED states
 
-While the monitor owns the EDU display, alpha16 uses `$01` for running.
+While the monitor owns the EDU display, alpha17 uses `$01` for running.
 Flash unlock asserts `$F0` and keeps all four red LEDs on until mutation and
 verification finish. `G` and `J` clear the display before handing ownership
 to an application.
@@ -239,7 +242,7 @@ CPU snapshot.
 ## RAM map
 
 The application and public-entry boundaries in this table are frozen for the
-alpha16 contract. Private state within the monitor-owned ranges may move.
+alpha17 contract. Private state within the monitor-owned ranges may move.
 
 | Address | Size | Ownership |
 | --- | --- | --- |
@@ -248,13 +251,13 @@ alpha16 contract. Private state within the monitor-owned ranges may move.
 | $0100-$01FF | 256 bytes | Hardware stack; contents are not preserved |
 | $0200-$68FF | 25.75 KiB | Contiguous application RAM, including user handlers |
 | $6900-$78FF | 4 KiB | Shared F/I sector buffer |
-| $7900-$7BFF | 768 bytes | RAM worker, bank access, and console implementation; alpha16 uses 767 bytes |
+| $7900-$7BFF | 768 bytes | RAM worker, bank access, and console implementation; alpha17 uses 744 bytes |
 | $7C00-$7CFF | 256 bytes | Shared command/S-record data buffer |
 | $7D00-$7DFF | 256 bytes | State, including CPU at $7D01, console at $7D02, parameters, queue, and configuration copy |
 | $7E00-$7E1F | 32 bytes | Handler pointers and NMI publication gate area |
-| $7E20-$7E5F | 64 bytes | RAM interrupt entry code and defaults |
-| $7E60-$7EEB | 140 bytes | Fixed RAM ABI table and implementations |
-| $7EEC-$7EFF | 20 bytes | Reserved |
+| $7E20-$7E57 | 56 bytes | RAM interrupt entry code and defaults |
+| $7E58-$7EE3 | 140 bytes | Fixed RAM ABI table and implementations |
+| $7EE4-$7EFF | 28 bytes | Reserved |
 | $7F00-$7FFF | 256 bytes | I/O; excluded from ordinary D/M/L access |
 
 The sector buffer is page-aligned and occupies sixteen pages; it need not

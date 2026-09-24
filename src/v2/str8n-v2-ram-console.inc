@@ -94,8 +94,9 @@ V2W_CON_SELECTED:      CMP     V2_CONSOLE
                         BEQ     V2W_CON_INITIALIZE
                         STA     V2_CONSOLE
                         JSR     V2W_RX_RESET
-V2W_CON_INITIALIZE:    LDA     V2_CONSOLE
-                        BEQ     V2W_CON_READY
+; Selection is exactly 0/1 and RX_RESET preserves A.
+V2W_CON_INITIALIZE:    LSR     A
+                        BCC     V2W_CON_READY
                         STZ     V2_ACIA_STATUS
                         LDA     #V2_ACIA_CONTROL_19200
                         STA     V2_ACIA_CONTROL

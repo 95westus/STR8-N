@@ -68,8 +68,13 @@ V2V_NATIVE_IRQ:        JMP     (V2_NATIVE_POINTERS+8)
 ; RTI itself is valid in either mode and consumes that mode's hardware frame.
 ; This is a default, not an IRQ source acknowledgement or a native dispatcher.
 V2V_DEFAULT:           RTI
+; This eight-byte query exactly fills the alignment gap before the fixed ABI.
+V2V_RAM_CAPS_QUERY:    LDA     #STR8V2_CAPS_FORMAT
+                        LDX     #STR8V2_CAPS_FLAGS
+                        LDY     #STR8V2_CAPS_LENGTH
+                        SEC
+                        RTS
 ; Keep the public RAM descriptor fixed even if private interrupt code changes.
-                        DB      $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
 V2V_RAM_SIGNATURE:     DB      "RA",STR8V2_RAM_FORMAT,STR8V2_RAM_CALLS
 V2V_RAM_RESET_ENTRY:   JMP     V2V_RAM_RESET
 V2V_RAM_HOLD_ENTRY:    JMP     V2V_RAM_HOLD
@@ -129,11 +134,6 @@ V2V_RAM_NEWLINE:       LDA     #$0D
                         LDA     #$0A
                         JMP     V2W_PUTC
 
-V2V_RAM_CAPS_QUERY:    LDA     #STR8V2_CAPS_FORMAT
-                        LDX     #STR8V2_CAPS_FLAGS
-                        LDY     #STR8V2_CAPS_LENGTH
-                        SEC
-                        RTS
 V2V_RAM_BOARD_QUERY:   LDX     V2_CPU
                         LDY     #(STR8V2_BOARD_FT245|STR8V2_BOARD_ACIA|STR8V2_BOARD_ACIA_TIMED|STR8V2_BOARD_FT245_PRESENT)
                         LDA     V2_CONSOLE
