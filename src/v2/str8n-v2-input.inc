@@ -49,21 +49,7 @@ V2_RX_CANCEL:          JSR     V2_RX_RESET
                         INC     V2_CANCEL_REQUEST
                         BRA     V2_RX_CONSUMED
 
-; Monitor line input shows the selected transport's wait state and a received
-; byte. The public GETC entry uses V2_GETC_RAW and remains LED-neutral.
-V2_GETC:               LDA     #V2_LED_FT245_WAIT
-                        BIT     V2_CONSOLE
-                        BEQ     V2_GETC_SHOW_WAIT
-                        DEC     A
-                        DEC     A
-V2_GETC_SHOW_WAIT:     STA     V2_LED
-                        JSR     V2_GETC_RAW
-                        PHA
-                        LDA     #V2_LED_RX
-                        STA     V2_LED
-                        PLA
-                        RTS
-V2_GETC_RAW:           PHX
+V2_GETC:               PHX
 ; Consume the boolean cancel latch; an absent request remains zero.
 V2_GETC_WAIT:          LSR     V2_CANCEL_REQUEST
                         BCC     V2_GETC_QUEUE
