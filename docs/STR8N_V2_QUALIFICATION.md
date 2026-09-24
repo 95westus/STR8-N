@@ -36,10 +36,16 @@ The [frozen artifact identity and image checks](STR8N_V2_ALPHA19_ARTIFACT_IDENTI
 passed for all 103 candidate files, the dense E-F and full-bank S19 files, and
 the Bank 1 board 2512 install/readback.
 
-On the [currently attached board marked 2512](STR8N_V2_ATTACHED_BOARD_B0_READBACK_2026-09-24.md),
-a read-only full Bank 0 readback matches the retained WDCMONv2 image. Bank 1
-currently differs from the frozen alpha19 image, so further hardware runs on
-that installed image do not qualify the frozen candidate.
+An earlier [preflight of the board marked 2512](STR8N_V2_ATTACHED_BOARD_B0_READBACK_2026-09-24.md)
+found Bank 0 matched the retained WDCMONv2 image. Bank 1 then held a rebuild
+outside the frozen alpha19 identity, so tests of that installation did not
+qualify the frozen candidate.
+
+The later [four-bank layout session](STR8N_V2_2512_BANK_LAYOUT_2026-09-24.md)
+installed the frozen alpha19 image in Bank 3, with exact full-bank readback and
+startup observed. Bank 1 now holds v1.35 with HIMON and ASM-F2, and Bank 2 is
+erased. This establishes a new live candidate location; the remaining behavior
+gates are still open.
 
 ## Qualification matrix
 
