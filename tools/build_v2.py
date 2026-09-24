@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha15.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha16.
 """
 from pathlib import Path
 import argparse
@@ -12,12 +12,13 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a15'
-STEM = 'str8n-v2-alpha15'
-OUT = ROOT / 'BUILD/v2-alpha15'
+VERSION = '2.0a16'
+STEM = 'str8n-v2-alpha16'
+OUT = ROOT / 'BUILD/v2-alpha16'
 SOURCE = ROOT / 'src/v2'
 INTERRUPT_PROBE_SOURCE = ROOT / 'tools/v2-interrupt-test'
 ACIA_TEST_SOURCE = ROOT / 'tools/v2-acia-test'
+RAM_ABI_TEST_SOURCE = ROOT / 'tools/v2-ram-abi-test'
 TOP_UPDATE_SOURCE = ROOT / 'tools/top-update/str8n-v1.23-top-update-2000.asm'
 RESIDENT_START = 0xF000
 SIGNATURE_SIZE = 4
@@ -26,14 +27,31 @@ EXPANSION_RESERVE_SIZE = 0xE0
 PUBLIC_CALLS = (
     ('STR8V2_RESET', 'START', 'V2_RESET'),
     ('STR8V2_HOLD', 'V2_PROMPT_ENTRY', 'V2_REENTER'),
-    ('STR8V2_CON_INIT', 'V2_CON_INIT_ENTRY', 'V2_CON_INIT'),
+    ('STR8V2_CON_INIT', 'V2_CON_INIT_ENTRY', 'V2W_CON_INIT'),
     *((f'STR8V2_{name}', f'V2_{name}_ENTRY', f'V2_{name}') for name in (
-        'PUTC', 'GETC', 'RAW_POLL', 'CHECK_CANCEL', 'RX_RESET', 'READ_LINE',
+        'PUTC', 'GETC', 'RAW_POLL', 'CHECK_CANCEL', 'RX_RESET')),
+    ('STR8V2_RESERVED_LINE', 'V2_READ_LINE_ENTRY', 'V2_RESERVED'),
+    *((f'STR8V2_{name}', f'V2_{name}_ENTRY', f'V2_{name}') for name in (
         'HEX_OUT', 'NEWLINE', 'HEX_NIBBLE')),
     ('STR8V2_CAPS_QUERY', 'V2_CAPS_QUERY_ENTRY', 'V2_CAPS_QUERY'),
     ('STR8V2_BOARD_QUERY', 'V2_BOARD_QUERY_ENTRY', 'V2_BOARD_QUERY'),
     *((f'STR8V2_RESERVED{index}', f'V2_RESERVED{index}_ENTRY', 'V2_RESERVED')
       for index in range(2, 4)),
+)
+RAM_PUBLIC_CALLS = (
+    ('STR8V2_RAM_RESET', 'V2V_RAM_RESET_ENTRY', 'V2V_RAM_RESET'),
+    ('STR8V2_RAM_HOLD', 'V2V_RAM_HOLD_ENTRY', 'V2V_RAM_HOLD'),
+    ('STR8V2_RAM_CON_INIT', 'V2V_RAM_CON_INIT_ENTRY', 'V2W_CON_INIT'),
+    ('STR8V2_RAM_PUTC', 'V2V_RAM_PUTC_ENTRY', 'V2W_PUTC'),
+    ('STR8V2_RAM_GETC', 'V2V_RAM_GETC_ENTRY', 'V2W_GETC'),
+    ('STR8V2_RAM_RAW_POLL', 'V2V_RAM_RAW_POLL_ENTRY', 'V2W_RAW_POLL'),
+    ('STR8V2_RAM_CHECK_CANCEL', 'V2V_RAM_CHECK_CANCEL_ENTRY', 'V2W_CHECK_CANCEL'),
+    ('STR8V2_RAM_RX_RESET', 'V2V_RAM_RX_RESET_ENTRY', 'V2W_RX_RESET'),
+    ('STR8V2_RAM_HEX_OUT', 'V2V_RAM_HEX_OUT_ENTRY', 'V2V_RAM_HEX_OUT'),
+    ('STR8V2_RAM_NEWLINE', 'V2V_RAM_NEWLINE_ENTRY', 'V2V_RAM_NEWLINE'),
+    ('STR8V2_RAM_HEX_NIBBLE', 'V2V_RAM_HEX_NIBBLE_ENTRY', 'V2V_RAM_HEX_NIBBLE'),
+    ('STR8V2_RAM_CAPS_QUERY', 'V2V_RAM_CAPS_QUERY_ENTRY', 'V2V_RAM_CAPS_QUERY'),
+    ('STR8V2_RAM_BOARD_QUERY', 'V2V_RAM_BOARD_QUERY_ENTRY', 'V2V_RAM_BOARD_QUERY'),
 )
 
 
@@ -157,11 +175,28 @@ def main():
         stream.seek(0)
         stream.write('V2_TEXT:\n' + encoded)
     worker_mem, worker_sym = assemble('str8n-v2-worker', 0x7900, assembler, linker)
-    vector_mem, vector_sym = assemble('str8n-v2-vectors', 0x7E20, assembler, linker)
+    ram_targets = ('V2W_SELECT', 'V2W_CON_INIT', 'V2W_PUTC', 'V2W_GETC',
+                   'V2W_RAW_POLL', 'V2W_CHECK_CANCEL', 'V2W_RX_RESET')
+    (OUT / 'asm/worker-public-symbols.inc').write_text(''.join(
+        f'{name:24} EQU     ${worker_sym[name]:04X}\n' for name in ram_targets),
+        encoding='ascii')
+    vector_mem, vector_sym = assemble(
+        'str8n-v2-vectors', 0x7E20, assembler, linker,
+        include_dirs=(OUT / 'asm',))
     worker = dense_image(worker_mem, 0x7900, worker_sym['V2W_END'])
     vectors = dense_image(vector_mem, 0x7E20, vector_sym['V2V_END'])
     if not 0 < len(worker) <= 0x300 or not 0 < len(vectors) <= 0xE0:
         raise ValueError('Milestone RAM copy limit exceeded')
+    if (vector_sym['V2V_RAM_SIGNATURE'] != 0x7E60 or
+            bytes(vector_mem[a] for a in range(0x7E60, 0x7E64)) != b'RA\x01\x0d'):
+        raise ValueError('RAM ABI descriptor moved or changed')
+    for index, (public, entry_label, target) in enumerate(RAM_PUBLIC_CALLS):
+        address = 0x7E64 + 3*index
+        if vector_sym[public] != address or vector_sym[entry_label] != address:
+            raise ValueError(f'RAM public entry moved: {public}')
+        expected = b'\x4c' + vector_sym[target].to_bytes(2, 'little')
+        if bytes(vector_mem[a] for a in range(address, address+3)) != expected:
+            raise ValueError(f'RAM public entry is not the expected JMP: {public}')
     include_bytes(OUT / 'asm/worker-image.inc', worker)
     include_bytes(OUT / 'asm/vectors-image.inc', vectors)
     # Copy fixed 256-byte windows together, overlapping the final window to
@@ -192,7 +227,7 @@ def main():
             raise ValueError(f'Public entry moved: {public}')
         if bytes(memory[a] for a in range(address, address+3)) != b'\x4c' + resident[target].to_bytes(2, 'little'):
             raise ValueError(f'Public entry is not the expected JMP: {public}')
-    descriptor = b'CA\x01\x07'
+    descriptor = b'CA\x01\x17'
     if resident['STR8V2_CAPS_DATA'] != 0xF035 or resident['V2_CAPS_DATA'] != 0xF035:
         raise ValueError('Capability descriptor moved')
     if bytes(memory[a] for a in range(0xF035, 0xF035+len(descriptor))) != descriptor:
@@ -335,6 +370,25 @@ def main():
     assert dense_image(parsed_acia, 0x2000, 0x2000+len(acia_probe)) == acia_probe
     assert acia_entry == 0x2000
     artifacts[acia_path.name] = hashlib.sha256(acia_path.read_bytes()).hexdigest()
+    ram_abi_source_name = 'str8n-v2-ram-abi-test-2000'
+    ram_abi_name = f'{STEM}-ram-abi-test-2000'
+    ram_abi_memory, ram_abi_symbols = assemble(
+        ram_abi_source_name, 0x2000, assembler, linker, RAM_ABI_TEST_SOURCE,
+        include_dirs=(SOURCE,))
+    ram_abi_probe = dense_image(
+        ram_abi_memory, 0x2000, ram_abi_symbols['PROBE_END'])
+    ram_abi_path = OUT / f'{ram_abi_name}.s19'
+    ram_abi_lines = [record('0', 0, f'STR8-N {VERSION} RAM ABI'.encode('ascii'))]
+    ram_abi_lines.extend(record(
+        '1', address,
+        ram_abi_probe[address-0x2000:address-0x2000+32])
+        for address in range(0x2000, 0x2000+len(ram_abi_probe), 32))
+    ram_abi_lines.append(record('9', 0x2000))
+    ram_abi_path.write_text('\n'.join(ram_abi_lines) + '\n')
+    parsed_ram_abi, ram_abi_entry = read_s19(ram_abi_path)
+    assert dense_image(parsed_ram_abi, 0x2000, 0x2000+len(ram_abi_probe)) == ram_abi_probe
+    assert ram_abi_entry == 0x2000
+    artifacts[ram_abi_path.name] = hashlib.sha256(ram_abi_path.read_bytes()).hexdigest()
     report = dict(milestone='compact-resident', resident_bytes=len(code),
                   resident_start=RESIDENT_START,
                   public_calls={public: resident[public] for public, _, _ in PUBLIC_CALLS},
@@ -346,6 +400,7 @@ def main():
                   nmi_probe_bytes=len(nmi_probe), nmi_probe=nmi_symbols,
                   native_probe_bytes=len(native_probe), native_probe=native_symbols,
                   acia_probe_bytes=len(acia_probe), acia_probe=acia_symbols,
+                  ram_abi_probe_bytes=len(ram_abi_probe), ram_abi_probe=ram_abi_symbols,
                   b3_top_update=updater_symbols,
                   free_before_vectors=0xFFE0-resident['V2_END'],
                   expansion_reserve_start=EXPANSION_RESERVE_START,

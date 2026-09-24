@@ -60,6 +60,7 @@ V2W_SELECT:
                         RTS
 V2W_BITS:               DB      $CC,$CE,$EC,$EE
                         INCLUDE "str8n-v2-flash-worker.inc"
+                        INCLUDE "str8n-v2-ram-console.inc"
 V2W_END:
                         ENDMOD
                         END
