@@ -30,6 +30,10 @@ Earlier alpha reports are supporting history, not complete alpha19 acceptance.
 The [2512 qualification session](STR8N_V2_ALPHA19_2512_BOARD_TEST_2026-09-24.md)
 adds exact installation/readback, FTDI, RAM ABI, BRK/IRQ/NMI, F/I, and autostart
 evidence. Direct ACIA TX passed, but RX did not; the matrix remains incomplete.
+ACIA receive and fallback-console qualification are deferred.
+
+The [frozen artifact identity check](STR8N_V2_ALPHA19_ARTIFACT_IDENTITY_2026-09-24.md)
+passed for all 103 candidate files and the Bank 1 board 2512 install/readback.
 
 ## Qualification matrix
 
@@ -50,10 +54,10 @@ for each hardware session. Mark a gate passed only when evidence supports it.
 | Public ROM and cross-bank RAM ABI | 2512 cross-bank RAM ABI probe and HOLD return passed; broader public entry coverage pending |
 | W65C02 interrupts | 2512 physical NMI, VIA1 timer IRQ, BRK, register/stack/RTI probes passed |
 | FT245 console and operation LEDs | 2512 command/transfer/load/flash/handoff passed; visual LED observations pending |
-| W65C51N backup console | 2512 direct timed TX passed; RX and Q return failed to demonstrate reception ($70 status). Cause, fallback selection and transfer tests remain open |
+| W65C51N backup console | Deferred: 2512 direct timed TX passed; RX and Q return failed to demonstrate reception ($70 status). Cause, fallback selection and transfer tests remain open |
 | W65C816 | Pending board availability, detection, emulation and native interrupt/RAM ABI probe execution |
 | Failure and recovery | Pending controlled failure cases and demonstrated recovery; host fault injection alone is insufficient |
-| Final release | Pending matrix disposition, documentation, final hashes and package verification |
+| Final release | Frozen candidate artifact identity passed; matrix disposition, documentation, final hashes and package verification remain pending |
 
 Start hardware qualification with live identity and backup collection, then
 reset/console and read-only monitor checks. Establish scratch ranges and recovery
