@@ -34,7 +34,7 @@ CASES = []
 
 
 class Memory:
-    def __init__(self, bank):
+    def __init__(self, bank, ft245_present=True):
         self.ram = bytearray([0x5A] * 0x8000)
         self.banks = [bytearray(b'\xff' * 0x8000) for _ in range(4)]
         self.banks[bank][0x6000:] = IMAGE
@@ -43,6 +43,11 @@ class Memory:
         self.ram[0x7FE0] = 0x0C
         self.ram[0x7FE3] = 0
         self.rx, self.tx = deque(), bytearray()
+        self.acia_rx, self.acia_tx = deque(), bytearray()
+        self.acia_tx_cycles = []
+        self.acia_resets = 0
+        self.ft245_present = ft245_present
+        self.cpu = None
         self.tx_blocked = False
         self.writes = []
         self.bank_changes = []
@@ -55,8 +60,13 @@ class Memory:
             self.io_reads.append(address)
         if address >= 0x8000:
             return self.banks[self.bank][address-0x8000]
+        if address == 0x7F80:
+            return self.acia_rx.popleft() if self.acia_rx else 0
+        if address == 0x7F81:
+            return 0x08 if self.acia_rx else 0
         if address == 0x7FE0:
-            return (self.ram[address] & ~3) | (0 if self.rx else 2) | 0x20 | int(self.tx_blocked)
+            return ((self.ram[address] & ~0x23) | (0 if self.rx else 2)
+                    | (0 if self.ft245_present else 0x20) | int(self.tx_blocked))
         if address == 0x7FE1 and not self.ram[0x7FE3]:
             return self.rx[0] if self.rx else 0
         return self.ram[address]
@@ -68,7 +78,13 @@ class Memory:
             raise AssertionError(f'Unexpected flash write B{self.bank}:{address:04X}')
         old = self.ram[address]
         self.ram[address] = value
-        if address == 0x7FEC:
+        if address == 0x7F80:
+            self.acia_tx.append(value)
+            if self.cpu:
+                self.acia_tx_cycles.append(self.cpu.processorCycles)
+        elif address == 0x7F81:
+            self.acia_resets += 1
+        elif address == 0x7FEC:
             self.bank = (0 if value & 0x0E == 0x0C else 1) | (
                 0 if value & 0xE0 == 0xC0 else 2)
             self.bank_changes.append(self.bank)
@@ -89,26 +105,33 @@ def run(cpu, stop, limit=100000):
 
 def waiting(cpu):
     return (cpu.pc in (SYM['V2_GETC'], SYM['V2_GETC_WAIT'])
-            and not cpu.memory.rx and not cpu.memory.ram[SYM['V2_RX_COUNT']]
+            and not cpu.memory.rx and not cpu.memory.acia_rx
+            and not cpu.memory.ram[SYM['V2_RX_COUNT']]
             and not cpu.memory.ram[SYM['V2_CANCEL_REQUEST']])
 
 
 def hold(cpu):
-    run(cpu, lambda: waiting(cpu), limit=300000)
+    run(cpu, lambda: waiting(cpu), limit=600000)
 
 
-def boot(bank, reset_pcr=False):
-    memory = Memory(bank)
+def boot(bank, reset_pcr=False, ft245_present=True):
+    memory = Memory(bank, ft245_present=ft245_present)
     if reset_pcr:
         assert bank == 3
         memory.ram[0x7FEC] = 0
     cpu = MPU(memory=memory, pc=SYM['START'])
+    memory.cpu = cpu
     cpu.p |= cpu.DECIMAL
     hold(cpu)
     assert memory.bank == bank
     assert all(memory.ram[SYM[name]] == bank for name in ('V2_RESIDENT', 'V2_SELECTED', 'V2_TARGET'))
-    assert (f'STR8-N {VERSION} B{bank}\r\n'
-            f'ABI 65C02 | 816E | 816N-VEC\r\nB{bank}> '.encode()) in memory.tx
+    assert memory.ram[SYM['V2_CPU']] == 0x02
+    assert memory.ram[SYM['V2_CONSOLE']] == (0 if ft245_present else 1)
+    output = memory.tx if ft245_present else memory.acia_tx
+    other = memory.acia_tx if ft245_present else memory.tx
+    assert (f'STR8-N {VERSION} B{bank} 65C02\r\n'
+            f'ABI 65C02 | 816E | 816N-VEC\r\nB{bank}> '.encode()) in output
+    assert not other
     assert not memory.bank_changes
     assert memory.ram[:0xE0] == bytes([0x5A])*0xE0
     assert memory.ram[0x0200:0x6900] == bytes([0x5A])*0x6700
@@ -215,8 +238,8 @@ def check_image_and_instructions():
     assert bytes(memory[a] for a in range(0xF035, 0xF039)) == b'CA\x01\x07'
     assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
     assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
-    assert SYM['V2_END'] <= 0xFE40
-    assert bytes(memory[a] for a in range(0xFE40, 0xFF00)) == b'\xff'*192
+    assert SYM['V2_END'] <= 0xFF00
+    assert bytes(memory[a] for a in range(0xFF00, 0xFFE0)) == b'\xff'*224
     assert bytes(memory[a] for a in range(SYM['V2_END'], 0xFFE0)) == b'\xff' * (0xFFE0-SYM['V2_END'])
     for address in (0xFFE0, 0xFFE2, 0xFFEC, 0xFFF0, 0xFFF2, 0xFFF6):
         assert bytes(memory[a] for a in range(address, address+2)) == b'\xff\xff'
@@ -231,12 +254,16 @@ def check_image_and_instructions():
                        (0x7E20, VSYM['V2V_END'])]:
         pc = start
         while pc < end:
+            if pc in (SYM['V2_CPU_XCE_PROBE'], SYM['V2_CPU_XCE_RESTORE']):
+                assert bytes(memory[a] for a in range(pc, pc+2)) == b'\xfb\xea'
+                pc += 1
+                continue
             length, instruction = dis.instruction_at(pc)
             mnemonic = instruction.split()[0]
             assert mnemonic != '???' and not mnemonic.startswith(('RMB', 'SMB', 'BBR', 'BBS'))
             pc += length
         assert pc == end
-    CASES.append('dense S19, disabled config, expansion reserve, reserved vectors, common-instruction audit')
+    CASES.append('dense S19, disabled config, $FF00-$FFDF reserve, reserved vectors, isolated XCE audit')
 
 
 def check_capability_abi():
@@ -253,6 +280,70 @@ def check_capability_abi():
         assert cpu.x & 0x07 == 0x07
         assert not cpu.x & 0x08
     CASES.append('public capability query and fixed descriptor match the visible CPU/ABI contract')
+
+
+def call_public(cpu, entry):
+    cpu.sp = 255
+    cpu.stPushWord(0x01FF)
+    cpu.pc = entry
+    run(cpu, lambda: cpu.pc == 0x0200, limit=600000)
+    assert cpu.sp == 255
+
+
+def check_board_query_and_acia():
+    for bank in range(4):
+        cpu, mem = boot(bank, ft245_present=False)
+        assert mem.acia_resets == 1
+        assert mem.ram[0x7F83] == 0x1F and mem.ram[0x7F82] == 0x0B
+        assert mem.acia_tx and not mem.tx
+        assert all(b-a >= 4167 for a, b in zip(mem.acia_tx_cycles, mem.acia_tx_cycles[1:]))
+
+        # PWE changes do not alter the latched console until CON_INIT.
+        mem.ft245_present = True
+        start = len(mem.acia_tx)
+        mem.acia_rx.extend(b'?\r')
+        hold(cpu)
+        assert b'J0-J3 boot  ? help' in mem.acia_tx[start:] and not mem.tx
+
+        cpu.a = cpu.x = cpu.y = 0
+        cpu.p &= ~cpu.CARRY
+        call_public(cpu, SYM['STR8V2_BOARD_QUERY'])
+        assert (cpu.a, cpu.x, cpu.y) == (1, 0x02, 0x0F)
+        assert cpu.p & cpu.CARRY
+
+        # A changed transport drops all queued/partial state and initializes
+        # only the selected primary console.
+        mem.ram[SYM['V2_RX_HEAD']] = 2
+        mem.ram[SYM['V2_RX_TAIL']] = 7
+        mem.ram[SYM['V2_RX_COUNT']] = 5
+        mem.ram[SYM['V2_RX_DROP']] = 1
+        mem.ram[SYM['V2_RX_BAD']] = 1
+        mem.ram[SYM['V2_CANCEL_REQUEST']] = 1
+        call_public(cpu, SYM['STR8V2_CON_INIT'])
+        assert mem.ram[SYM['V2_CONSOLE']] == 0
+        assert all(mem.ram[SYM[name]] == 0 for name in (
+            'V2_RX_HEAD', 'V2_RX_TAIL', 'V2_RX_COUNT', 'V2_RX_DROP',
+            'V2_RX_BAD', 'V2_CANCEL_REQUEST'))
+        call_public(cpu, SYM['STR8V2_BOARD_QUERY'])
+        assert (cpu.a, cpu.x, cpu.y) == (1, 0x02, 0x17)
+
+    # ACIA RAW_POLL/PUTC preserve the public register contract and work with
+    # TDRE permanently clear in the model.
+    cpu, mem = boot(1, ft245_present=False)
+    mem.acia_rx.append(0xA5)
+    cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
+    call_public(cpu, SYM['STR8V2_RAW_POLL'])
+    assert (cpu.a, cpu.x, cpu.y) == (0xA5, 0x39, 0xC7) and cpu.p & cpu.CARRY
+    start = len(mem.acia_tx)
+    cpu.a, cpu.x, cpu.y = 0x5A, 0x39, 0xC7
+    call_public(cpu, SYM['STR8V2_PUTC'])
+    assert mem.acia_tx[start:] == b'Z'
+    assert (cpu.a, cpu.x, cpu.y) == (0x5A, 0x39, 0xC7)
+    # The 816 return value is also defined even though native execution awaits hardware.
+    mem.ram[SYM['V2_CPU']] = 0x16
+    call_public(cpu, SYM['STR8V2_BOARD_QUERY'])
+    assert (cpu.a, cpu.x, cpu.y) == (1, 0x16, 0x0F)
+    CASES.append('latched FT245/ACIA selection, init, pacing, isolated I/O, and public board query')
 
 
 def check_v135_roundtrip():
@@ -321,6 +412,7 @@ def check_compact_messages():
 def main():
     for test in (check_boot_and_input, check_handoffs, check_vectors,
                  check_image_and_instructions, check_capability_abi,
+                 check_board_query_and_acia,
                  check_v135_roundtrip, check_compact_messages):
         test()
         print('PASS:', CASES[-1])

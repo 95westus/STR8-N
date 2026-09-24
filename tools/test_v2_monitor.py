@@ -178,7 +178,7 @@ def check_full_flash_display():
     command(cpu, b'B1\r')
     begin = len(mem.tx)
     mem.rx.extend(b'D 8000 FFFF\r')
-    run(cpu, lambda: waiting(cpu), limit=4000000)
+    run(cpu, lambda: waiting(cpu), limit=5000000)
     rows = re.findall(rb'^([0-9A-F]{4}): ([0-9A-F ]+)\r?$', bytes(mem.tx[begin:]), re.M)
     assert len(rows) == 2048
     assert [int(addr, 16) for addr, _ in rows] == list(range(0x8000, 0x10000, 16))

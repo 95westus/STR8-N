@@ -1,4 +1,4 @@
-; v2-alpha12: visible CPU/ABI capabilities and public query at F028.
+; v2-alpha13: actual CPU identity and a latched FT245/ACIA console.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE
@@ -15,7 +15,7 @@
                         XDEF    V2_NEWLINE_ENTRY
                         XDEF    V2_HEX_NIBBLE_ENTRY
                         XDEF    V2_CAPS_QUERY_ENTRY
-                        XDEF    V2_RESERVED1_ENTRY
+                        XDEF    V2_BOARD_QUERY_ENTRY
                         XDEF    V2_RESERVED2_ENTRY
                         XDEF    V2_RESERVED3_ENTRY
                         XDEF    V2_CAPS_DATA
@@ -41,7 +41,7 @@ V2_HEX_OUT_ENTRY:       JMP     V2_HEX_OUT
 V2_NEWLINE_ENTRY:       JMP     V2_NEWLINE
 V2_HEX_NIBBLE_ENTRY:    JMP     V2_HEX_NIBBLE
 V2_CAPS_QUERY_ENTRY:    JMP     V2_CAPS_QUERY
-V2_RESERVED1_ENTRY:     JMP     V2_RESERVED
+V2_BOARD_QUERY_ENTRY:   JMP     V2_BOARD_QUERY
 V2_RESERVED2_ENTRY:     JMP     V2_RESERVED
 V2_RESERVED3_ENTRY:     JMP     V2_RESERVED
 V2_RESERVED:            RTS
@@ -50,6 +50,14 @@ V2_CAPS_DATA:           DB      "CA",STR8V2_CAPS_FORMAT,STR8V2_CAPS_FLAGS
 V2_CAPS_QUERY:          LDA     #STR8V2_CAPS_FORMAT
                         LDX     #STR8V2_CAPS_FLAGS
                         LDY     #STR8V2_CAPS_LENGTH
+                        SEC
+                        RTS
+V2_BOARD_QUERY:         LDX     V2_CPU
+                        LDY     #(STR8V2_BOARD_FT245|STR8V2_BOARD_ACIA|STR8V2_BOARD_ACIA_TIMED|STR8V2_BOARD_FT245_PRESENT)
+                        LDA     V2_CONSOLE
+                        BEQ     V2_BOARD_QUERY_DONE
+                        LDY     #(STR8V2_BOARD_FT245|STR8V2_BOARD_ACIA|STR8V2_BOARD_ACIA_TIMED|STR8V2_BOARD_SELECTED_ACIA)
+V2_BOARD_QUERY_DONE:    LDA     #STR8V2_BOARD_FORMAT
                         SEC
                         RTS
 
@@ -61,6 +69,19 @@ V2_RESET:
 ; Capture the visible bank before touching peripherals. Manual-low CA2/CB2
 ; selects zero; manual-high or reset input with board pull-up selects one.
                         JSR     V2_CAPTURE_BANK
+; $FB is XCE on the 816 and a one-byte unused NOP on the W65C02. The explicit
+; NOP also accommodates the host emulator's two-byte undefined-opcode model.
+; On an 816, restore emulation mode before any monitor code continues.
+                        LDA     #V2_CPU_65C02
+                        CLC
+V2_CPU_XCE_PROBE:       DB      $FB,$EA
+                        BCC     V2_CPU_DETECTED
+                        LDA     #V2_CPU_65C816
+                        SEC
+V2_CPU_XCE_RESTORE:     DB      $FB,$EA
+V2_CPU_DETECTED:        STA     V2_CPU
+                        LDA     #$FF
+                        STA     V2_CONSOLE
                         LDX     #$03
 V2_CLEAR_STATE:        STZ     V2_RESIDENT,X
                         INX
@@ -114,6 +135,12 @@ V2_WORKER_COPIED:
                         LDA     V2_RESIDENT
                         ORA     #'0'
                         JSR     V2_PUTC
+                        LDX     #V2_CPU_02_TEXT
+                        LDA     V2_CPU
+                        CMP     #V2_CPU_65C816
+                        BNE     V2_CPU_HEADER
+                        LDX     #V2_CPU_816_TEXT
+V2_CPU_HEADER:          JSR     V2_PRINT
                         LDX     #V2_ABI_HEADER
                         JSR     V2_PRINT
                         LDA     V2_AUTO
@@ -335,14 +362,35 @@ V2_PRINT_NEXT:         LDA     (V2_PTR),Y
 V2_PRINT_END:          PLX
                         RTS
 
-; Direct FT245/VIA routines derived from the v1.35 board-tested sequences.
-; Preserve X/Y; initialization never changes bank-select PCR bits.
+; Select one console per initialization. PWE# low means that the primary
+; FT245 USB interface is configured; high selects the backup W65C51N ACIA.
+; Preserve X/Y and never change bank-select PCR bits.
 V2_CON_INIT:           LDA     #$0C
                         STA     V2_CTRL
                         STA     V2_DDRB
                         STZ     V2_DDRA
-                        RTS
-V2_RAW_POLL:           STZ     V2_DDRA
+                        LDA     V2_CTRL
+                        AND     #$20
+                        BEQ     V2_CON_FT245
+                        LDA     #V2_CONSOLE_ACIA
+                        BRA     V2_CON_SELECTED
+V2_CON_FT245:          LDA     #V2_CONSOLE_FT245
+V2_CON_SELECTED:       CMP     V2_CONSOLE
+                        BEQ     V2_CON_INITIALIZE
+                        STA     V2_CONSOLE
+                        JSR     V2_RX_RESET
+V2_CON_INITIALIZE:     LDA     V2_CONSOLE
+                        BEQ     V2_CON_READY
+                        STZ     V2_ACIA_STATUS
+                        LDA     #V2_ACIA_CONTROL_19200
+                        STA     V2_ACIA_CONTROL
+                        LDA     #V2_ACIA_COMMAND_19200
+                        STA     V2_ACIA_COMMAND
+V2_CON_READY:          RTS
+V2_RAW_POLL:           LDA     V2_CONSOLE
+                        BNE     V2_ACIA_RAW_POLL
+; Direct FT245/VIA routines derived from the v1.35 board-tested sequences.
+                        STZ     V2_DDRA
                         LDA     #$02
                         BIT     V2_CTRL
                         BNE     V2_RAW_EMPTY
@@ -359,9 +407,17 @@ V2_RAW_POLL:           STZ     V2_DDRA
                         RTS
 V2_RAW_EMPTY:          CLC
                         RTS
+V2_ACIA_RAW_POLL:      LDA     #V2_ACIA_RDRF
+                        BIT     V2_ACIA_STATUS
+                        BEQ     V2_RAW_EMPTY
+                        LDA     V2_ACIA_DATA
+                        SEC
+                        RTS
 V2_PUTC:               PHA
                         LDA     V2_CANCEL_REQUEST
                         BNE     V2_TX_CANCEL
+                        LDA     V2_CONSOLE
+                        BNE     V2_TX_ACIA
                         STZ     V2_DDRA
                         LDA     #$01
 V2_TX_WAIT:            BIT     V2_CTRL
@@ -378,6 +434,10 @@ V2_TX_READY:           PLA
 ; Input polling/cancellation stays here; the identical hardware transaction
 ; is shared with the RAM-only self-edit reporter. Preserve A on the stack.
                         JSR     V2W_SEND
+                        BRA     V2_TX_CANCEL
+V2_TX_ACIA:            PLA
+                        PHA
+                        JSR     V2W_ACIA_SEND
 V2_TX_CANCEL:
                         PLA
                         RTS

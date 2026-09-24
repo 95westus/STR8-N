@@ -17,6 +17,12 @@ V2_INSTALL_END          EQU     $E9      ; parsed end high byte; low is always F
 V2_INSTALL_DONE         EQU     $E8      ; parsed end low byte after confirmation
 V2_EDIT_FLASH           EQU     $F5
 V2_RESIDENT             EQU     $7D00
+V2_CPU                  EQU     $7D01
+V2_CONSOLE              EQU     $7D02
+V2_CPU_65C02            EQU     $02
+V2_CPU_65C816           EQU     $16
+V2_CONSOLE_FT245        EQU     $00
+V2_CONSOLE_ACIA         EQU     $01
 V2_SELECTED             EQU     $F3
 V2_TARGET               EQU     $FB      ; V2_REC_SUM outside S19 transfers
 V2_VECTOR               EQU     $FE
@@ -50,6 +56,13 @@ V2_CTRL                 EQU     $7FE0
 V2_DATA                 EQU     $7FE1
 V2_DDRB                 EQU     $7FE2
 V2_DDRA                 EQU     $7FE3
+V2_ACIA_DATA            EQU     $7F80
+V2_ACIA_STATUS          EQU     $7F81
+V2_ACIA_COMMAND         EQU     $7F82
+V2_ACIA_CONTROL         EQU     $7F83
+V2_ACIA_RDRF            EQU     $08
+V2_ACIA_COMMAND_19200   EQU     $0B
+V2_ACIA_CONTROL_19200   EQU     $1F
 V2_LED                  EQU     $7FA0
 V2_PIA_CRA              EQU     $7FA1
 V2_CFG_SUM              EQU     $F6

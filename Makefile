@@ -543,15 +543,20 @@ clean:
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "if (Test-Path -LiteralPath '$(BUILD_DIR)') { Remove-Item -LiteralPath '$(BUILD_DIR)' -Recurse -Force }"
 
 # V2 is an independent milestone; these targets never rebuild v1 artifacts.
-.PHONY: v2 v2-check v2-interrupt-probe-check
+.PHONY: v2 v2-full-bank v2-check v2-interrupt-probe-check
 v2:
 	python tools/build_v2.py
+
+v2-full-bank:
+	python tools/build_v2.py --full-bank
 
 v2-interrupt-probe-check: v2
 	python tools/test_v2_interrupt_probe.py
 
-v2-check: v2
+v2-check: v2-full-bank
 	python tools/test_v2_boot.py
+	python tools/test_v2_acia_probe.py
+	python tools/test_v2_b3_migration.py
 	python tools/test_v2_monitor.py
 	python tools/test_v2_load.py
 	python tools/test_v2_flash.py

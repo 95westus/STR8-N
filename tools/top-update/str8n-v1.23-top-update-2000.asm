@@ -566,6 +566,9 @@ TU_IN_READY:           LDA             #TU_FTDI_RXF
                         PLA
                         RTS
 
+                        IF              STR8_V2_TOP_IMAGE
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 2.0a13 B3 INSTALL",$0D,$0A
+                        ELSE
                         IF              STR8_DIRECTORY_REFRESH
                         IF              STR8_IN65_VERSION_135
 TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.35 DIRECTORY REFRESH",$0D,$0A
@@ -583,11 +586,15 @@ TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.23 TOP UPDATE",$0D,$0A
                         ENDIF
                         ENDIF
                         ENDIF
+                        ENDIF
                         DB              "BACKUP B2:F; TARGET B3:F",$0D,$0A,0
 TU_MSG_BACKUP:         DB              "TYPE BACKUP B2F> ",0
 TU_MSG_BACKUP_OK:      DB              "BACKUP VERIFIED",$0D,$0A,0
 TU_MSG_RECEIPT:        DB              "SAFE PHY $17000-$17FFF; TARGET PHY "
                         DB              "$1F000-$1FFFF; SUM=$",0
+                        IF              STR8_V2_TOP_IMAGE
+TU_MSG_FINAL:          DB              "TYPE STR8-N 2.0a13> ",0
+                        ELSE
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_FINAL:          DB              "TYPE ERASE DIRECTORY> ",0
                         ELSE
@@ -601,8 +608,12 @@ TU_MSG_FINAL:          DB              "TYPE STR8-N 1.23> ",0
                         ENDIF
                         ENDIF
                         ENDIF
+                        ENDIF
 TU_MSG_ERASE:          DB              "ERASING B3:F - NO RESET/NMI/POWER",$0D,$0A,0
 TU_MSG_RECOVERY:       DB              "WRITE FAIL: R=RETRY O=RESTORE OLD> ",0
+                        IF              STR8_V2_TOP_IMAGE
+TU_MSG_OK:             DB              "STR8-N 2.0a13 VERIFIED; RESET",$0D,$0A,0
+                        ELSE
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_OK:             DB              "DIRECTORY EMPTY; STR8-N VERIFIED; RESET",$0D,$0A,0
                         ELSE
@@ -616,13 +627,21 @@ TU_MSG_OK:             DB              "STR8-N 1.23 VERIFIED; RESET",$0D,$0A,0
                         ENDIF
                         ENDIF
                         ENDIF
+                        ENDIF
 TU_MSG_OLD_OK:         DB              "OLD TOP RESTORED; RESET",$0D,$0A,0
+                        IF              STR8_V2_TOP_IMAGE
+TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE V2 INSTALL",$0D,$0A,0
+                        ELSE
                         IF              STR8_DIRECTORY_REFRESH
 TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE DIRECTORY REFRESH",$0D,$0A,0
                         ELSE
 TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE TOP UPDATE",$0D,$0A,0
                         ENDIF
+                        ENDIF
 TU_CONFIRM_BACKUP:     DB              "BACKUP B2F",0
+                        IF              STR8_V2_TOP_IMAGE
+TU_CONFIRM_FINAL:      DB              "STR8-N 2.0A13",0
+                        ELSE
                         IF              STR8_DIRECTORY_REFRESH
 TU_CONFIRM_FINAL:      DB              "ERASE DIRECTORY",0
                         ELSE
@@ -633,6 +652,7 @@ TU_CONFIRM_FINAL:      DB              "STR8-N 1.35",0
 TU_CONFIRM_FINAL:      DB              "STR8-N 1.33",0
                         ELSE
 TU_CONFIRM_FINAL:      DB              "STR8-N 1.23",0
+                        ENDIF
                         ENDIF
                         ENDIF
                         ENDIF
@@ -647,6 +667,9 @@ TU_CONFIRM_FINAL:      DB              "STR8-N 1.23",0
 
                         ORG             $4000
 TU_CANDIDATE_IMAGE:
+                        IF              STR8_V2_TOP_IMAGE
+                        INCLUDE         "str8n-v2-alpha13-top-image.inc"
+                        ELSE
                         IF              STR8_IN65_TOP_IMAGE
                         IF              STR8_IN65_VERSION_135
                         INCLUDE         "str8n-v1.35-str8-in65-top-image.inc"
@@ -665,6 +688,7 @@ TU_CANDIDATE_IMAGE:
                         INCLUDE         "str8n-v1.33-top-image.inc"
                         ELSE
                         INCLUDE         "str8n-v1.23-top-image.inc"
+                        ENDIF
                         ENDIF
                         ENDIF
                         ENDIF

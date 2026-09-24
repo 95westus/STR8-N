@@ -35,6 +35,20 @@ def check_load():
     CASES.append('all banks, maximum-size/lowercase/page-crossing records, all byte values, 256 records, no execution')
 
 
+def check_acia_load_and_cancel():
+    cpu, mem = boot(0, ft245_present=False)
+    start = len(mem.acia_tx)
+    mem.acia_rx.extend(b'L\r' + rec('1', 0x0200, b'ACIA') + rec('9', 0x0200))
+    hold(cpu)
+    assert mem.ram[0x0200:0x0204] == b'ACIA'
+    assert b'Entry 0200' in mem.acia_tx[start:] and not mem.tx
+    start = len(mem.acia_tx)
+    mem.acia_rx.extend(b'\x03')
+    hold(cpu)
+    assert b'Canceled' in mem.acia_tx[start:] and not mem.tx
+    CASES.append('ACIA S19 load and Ctrl-C stay on the selected backup transport')
+
+
 def check_rejections():
     bad_checksum = rec('1', 0x0200, b'ABC')[:-4] + b'00\r\n'
     cases = [(bad_checksum, b'Bad checksum'),
@@ -135,7 +149,7 @@ def check_backpressure_and_queue():
 
 
 def main():
-    for test in (check_load, check_rejections, check_cancel_load,
+    for test in (check_load, check_acia_load_and_cancel, check_rejections, check_cancel_load,
                  check_cancel_commands, check_backpressure_and_queue):
         test()
         print('PASS:', CASES[-1])
