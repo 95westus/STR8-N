@@ -66,10 +66,6 @@ V2_ACIA_CONTROL_19200   EQU     $1F
 V2_LED                  EQU     $7FA0
 V2_PIA_CRA              EQU     $7FA1
 V2_LED_RUNNING          EQU     $01
-V2_LED_ACIA_WAIT        EQU     $41
-V2_LED_FT245_WAIT       EQU     $43
-V2_LED_RX               EQU     $07
-V2_LED_TX               EQU     $0B
 V2_LED_FLASH            EQU     $F0
 V2_CFG_SUM              EQU     $F6
 V2_CFG_SUM2             EQU     $F7

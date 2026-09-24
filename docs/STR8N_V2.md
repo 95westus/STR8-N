@@ -2,17 +2,19 @@
 
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
-Alpha14 detects and displays the installed CPU, retains
+Alpha15 detects and displays the installed CPU, retains
 `ABI 65C02 | 816E | 816N-VEC`, and publishes both the actual board state and
 supported execution contract through fixed queries. The independent
 [v2-alpha10 interaction milestone](STR8N_V2_ALPHA10_INTERACTION.md)
 implements bank-independent startup, B/D/M/G/L/F/I/C, safe Ctrl-C cancellation,
 console/help, J0-J3, RAM interrupt entries, and configured autostart with hold.
-The required command set is implemented; alpha14 builds at 3840 resident bytes,
-including a 541-byte RAM worker. The
-[alpha14 LED board test](STR8N_V2_ALPHA14_LED_BOARD_TEST_2026-09-23.md)
+The required command set is implemented; alpha15 uses 3810 resident bytes,
+leaves 30 bytes before the reserved page, and includes a 541-byte RAM worker.
+The [alpha15 board test](STR8N_V2_ALPHA15_LEAN_LED_BOARD_TEST_2026-09-23.md)
 installed the image through the guarded V2-to-V2 path and preserved the final
 four-bank layout. The preceding
+[alpha14 LED board test](STR8N_V2_ALPHA14_LED_BOARD_TEST_2026-09-23.md)
+exercised the removed resident console animation. The earlier
 [alpha13 board test](STR8N_V2_ALPHA13_BOARD_TEST_2026-09-23.md) installed the
 final image in Bank 3 and verified the W65C02 banner and primary FT245
 selection; the direct RAM probe also passed physical ACIA transmit at 19200
@@ -100,16 +102,15 @@ fixed-delay driver does not wait indefinitely.
 
 ## EDU LED states
 
-While the monitor owns the EDU display, alpha14 uses `$01` for running,
-`$43` for an FT245 input wait, `$41` for an ACIA input wait, `$07` for received
-input, and `$0B` for transmitted output. Flash unlock asserts `$F0` and keeps
-all four red LEDs on until mutation and verification finish. `G` and `J`
-clear the display before handing ownership to an application.
+While the monitor owns the EDU display, alpha15 uses `$01` for running.
+Flash unlock asserts `$F0` and keeps all four red LEDs on until mutation and
+verification finish. `G` and `J` clear the display before handing ownership
+to an application.
 
-Public `PUTC`, `GETC`, and `RAW_POLL` calls remain LED-neutral so applications
-retain their display state. The resident monitor's own line and output paths
-use activity wrappers around those raw services. The guarded V2 B3 updater
-uses the same visible FT245, flash, and completion states.
+Console calls and ordinary resident input/output leave the display unchanged.
+The guarded V2 B3 updater remains RAM-resident and uses visible FT245 wait,
+receive, transmit, flash, and completion states without consuming resident
+flash space.
 
 ## Agreed monitor commands
 

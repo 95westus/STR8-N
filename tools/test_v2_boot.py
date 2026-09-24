@@ -130,9 +130,9 @@ def boot(bank, reset_pcr=False, ft245_present=True):
     assert all(memory.ram[SYM[name]] == bank for name in ('V2_RESIDENT', 'V2_SELECTED', 'V2_TARGET'))
     assert memory.ram[SYM['V2_CPU']] == 0x02
     assert memory.ram[SYM['V2_CONSOLE']] == (0 if ft245_present else 1)
-    wait_led = 0x43 if ft245_present else 0x41
-    assert memory.ram[0x7FA0] == wait_led
-    assert {0x01, 0x0B, wait_led}.issubset(memory.led_events)
+    assert memory.ram[0x7FA0] == 0x01
+    assert memory.led_events[-1] == 0x01
+    assert not ({0x43, 0x41, 0x07, 0x0B} & set(memory.led_events))
     output = memory.tx if ft245_present else memory.acia_tx
     other = memory.acia_tx if ft245_present else memory.tx
     assert (f'STR8-N {VERSION} B{bank} 65C02\r\n'
@@ -173,7 +173,8 @@ def check_boot_and_input():
             output = command(cpu, line)
             assert expected in output, (line, output)
             assert mem.bank == bank and not mem.bank_changes
-        assert 0x07 in mem.led_events and mem.ram[0x7FA0] == 0x43
+        assert mem.ram[0x7FA0] == 0x01
+        assert not ({0x43, 0x41, 0x07, 0x0B} & set(mem.led_events))
         assert b'Bad' not in command(cpu, b'J0\x03\r')
         # Software entry preserves user-owned vector pointers and code.
         mem.ram[0x7E00:0x7E02] = b'\x00\x02'
