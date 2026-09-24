@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha19.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha21.
 """
 from pathlib import Path
 import argparse
@@ -12,9 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a19'
-STEM = 'str8n-v2-alpha19'
-OUT = ROOT / 'BUILD/v2-alpha19'
+VERSION = '2.0a21'
+STEM = 'str8n-v2-alpha21'
+OUT = ROOT / 'BUILD/v2-alpha21'
 SOURCE = ROOT / 'src/v2'
 INTERRUPT_PROBE_SOURCE = ROOT / 'tools/v2-interrupt-test'
 ACIA_TEST_SOURCE = ROOT / 'tools/v2-acia-test'
@@ -22,8 +22,8 @@ RAM_ABI_TEST_SOURCE = ROOT / 'tools/v2-ram-abi-test'
 TOP_UPDATE_SOURCE = ROOT / 'tools/top-update/str8n-v1.23-top-update-2000.asm'
 RESIDENT_START = 0xF000
 SIGNATURE_SIZE = 4
-EXPANSION_RESERVE_START = 0xFF00
-EXPANSION_RESERVE_SIZE = 0xE0
+EXPANSION_RESERVE_START = 0xFF20
+EXPANSION_RESERVE_SIZE = 0xC0
 PUBLIC_CALLS = (
     ('STR8V2_RESET', 'START', 'V2_RESET'),
     ('STR8V2_HOLD', 'V2_PROMPT_ENTRY', 'V2_REENTER'),
@@ -233,7 +233,7 @@ def main():
     if bytes(memory[a] for a in range(0xF035, 0xF035+len(descriptor))) != descriptor:
         raise ValueError('Capability descriptor changed')
     if resident['V2_END'] > EXPANSION_RESERVE_START:
-        raise ValueError('Resident overlaps reserved expansion tail $FF00-$FFDF')
+        raise ValueError('Resident overlaps reserved expansion tail $FF20-$FFDF')
     image = bytearray(b'\xff' * 8192)
     offset = RESIDENT_START - 0xE000
     image[offset:offset+len(code)] = code
@@ -269,7 +269,7 @@ def main():
     # Guarded RAM updater for the final B3:F transition. B2:F holds a verified
     # recovery copy of the old top while the new clean V2 top is programmed.
     top = bytes(image[-4096:])
-    top_include = OUT / 'asm' / f'{STEM}-top-image.inc'
+    top_include = OUT / 'asm' / 'str8n-v2-current-top-image.inc'
     top_sum = sum(top) & 0xFFFF
     top_include.write_text(f'TU_CANDIDATE_SUM        EQU             ${top_sum:04X}\n',
                            encoding='ascii')

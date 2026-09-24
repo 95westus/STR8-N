@@ -7,8 +7,28 @@
 Unresolved defects and hardware investigations are listed in the
 [repo issue tracker](ISSUES.md).
 
-The current qualification candidate is frozen as v2-alpha19; see the
-[freeze record and qualification matrix](docs/STR8N_V2_QUALIFICATION.md).
+The current W65C02SXB operating claim assumes a USB FT245 data host is
+connected and enumerated at startup and supplies stable board power. Keep the
+USB cable connected; do not reset or remove power during transfers or flash
+writes. The ACIA backup-console path remains unqualified. See the
+[v2 operating scope](docs/STR8N_V2.md#supported-host-connected-operating-scope).
+
+**STR8-N 2.0a21 RC1 is ready as a binary/S19 release candidate.** The
+[package README](docs/STR8N_V2_RC1_PACKAGE_README.md) lists the images, the
+standalone WDCMONv2-to-STR8-N RAM installer, and the STR8-N guarded top updater.
+The [W65C816SXB/EDU getting-started guide](docs/STR8N_V2_RC1_GETTING_STARTED_816.md)
+is included in the RC1 ZIP.
+The [printable 816 qualification checklist](docs/STR8N_V2_RC1_816_QUALIFICATION_CHECKLIST.md)
+records SXB-alone and optional EDU results, evidence, and signatures.
+The package includes no WDCMONv2 firmware, owner stock-bank image, or guest
+payload. The [RC decision](docs/STR8N_V2_RC1_2026-09-24.md) states the accepted
+board evidence and remaining qualifications. The firmware candidate is v2-alpha21; see the
+[alpha21 freeze record](docs/STR8N_V2_ALPHA21_FREEZE.md). It waits before
+sampling USB host presence on reset. Alpha20 was installed and read back
+exactly on board 2512, but its cold USB reconnect missed the banner; see the
+[alpha20 board report](docs/STR8N_V2_ALPHA20_2512_INSTALL_2026-09-24.md).
+The [alpha19 qualification matrix](docs/STR8N_V2_QUALIFICATION.md) records
+earlier hardware evidence.
 The [2512 board session](docs/STR8N_V2_ALPHA19_2512_BOARD_TEST_2026-09-24.md)
 passed FTDI, RAM ABI, interrupts, flash and autostart checks; ACIA receive
 remains unresolved.
@@ -29,7 +49,7 @@ Bank 0 and R-YORS/HIMON in Bank 1; see the
 The earlier physical FT245, W65C02 detection, and direct ACIA transmit checks
 are in the [alpha13 board test](docs/STR8N_V2_ALPHA13_BOARD_TEST_2026-09-23.md);
 ACIA receive on that board remains suspect.
-The alpha19 build and host regression suites pass. It also emits RAM-only
+The alpha21 build and host regression suites pass. It also emits RAM-only
 cross-bank ABI and
 W65C816 native BRK/NMI acceptance probe for the incoming board; that probe is
 assembled and structurally checked but awaits native-mode hardware execution.

@@ -1,5 +1,6 @@
 param(
     [string]$Port,
+    [ValidateSet('SXB2', 'SXB3')][string]$ExpectedBoardTag = 'SXB2',
     [string]$ImagePath,
     [int]$BaudRate = 115200,
     [int]$ChunkBytes = 256,
@@ -34,6 +35,7 @@ class Wdcmonv2ProtocolMock {
     [int]$Need
     [byte]$Command
     [int]$ExecutedAddress
+    [string]$BoardTag
 
     Wdcmonv2ProtocolMock() {
         $this.Receive = [System.Collections.Generic.Queue[byte]]::new()
@@ -44,10 +46,12 @@ class Wdcmonv2ProtocolMock {
         $this.State = 'SYNC'
         $this.SyncIndex = 0
         $this.ExecutedAddress = -1
+        $this.BoardTag = 'SXB2'
     }
 
     [void] EnqueueBoardInfo() {
-        foreach ($byte in [byte[]]@(0x53,0x58,0x42,0x32,0x7B,0,0,0,0xC8,0,0,0)) { $this.Receive.Enqueue($byte) }
+        foreach ($byte in [System.Text.Encoding]::ASCII.GetBytes($this.BoardTag)) { $this.Receive.Enqueue($byte) }
+        foreach ($byte in [byte[]]@(0x7B,0,0,0,0xC8,0,0,0)) { $this.Receive.Enqueue($byte) }
     }
 
     [int] DecodeU24([int]$Offset) {
@@ -308,8 +312,8 @@ function Get-WdcBoardInfo {
     Start-WdcCommand -Serial $Serial -Command $script:WdcBoardInfo
     $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'board-info reply'
     $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
-    if ($tag -ne 'SXB2') {
-        throw ('Unsupported WDCMONv2 board identity {0}; expected SXB2' -f ([BitConverter]::ToString($reply)))
+    if ($tag -ne $script:ExpectedBoardTag) {
+        throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($reply)), $script:ExpectedBoardTag)
     }
     $hardware = [BitConverter]::ToUInt32($reply, 4)
     $software = [BitConverter]::ToUInt32($reply, 8)
@@ -340,8 +344,8 @@ function Get-WdcBoardInfoAfterResetArm {
                     $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
                     $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
                     $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
-                    if ($tag -ne 'SXB2') {
-                        throw ('Unsupported WDCMONv2 board identity {0}; expected SXB2' -f ([BitConverter]::ToString($reply)))
+                    if ($tag -ne $script:ExpectedBoardTag) {
+                        throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($reply)), $script:ExpectedBoardTag)
                     }
                     return [pscustomobject]@{
                         Tag = $tag
@@ -358,8 +362,8 @@ function Get-WdcBoardInfoAfterResetArm {
                         $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
                         $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
                         $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
-                        if ($tag -ne 'SXB2') {
-                            throw ('Unsupported WDCMONv2 board identity {0}; expected SXB2' -f ([BitConverter]::ToString($reply)))
+                        if ($tag -ne $script:ExpectedBoardTag) {
+                            throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($reply)), $script:ExpectedBoardTag)
                         }
                         return [pscustomobject]@{
                             Tag = $tag
@@ -550,8 +554,9 @@ if ($SelfTest) {
     $fixture = Convert-ToByteArray @(0x68,0x65,0x6C,0x6C,0x6F)
     if ((Get-Fnv1a32 -Bytes $fixture) -ne [uint32]0x4F9F2CAB) { throw 'FNV-1a self-test failed' }
     $mock = [Wdcmonv2ProtocolMock]::new()
+    $mock.BoardTag = $ExpectedBoardTag
     $board = Get-WdcBoardInfo -Serial $mock
-    if ($board.Tag -ne 'SXB2' -or $board.Hardware -ne 123 -or $board.Software -ne 200) { throw 'Board-info protocol self-test failed' }
+    if ($board.Tag -ne $ExpectedBoardTag -or $board.Hardware -ne 123 -or $board.Software -ne 200) { throw 'Board-info protocol self-test failed' }
     $writeFixture = Convert-ToByteArray @(0x11,0x22,0x33,0x44)
     Write-WdcMemory -Serial $mock -Address 0x2000 -Bytes $writeFixture
     $readFixture = Read-WdcMemory -Serial $mock -Address 0x2000 -Count $writeFixture.Length

@@ -5,11 +5,11 @@ W65C51N directly. It does not write flash.
 
 Build it with `make v2`. The loadable file is:
 
-`BUILD/v2-alpha19/str8n-v2-alpha19-acia-test-2000.s19`
+`BUILD/v2-alpha21/str8n-v2-alpha21-acia-test-2000.s19`
 
 On the primary FT245 terminal:
 
-1. Enter STR8-N alpha19 and confirm a `Bn>` prompt.
+1. Enter STR8-N alpha21 and confirm a `Bn>` prompt.
 2. Enter `L` and send the ACIA-test S19 file.
 3. Confirm `Entry 2000`.
 4. Open the ACIA adapter terminal at 19200 baud, 8 data bits, no parity, one

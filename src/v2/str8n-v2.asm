@@ -1,4 +1,4 @@
-; v2-alpha19: configurable RESET-vector autostart.
+; v2-alpha21: reset wait before console selection for USB re-enumeration.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE
@@ -131,6 +131,13 @@ V2_WORKER_COPIED:
                         STA     V2_PIA_CRA
                         LDA     #V2_LED_RUNNING
                         STA     V2_LED
+; Wait before PWE# is sampled. On a cold USB power cycle, FT245 host
+; configuration may lag CPU reset; sampling first can latch the ACIA instead.
+; The RAM helper runs only on reset. Software HOLD remains immediate.
+                        LDA     V2_AUTO
+                        BEQ     V2_BOOT_DELAY_DONE
+                        JSR     V2W_BOOT_DELAY
+V2_BOOT_DELAY_DONE:
                         JSR     V2_CON_INIT
                         LDX     #V2_BANNER
                         JSR     V2_PRINT

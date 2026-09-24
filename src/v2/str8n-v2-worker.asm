@@ -4,6 +4,7 @@
                         XDEF    V2W_END
                         XDEF    V2W_READ
                         XDEF    V2W_EXECUTE
+                        XDEF    V2W_BOOT_DELAY
                         INCLUDE "str8n-v2-eq.inc"
                         CODE
 START:
@@ -61,6 +62,19 @@ V2W_SELECT:
 V2W_BITS:               DB      $CC,$CE,$EC,$EE
                         INCLUDE "str8n-v2-flash-worker.inc"
                         INCLUDE "str8n-v2-ram-console.inc"
+; Only the reset entry calls this helper. Wait about 6.58 seconds at nominal
+; 8 MHz before PWE# selection, allowing cold USB host configuration.
+V2W_BOOT_DELAY:         LDA     #$00
+                        LDY     #$A0
+V2W_BOOT_DELAY_OUTER:   TAX
+V2W_BOOT_DELAY_MIDDLE:  LDA     #$00
+V2W_BOOT_DELAY_INNER:   DEC     A
+                        BNE     V2W_BOOT_DELAY_INNER
+                        DEX
+                        BNE     V2W_BOOT_DELAY_MIDDLE
+                        DEY
+                        BNE     V2W_BOOT_DELAY_OUTER
+V2W_BOOT_DELAY_DONE:    RTS
 V2W_END:
                         ENDMOD
                         END

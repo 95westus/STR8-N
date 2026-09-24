@@ -22,7 +22,7 @@ for directory in reversed([
     if (directory / 'py65').is_dir():
         sys.path.insert(0, str(directory))
 try:
-    from py65.devices.mpu65c02 import MPU
+    from py65.devices.mpu65c02 import MPU as BaseMPU
     from py65.disassembler import Disassembler
 except ImportError as error:
     raise SystemExit('py65 is required; set STR8_TEST_DEPS to its parent directory') from error
@@ -32,6 +32,21 @@ SYM, VSYM = REPORT['resident'], REPORT['vectors']
 IMAGE = (OUT / f'{STEM}-e000-ffff.bin').read_bytes()
 PATTERNS = (0xCC, 0xCE, 0xEC, 0xEE)
 CASES = []
+
+
+class MPU(BaseMPU):
+    boot_waits = 0
+
+    def step(self):
+        # Model the long, side-effect-free reset wait as one step. It must
+        # occur before CON_INIT samples FT245 host presence.
+        if self.pc == REPORT['worker']['V2W_BOOT_DELAY_OUTER']:
+            assert self.memory.ram[SYM['V2_CONSOLE']] == 0xFF
+            self.boot_waits += 1
+            self.processorCycles += 52_675_519
+            self.pc = REPORT['worker']['V2W_BOOT_DELAY_DONE']
+            return
+        return super().step()
 
 
 class Memory:
@@ -131,6 +146,7 @@ def boot(bank, reset_pcr=False, ft245_present=True):
     assert all(memory.ram[SYM[name]] == bank for name in ('V2_RESIDENT', 'V2_SELECTED', 'V2_TARGET'))
     assert memory.ram[SYM['V2_CPU']] == 0x02
     assert memory.ram[SYM['V2_CONSOLE']] == (0 if ft245_present else 1)
+    assert cpu.boot_waits == 1
     assert memory.ram[0x7FA0] == 0x01
     assert memory.led_events[-1] == 0x01
     assert not ({0x43, 0x41, 0x07, 0x0B} & set(memory.led_events))
@@ -247,8 +263,8 @@ def check_image_and_instructions():
     assert bytes(memory[a] for a in range(0xF035, 0xF039)) == b'CA\x01\x17'
     assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
     assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
-    assert SYM['V2_END'] <= 0xFF00
-    assert bytes(memory[a] for a in range(0xFF00, 0xFFE0)) == b'\xff'*224
+    assert SYM['V2_END'] <= 0xFF20
+    assert bytes(memory[a] for a in range(0xFF20, 0xFFE0)) == b'\xff'*192
     assert bytes(memory[a] for a in range(SYM['V2_END'], 0xFFE0)) == b'\xff' * (0xFFE0-SYM['V2_END'])
     for address in (0xFFE0, 0xFFE2, 0xFFEC, 0xFFF0, 0xFFF2, 0xFFF6):
         assert bytes(memory[a] for a in range(address, address+2)) == b'\xff\xff'
@@ -276,7 +292,7 @@ def check_image_and_instructions():
             assert mnemonic != '???' and not mnemonic.startswith(('RMB', 'SMB', 'BBR', 'BBS'))
             pc += length
         assert pc == end
-    CASES.append('dense S19, disabled config, $FF00-$FFDF reserve, reserved vectors, isolated XCE audit')
+    CASES.append('dense S19, disabled config, $FF20-$FFDF reserve, reserved vectors, isolated XCE audit')
 
 
 def check_capability_abi():
