@@ -10,7 +10,7 @@ the matching EDU; W65C816SXB and EDU operation still require board evidence.
 
 This archive contains **only STR8-N firmware BIN/S19 images, project-authored
 RAM flash update tools, the host bridge, this README, the 816 getting-started
-guide, printable qualification checklist, readback verifier, manifest, and the
+guide, fillable and printable qualification checklist, readback verifier, manifest, and the
 STR8-N license**. It contains no WDCMONv2 firmware, stock-bank dump, HIMON,
 ASM-F2, R-YORS, guest application, frozen source tree, or test probe.
 
@@ -36,6 +36,11 @@ command accepts **S19**, not raw BIN; use the supplied S19 for monitor loads.
 For an incoming W65C816SXB/EDU, follow `GETTING-STARTED-816.md` first. It
 starts with a read-only identity probe and ends with exact top-sector readback.
 Record and sign the observations on `QUALIFICATION-CHECKLIST-816.md`.
+The matching `QUALIFICATION-CHECKLIST-816.pdf` can be completed on screen or
+printed. Its optional QCC (Questions, Comments, Concerns) page lists
+`95west.us@gmail.com` for completed
+records, questions, and concerns. Do not include private stock firmware or
+full-flash backups with a returned record.
 
 On Windows, extract the ZIP, connect the stock board to the host, then run:
 

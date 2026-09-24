@@ -25,6 +25,7 @@ PUBLIC_FILES = {
     "README.md": ROOT / "docs/STR8N_V2_RC1_PACKAGE_README.md",
     "GETTING-STARTED-816.md": ROOT / "docs/STR8N_V2_RC1_GETTING_STARTED_816.md",
     "QUALIFICATION-CHECKLIST-816.md": ROOT / "docs/STR8N_V2_RC1_816_QUALIFICATION_CHECKLIST.md",
+    "QUALIFICATION-CHECKLIST-816.pdf": ROOT / "output/pdf/STR8N_V2_RC1_816_QUALIFICATION_CHECKLIST.pdf",
     "LICENSE": ROOT / "LICENSE",
     "START-STR8N-V2-RC1.ps1": ROOT / "tools/wdcmonv2/START-STR8N-V2-RC1.ps1",
     "VERIFY-STR8N-V2-READBACK.ps1": ROOT / "tools/wdcmonv2/VERIFY-STR8N-V2-READBACK.ps1",
@@ -49,6 +50,8 @@ def main() -> None:
     top = package["FIRMWARE/str8n-v2-alpha21-e000-ffff.bin"][-4096:]
     if sha256(top) != BOARD_TOP_SHA256:
         raise ValueError("packaged Bank 3 F differs from board readback")
+    subprocess.run(["python", str(ROOT / "tools/build_v2_rc_qualification_pdf.py")],
+                   cwd=ROOT, check=True)
     subprocess.run(["python", str(ROOT / "tools/build_v2_rc1_wdcmon_ram.py")],
                    cwd=ROOT, check=True)
     build = ROOT / "BUILD/v2-rc1-wdcmon-ram"

@@ -8,7 +8,8 @@ The alpha21 firmware has board evidence on W65C02SXB; its W65C816 execution,
 the alpha21 stock-board migration, and EDU behavior await physical testing.
 Record each result as you go. A mismatch is a reason to stop before the next
 flash step. Use the printable `QUALIFICATION-CHECKLIST-816.md` to record and
-sign the physical-board result.
+sign the physical-board result. The package also includes a fillable,
+printable PDF of that record.
 
 The [W65C816SXB datasheet](https://www.westerndesigncenter.com/wdc/documentation/W65C816SXB.pdf)
 describes an 8 MHz W65C816S, 32 KB SRAM, four 32 KB overlays in a 128 KB flash,
