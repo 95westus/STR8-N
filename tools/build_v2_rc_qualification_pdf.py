@@ -106,8 +106,20 @@ def main() -> None:
         for part in wrapped(value, font, size):
             if y - leading < BOTTOM:
                 next_page()
-            pdf.setFont(font, size)
-            pdf.drawString(LEFT, y, part)
+            if raw.startswith("#"):
+                # The installed 3270 family has no bold face. A light outline
+                # adds weight while preserving the 3270 letterforms.
+                pdf.saveState()
+                pdf.setLineWidth(0.35)
+                heading = pdf.beginText(LEFT, y)
+                heading.setFont(font, size)
+                heading.setTextRenderMode(2)  # fill and stroke
+                heading.textOut(part)
+                pdf.drawText(heading)
+                pdf.restoreState()
+            else:
+                pdf.setFont(font, size)
+                pdf.drawString(LEFT, y, part)
             if not raw.startswith("#"):
                 for match in re.finditer(r"\[ \]|_{4,}", part):
                     field_count += 1
