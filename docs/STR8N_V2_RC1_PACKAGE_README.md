@@ -1,5 +1,12 @@
 # STR8-N 2.0a21 RC1
 
+STR8-N v2 is a small board monitor and guarded loader. It grew from v1.3x by
+retaining the console, RAM/S19 loading, guarded flash writes, bank selection,
+and boot handoff while removing directory, enrollment, journal, and
+HIMON-specific policy. The operator chooses bank roles, images, and recovery
+copies. Guest software supplies applications, displays, sounds, and any
+higher-level environment.
+
 STR8-N 2.0a21 RC1 is available for W65C02SXB board management with a connected,
 enumerated USB FT245 host and stable 5 V board power. Board 2512 passed exact
 Bank 3 F readback, physical RESET and hold cancellation, cold USB banner

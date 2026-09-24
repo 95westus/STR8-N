@@ -1,3 +1,18 @@
+# STR8-N v2
+
+**A small board monitor and guarded loader for the WDC SXB.** V2 grew from
+STR8-N v1.3x by keeping the essential console, RAM/S19 loading, flash editing,
+bank selection, and boot handoff, while removing the directory, enrollment,
+journal, and HIMON-specific policy. You choose what each flash bank holds,
+which image to load, and when to boot it. STR8-N checks addresses, asks for
+confirmation before flash changes, and verifies writes; it does not choose a
+board layout or manage guest applications for you.
+
+HIMON, ASM-F2, AP, and other R-YORS software remain separate guest layers.
+The [v2 command and memory guide](docs/STR8N_V2.md) describes the current
+interfaces and limits. The v1.34 material farther down this README describes
+the earlier release line.
+
 > **AI Assistance & Human Validation**
 >
 > This project is developed with AI assistance and is grounded in human ideas,
