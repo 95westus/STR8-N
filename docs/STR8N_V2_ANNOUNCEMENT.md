@@ -6,6 +6,10 @@ boot handoff. It grew from the v1.3x line with a simpler role: you decide what
 each bank holds and when to run an image. Applications such as HIMON, ASM-F2,
 and AP live in a separate guest layer.
 
+The RC1 package provides migration paths from stock WDCMONv2 and existing
+compatible STR8-N v1.3x installations. These use separate RAM tools; v2 does
+not preserve the older monitors' command and data interfaces.
+
 The first release candidate is **STR8-N 2.0a21 RC1**. On W65C02SXB board 2512,
 its Bank 3 top sector was installed and read back byte for byte. Reset, cold
 USB reconnect, and configured guest handoff were exercised on that board. RC1

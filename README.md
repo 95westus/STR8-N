@@ -5,6 +5,12 @@ bank selection, RAM/S19 loading, verified flash writes, and boot handoff.
 W65C816SXB and matching EDU boards are intended targets; their RC1 hardware
 qualification is still in progress.
 
+RC1 includes a RAM installer for migration from a stock WDCMONv2 board and a
+guarded updater for an existing compatible STR8-N v1.3x installation. These are
+installation paths, not drop-in compatibility with the older monitors' commands
+or data structures. The WDCMONv2-to-RC1 path has host checks and awaits its
+first factory-board run.
+
 [Read the v2 announcement](docs/STR8N_V2_ANNOUNCEMENT.md) and join its
 [GitHub discussion](https://github.com/95westus/STR8-N/discussions/2).
 Report reproducible defects in [GitHub Issues](https://github.com/95westus/STR8-N/issues).
