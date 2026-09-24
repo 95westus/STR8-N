@@ -1,4 +1,4 @@
-; v2-alpha17: compact bank-independent public ABI implementation.
+; v2-alpha18: operation-level S19 and flash LED activity.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE
@@ -148,7 +148,8 @@ V2_CPU_HEADER:          JSR     V2_PRINT
                         LDA     V2_AUTO
                         BEQ     V2_PROMPT
                         JSR     V2_AUTOSTART
-V2_PROMPT:
+V2_PROMPT:              LDA     #V2_LED_RUNNING
+                        STA     V2_LED
                         LDX     #V2_PROMPT_TEXT
                         JSR     V2_PRINT
                         LDA     V2_SELECTED

@@ -128,6 +128,18 @@ def check_f():
     CASES.append('F all banks: direct/no-op/erase edits, neighbor preservation, previews, confirmation and full preflight')
 
 
+def check_flash_led_activity():
+    cpu, mem = boot_flash()
+    command(cpu, b'B1\r')
+    mem.led_events.clear()
+    output = send(cpu, b'F 80FF 00 00\rY\r')
+    assert b'Done' in output
+    assert 0xF0 in mem.led_events and 0xF1 in mem.led_events
+    assert all(value & 0xF0 == 0xF0 for value in mem.led_events if value != 0x01)
+    assert mem.led_events[-1] == 0x01 and mem.ram[0x7FA0] == 0x01
+    CASES.append('flash activity keeps red LEDs asserted, phases by 256-byte page, and restores running state')
+
+
 def check_f_boundaries():
     cpu, mem = boot_flash()
     command(cpu, b'B3\r')
@@ -329,7 +341,7 @@ def check_failures_and_self():
 
 
 def main():
-    for test in (check_f, check_f_boundaries, check_install, check_install_rejections,
+    for test in (check_f, check_flash_led_activity, check_f_boundaries, check_install, check_install_rejections,
                  check_install_image_and_failure, check_cancellation, check_failures_and_self):
         test()
         print('PASS:', CASES[-1], flush=True)

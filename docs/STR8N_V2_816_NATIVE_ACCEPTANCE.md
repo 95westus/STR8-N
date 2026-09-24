@@ -1,7 +1,7 @@
 # STR8-N v2 W65C816 native acceptance
 
-The alpha17 build emits
-`BUILD/v2-alpha17/str8n-v2-alpha17-native-probe-2000.s19`. It is a 479-byte,
+The alpha18 build emits
+`BUILD/v2-alpha18/str8n-v2-alpha18-native-probe-2000.s19`. It is a 479-byte,
 RAM-only probe assembled by WDC816AS. It changes no flash.
 
 The probe verifies the minimum native vector ABI needed before native board
@@ -22,10 +22,10 @@ interrupt-dispatch layer or claim native callable monitor services.
 
 ## Board procedure
 
-Start alpha17 on a W65C816 board and confirm this header:
+Start alpha18 on a W65C816 board and confirm this header:
 
 ```text
-STR8-N 2.0a17 Bn 65C816
+STR8-N 2.0a18 Bn 65C816
 ABI 65C02 | 816E | 816N-VEC
 Bn>
 ```

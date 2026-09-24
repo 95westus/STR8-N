@@ -125,7 +125,9 @@ V2_SREC_CHECK:         JSR     V2_SREC_BYTE
                         BNE     V2_SREC_BAD
                         INC     V2_SKIP_LF
 ; Either matching delimiter comparison already set carry; INC preserves it.
-V2_SREC_OK:
+V2_SREC_OK:             LDA     V2_LED
+                        EOR     #V2_LED_RX
+                        STA     V2_LED
 V2_SREC_RETURN:        RTS
 V2_SREC_SUM_BAD:       LDA     #$02
                         CLC
