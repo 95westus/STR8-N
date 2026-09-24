@@ -1,0 +1,29 @@
+; STR8N-V2-BANK3-ID-2000.A
+; ASM-F2 ORG/DB image carrier for the public R-YORS 00.0915(2324) assembler.
+; Read-only Bank 3 top header/vector; restores the caller's flash overlay.
+; ASM NEW; send complete file; require END/SEAL with no ERR; enter .; G 2000.
+; Source bytes are checked against the matching RC1 S19; do not edit DB rows.
+
+        ORG $2000
+        DB $78,$D8,$DA,$5A,$AD,$EC,$7F,$48
+        DB $29,$11,$09,$EE,$8D,$EC,$7F,$A2
+        DB $00,$BD,$94,$20,$F0,$06,$20,$74
+        DB $20,$E8,$80,$F5,$AD,$00,$F0,$20
+        DB $5E,$20,$AD,$01,$F0,$20,$5E,$20
+        DB $AD,$02,$F0,$20,$5E,$20,$AD,$03
+        DB $F0,$20,$5E,$20,$A2,$00,$BD,$9F
+        DB $20,$F0,$06,$20,$74,$20,$E8,$80
+        DB $F5,$AD,$FD,$FF,$20,$5E,$20,$AD
+        DB $FC,$FF,$20,$5E,$20,$A9,$0D,$20
+        DB $74,$20,$A9,$0A,$20,$74,$20,$68
+        DB $8D,$EC,$7F,$7A,$FA,$60,$48,$4A
+        DB $4A,$4A,$4A,$20,$69,$20,$68,$29
+        DB $0F,$C9,$0A,$90,$02,$69,$06,$69
+        DB $30,$4C,$74,$20,$48,$9C,$E3,$7F
+        DB $8D,$E1,$7F,$A9,$01,$2C,$E0,$7F
+        DB $D0,$F9,$A9,$04,$0C,$E0,$7F,$CE
+        DB $E3,$7F,$EA,$EA,$1C,$E0,$7F,$9C
+        DB $E3,$7F,$68,$60,$42,$33,$3A,$46
+        DB $20,$48,$45,$41,$44,$3D,$00,$20
+        DB $52,$45,$53,$45,$54,$3D,$00
+        END

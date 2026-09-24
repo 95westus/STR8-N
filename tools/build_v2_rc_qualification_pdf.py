@@ -63,7 +63,7 @@ def wrapped(line: str, font: str, size: float) -> list[str]:
 def main() -> None:
     register_3270_fonts()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    pdf = canvas.Canvas(str(OUTPUT), pagesize=letter, pageCompression=1)
+    pdf = canvas.Canvas(str(OUTPUT), pagesize=letter, pageCompression=1, invariant=1)
     pdf.setTitle("STR8-N 2.0a21 RC1 W65C816SXB/EDU qualification record")
     page = 1
     y = TOP

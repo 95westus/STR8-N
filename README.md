@@ -13,14 +13,17 @@ USB cable connected; do not reset or remove power during transfers or flash
 writes. The ACIA backup-console path remains unqualified. See the
 [v2 operating scope](docs/STR8N_V2.md#supported-host-connected-operating-scope).
 
-**STR8-N 2.0a21 RC1 is ready as a binary/S19 release candidate.** The
+**STR8-N 2.0a21 RC1 is ready as a binary/S19 release candidate with two
+ASM-F2 `.a` utilities.** The
 [package README](docs/STR8N_V2_RC1_PACKAGE_README.md) lists the images, the
 standalone WDCMONv2-to-STR8-N RAM installer, and the STR8-N guarded top updater.
+The [ASM-F2 application guide](docs/STR8N_V2_RC1_ASMF2_APPLICATIONS.md)
+describes the public R-YORS carrier workflow and its compatibility limits.
 The [W65C816SXB/EDU getting-started guide](docs/STR8N_V2_RC1_GETTING_STARTED_816.md)
 is included in the RC1 ZIP.
 The [printable 816 qualification checklist](docs/STR8N_V2_RC1_816_QUALIFICATION_CHECKLIST.md)
 records SXB-alone and optional EDU results, evidence, and signatures.
-The package includes no WDCMONv2 firmware, owner stock-bank image, or guest
+The package includes no WDCMONv2 firmware, owner stock-bank image, or R-YORS guest
 payload. The [RC decision](docs/STR8N_V2_RC1_2026-09-24.md) states the accepted
 board evidence and remaining qualifications. The firmware candidate is v2-alpha21; see the
 [alpha21 freeze record](docs/STR8N_V2_ALPHA21_FREEZE.md). It waits before
