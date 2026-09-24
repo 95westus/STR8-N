@@ -52,6 +52,7 @@ class Memory:
         self.writes = []
         self.bank_changes = []
         self.io_reads = []
+        self.led_events = []
 
     def __getitem__(self, address):
         if isinstance(address, slice):
@@ -78,7 +79,9 @@ class Memory:
             raise AssertionError(f'Unexpected flash write B{self.bank}:{address:04X}')
         old = self.ram[address]
         self.ram[address] = value
-        if address == 0x7F80:
+        if address == 0x7FA0:
+            self.led_events.append(value)
+        elif address == 0x7F80:
             self.acia_tx.append(value)
             if self.cpu:
                 self.acia_tx_cycles.append(self.cpu.processorCycles)
@@ -104,7 +107,7 @@ def run(cpu, stop, limit=100000):
 
 
 def waiting(cpu):
-    return (cpu.pc in (SYM['V2_GETC'], SYM['V2_GETC_WAIT'])
+    return (cpu.pc == SYM['V2_GETC_WAIT']
             and not cpu.memory.rx and not cpu.memory.acia_rx
             and not cpu.memory.ram[SYM['V2_RX_COUNT']]
             and not cpu.memory.ram[SYM['V2_CANCEL_REQUEST']])
@@ -127,6 +130,9 @@ def boot(bank, reset_pcr=False, ft245_present=True):
     assert all(memory.ram[SYM[name]] == bank for name in ('V2_RESIDENT', 'V2_SELECTED', 'V2_TARGET'))
     assert memory.ram[SYM['V2_CPU']] == 0x02
     assert memory.ram[SYM['V2_CONSOLE']] == (0 if ft245_present else 1)
+    wait_led = 0x43 if ft245_present else 0x41
+    assert memory.ram[0x7FA0] == wait_led
+    assert {0x01, 0x0B, wait_led}.issubset(memory.led_events)
     output = memory.tx if ft245_present else memory.acia_tx
     other = memory.acia_tx if ft245_present else memory.tx
     assert (f'STR8-N {VERSION} B{bank} 65C02\r\n'
@@ -167,6 +173,7 @@ def check_boot_and_input():
             output = command(cpu, line)
             assert expected in output, (line, output)
             assert mem.bank == bank and not mem.bank_changes
+        assert 0x07 in mem.led_events and mem.ram[0x7FA0] == 0x43
         assert b'Bad' not in command(cpu, b'J0\x03\r')
         # Software entry preserves user-owned vector pointers and code.
         mem.ram[0x7E00:0x7E02] = b'\x00\x02'
@@ -331,14 +338,23 @@ def check_board_query_and_acia():
     # TDRE permanently clear in the model.
     cpu, mem = boot(1, ft245_present=False)
     mem.acia_rx.append(0xA5)
+    mem.ram[0x7FA0] = 0xA5
     cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
     call_public(cpu, SYM['STR8V2_RAW_POLL'])
     assert (cpu.a, cpu.x, cpu.y) == (0xA5, 0x39, 0xC7) and cpu.p & cpu.CARRY
+    assert mem.ram[0x7FA0] == 0xA5
     start = len(mem.acia_tx)
     cpu.a, cpu.x, cpu.y = 0x5A, 0x39, 0xC7
     call_public(cpu, SYM['STR8V2_PUTC'])
     assert mem.acia_tx[start:] == b'Z'
     assert (cpu.a, cpu.x, cpu.y) == (0x5A, 0x39, 0xC7)
+    assert mem.ram[0x7FA0] == 0xA5
+    mem.ram[SYM['V2_RX_QUEUE']] = 0x51
+    mem.ram[SYM['V2_RX_COUNT']] = 1
+    cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
+    call_public(cpu, SYM['STR8V2_GETC'])
+    assert (cpu.a, cpu.x, cpu.y) == (0x51, 0x39, 0xC7)
+    assert mem.ram[0x7FA0] == 0xA5
     # The 816 return value is also defined even though native execution awaits hardware.
     mem.ram[SYM['V2_CPU']] = 0x16
     call_public(cpu, SYM['STR8V2_BOARD_QUERY'])

@@ -1,7 +1,7 @@
 """Build the bank-independent v2 monitor milestone without touching v1 outputs.
 
 Requires WDC02AS and WDCLN on PATH. No board access or flash programming.
-All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha13.
+All assembler inputs/sidecars and generated output stay under BUILD/v2-alpha14.
 """
 from pathlib import Path
 import argparse
@@ -12,9 +12,9 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0a13'
-STEM = 'str8n-v2-alpha13'
-OUT = ROOT / 'BUILD/v2-alpha13'
+VERSION = '2.0a14'
+STEM = 'str8n-v2-alpha14'
+OUT = ROOT / 'BUILD/v2-alpha14'
 SOURCE = ROOT / 'src/v2'
 INTERRUPT_PROBE_SOURCE = ROOT / 'tools/v2-interrupt-test'
 ACIA_TEST_SOURCE = ROOT / 'tools/v2-acia-test'
@@ -26,9 +26,12 @@ EXPANSION_RESERVE_SIZE = 0xE0
 PUBLIC_CALLS = (
     ('STR8V2_RESET', 'START', 'V2_RESET'),
     ('STR8V2_HOLD', 'V2_PROMPT_ENTRY', 'V2_REENTER'),
+    ('STR8V2_CON_INIT', 'V2_CON_INIT_ENTRY', 'V2_CON_INIT'),
+    ('STR8V2_PUTC', 'V2_PUTC_ENTRY', 'V2_PUTC_RAW'),
+    ('STR8V2_GETC', 'V2_GETC_ENTRY', 'V2_GETC_RAW'),
     *((f'STR8V2_{name}', f'V2_{name}_ENTRY', f'V2_{name}') for name in (
-        'CON_INIT', 'PUTC', 'GETC', 'RAW_POLL', 'CHECK_CANCEL', 'RX_RESET',
-        'READ_LINE', 'HEX_OUT', 'NEWLINE', 'HEX_NIBBLE')),
+        'RAW_POLL', 'CHECK_CANCEL', 'RX_RESET', 'READ_LINE', 'HEX_OUT',
+        'NEWLINE', 'HEX_NIBBLE')),
     ('STR8V2_CAPS_QUERY', 'V2_CAPS_QUERY_ENTRY', 'V2_CAPS_QUERY'),
     ('STR8V2_BOARD_QUERY', 'V2_BOARD_QUERY_ENTRY', 'V2_BOARD_QUERY'),
     *((f'STR8V2_RESERVED{index}', f'V2_RESERVED{index}_ENTRY', 'V2_RESERVED')

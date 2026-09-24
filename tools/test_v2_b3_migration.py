@@ -1,7 +1,7 @@
 """Check the clean B3 image and execute its guarded top updater in the flash model."""
 from pathlib import Path
 
-from build_v2 import OUT, STEM, read_s19
+from build_v2 import OUT, STEM, VERSION, read_s19
 from test_worker_optimization import FlashMemory, MPU, PCR, LED, symbols
 
 
@@ -21,15 +21,19 @@ def main():
     top = ef[-4096:]
     assert bytes(updater[a] for a in range(0x4000, 0x5000)) == top
     linked = bytes(updater[a] for a in sorted(updater))
-    for text in (b'STR8-N 2.0a13 B3 INSTALL', b'TYPE STR8-N 2.0a13> ',
-                 b'STR8-N 2.0a13 VERIFIED; RESET', b'STR8-N 2.0A13\0'):
+    for text in (f'STR8-N {VERSION} B3 INSTALL'.encode(),
+                 f'TYPE STR8-N {VERSION}> '.encode(),
+                 f'STR8-N {VERSION} VERIFIED; RESET'.encode(),
+                 f'STR8-N {VERSION.upper()}\0'.encode()):
         assert text in linked
 
     mem = FlashMemory(b'')
-    mem.ram[PCR], mem.ram[LED] = 0xEE, 0xF0
+    mem.ram[PCR], mem.ram[LED] = 0xEE, 0x01
     for address, value in updater.items():
         mem.ram[address] = value
-    old_top = bytes((i * 29 + 7) & 255 for i in range(4096))
+    old_top = bytearray((i * 29 + 7) & 255 for i in range(4096))
+    old_top[:4] = b'SN\x02\x00'
+    old_top = bytes(old_top)
     mem.banks[3][0x7000:] = old_top
     mem.banks[2][0x7000:] = b'\xa5' * 4096
     untouched = [bytes(mem.banks[i]) for i in (0, 1)]
@@ -49,8 +53,12 @@ def main():
                 cpu.step()
         raise AssertionError(('instruction limit', hex(cpu.pc)))
 
+    # The guarded updater must start from an already-installed V2 signature.
+    run('START', 'TU_PF_SUM_LO_OK')
     run('TU_BACKUP_CONFIRMED', 'TU_BACKUP_SUM_HI_OK')
     assert mem.bank == 2 and bytes(mem.banks[2][0x7000:]) == old_top
+    led_values = [value for address, value in mem.events if address == LED]
+    assert 0xF0 in led_values and led_values[-1] == 0x01
     backup_count = len(mem.mutations)
     run('TU_FINAL_CONFIRMED', 'TU_SUCCESS', recovery=True)
     assert mem.bank == 3 and bytes(mem.banks[3][0x7000:]) == top

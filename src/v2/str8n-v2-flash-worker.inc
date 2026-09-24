@@ -86,7 +86,7 @@ V2W_FINISH:            LDA     #$F0
                         STA     $D555
                         JSR     V2W_RETURN
                         STZ     V2_NMI_HOLD
-                        LDA     #$01
+                        LDA     #V2_LED_RUNNING
                         STA     V2_LED
                         LDA     V2_SELF
                         BNE     V2W_SELF_RESULT
@@ -174,7 +174,7 @@ V2W_ACIA_DELAY_INNER:  DEX
                         PLY
                         PLX
                         RTS
-V2W_UNLOCK:            LDA     #$F0
+V2W_UNLOCK:            LDA     #V2_LED_FLASH
                         STA     V2_LED
                         LDA     #$AA
                         STA     $D555
