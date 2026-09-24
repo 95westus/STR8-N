@@ -32,9 +32,9 @@ adds exact installation/readback, FTDI, RAM ABI, BRK/IRQ/NMI, F/I, and autostart
 evidence. Direct ACIA TX passed, but RX did not; the matrix remains incomplete.
 ACIA receive and fallback-console qualification are deferred.
 
-The [frozen artifact identity and install-file check](STR8N_V2_ALPHA19_ARTIFACT_IDENTITY_2026-09-24.md)
-passed for all 103 candidate files, the dense E-F S19, and the Bank 1 board
-2512 install/readback.
+The [frozen artifact identity and image checks](STR8N_V2_ALPHA19_ARTIFACT_IDENTITY_2026-09-24.md)
+passed for all 103 candidate files, the dense E-F and full-bank S19 files, and
+the Bank 1 board 2512 install/readback.
 
 ## Qualification matrix
 
@@ -58,7 +58,7 @@ for each hardware session. Mark a gate passed only when evidence supports it.
 | W65C51N backup console | Deferred: 2512 direct timed TX passed; RX and Q return failed to demonstrate reception ($70 status). Cause, fallback selection and transfer tests remain open |
 | W65C816 | Pending board availability, detection, emulation and native interrupt/RAM ABI probe execution |
 | Failure and recovery | Pending controlled failure cases and demonstrated recovery; host fault injection alone is insufficient |
-| Final release | Frozen candidate artifact identity and E-F S19 validation passed; matrix disposition, documentation, final hashes and package verification remain pending |
+| Final release | Frozen candidate artifact identity and E-F/full-bank S19 validation passed; matrix disposition, documentation, final hashes and package verification remain pending |
 
 Start hardware qualification with live identity and backup collection, then
 reset/console and read-only monitor checks. Establish scratch ranges and recovery
