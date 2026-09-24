@@ -1,4 +1,4 @@
-; v2-alpha16: bank-independent public ABI in the reserved RAM pockets.
+; v2-alpha17: compact bank-independent public ABI implementation.
 ; 816 software entry requires E=1, D=0, DBR=0, PBR=0. Reset supplies this state.
                         MODULE  V2_MONITOR
                         XDEF    V2_SIGNATURE

@@ -97,24 +97,27 @@ V2W_FINISH:            LDA     #$F0
 ; RAM; this jumps to the fixed public RESET entry and does not pulse RESET.
 V2W_SELF_RESULT:       LDX     #$00
                         LDA     V2_FLASH_ERROR
-                        BEQ     V2W_SELF_OK
+                        BEQ     V2W_SELF_TEXT
                         LDX     #(V2W_FAIL_TEXT-V2W_OK_TEXT)
-V2W_SELF_OK:           LDA     V2W_OK_TEXT,X
+V2W_SELF_TEXT:         LDA     V2W_OK_TEXT,X
+                        BNE     V2W_SELF_CHAR
+                        CPX     #(V2W_TEXT_END-V2W_OK_TEXT-1)
                         BEQ     V2W_RESET_WAIT
-                        JSR     V2W_PUTC
+                        LDX     #(V2W_RESET_TEXT-V2W_OK_TEXT)
+                        BRA     V2W_SELF_TEXT
+V2W_SELF_CHAR:         JSR     V2W_PUTC
                         INX
-                        BRA     V2W_SELF_OK
+                        BRA     V2W_SELF_TEXT
 V2W_RESET_WAIT:        JSR     V2W_GETC
                         AND     #$DF
                         CMP     #'Y'
                         BNE     V2W_RESET_WAIT
-                        SEI
-                        CLD
-                        LDX     #$FF
-                        TXS
+; The public RESET entry establishes IRQ, decimal, stack, and CPU state.
                         JMP     $F004
-V2W_OK_TEXT:           DB      $0D,$0A,"OK; press Y to soft reset",$00
-V2W_FAIL_TEXT:         DB      $0D,$0A,"Flash fail; press Y to soft reset",$00
+V2W_OK_TEXT:           DB      $0D,$0A,"OK",$00
+V2W_FAIL_TEXT:         DB      $0D,$0A,"Flash fail",$00
+V2W_RESET_TEXT:        DB      "; press Y to soft reset",$00
+V2W_TEXT_END:
 ; IN A=byte, output ready and DDRA=0. X/Y preserved; A clobbered.
 ; Also called by the resident console after its cancellable ready wait.
 V2W_SEND:              STA     V2_DATA
@@ -134,14 +137,12 @@ V2W_SEND:              STA     V2_DATA
 ; preserving X/Y for the public console contract and RAM self-edit strings.
 V2W_ACIA_SEND:         STA     V2_ACIA_DATA
                         PHX
-                        PHY
-                        LDY     #$04
+                        LDA     #$04
 V2W_ACIA_DELAY_OUTER:  LDX     #$D0
 V2W_ACIA_DELAY_INNER:  DEX
                         BNE     V2W_ACIA_DELAY_INNER
-                        DEY
+                        DEC     A
                         BNE     V2W_ACIA_DELAY_OUTER
-                        PLY
                         PLX
                         RTS
 V2W_UNLOCK:            LDA     #V2_LED_FLASH
