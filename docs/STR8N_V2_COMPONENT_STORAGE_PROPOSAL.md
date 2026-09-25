@@ -58,6 +58,61 @@ arbitrary destination handling, integration, and actual fit remain to be proven.
 Named lookup and DIR add parsing, scanning, and validation work beyond that
 original minimal estimate; their combined fit must be measured.
 
+## RAM boundaries and the next software layer
+
+The current v2 application RAM range is `$0200-$68FF`. `$2000` is a common
+program load address within that range, not its lower bound. STR8-N uses
+`$6900-$78FF` as a 4 KiB flash-sector buffer and `$7900-$7BFF` for its RAM
+worker; other monitor state lies above and outside ordinary application RAM.
+
+S accepts a source range only when every byte is in `$0200-$68FF`. Before
+copying any data, R validates the record, its checksum, the recorded start and
+length, and the calculated end without address wraparound. It rejects a
+destination outside `$0200-$68FF`. These checks protect STR8-N's workspace;
+they do not establish whether application RAM already contains another program.
+
+STR8-N is the boot and recovery layer. It does not keep a task/job table,
+allocate application RAM, or track running components. A future higher layer
+may own a job table and claimed RAM ranges. That layer can check its claims
+before invoking R or offer its own managed restore operation. Its claims are
+cooperative: a program with direct memory access can still write any RAM.
+Programs expecting to reenter or call STR8-N must respect its published RAM
+map. A standalone RAM installer may use the monitor's sector buffer and flash
+worker under their calling rules; it must keep its own live code and data safe
+throughout installation.
+
+## Proposed extension installation
+
+The first installer runs in application RAM, loaded through the existing v2
+RAM load path. It carries or receives the E-sector extension image and the
+matching F-sector core changes. It checks the resident bank, the exact
+starting firmware identity, payload integrity, destination ranges, and RAM
+layout before writing flash. Preserve recoverable copies of the original E
+and F sectors before mutation.
+
+1. Read the resident bank's full `$E000-$EFFF` sector into the 4 KiB RAM
+   sector buffer. Preserve `$E000-$E7FF` and `$EF00-$EFFF`; replace
+   `$E800-$EEFF` with the extension and its specified unused-byte fill.
+   Inspect non-erased bytes in newly reserved configuration space before
+   adopting it. Program and verify the complete resulting E sector.
+2. Construct a matching F-sector image with dispatch for S, R, and DIR and
+   fixed `$Fxxx` entries. The existing first-character dispatcher already
+   uses `D` for display, so it must distinguish `DIR` from `D address`.
+   Install F only after E verifies, using a RAM-resident guarded updater,
+   and verify the entire F sector.
+3. Reenter through reset-style initialization. Check extension identity and
+   version before enabling its commands. Validate read-only DIR first, then
+   save/restore by address and by name, including unaligned and crossing-sector
+   records and preserved neighboring flash bytes.
+
+Patching the existing F-sector dispatcher is possible. The patch must match
+the exact starting image and still rebuild/verify the whole sector when flash
+erase is required. Rebuilding the matching F image from source is another
+installation path. Writing E alone cannot add commands to the current core.
+The E and F writes are not atomic; interruption between them needs an explicit
+recovery procedure. Exact installer addresses, stub addresses, image identity,
+and recovery packaging remain to be defined before implementation.
+
 ## Named saved-image records and DIR
 
 The agreed record direction uses a leading ASCII `SR` signature and a
