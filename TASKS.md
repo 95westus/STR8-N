@@ -27,6 +27,10 @@ Defects and hardware investigations are indexed in the
   Bank display is one producer use case, with no STR8-N dependency in RTERM.
   Requires coordinated target API and RTERM protocol/display work.
 
+- [ ] Document RTERM host-terminal font selection and plan optional graphical
+  font/preset support; see the [appearance proposal](docs/RTERM_APPEARANCE_PROPOSAL.md).
+  Local preferences include 3270-style, amber, and line-printer appearances.
+
 - [ ] Continue the [fixed-address component/storage design](docs/STR8N_V2_COMPONENT_STORAGE_PROPOSAL.md):
   explicit-bank save, AUTO placement, original-address restore, HAL device
   access, and DEBUG's IRQX dependency. Discussion only; no implementation yet.

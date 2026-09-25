@@ -68,6 +68,10 @@ area. Host connection, error, and transfer indications take priority when
 space is limited; clip or omit the optional field. Provide a host preference
 to hide it entirely. Targets that never publish leave it absent.
 
+Fonts and appearance presets are local user preferences, described in the
+[appearance proposal](RTERM_APPEARANCE_PROPOSAL.md). This API does not select
+fonts, presets, or terminal personalities.
+
 RTERM already implements a separate target-writable DEC status line in its
 VT525 subset. That is an existing option for a whole target-controlled row.
 This proposal concerns a compact field within RTERM's own bottom status area;
