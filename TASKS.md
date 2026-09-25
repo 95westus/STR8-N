@@ -20,6 +20,12 @@ Defects and hardware investigations are indexed in the
   signal, clock, handshake, supply, and ground. The backup-console
   qualification gate remains open.
 
+## Proposed v2 component storage and interfaces
+
+- [ ] Continue the [fixed-address component/storage design](docs/STR8N_V2_COMPONENT_STORAGE_PROPOSAL.md):
+  explicit-bank save, AUTO placement, original-address restore, HAL device
+  access, and DEBUG's IRQX dependency. Discussion only; no implementation yet.
+
 ## Next v2 layer: public R-YORS integration
 
 Keep this work on `v2`; the v1.34/v1.35 release line stays separate. The
