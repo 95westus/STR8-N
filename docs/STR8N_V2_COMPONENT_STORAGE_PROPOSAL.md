@@ -54,6 +54,48 @@ The earlier source-informed estimate for basic S/R was 560-1,000 additional
 ROM bytes, budgeting about 800 bytes. This is not an assembled measurement;
 arbitrary destination handling, integration, and actual fit remain to be proven.
 
+## Candidate saved payloads
+
+A v2 bank-maintenance utility is a strong first practical S/R payload: keep
+the tool in flash, restore it to its fixed RAM address when needed, and run
+it explicitly. Candidate operations include bank inspection, blank checks,
+checksums, comparisons, and controlled erase/copy operations.
+
+The existing v1 utility is not automatically compatible. A v2 adaptation must
+remove dependencies on v1 directory/journal policy and use the v2 memory and
+service contracts. Its execution range must avoid STR8-N workspace, and its
+flash operations must protect STR8-N, the S/R extension, configuration, and
+saved images designated for retention. Flash mutation and bank switching must
+execute safely from RAM.
+
+Other candidates, not commitments to implement:
+
+| Payload | Purpose and constraints |
+| --- | --- |
+| Memory test | On-demand RAM diagnostics; exclude its own code, live data, and monitor workspace. |
+| Board diagnostics | Console, VIA, LED, and interrupt checks without a fresh host transfer. |
+| Disassembler | On-demand code inspection without enlarging the resident core. |
+| HAL modules | Restore SPI/I2C and device support from flash before accessing devices that require HAL. |
+| IRQX and DEBUG | Restore into separate fixed ranges; initialize IRQX before DEBUG installs its hooks. |
+| Small applications | Locally available games, display demos, and control programs. |
+| Data and settings | Preserve tables, display patterns, or application configuration as ordinary byte ranges. |
+
+Restore does not activate a component or recreate hardware state. Each program
+needs a defined entry or initialization procedure, and simultaneously loaded
+components need nonoverlapping memory allocations and compatible interfaces.
+
+Suggested qualification order:
+
+1. Save a small program with known byte patterns, alter its source RAM, restore
+   it, and verify the complete original range before executing it. Include an
+   unaligned flash destination and a saved image crossing a sector boundary;
+   verify neighboring flash bytes remain unchanged.
+2. Exercise invalid headers, checksums, ranges, and protected destinations,
+   confirming the intended rejection behavior before using a flash-writing tool.
+3. Save and restore the v2 bank-maintenance utility. Verify its restored bytes
+   and read-only operations first, then qualify its guarded flash operations.
+4. Extend qualification to multiple components and their initialization order.
+
 ## Recommendations under consideration
 
 - Keep command meanings stable regardless of HAL presence. Missing HAL makes
