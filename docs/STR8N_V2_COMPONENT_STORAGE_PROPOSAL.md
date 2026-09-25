@@ -83,12 +83,14 @@ worker under their calling rules; it must keep its own live code and data safe
 throughout installation.
 
 If that higher layer later supports relocation, every image managed by it
-must carry REBIS metadata. The manager uses that metadata to distinguish
+needs metadata describing how it is loaded. REBIS and SRIEB were informal
+names used in discussion for that required metadata; neither names a chosen
+format or standard. The manager would use the metadata to distinguish
 fixed-address and relocatable images, choose a suitable RAM region, resolve
 references where applicable, and determine entry and resource requirements.
-No assembly-origin shortcut is assumed.
+The fields and encoding still need to be designed.
 The initial STR8-N SR records remain fixed-address snapshots: their recorded
-RAM start controls R, and R neither interprets REBIS metadata nor moves a
+RAM start controls R, and R neither interprets higher-layer metadata nor moves a
 payload around occupied application RAM. Job state, RAM claims, and any
 later page-out/resume policy belong to the higher layer.
 
