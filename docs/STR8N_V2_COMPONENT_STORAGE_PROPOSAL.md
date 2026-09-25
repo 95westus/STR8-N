@@ -94,6 +94,41 @@ RAM start controls R, and R neither interprets higher-layer metadata nor moves a
 payload around occupied application RAM. Job state, RAM claims, and any
 later page-out/resume policy belong to the higher layer.
 
+### Possible higher-layer command handoff
+
+This is an exploratory direction, not an agreed command ABI or installation
+requirement. A future STR8-N dispatcher patch could provide a small, versioned
+hook for S, R, and DIR. A broader variant could register command names and
+RAM handlers generically, so later layers could add commands without further
+flash changes. Neither hook is present in the current v2 image.
+
+Installing either hook would require a guarded F-sector update. A reusable
+updater could carry patch recipes for known firmware images, but each recipe
+must check the exact starting image, stage the whole affected sector, and
+verify the result. "Generic updater" would describe its packaging and
+interface, not permission to patch an arbitrary unknown image.
+
+The higher layer registers its RAM handler entries when it starts and removes
+them before unloading. STR8-N clears the registration on reset. A command
+uses the registered handler only while that layer is present; otherwise it
+uses the built-in fixed-address S/R or DIR behavior. The hook contract must
+define register use, return status, and how a handler explicitly delegates to
+the built-in operation without recursively invoking itself. A stale handler
+pointer must not be followed after the layer unloads or its RAM is reused;
+registration lifetime and monitor prompt reentry need an explicit rule.
+
+A generic registry would also need bounded table capacity, exact command-name
+matching (including distinguishing DIR from D), duplicate-name ownership,
+and a defined response when registration space is exhausted. Measure ROM and
+RAM cost before selecting this variant; the current core and worker have
+limited spare space.
+
+The higher layer may interpret its own image metadata, consult RAM claims,
+choose a free destination, and relocate a payload. STR8-N retains its fixed
+workspace protection and recovery behavior. The record types accepted by the
+built-in and higher-layer handlers, and the behavior of DIR when both types
+are present, remain to be specified.
+
 ## Proposed extension installation
 
 The first installer runs in application RAM, loaded through the existing v2
