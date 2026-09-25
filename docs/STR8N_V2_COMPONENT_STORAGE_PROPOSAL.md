@@ -38,6 +38,8 @@ configuration into the monitor's F sector.
   ordering and an inclusive RAM range. Example: `S 2 8123 2000 316A`.
 - `R <bank 0-3> <flash address>` restores to the original recorded RAM address,
   without executing it. Example: `R 2 8123`.
+- Named records extend these forms with a save name, restore by name, and
+  `DIR <bank>` as described below.
 - No sector-alignment requirement for saved-image destinations. Handle sector
   crossings and preserve bytes outside the saved image in affected sectors.
 - The discussed flash image storage range is `$8000-$DFFF`; the entire header
@@ -53,6 +55,67 @@ configuration into the monitor's F sector.
 The earlier source-informed estimate for basic S/R was 560-1,000 additional
 ROM bytes, budgeting about 800 bytes. This is not an assembled measurement;
 arbitrary destination handling, integration, and actual fit remain to be proven.
+Named lookup and DIR add parsing, scanning, and validation work beyond that
+original minimal estimate; their combined fit must be measured.
+
+## Named saved-image records and DIR
+
+The agreed record direction uses a leading ASCII `SR` signature and a
+null-terminated name. There is no trailing `RS` signature and no name-length
+byte. Proposed field order:
+
+```text
+SR | version | RAM start | payload length | checksum | name | $00 | body
+```
+
+Payload length counts only body bytes and determines the record end. The body
+begins immediately after the name terminator. The checksum covers the metadata
+(including the signature), name, terminator, and body, excluding the checksum
+field itself. The checksum algorithm, field widths, and byte order remain to
+be specified before implementing or freezing the format.
+
+Proposed name rules are at most 16 characters, normalized to uppercase, with
+a required null terminator within 17 bytes. Parsing must enforce this bound.
+Duplicate names should produce an ambiguous-name error rather than selecting
+one silently. Distinguishing all-hex names from address arguments still needs
+a syntax decision; quoting or an explicit name indicator are options.
+
+```text
+S 3 8123 2000 316A MICROCHESS
+R 3 8123
+R 3 MICROCHESS
+DIR 3
+```
+
+The save example records inclusive RAM range `$2000-$316A` with its header at
+Bank 3:`$8123`. Both restore forms use the recorded RAM destination and do not
+execute the payload. Whether a name may be omitted when saving remains open.
+
+DIR scans the selected bank's permitted storage range and derives its listing
+from saved-image records; it does not maintain a separate directory allocation,
+enrollment state, or journal. Example output (hexadecimal values):
+
+```text
+B3  NAME              START END   FLASH BYTES
+    MICROCHESS        2000 316A  8123  116B
+    BANKMAINT         2000 27FF  9300  0800
+```
+
+FLASH identifies the record's leading SR address. START and END describe the
+original inclusive RAM range; BYTES is the payload length, excluding metadata.
+
+DIR and named restore share a scanner. Search for a candidate SR signature,
+then validate the supported version, bounded name, lengths, address ranges,
+and checksum before accepting the record. Reject arithmetic wraparound and
+records extending beyond permitted storage. A signature alone is insufficient:
+ordinary program data may contain the same bytes. After accepting a record,
+skip its entire extent, including payload, before continuing the scan. A failed
+candidate must not use unvalidated length data to skip possible later records.
+
+Qualification should cover embedded SR bytes in payloads, missing name
+terminators, invalid lengths/checksums, duplicate names, and agreement between
+DIR listings and named/address-based restoration. This remains a proposed
+extension to v2, not a change to the frozen release's command contract.
 
 ## Candidate saved payloads
 
