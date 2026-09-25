@@ -1,6 +1,6 @@
 param(
     [string]$Port,
-    [ValidateSet('SXB2', 'SXB3')][string]$ExpectedBoardTag = 'SXB2',
+    [ValidateSet('Auto', 'SXB2', 'SXB3')][string]$ExpectedBoardTag = 'SXB2',
     [string]$ImagePath,
     [int]$BaudRate = 115200,
     [int]$ChunkBytes = 256,
@@ -312,12 +312,20 @@ function Get-WdcBoardInfo {
     Start-WdcCommand -Serial $Serial -Command $script:WdcBoardInfo
     $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'board-info reply'
     $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
-    if ($tag -ne $script:ExpectedBoardTag) {
-        throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($reply)), $script:ExpectedBoardTag)
-    }
+    Assert-WdcBoardTag -Tag $tag -Reply $reply
     $hardware = [BitConverter]::ToUInt32($reply, 4)
     $software = [BitConverter]::ToUInt32($reply, 8)
     return [pscustomobject]@{ Tag = $tag; Hardware = $hardware; Software = $software; Raw = $reply }
+}
+
+function Assert-WdcBoardTag {
+    param([string]$Tag, [byte[]]$Reply)
+    if ($Tag -notin @('SXB2', 'SXB3') -or
+        ($script:ExpectedBoardTag -ne 'Auto' -and $Tag -ne $script:ExpectedBoardTag)) {
+        throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($Reply)), $script:ExpectedBoardTag)
+    }
+    $family = if ($Tag -eq 'SXB2') { 'W65C02SXB' } else { 'W65C816SXB' }
+    Write-Host ('BOARD FAMILY = {0} ({1})' -f $family, $Tag)
 }
 
 function Get-WdcBoardInfoAfterResetArm {
@@ -344,9 +352,7 @@ function Get-WdcBoardInfoAfterResetArm {
                     $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
                     $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
                     $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
-                    if ($tag -ne $script:ExpectedBoardTag) {
-                        throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($reply)), $script:ExpectedBoardTag)
-                    }
+                    Assert-WdcBoardTag -Tag $tag -Reply $reply
                     return [pscustomobject]@{
                         Tag = $tag
                         Hardware = [BitConverter]::ToUInt32($reply, 4)
@@ -362,9 +368,7 @@ function Get-WdcBoardInfoAfterResetArm {
                         $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
                         $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
                         $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
-                        if ($tag -ne $script:ExpectedBoardTag) {
-                            throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($reply)), $script:ExpectedBoardTag)
-                        }
+                        Assert-WdcBoardTag -Tag $tag -Reply $reply
                         return [pscustomobject]@{
                             Tag = $tag
                             Hardware = [BitConverter]::ToUInt32($reply, 4)
@@ -554,9 +558,23 @@ if ($SelfTest) {
     $fixture = Convert-ToByteArray @(0x68,0x65,0x6C,0x6C,0x6F)
     if ((Get-Fnv1a32 -Bytes $fixture) -ne [uint32]0x4F9F2CAB) { throw 'FNV-1a self-test failed' }
     $mock = [Wdcmonv2ProtocolMock]::new()
-    $mock.BoardTag = $ExpectedBoardTag
+    $mock.BoardTag = if ($ExpectedBoardTag -eq 'Auto') { 'SXB2' } else { $ExpectedBoardTag }
     $board = Get-WdcBoardInfo -Serial $mock
-    if ($board.Tag -ne $ExpectedBoardTag -or $board.Hardware -ne 123 -or $board.Software -ne 200) { throw 'Board-info protocol self-test failed' }
+    if ($board.Tag -ne $mock.BoardTag -or $board.Hardware -ne 123 -or $board.Software -ne 200) { throw 'Board-info protocol self-test failed' }
+    if ($ExpectedBoardTag -eq 'Auto') {
+        $other = [Wdcmonv2ProtocolMock]::new()
+        $other.BoardTag = 'SXB3'
+        $otherBoard = Get-WdcBoardInfo -Serial $other
+        if ($otherBoard.Tag -ne 'SXB3') { throw 'SXB3 automatic detection self-test failed' }
+        $unsupported = [Wdcmonv2ProtocolMock]::new()
+        $unsupported.BoardTag = 'SXB4'
+        try {
+            $null = Get-WdcBoardInfo -Serial $unsupported
+            throw 'Unsupported board identity was accepted'
+        } catch {
+            if ($_.Exception.Message -notlike 'Unsupported WDCMONv2 board identity*') { throw }
+        }
+    }
     $writeFixture = Convert-ToByteArray @(0x11,0x22,0x33,0x44)
     Write-WdcMemory -Serial $mock -Address 0x2000 -Bytes $writeFixture
     $readFixture = Read-WdcMemory -Serial $mock -Address 0x2000 -Count $writeFixture.Length

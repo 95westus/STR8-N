@@ -109,11 +109,14 @@ Bank 3 sector F. It leaves Banks 1 and 2 untouched. A used Bank 0 that differs
 from Bank 3 is refused. This path has passed host checks but has **not** been
 run on a W65C816SXB.
 
-Run, using the same COM port:
+Run, using the same COM port. The RC1 launcher automatically accepts `SXB2`
+(W65C02SXB) or `SXB3` (W65C816SXB) from WDCMONv2 board-info and reports
+the detected family. Other tags are refused before RAM loading. For this 816
+qualification, require the reported tag to be `SXB3` before continuing:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\START-STR8N-V2-RC1.ps1 `
-  -Port COM4 -ExpectedBoardTag SXB3
+  -Port COM4
 ```
 
 Press physical RESET **once while the 60-second arm is active**. Require the

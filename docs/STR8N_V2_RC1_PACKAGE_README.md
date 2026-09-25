@@ -63,10 +63,10 @@ On Windows, extract the ZIP, connect the stock board to the host, then run:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\START-STR8N-V2-RC1.ps1 -Port COM4
 ```
 
-The actual COM port may differ. The launcher opens a timed physical RESET arm,
-and defaults to expected board tag `SXB3` for the W65C816SXB. For a known
-W65C02SXB stock board, pass `-ExpectedBoardTag SXB2`. Confirm the board's
-reported identity before proceeding with any flash operation. The bridge
+The actual COM port may differ. The launcher opens a timed physical RESET arm
+and automatically identifies `SXB2` (W65C02SXB) or `SXB3` (W65C816SXB).
+Pass `-ExpectedBoardTag SXB2` or `SXB3` to require one specific board. Confirm
+the board's reported identity before proceeding with any flash operation. The bridge
 loads and byte-verifies the installer in RAM, then exposes its terminal. The
 installer refuses a used, different Bank 0. With an erased Bank 0 it asks to
 copy and verify the original complete Bank 3 there before touching Bank 3 F.

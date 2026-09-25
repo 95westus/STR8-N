@@ -1,6 +1,6 @@
 param(
     [string]$Port,
-    [ValidateSet('SXB2', 'SXB3')][string]$ExpectedBoardTag = 'SXB3',
+    [ValidateSet('Auto', 'SXB2', 'SXB3')][string]$ExpectedBoardTag = 'Auto',
     [int]$PhysicalResetArmSeconds = 60,
     [string]$TranscriptPath
 )
