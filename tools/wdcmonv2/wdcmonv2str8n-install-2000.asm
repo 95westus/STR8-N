@@ -1217,7 +1217,7 @@ W2R_MSG_BOOT:           DB              "BOOT STOCK B3",$0D,$0A,0
 
 W2I_TOKEN_COPY:         DB              "COPY B3 TO B0",0
                         IF              STR8_V2_RC1
-W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 2.0a21",0
+W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 2.0A21",0
                         ELSE
                         IF              STR8_IN65_VERSION_135
 W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.35",0

@@ -111,6 +111,7 @@ for each hardware session. Mark a gate passed only when evidence supports it.
 | W65C816 | Pending board availability, detection, emulation and native interrupt/RAM ABI probe execution |
 | Failure and recovery | Deliberate cable/host/power and active-flash fault injection excluded from the stable FT245 operating claim; no interruption-recovery or automatic-rollback claim. Existing guard/cancellation evidence is limited to the linked board tests |
 | RC1 package | Frozen alpha21 artifact identities, exact board 2512 Bank 3 F match, and ZIP file hashes verified; scoped RC decision recorded. Public final-release disposition remains separate |
+| RC1 stock WDCMONv2 migration | W65C02SXB board 2205 passed corrected RC1 RAM installer, physical RESET, and exact four-bank readback; W65C816SXB remains untested. See the [board report](STR8N_V2_RC1_2205_MIGRATION_BOARD_TEST_2026-09-25.md). |
 
 Start hardware qualification with live identity and backup collection, then
 reset/console and read-only monitor checks. Establish scratch ranges and recovery
