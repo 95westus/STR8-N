@@ -22,6 +22,11 @@ Defects and hardware investigations are indexed in the
 
 ## Proposed v2 component storage and interfaces
 
+- [ ] Add an optional target-controlled RTERM status field and set/clear API;
+  see the [target status proposal](docs/RTERM_TARGET_STATUS_PROPOSAL.md).
+  Bank display is one producer use case, with no STR8-N dependency in RTERM.
+  Requires coordinated target API and RTERM protocol/display work.
+
 - [ ] Continue the [fixed-address component/storage design](docs/STR8N_V2_COMPONENT_STORAGE_PROPOSAL.md):
   explicit-bank save, AUTO placement, original-address restore, HAL device
   access, and DEBUG's IRQX dependency. Discussion only; no implementation yet.
