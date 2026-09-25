@@ -4,8 +4,9 @@ Recorded 2026-09-25. Design discussion only; no implementation or frozen ABI.
 
 ## User direction
 
-- STR8-N v2 remains at `$F000`. HAL, DEBUG, and IRQX (interrupt extension)
-  occupy other fixed addresses. No relocations.
+- STR8-N v2 remains at `$F000`. Initial HAL, DEBUG, and IRQX (interrupt
+  extension) components use fixed addresses. The initial S/R format does not
+  relocate them.
 - Save an inclusive memory range locally and restore it to its original start
   address, so component code need not be transferred from a host each session.
 - Initial syntax discussion included AUTO placement; the later flash-only
@@ -80,6 +81,16 @@ Programs expecting to reenter or call STR8-N must respect its published RAM
 map. A standalone RAM installer may use the monitor's sector buffer and flash
 worker under their calling rules; it must keep its own live code and data safe
 throughout installation.
+
+If that higher layer later supports relocation, every image managed by it
+must carry REBIS metadata. The manager uses that metadata to distinguish
+fixed-address and relocatable images, choose a suitable RAM region, resolve
+references where applicable, and determine entry and resource requirements.
+No assembly-origin shortcut is assumed.
+The initial STR8-N SR records remain fixed-address snapshots: their recorded
+RAM start controls R, and R neither interprets REBIS metadata nor moves a
+payload around occupied application RAM. Job state, RAM claims, and any
+later page-out/resume policy belong to the higher layer.
 
 ## Proposed extension installation
 
