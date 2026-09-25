@@ -20,8 +20,9 @@ they were not all repeated on alpha21.
 The v2 branch includes a getting-started guide and a printable, fillable
 qualification record for incoming W65C816SXB boards, with or without the
 matching EDU board. Those board combinations have not yet been physically
-qualified. The stock WDCMONv2 migration path has host checks and also awaits a
-factory-board run. The ACIA fallback console remains under investigation.
+qualified. The corrected stock WDCMONv2 migration path passed a factory-board
+run on W65C02SXB board 2205 with exact four-bank readback; W65C816SXB
+migration remains untested. The ACIA fallback console remains under investigation.
 There is no interruption-recovery claim for an active flash or configuration
 change; an interrupted change can require external reflashing.
 

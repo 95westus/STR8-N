@@ -65,6 +65,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\START-STR8N-V2-RC1.ps1
 
 The actual COM port may differ. The launcher opens a timed physical RESET arm
 and automatically identifies `SXB2` (W65C02SXB) or `SXB3` (W65C816SXB).
+If stock WDCMONv2 is already running, `-PhysicalResetArmSeconds 0` probes it
+immediately without another RESET arm.
 Pass `-ExpectedBoardTag SXB2` or `SXB3` to require one specific board. Confirm
 the board's reported identity before proceeding with any flash operation. The bridge
 loads and byte-verifies the installer in RAM, then exposes its terminal. The
@@ -75,8 +77,10 @@ It then requests the packaged top BIN via Ctrl+U and requires a separate
 asks for **physical RESET**, which initializes alpha21's RAM state. Preserve
 owner-local stock archives privately; the archive includes none.
 
-This stock-board alpha21 migration tool has not been run on hardware. Its
-S19 structure, guard order, and alpha21 BIN hash passed host checks. Use an
+The corrected stock-board alpha21 migration tool passed a complete factory
+run on W65C02SXB board 2205 with exact four-bank readback. W65C816SXB
+migration still awaits physical testing. Its S19 structure, guard order, and
+alpha21 BIN hash also passed host checks. Use an
 external programmer if recovery from a failed top-sector write is required.
 
 ## Operating scope

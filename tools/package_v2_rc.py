@@ -87,7 +87,9 @@ def main() -> None:
         "board_2512_bank3_f_sha256": BOARD_TOP_SHA256,
         "stock_wdcmonv2_firmware_included": False,
         "owner_bank_archives_included": False,
-        "migration_hardware_tested": False,
+        "migration_hardware_tested": True,
+        "migration_hardware_tested_w65c02sxb": True,
+        "migration_hardware_tested_w65c816sxb": False,
         "files": {name: sha256(data) for name, data in sorted(package.items())},
     }
     package["MANIFEST.json"] = (json.dumps(manifest, indent=2) + "\n").encode()

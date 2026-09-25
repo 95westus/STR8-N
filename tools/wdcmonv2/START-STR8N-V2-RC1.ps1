@@ -19,8 +19,8 @@ if ((Get-Item -LiteralPath $candidate).Length -ne 4096) { throw 'RC1 top BIN mus
 $expected = '3738EAB501C50EF0470E9A81EF573B563DA7DC656CC18A83573D16C9BD2E6E49'
 $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $candidate).Hash
 if ($actual -ne $expected) { throw 'RC1 top BIN does not match board 2512 readback identity' }
-if ($PhysicalResetArmSeconds -lt 1 -or $PhysicalResetArmSeconds -gt 120) {
-    throw '-PhysicalResetArmSeconds must be 1..120'
+if ($PhysicalResetArmSeconds -lt 0 -or $PhysicalResetArmSeconds -gt 120) {
+    throw '-PhysicalResetArmSeconds must be 0..120 (0 probes an already running stock monitor)'
 }
 if (-not $Port) {
     $ports = @([System.IO.Ports.SerialPort]::GetPortNames() | Sort-Object)

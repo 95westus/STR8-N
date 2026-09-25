@@ -4,8 +4,9 @@ This is the first-board installation card for an incoming **stock W65C816SXB**
 and optional **W65C816EDU**. It uses the STR8-N 2.0a21 RC1 ZIP on a Windows host.
 STR8-N is intended to run on the SXB **with or without** its matching EDU;
 the EDU is not required for the core monitor, USB console, or flash installer.
-The alpha21 firmware has board evidence on W65C02SXB; its W65C816 execution,
-the alpha21 stock-board migration, and EDU behavior await physical testing.
+The alpha21 firmware and corrected stock-board migration have board evidence
+on W65C02SXB; W65C816 execution, W65C816 migration, and EDU behavior await
+physical testing.
 Record each result as you go. A mismatch is a reason to stop before the next
 flash step. Use the printable `QUALIFICATION-CHECKLIST-816.md` to record and
 sign the physical-board result. The package also includes a fillable,
