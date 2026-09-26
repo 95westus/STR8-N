@@ -62,11 +62,10 @@ V2W_SELECT:
 V2W_BITS:               DB      $CC,$CE,$EC,$EE
                         INCLUDE "str8n-v2-flash-worker.inc"
                         INCLUDE "str8n-v2-ram-console.inc"
-; Only the reset entry calls this helper. Wait about 6.58 seconds at nominal
-; 8 MHz before PWE# selection, allowing cold USB host configuration.
-V2W_BOOT_DELAY:         LDA     #$00
-                        LDY     #$A0
-V2W_BOOT_DELAY_OUTER:   TAX
+; Only the reset entry calls this helper after console initialization.
+V2W_BOOT_DELAY:         LDX     #$00
+V2W_BOOT_DELAY_OUTER:   LDA     #'.'
+                        JSR     V2W_PUTC
 V2W_BOOT_DELAY_MIDDLE:  LDA     #$00
 V2W_BOOT_DELAY_INNER:   DEC     A
                         BNE     V2W_BOOT_DELAY_INNER

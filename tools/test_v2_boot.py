@@ -38,10 +38,9 @@ class MPU(BaseMPU):
     boot_waits = 0
 
     def step(self):
-        # Model the long, side-effect-free reset wait as one step. It must
-        # occur before CON_INIT samples FT245 host presence.
+        # Fast-forward the long reset wait after console selection.
         if self.pc == REPORT['worker']['V2W_BOOT_DELAY_OUTER']:
-            assert self.memory.ram[SYM['V2_CONSOLE']] == 0xFF
+            assert self.memory.ram[SYM['V2_CONSOLE']] in (0, 1)
             self.boot_waits += 1
             self.processorCycles += 52_675_519
             self.pc = REPORT['worker']['V2W_BOOT_DELAY_DONE']
