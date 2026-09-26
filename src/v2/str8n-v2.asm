@@ -131,14 +131,12 @@ V2_WORKER_COPIED:
                         STA     V2_PIA_CRA
                         LDA     #V2_LED_RUNNING
                         STA     V2_LED
-; Wait before PWE# is sampled. On a cold USB power cycle, FT245 host
-; configuration may lag CPU reset; sampling first can latch the ACIA instead.
-; The RAM helper runs only on reset. Software HOLD remains immediate.
+                        JSR     V2_CON_INIT
                         LDA     V2_AUTO
                         BEQ     V2_BOOT_DELAY_DONE
+                        LDY     #$A0
                         JSR     V2W_BOOT_DELAY
 V2_BOOT_DELAY_DONE:
-                        JSR     V2_CON_INIT
                         LDX     #V2_BANNER
                         JSR     V2_PRINT
                         LDA     V2_RESIDENT
