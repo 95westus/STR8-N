@@ -79,7 +79,7 @@ GATE C - inspect the verified Bank 0 preservation before alpha21 flash:
 
 [ ] P [ ] F [ ] NA  Ctrl+U sent packaged 4096-byte alpha21 top BIN once.
 [ ] P [ ] F [ ] NA  Installer reported `STR8-N TOP RECEIVED` and hash accepted.
-[ ] P [ ] F [ ] NA  `INSTALL STR8-N 2.0a21` entered at exact prompt.
+[ ] P [ ] F [ ] NA  `INSTALL STR8-N 2.0A21` entered at exact prompt (uppercase `A`).
 [ ] P [ ] F [ ] NA  B3:F program and verification completed.
 [ ] P [ ] F [ ] NA  `MIGRATION VERIFIED; PRESS PHYSICAL RESET` appeared.
 Installer result / timestamp: _____________________________________________

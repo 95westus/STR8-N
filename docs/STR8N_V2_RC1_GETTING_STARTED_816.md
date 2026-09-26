@@ -1,7 +1,8 @@
-# Getting started: STR8-N 2.0a21 RC1 on W65C816SXB/EDU
+# Getting started: STR8-N 2.0a21 RC1 on W65C02SXB or W65C816SXB/EDU
 
-This is the first-board installation card for an incoming **stock W65C816SXB**
-and optional **W65C816EDU**. It uses the STR8-N 2.0a21 RC1 ZIP on a Windows host.
+This is the stock-board installation card for a **W65C02SXB (SXB2)** or
+**W65C816SXB (SXB3)** and optional matching EDU. It uses the STR8-N 2.0a21
+RC1 ZIP on a Windows host.
 STR8-N is intended to run on the SXB **with or without** its matching EDU;
 the EDU is not required for the core monitor, USB console, or flash installer.
 The alpha21 firmware and corrected stock-board migration have board evidence
@@ -24,14 +25,14 @@ after the core installation passes.
 
 ## Installation and verification flow
 
-This is the order of the gates below, not a record of an 816 board test. Stop
+This is the order of the gates below. It is not a record of an 816 board test. Stop
 at any failed gate and record the result before changing flash.
 
 ```mermaid
 flowchart TD
     A[Verify RC1 package and top BIN hash] --> B[Connect stock SXB without EDU]
     B --> C[Read-only WDCMONv2 probe after physical RESET]
-    C --> D{SXB3 and compatible stock monitor?}
+    C --> D{Expected SXB2 or SXB3 and compatible stock monitor?}
     D -- No --> STOP[Stop and record mismatch]
     D -- Yes --> E[Start RAM installer and reset during arm]
     E --> F{RAM readback exact and flash ID BF/B5?}
@@ -80,40 +81,47 @@ flowchart TD
 
 ## 2. Read-only stock-board preflight
 
-With **only the W65C816SXB** attached, connect USB and note the board label,
+With **only the SXB** attached, connect USB and note the board label,
 flash-chip marking, COM port, and any stock WDCMON version. The packaged bridge
-is configured to expect board tag `SXB3` for this 816 attempt. That tag is an
-expected identity to verify on arrival, not a result already measured here.
+must be given the expected tag for your board: `SXB2` for W65C02SXB or
+`SXB3` for W65C816SXB. Verify the reported identity before proceeding.
 
 Run this **probe-only** command, replacing `COM4` with the actual port:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\TOOLS\start_wdcmonv2_ram.ps1 `
-  -Port COM4 -ExpectedBoardTag SXB3 -ProbeOnly -NoReset -PhysicalResetArmSeconds 60
+  -Port COM4 -ExpectedBoardTag SXB2 -ProbeOnly -NoReset -PhysicalResetArmSeconds 60
 ```
+
+For W65C816SXB, change `SXB2` to `SXB3`. Keep `-ProbeOnly` after the script
+path; `-Port COM4` alone requires an image path and is not a probe command.
 
 When the arm message appears, press the board's physical RESET once. Require
 `WDCMONV2 PROBE = PASS; NO RAM OR FLASH COMMAND ISSUED` and record the printed
 board tag, hardware version, and monitor version. If the reported tag is not
-`SXB3`, the monitor is not v2-compatible, or the probe cannot communicate,
+the expected tag, the monitor is not v2-compatible, or the probe cannot communicate,
 **stop before loading the RAM installer**. Do not override an unexpected tag
 solely to advance the procedure. The stock monitor's published board-info
 command is `$0C`; this step sends no RAM or flash write. If the flash chip is
 not the installer's expected SST39SF010A (`BF/B5`), the installer later refuses
 to write; stop and record the marking.
 
+If the probe times out or fails to synchronize, rerun the command and vary
+the delay between the `PHYSICAL RESET ARM` message and pressing physical RESET.
+Press RESET once while the arm is active; do not press it before the message.
+
 ## 3. Install the alpha21 top sector from RAM
 
 The WDCMONv2 path receives only the 4096-byte alpha21 top BIN. It copies and
 byte-verifies the original **entire** Bank 3 into an erased Bank 0, then writes
 Bank 3 sector F. It leaves Banks 1 and 2 untouched. A used Bank 0 that differs
-from Bank 3 is refused. This path has passed host checks but has **not** been
-run on a W65C816SXB.
+from Bank 3 is refused. This path has passed on a W65C02SXB, but has **not**
+been run on a W65C816SXB.
 
 Run, using the same COM port. The RC1 launcher automatically accepts `SXB2`
 (W65C02SXB) or `SXB3` (W65C816SXB) from WDCMONv2 board-info and reports
-the detected family. Other tags are refused before RAM loading. For this 816
-qualification, require the reported tag to be `SXB3` before continuing:
+the detected family. Other tags are refused before RAM loading. Require the
+reported tag to match your board before continuing:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\START-STR8N-V2-RC1.ps1 `
@@ -121,8 +129,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\START-STR8N-V2-RC1.ps1
 ```
 
 Press physical RESET **once while the 60-second arm is active**. Require the
-expected `SXB3` identity, `RAM READBACK = BYTE-EXACT`, and flash ID `BF/B5`
+expected `SXB2` or `SXB3` identity, `RAM READBACK = BYTE-EXACT`, and flash ID `BF/B5`
 before proceeding. Read the terminal prompts. For an erased Bank 0:
+
+If synchronization still fails before the installer starts, rerun the launcher
+and change the delay between the `PHYSICAL RESET ARM` message and the physical
+RESET press. Keep that press within the arm window. Never try another RESET
+during a RAM transfer or active flash write.
 
 1. At `TYPE COPY B3 TO B0>`, type `COPY B3 TO B0` and Enter. Wait for the
    complete copy and exact comparison. Do not reset or remove power while
@@ -130,7 +143,9 @@ before proceeding. Read the terminal prompts. For an erased Bank 0:
 2. At `SEND STR8-N TOP BIN; 4096 BYTES; START $F000`, press **Ctrl+U once**.
    The host bridge sends the packaged alpha21 top BIN. Require `STR8-N TOP
    RECEIVED` and then the install prompt. Ctrl+D has no role in this RC1 path.
-3. At `TYPE INSTALL STR8-N 2.0a21>`, type `INSTALL STR8-N 2.0a21` and Enter.
+3. At `TYPE INSTALL STR8-N 2.0a21>`, type **`INSTALL STR8-N 2.0A21`** and Enter.
+   The installer uppercases input before matching it. The displayed prompt
+   uses lowercase `a`, but the comparison token uses uppercase `A`.
    Wait for `MIGRATION VERIFIED; PRESS PHYSICAL RESET`.
 4. Only after that verified message, press physical RESET once. The alpha21
    startup delay is about 6.58 seconds at 8 MHz before console selection.
@@ -143,13 +158,16 @@ external reflashing; no interruption-recovery claim is made.
 
 ## 4. Verify the first alpha21 boot
 
-The expected startup begins:
+The expected startup begins with the line for your board:
 
 ```text
-STR8-N 2.0a21 B3 65C816
+STR8-N 2.0a21 B3 65C02    (SXB2)
+STR8-N 2.0a21 B3 65C816   (SXB3)
 ABI 65C02 | 816E | 816N-VEC
 B3>
 ```
+
+Only one of the two `STR8-N` banner lines appears.
 
 An erased configuration should leave the monitor at `B3>`. If a hold window
 appears because the board carries configuration, send `S` during the hold to
@@ -162,9 +180,11 @@ D 7D01 7D02
 ```
 
 `D F000 F003` should show `53 4E 02 00` (`SN` v2 signature).
-`D 7D01 7D02` should show `16 00`: W65C816 CPU ID `$16` and FT245 console
-ID `$00`. Record the banner, prompt, commands, and results. For a full 4096-byte
-Bank 3 F readback, send `D F000 FFFF` at `B3>` and wait until every row and the
+`D 7D01 7D02` should show `02 00` on W65C02SXB or `16 00` on W65C816SXB;
+the second byte is FT245 console ID `$00`. Record the banner, prompt, commands,
+and results. For a full 4096-byte
+Bank 3 F dump on **either** board, send `D F000 FFFF` at `B3>` and wait until
+every row from `F000:` through `FFF0:` and the
 prompt return. Then exit the bridge terminal with Ctrl+`]` and verify its raw
 capture (replace the sample filename with the one printed by the launcher):
 
@@ -183,7 +203,7 @@ Exit the bridge terminal only after the board is idle. Its raw capture and
 folder. Keep any stock-monitor bytes in owner-local files and out of a public
 issue, repository commit, or release archive.
 
-## 5. Add the EDU and expand qualification
+## 5. Add the EDU and expand qualification (W65C816SXB only)
 
 After the SXB passes the core checks, power it off. Align the EDU's J1-J4
 connectors with the SXB's matching headers according to the
