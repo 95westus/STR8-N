@@ -73,7 +73,7 @@ loads and byte-verifies the installer in RAM, then exposes its terminal. The
 installer refuses a used, different Bank 0. With an erased Bank 0 it asks to
 copy and verify the original complete Bank 3 there before touching Bank 3 F.
 It then requests the packaged top BIN via Ctrl+U and requires a separate
-`INSTALL STR8-N 2.0a21` confirmation. After verification it stays in RAM and
+`INSTALL STR8-N 2.0A21` confirmation (uppercase `A`, on either board). After verification it stays in RAM and
 asks for **physical RESET**, which initializes alpha21's RAM state. Preserve
 owner-local stock archives privately; the archive includes none.
 
