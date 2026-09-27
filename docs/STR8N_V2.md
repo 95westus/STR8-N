@@ -1,5 +1,13 @@
 # STR8-N v2 development
 
+This document preserves development contracts and alpha21 history. For the
+installed dot-enabled 2.0a22 E/F candidate, use the current
+[quickstart](STR8N_V2_A22_QUICKSTART.md),
+[operator's guide](STR8N_V2_A22_OPERATORS_GUIDE.md), and
+[technical manual](STR8N_V2_A22_TECHNICAL_MANUAL.md). In particular, a22
+uses 759 RAM-worker bytes, fills F code through `$FFDF`, reserves Bank 3 E
+for S/R/T and configuration, and can autostart without a ready USB host.
+
 Development branch: `v2`. The starting firmware is commit `6d1af3d`,
 preserved by tag `v1.35`. This document describes the complete intended v2.
 Alpha21 moves the reset-only delay before `CON_INIT` samples FT245 host
