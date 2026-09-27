@@ -1137,6 +1137,10 @@ W2I_CRLF:
 W2I_BANK_BITS:          DB              $CC,$CE,$EC,$EE
 W2I_FNV_OFFSET:         DB              $C5,$9D,$1C,$81
 
+                        IF              STR8_V2_A22
+W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 2.0a22 CANDIDATE MIGRATION",$0D,$0A
+                        DB              "B3 STOCK -> B0; STR8-N 2.0a22 -> B3:F",$0D,$0A
+                        ELSE
                         IF              STR8_V2_RC1
 W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 2.0a21 RC1 MIGRATION",$0D,$0A
                         DB              "B3 STOCK -> B0; STR8-N 2.0a21 -> B3:F",$0D,$0A
@@ -1147,6 +1151,7 @@ W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.35 MIGRATI
                         ELSE
 W2I_MSG_TITLE:          DB              $0D,$0A,"WDCMONV2 -> STR8-N 1.33 MIGRATION",$0D,$0A
                         DB              "B3 STOCK -> B0; STR8-N 1.33 -> B3:F",$0D,$0A
+                        ENDIF
                         ENDIF
                         ENDIF
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0",$0D,$0A,0
@@ -1164,6 +1169,9 @@ W2I_MSG_B0_OK:          DB              "B0 == ORIGINAL B3 VERIFIED",$0D,$0A,0
 W2I_MSG_SEND_CANDIDATE: DB              "SEND STR8-N TOP BIN; 4096 BYTES; START $F000",$0D,$0A,0
 W2I_MSG_CANDIDATE_RX:   DB              "STR8-N TOP RECEIVED",$0D,$0A,0
 W2I_MSG_CANDIDATE_BAD:  DB              "RECEIVED STR8-N TOP CHECK FAILED",$0D,$0A,0
+                        IF              STR8_V2_A22
+W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 2.0a22> ",0
+                        ELSE
                         IF              STR8_V2_RC1
 W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 2.0a21> ",0
                         ELSE
@@ -1171,6 +1179,7 @@ W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 2.0a21> ",0
 W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 1.35> ",0
                         ELSE
 W2I_MSG_INSTALL_CONFIRM: DB             "TYPE INSTALL STR8-N 1.33> ",0
+                        ENDIF
                         ENDIF
                         ENDIF
 W2I_MSG_INSTALL_CANCEL: DB              "CANCELLED: INSTALL TEXT DID NOT MATCH",$0D,$0A,0
@@ -1216,6 +1225,9 @@ W2R_MSG_BOOT:           DB              "BOOT STOCK B3",$0D,$0A,0
                         ENDIF
 
 W2I_TOKEN_COPY:         DB              "COPY B3 TO B0",0
+                        IF              STR8_V2_A22
+W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 2.0A22",0
+                        ELSE
                         IF              STR8_V2_RC1
 W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 2.0A21",0
                         ELSE
@@ -1223,6 +1235,7 @@ W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 2.0A21",0
 W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.35",0
                         ELSE
 W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.33",0
+                        ENDIF
                         ENDIF
                         ENDIF
 W2I_ARCHIVE_TOKEN:      DB              "ARCHIVE ",0,0,0,0,0,0,0,0,0

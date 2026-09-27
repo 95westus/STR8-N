@@ -1,15 +1,22 @@
 # STR8-N v2
 
-**4 KB guarded board monitor and loader for WDC W65C02SXB.** It supports
-bank selection, RAM/S19 loading, verified flash writes, and boot handoff.
+**Guarded board monitor and loader for WDC W65C02SXB.** The RC1 resident
+monitor occupies the 4 KB F sector; the later 2.0a22 candidate adds an
+optional S/R/T extension in the E sector. It supports bank selection,
+RAM/S19 loading, verified flash writes, and boot handoff.
 W65C816SXB and matching EDU boards are intended targets; their RC1 hardware
 qualification is still in progress.
+
+The [2.0a22 release candidate package guide](docs/STR8N_V2_A22_RC_PACKAGE_README.md)
+covers its stock WDCMONv2 F-sector migration, new v2 RAM bank maintenance,
+guarded top updater, and the separate E-extension installation boundary.
+Build the candidate ZIP with `python tools/package_v2_a22_rc.py`.
 
 RC1 includes a RAM installer for migration from a stock WDCMONv2 board and a
 guarded updater for an existing compatible STR8-N v1.3x installation. These are
 installation paths, not drop-in compatibility with the older monitors' commands
-or data structures. The WDCMONv2-to-RC1 path has host checks and awaits its
-first factory-board run.
+or data structures. The WDCMONv2-to-RC1 path passed a factory-board run on
+W65C02SXB board 2205; W65C816SXB migration remains unqualified.
 
 [Read the v2 announcement](docs/STR8N_V2_ANNOUNCEMENT.md) and join its
 [GitHub discussion](https://github.com/95westus/STR8-N/discussions/2).
@@ -23,16 +30,21 @@ confirmation before flash changes, and verifies writes; it does not choose a
 board layout or manage guest applications for you.
 
 HIMON, ASM-F2, AP, and other R-YORS software remain separate guest layers.
-The [v2 command and memory guide](docs/STR8N_V2.md) describes the current
-interfaces and limits. The v1.34 material farther down this README describes
-the earlier release line.
+The [2.0a22 operator's guide](docs/STR8N_V2_A22_OPERATORS_GUIDE.md)
+describes the installed candidate's commands and limits. The
+[v2 development guide](docs/STR8N_V2.md) retains earlier contracts and
+history. The v1.34 material farther down this README describes the earlier
+release line.
 
 ## V2 quick index
 
 | Start here | What it covers |
 | --- | --- |
+| [2.0a22 quickstart](docs/STR8N_V2_A22_QUICKSTART.md) | Dot-enabled COM3 candidate: first prompt, boot, save/list/restore, and autostart. |
+| [2.0a22 operator's guide](docs/STR8N_V2_A22_OPERATORS_GUIDE.md) | Current candidate commands, S/R/T procedure, errors, and update boundaries. |
+| [2.0a22 technical manual](docs/STR8N_V2_A22_TECHNICAL_MANUAL.md) | E/F and RAM maps, measured sizes, call sites, ABIs, record/config layouts, and diagrams. |
 | [Getting started on W65C816SXB/EDU](docs/STR8N_V2_RC1_GETTING_STARTED_816.md) | Stock-board preflight, installation, and first verification; EDU is optional. |
-| [V2 command and memory guide](docs/STR8N_V2.md) | Monitor commands, memory map, host requirements, and operating limits. |
+| [V2 development guide](docs/STR8N_V2.md) | Historical command, memory, and design notes through alpha21. |
 | [RC1 package guide](docs/STR8N_V2_RC1_PACKAGE_README.md) | Which BIN, S19, `.a`, and host-tool files to use. |
 | [ASM-F2 application guide](docs/STR8N_V2_RC1_ASMF2_APPLICATIONS.md) | Using the two STR8-N `.a` utilities with public R-YORS ASM-F2. |
 | [Printable 816 qualification record](docs/STR8N_V2_RC1_816_QUALIFICATION_CHECKLIST.md) | Board checks, evidence, signatures, and questions/comments/concerns. |
@@ -48,11 +60,14 @@ the earlier release line.
 Unresolved defects and hardware investigations are listed in the
 [repo issue tracker](ISSUES.md).
 
-The current W65C02SXB operating claim assumes a USB FT245 data host is
+The RC1 W65C02SXB operating claim assumes a USB FT245 data host is
 connected and enumerated at startup and supplies stable board power. Keep the
 USB cable connected; do not reset or remove power during transfers or flash
 writes. The ACIA backup-console path remains unqualified. See the
 [v2 operating scope](docs/STR8N_V2.md#supported-host-connected-operating-scope).
+The [2.0a22 COM3 regression](docs/STR8N_V2_A22_REGRESSION_2026-09-26.md)
+adds a scoped headless autostart check and dot-enabled FT245 behavior for its
+installed E/F pair.
 
 **STR8-N 2.0a21 RC1 is ready as a binary/S19 release candidate with two
 ASM-F2 `.a` utilities.** The
