@@ -13,12 +13,16 @@ optional E-sector S/R/T extension. W65C816SXB board 2609 passed the core
 migration and regression checks. W65C02SXB board 2205 passed the unified
 installer and no-EDU migration checks. The EDU daughterboard was absent.
 
+[Download the alpha24 board-test package](https://github.com/95westus/STR8-N/releases/download/v2.0a24/str8n-v2-alpha24-board-test.zip)
+and its [SHA-256 checksum](https://github.com/95westus/STR8-N/releases/download/v2.0a24/str8n-v2-alpha24-board-test.sha256).
+
 The same alpha24 WDCMONv2 RAM installer runs on both SXB CPU families: its
 `$FB` entry byte is XCE on the 816 and a one-byte NOP on the W65C02S. The
 65C02 installer runs in an automated CPU/flash model; the 816 qualification
 uses recorded manual board tests.
 
 - [W65C816SXB manual migration guide](docs/STR8N_V2_A24_816_MANUAL_MIGRATION.md)
+- [Guarded B3:E SAVE/RESTORE installation guide](docs/STR8N_V2_A24_B3_E_INSTALL.md)
 - [Alpha24 package contents and limits](docs/STR8N_V2_A24_PACKAGE_README.md)
 - [Alpha24 maps and diagrams](docs/STR8N_V2_A24_MAPS.md)
 - [816 qualification checklist](docs/STR8N_V2_A24_816_CHECKLIST.md)

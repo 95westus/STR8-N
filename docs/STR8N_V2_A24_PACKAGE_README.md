@@ -21,6 +21,7 @@ was absent on both boards; EDU presence and RTC work belong to the next alpha.
 | `APPLICATIONS/str8n-v2-bank-maint-2000.s19` | Static RAM bank maintenance image, load with STR8-N `L` then `G 2000`. |
 | `APPLICATIONS/str8n-v2-bank-maint-2000.a` | ASM-F2 ORG/DB carrier of the same 703 machine bytes. Live ASM-F2 ingestion was not tested on board 2609. |
 | `APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.s19` and `.a` | Matching alpha23-to-alpha24 B3:F updater carriers. They require erased B2:F for backup and therefore refuse board 2609. |
+| `TOOLS/BUILD-B3-E-UPDATER.py`, `TOOLS/b3-e-guarded-template-2000.s19`, `GUIDE-B3-E.md` | Build a board-specific guarded B3:E RAM installer `.s19` from an exact 8 KiB B3:E/F binary readback. No assembler needed after extracting the ZIP. |
 | `PUBLIC/str8n-v2-public.inc` | Published ROM/RAM ABI addresses, modes, and capability bits. |
 | `MIGRATE-STR8N-V2-A24.ps1` | Single Windows WDCMONv2 migration script; prompts for COM if `-Port` omitted. |
 | `GUIDE-816.md`, `CHECKLIST-02-NO-EDU.md`, `MAPS.md` | 816 manual migration, 02 no-EDU test gates, T48 offsets, preservation map, and diagrams. |
@@ -56,9 +57,11 @@ packaged top BIN only when requested. Wait for verified completion before
 pressing physical RESET. Do not reset or remove power during a flash write.
 
 The F-sector installer does not install the optional E-sector S/R extension.
-E installation on board 2609 required a guarded updater built for its exact
-observed E preimage. The package has no general-purpose resident B3:E updater.
-Do not issue ordinary monitor `I E000 EFFF` against resident B3; it is protected.
+For B3:E, follow `GUIDE-B3-E.md` to build a guarded RAM installer `.s19` from
+the exact E/F readback of the target board. The builder checks the alpha24 F
+image and preserves that board's E margins. The generated installer refuses a
+different live E preimage. It is not a universal fixed E image. Do not issue
+ordinary monitor `I E000 EFFF` against resident B3; it is protected.
 
 The `.a` carrier is for a separate public HIMON/ASM-F2 session. STR8-N `L`
 accepts S19, not `.a`. Bank maintenance can map all sectors with `M`; copy and
