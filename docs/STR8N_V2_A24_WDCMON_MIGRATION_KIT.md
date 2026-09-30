@@ -2,7 +2,8 @@
 
 Build offline with `make v2-a24-migration-kit`. The target rebuilds alpha24,
 links the WDCMONv2 RAM installer, builds static bank maintenance in S19 and
-ASM-F2 `.a` formats, checks both images, and runs the binary-probe mock.
+ASM-F2 `.a` formats, checks both images, executes the linked installer in a
+W65C02 CPU/FT245/flash model, and runs the binary-probe mock.
 It opens no serial port and changes no board flash.
 
 | Artifact | Purpose | SHA-256 |
@@ -45,6 +46,15 @@ switch produces the same alpha24 S19 SHA-256 above. The
 [W65C02SXB board 2205 run](STR8N_V2_A24_2205_NO_EDU_2026-09-30.md) then
 qualified this image on physical 65C02 hardware without the EDU board.
 The alpha22 installer still builds and validates after the shared source change.
+
+`tools/test_v2_a24_wdcmon_65c02.py` runs the exact linked alpha24 S19 with
+WDC's one-byte `$FB` NOP behavior. Its successful case copies B3 to erased
+B0, installs the exact F BIN, and checks B1/B2 preservation. Two refusal cases
+check occupied B0 and a changed candidate BIN before B3:F mutation. The
+machine-readable receipt is packaged as `TESTS/wdcmon-65c02-test.json`.
+This is a logical hardware model; the physical 02 result is recorded below.
+The 816 evidence is manual board testing, recorded in the package's board
+2609 session, inventory, E-install report, and checklist.
 
 Use the [02SXB no-EDU checklist](STR8N_V2_A24_02_NO_EDU_CHECKLIST.md) for
 future runs. Do not treat absent EDU peripherals as a migration failure.

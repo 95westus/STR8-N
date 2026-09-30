@@ -14,7 +14,9 @@ migration and regression checks. W65C02SXB board 2205 passed the unified
 installer and no-EDU migration checks. The EDU daughterboard was absent.
 
 The same alpha24 WDCMONv2 RAM installer runs on both SXB CPU families: its
-`$FB` entry byte is XCE on the 816 and a one-byte NOP on the W65C02S.
+`$FB` entry byte is XCE on the 816 and a one-byte NOP on the W65C02S. The
+65C02 installer runs in an automated CPU/flash model; the 816 qualification
+uses recorded manual board tests.
 
 - [W65C816SXB manual migration guide](docs/STR8N_V2_A24_816_MANUAL_MIGRATION.md)
 - [Alpha24 package contents and limits](docs/STR8N_V2_A24_PACKAGE_README.md)

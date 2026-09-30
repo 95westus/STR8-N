@@ -15,6 +15,7 @@ was absent on both boards; EDU presence and RTC work belong to the next alpha.
 | `FIRMWARE/str8n-v2-alpha24-f000-ffff.bin` | Exact 4 KiB Bank 3 F image for the installer or T48 offset `$1F000`; SHA-256 `43e6ee966963e1cc401986581742cc75b302cd0a02cfaf22965fe7ab8a43ec1a`. |
 | `FIRMWARE/str8n-v2-alpha24-e000-efff.bin` | Separate 4 KiB generic E page for T48 offset `$1E000`; merge board-specific E margins before using on an occupied board. |
 | `FIRMWARE/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | Unified 02/816 RAM installer for a stock WDCMONv2 board. It preserves original B3 in erased B0 before installing F. |
+| `TESTS/wdcmon-65c02-test.json` | Automated 65C02 opcode/FT245/flash-model receipt: successful migration, occupied-B0 refusal, and altered-BIN refusal. Physical board evidence is separate. |
 | `FIRMWARE/str8n-v2-alpha24-e000-ffff.bin` and `.s19` | Generic E/F image for a deliberate external-programmer or compatible new-bank workflow. Its E margins are `$FF`; board 2609 retained its pre-existing E margins instead. |
 | `FIRMWARE/str8n-v2-alpha24-8000-ffff.bin` and `.s19` | Generic full 32 KiB bank image for an external-programmer or expressly selected full-bank workflow. It replaces the entire target bank. |
 | `APPLICATIONS/str8n-v2-bank-maint-2000.s19` | Static RAM bank maintenance image, load with STR8-N `L` then `G 2000`. |
@@ -26,6 +27,7 @@ was absent on both boards; EDU presence and RTC work belong to the next alpha.
 | `STR8N_V2_2609_*` | Board 2609 stock restore and later F-only remigration records linked from the map. |
 | `STR8N_V2_A24_2609_OPERATOR_SESSION.md`, `EVIDENCE/*.raw`, `EVIDENCE/*.raw.events.txt` | Owner-approved, byte-exact COM8 migration session showing the typed line, normalized board echo, and accepted install. |
 | `BOARD-2205-NO-EDU.md` | Physical 02SXB migration and no-EDU test result; its detailed serial logs remain owner-local. |
+| `MANUAL-816-INVENTORY.md`, `MANUAL-816-E-INSTALL.md` | Recorded manual W65C816SXB board 2609 identity, migration, E-sector, readback, and cold-boot checks with their limits. |
 | `CHECKLIST-816.md`, `CHECKLIST-816.pdf` | Printable and fillable qualification record. |
 
 `MANIFEST.json` records every packaged file's SHA-256 and the source commit.
