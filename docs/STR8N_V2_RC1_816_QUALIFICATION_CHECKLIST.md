@@ -1,5 +1,11 @@
 # STR8-N 2.0a21 RC1 - W65C816SXB/EDU qualification record
 
+**Board 2609 correction (2026-09-30):** The binary WDCMONv2 tag measured on
+this board is `SXB6` (hardware 3.00, monitor 2.00). The `SXB3` expectation
+below was unverified for board 2609. Use the
+[current board record](STR8N_V2_2609_INVENTORY_2026-09-30.md) for its evidence;
+this frozen RC1 checklist has not been completed on that board.
+
 Print one copy per physical SXB. Keep this signed record with the raw terminal
 capture, event log, readback result, and any owner-local flash backup.
 

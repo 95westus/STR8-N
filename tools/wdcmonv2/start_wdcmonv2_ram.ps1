@@ -1,6 +1,6 @@
 param(
     [string]$Port,
-    [ValidateSet('Auto', 'SXB2', 'SXB3')][string]$ExpectedBoardTag = 'SXB2',
+    [ValidateSet('Auto', 'SXB?', 'SXB2', 'SXB3', 'SXB6')][string]$ExpectedBoardTag = 'SXB?',
     [string]$ImagePath,
     [int]$BaudRate = 115200,
     [int]$ChunkBytes = 256,
@@ -320,12 +320,22 @@ function Get-WdcBoardInfo {
 
 function Assert-WdcBoardTag {
     param([string]$Tag, [byte[]]$Reply)
-    if ($Tag -notin @('SXB2', 'SXB3') -or
-        ($script:ExpectedBoardTag -ne 'Auto' -and $Tag -ne $script:ExpectedBoardTag)) {
+    $signature = $Reply.Length -eq 12 -and $Reply[0] -eq 0x53 -and
+        $Reply[1] -eq 0x58 -and $Reply[2] -eq 0x42 -and
+        $Reply[3] -ge 0x21 -and $Reply[3] -le 0x7E
+    if (-not $signature -or
+        ($script:ExpectedBoardTag -notin @('Auto', 'SXB?') -and $Tag -ne $script:ExpectedBoardTag)) {
         throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($Reply)), $script:ExpectedBoardTag)
     }
-    $family = if ($Tag -eq 'SXB2') { 'W65C02SXB' } else { 'W65C816SXB' }
-    Write-Host ('BOARD FAMILY = {0} ({1})' -f $family, $Tag)
+    Write-Host ('BOARD SIGNATURE = {0}; PHYSICAL BOARD TYPE UNCONFIRMED' -f $Tag)
+}
+
+function Assert-BoardTypeConfirmation {
+    param([string]$Answer)
+    if ($Answer -cnotin @('W65C02SXB', 'W65C816SXB')) {
+        throw 'Board type was not confirmed; RAM installer was not loaded'
+    }
+    return $Answer
 }
 
 function Get-WdcBoardInfoAfterResetArm {
@@ -349,8 +359,15 @@ function Get-WdcBoardInfoAfterResetArm {
                     Start-Sleep -Milliseconds 100
                     $Serial.DiscardInBuffer()
                     Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($script:WdcBoardInfo))
-                    $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
-                    $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
+                    $Serial.ReadTimeout = [Math]::Max($oldTimeout, 1000)
+                    try {
+                        $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
+                    } catch {
+                        if ($_.Exception.Message -notlike 'WDCMONv2 timeout during armed board-info reply*') { throw }
+                        Write-SessionEvent 'BOARD INFO RETRY AFTER EMPTY/INCOMPLETE REPLY'
+                        $Serial.ReadTimeout = 100
+                        continue
+                    }
                     $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
                     Assert-WdcBoardTag -Tag $tag -Reply $reply
                     return [pscustomobject]@{
@@ -365,8 +382,15 @@ function Get-WdcBoardInfoAfterResetArm {
                         Start-Sleep -Milliseconds 100
                         $Serial.DiscardInBuffer()
                         Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($script:WdcBoardInfo))
-                        $Serial.ReadTimeout = [Math]::Max($oldTimeout, 5000)
-                        $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
+                        $Serial.ReadTimeout = [Math]::Max($oldTimeout, 1000)
+                        try {
+                            $reply = Read-SerialExact -Serial $Serial -Count 12 -Purpose 'armed board-info reply'
+                        } catch {
+                            if ($_.Exception.Message -notlike 'WDCMONv2 timeout during armed board-info reply*') { throw }
+                            Write-SessionEvent 'BOARD INFO RETRY AFTER EMPTY/INCOMPLETE REPLY'
+                            $Serial.ReadTimeout = 100
+                            continue
+                        }
                         $tag = [System.Text.Encoding]::ASCII.GetString($reply, 0, 4)
                         Assert-WdcBoardTag -Tag $tag -Reply $reply
                         return [pscustomobject]@{
@@ -558,21 +582,35 @@ if ($SelfTest) {
     $fixture = Convert-ToByteArray @(0x68,0x65,0x6C,0x6C,0x6F)
     if ((Get-Fnv1a32 -Bytes $fixture) -ne [uint32]0x4F9F2CAB) { throw 'FNV-1a self-test failed' }
     $mock = [Wdcmonv2ProtocolMock]::new()
-    $mock.BoardTag = if ($ExpectedBoardTag -eq 'Auto') { 'SXB2' } else { $ExpectedBoardTag }
+    $mock.BoardTag = if ($ExpectedBoardTag -in @('Auto', 'SXB?')) { 'SXB2' } else { $ExpectedBoardTag }
     $board = Get-WdcBoardInfo -Serial $mock
     if ($board.Tag -ne $mock.BoardTag -or $board.Hardware -ne 123 -or $board.Software -ne 200) { throw 'Board-info protocol self-test failed' }
-    if ($ExpectedBoardTag -eq 'Auto') {
+    if ($ExpectedBoardTag -in @('Auto', 'SXB?')) {
         $other = [Wdcmonv2ProtocolMock]::new()
         $other.BoardTag = 'SXB3'
         $otherBoard = Get-WdcBoardInfo -Serial $other
         if ($otherBoard.Tag -ne 'SXB3') { throw 'SXB3 automatic detection self-test failed' }
+        $sxb6 = [Wdcmonv2ProtocolMock]::new()
+        $sxb6.BoardTag = 'SXB6'
+        $sxb6Board = Get-WdcBoardInfo -Serial $sxb6
+        if ($sxb6Board.Tag -ne 'SXB6') { throw 'SXB6 automatic detection self-test failed' }
+        $future = [Wdcmonv2ProtocolMock]::new()
+        $future.BoardTag = 'SXB7'
+        if ((Get-WdcBoardInfo -Serial $future).Tag -ne 'SXB7') { throw 'SXB? wildcard self-test failed' }
         $unsupported = [Wdcmonv2ProtocolMock]::new()
-        $unsupported.BoardTag = 'SXB4'
+        $unsupported.BoardTag = 'BAD4'
         try {
             $null = Get-WdcBoardInfo -Serial $unsupported
             throw 'Unsupported board identity was accepted'
         } catch {
             if ($_.Exception.Message -notlike 'Unsupported WDCMONv2 board identity*') { throw }
+        }
+        if ((Assert-BoardTypeConfirmation -Answer 'W65C816SXB') -ne 'W65C816SXB') { throw 'Board-type confirmation self-test failed' }
+        try {
+            $null = Assert-BoardTypeConfirmation -Answer 'yes'
+            throw 'Unconfirmed board type was accepted'
+        } catch {
+            if ($_.Exception.Message -notlike 'Board type was not confirmed*') { throw }
         }
     }
     $writeFixture = Convert-ToByteArray @(0x11,0x22,0x33,0x44)
@@ -779,6 +817,11 @@ try {
         Write-Host 'WDCMONV2 PROBE = PASS; NO RAM OR FLASH COMMAND ISSUED'
         return
     }
+
+    Write-Host ('WDCMON reports {0}. Check the physical SXB label before loading RAM.' -f $board.Tag)
+    $confirmedType = Assert-BoardTypeConfirmation -Answer (Read-Host 'Type W65C02SXB or W65C816SXB to confirm board type')
+    Write-SessionEvent ('PHYSICAL BOARD TYPE CONFIRMED={0} TAG={1}' -f $confirmedType, $board.Tag)
+    Write-Host ('PHYSICAL BOARD TYPE = {0}; BOARD SIGNATURE = {1}' -f $confirmedType, $board.Tag)
 
     for ($offset = 0; $offset -lt $image.Bytes.Length; $offset += $ChunkBytes) {
         $count = [Math]::Min($ChunkBytes, $image.Bytes.Length - $offset)

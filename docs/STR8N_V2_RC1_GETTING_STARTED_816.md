@@ -1,5 +1,11 @@
 # Getting started: STR8-N 2.0a21 RC1 on W65C02SXB or W65C816SXB/EDU
 
+**Board 2609 correction (2026-09-30):** Its WDCMONv2 binary board-info tag
+is `SXB6`, hardware 3.00, monitor 2.00. The `SXB3` expectation below was
+unverified for this board. The alpha24 bridge accepts `SXB6` and retries an
+early incomplete reply; see the [board record](STR8N_V2_2609_INVENTORY_2026-09-30.md).
+The frozen RC1 package procedure below has not been qualified on board 2609.
+
 This is the stock-board installation card for a **W65C02SXB (SXB2)** or
 **W65C816SXB (SXB3)** and optional matching EDU. It uses the STR8-N 2.0a21
 RC1 ZIP on a Windows host.

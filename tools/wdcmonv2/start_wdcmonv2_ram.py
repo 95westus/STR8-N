@@ -176,10 +176,16 @@ def get_board_info(port) -> BoardInfo:
     start_command(port, BOARD_INFO)
     reply = read_exact(port, 12, "board-info reply")
     tag = reply[:4].decode("ascii", errors="replace")
-    if tag != "SXB2":
-        raise LoaderError(f"Unsupported WDCMONv2 board identity {reply.hex('-').upper()}; expected SXB2")
+    if len(reply) != 12 or reply[:3] != b"SXB" or not 0x21 <= reply[3] <= 0x7E:
+        raise LoaderError(f"Unsupported WDCMONv2 board identity {reply.hex('-').upper()}")
     hardware, software = struct.unpack_from("<II", reply, 4)
     return BoardInfo(tag, hardware, software, reply)
+
+
+def confirm_board_type(answer: str) -> str:
+    if answer not in ("W65C02SXB", "W65C816SXB"):
+        raise LoaderError("Board type was not confirmed; RAM installer was not loaded")
+    return answer
 
 
 def write_memory(port, address: int, data: bytes) -> None:
@@ -212,6 +218,7 @@ class ProtocolMock:
         self.payload = bytearray()
         self.need = 0
         self.executed_address = -1
+        self.board_tag = b"SXB2"
 
     def write(self, data: bytes) -> int:
         for value in data:
@@ -244,7 +251,7 @@ class ProtocolMock:
             self.commands.append(value)
             self.payload.clear()
             if value == BOARD_INFO:
-                self.receive.extend(b"SXB2" + struct.pack("<II", 123, 200))
+                self.receive.extend(self.board_tag + struct.pack("<II", 123, 200))
                 self.state = "sync0"
             elif value in (WRITE_MEMORY, READ_MEMORY):
                 self.need = 6
@@ -290,6 +297,30 @@ def self_test() -> None:
     board = get_board_info(mock)
     if (board.tag, board.hardware, board.software) != ("SXB2", 123, 200):
         raise LoaderError("Board-info protocol self-test failed")
+    sxb6 = ProtocolMock()
+    sxb6.board_tag = b"SXB6"
+    if get_board_info(sxb6).tag != "SXB6":
+        raise LoaderError("SXB6 board-info protocol self-test failed")
+    future = ProtocolMock()
+    future.board_tag = b"SXB7"
+    if get_board_info(future).tag != "SXB7":
+        raise LoaderError("SXB? wildcard self-test failed")
+    invalid = ProtocolMock()
+    invalid.board_tag = b"BAD4"
+    try:
+        get_board_info(invalid)
+    except LoaderError:
+        pass
+    else:
+        raise LoaderError("Invalid SXB signature was accepted")
+    if confirm_board_type("W65C816SXB") != "W65C816SXB":
+        raise LoaderError("Board-type confirmation self-test failed")
+    try:
+        confirm_board_type("yes")
+    except LoaderError:
+        pass
+    else:
+        raise LoaderError("Unconfirmed board type was accepted")
     fixture = b"\x11\x22\x33\x44"
     write_memory(mock, 0x2000, fixture)
     if read_memory(mock, 0x2000, len(fixture)) != fixture:
@@ -490,6 +521,10 @@ def run_loader(
             board = get_board_info(port)
             events.write(f"BOARD TAG={board.tag} HW={board.hardware / 100:.2f} WDCMON={board.software / 100:.2f}")
             print(f"BOARD      = {board.tag}; HW={board.hardware / 100:.2f}; WDCMON={board.software / 100:.2f}")
+            print(f"WDCMON reports {board.tag}. Check the physical SXB label before loading RAM.")
+            confirmed_type = confirm_board_type(input("Type W65C02SXB or W65C816SXB to confirm board type: ").strip())
+            events.write(f"PHYSICAL BOARD TYPE CONFIRMED={confirmed_type} TAG={board.tag}")
+            print(f"PHYSICAL BOARD TYPE = {confirmed_type}; BOARD SIGNATURE = {board.tag}")
             for offset in range(0, len(image.data), chunk_bytes):
                 chunk = image.data[offset : offset + chunk_bytes]
                 address = image.first + offset
