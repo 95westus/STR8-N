@@ -46,5 +46,5 @@ the W65C816SXB. EDU peripherals are outside this test.
   scan text is not an EDU-presence result.
 
 The [W65C02S datasheet](https://www.wdc65xx.com/wdc/documentation/w65c02s.pdf)
-lists `$FB` among one-byte NOP opcodes. The 02 migration result remains
-**pending** until the physical session and readback are recorded.
+lists `$FB` among one-byte NOP opcodes. [Board 2205](STR8N_V2_A24_2205_NO_EDU_2026-09-30.md)
+completed this checklist's migration and readback path on 2026-09-30.

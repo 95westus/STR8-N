@@ -41,12 +41,13 @@ RAM range, S9 entry, candidate F identity, refusal and recovery gate order,
 and that B1/B2 are untouched. The unified entry starts `SEC; $FB; SEI`. WDC
 documents `$FB` as a one-byte NOP on W65C02S; on W65C816S it is XCE, so the
 entry forces emulation mode before the shared 8-bit code. The renamed build
-switch produces the same alpha24 S19 SHA-256 above. This is offline CPU-entry
-qualification; the W65C02SXB alpha24 migration still needs a physical run.
+switch produces the same alpha24 S19 SHA-256 above. The
+[W65C02SXB board 2205 run](STR8N_V2_A24_2205_NO_EDU_2026-09-30.md) then
+qualified this image on physical 65C02 hardware without the EDU board.
 The alpha22 installer still builds and validates after the shared source change.
 
-Use the [02SXB no-EDU checklist](STR8N_V2_A24_02_NO_EDU_CHECKLIST.md) for that
-run. Do not treat absent EDU peripherals as a migration failure.
+Use the [02SXB no-EDU checklist](STR8N_V2_A24_02_NO_EDU_CHECKLIST.md) for
+future runs. Do not treat absent EDU peripherals as a migration failure.
 
 The first board 2609 load had exact RAM readback, but execution returned to
 the shipped native EDU menu without showing the installer prompt. The revised
