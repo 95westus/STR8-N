@@ -7,7 +7,7 @@ It opens no serial port and changes no board flash.
 
 | Artifact | Purpose | SHA-256 |
 | --- | --- | --- |
-| `BUILD/v2-alpha24-wdcmon-ram/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | WDCMONv2 RAM installer at `$2000` | `ec57ea1467438eb28bd3688625574d080ac1b6f556467f2b90b65cd7c8fda4e1` |
+| `BUILD/v2-alpha24-wdcmon-ram/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | WDCMONv2 816 RAM installer at `$2000` | `66bd1030c2f48444826f03562886fc4828d4047f36d4ba42d1e5f8e5396cbebe` |
 | `BUILD/v2-alpha24-wdcmon-ram/str8n-v2-alpha24-f000-ffff.bin` | Exact F image supplied separately to installer | `43e6ee966963e1cc401986581742cc75b302cd0a02cfaf22965fe7ab8a43ec1a` |
 | `tools/v2-apps/str8n-v2-bank-maint-2000.s19` | Bank maintenance, `L` then `G 2000` under STR8-N | `7fad3875a12d0e606ee045b13cd5e5ab7802dc7d206e08fd10e561b4bdc6b06c` |
 | `tools/v2-apps/str8n-v2-bank-maint-2000.a` | Exact ASM-F2 `ORG`/`DB` carrier for bank maintenance | `a9254a351df0eab96d06dcb63a4a19441906178c6351ec56b3a2ffd8af40bef3` |
@@ -26,13 +26,35 @@ the exact tag and versions, then asks the operator to type the physical board
 model, `W65C02SXB` or `W65C816SXB`, **before sending any RAM write**. A blank or
 different answer stops the load. An exact tag may still be required explicitly
 with `-ExpectedBoardTag`. The installer also requires an expected SST39SF010A
-`BF/B5` flash ID and its Bank 0
-preservation policy. It copies stock B3 to erased B0 or accepts an exact
+`BF/B5` flash ID and its Bank 0 preservation policy. It copies stock B3 to erased B0 or accepts an exact
 existing copy, receives the 4,096-byte alpha24 F BIN, and programs B3:F only
-after the exact confirmation. The offline checker verified its `$2000-$2999`
+after the exact confirmation. The offline checker verified its `$2000-$299B`
 RAM range, S9 entry, candidate F identity, refusal and recovery gate order,
-and that B1/B2 are untouched. The alpha22 installer still builds and validates
+and that B1/B2 are untouched. The 816 entry begins with `SEC/XCE`, forcing
+emulation mode before the 8-bit installer code. The alpha22 installer still builds and validates
 after the shared source change.
+
+The first board 2609 load had exact RAM readback, but execution returned to
+the shipped native EDU menu without showing the installer prompt. The revised
+816 entry then reached the installer on a later reset. It identified `BF/B5`
+flash, printed stock B3 FNV1A `280928EC`, and found B0 erased. With the owner's
+authorization, the host sent `COPY B3 TO B0`; the installer reported
+`B0 == ORIGINAL B3 VERIFIED` after sector and whole-bank exact comparisons.
+The terminal was closed at `SEND STR8-N TOP BIN`. No candidate BIN was sent,
+Bank 3:F was not installed in that preservation session, and Bank 2 was not touched. The owner identified
+Bank 2 as the virgin W65C02SXB image; its contents were not read during this run.
+The raw terminal and event logs are owner-local under
+`output/qualification/board-2609-inventory-2026-09-30/`.
+
+In a separate owner-authorized run, the installer again verified B0 against
+original B3 and accepted the exact 4,096-byte alpha24 F BIN (SHA-256
+`43e6ee966963e1cc401986581742cc75b302cd0a02cfaf22965fe7ab8a43ec1a`).
+After `INSTALL STR8-N 2.0A24`, it reported `MIGRATION VERIFIED`. A physical
+RESET booted `STR8-N 2.0a24 B3 65C816` at `B3>`. The independent
+`D F000 FFFF` readback captured all 256 rows and matched that BIN byte for
+byte. Bank 2 was not selected or written. A later USB power disconnect/reconnect
+also booted the alpha24 core at `B3>`. E-sector installation and broader
+816/EDU acceptance remain separate tests.
 
 ## Binary identity probe
 
@@ -46,8 +68,8 @@ probe ran on board 2609 and captured the identity below.
 Board 2609 boots the native EDU demo/menu and also answers the WDCMONv2 binary
 probe as `SXB6`, hardware 3.00, WDCMON 2.00. The first early `$CC` response
 gave no board-info payload; the next handshake did. The bridge now accepts
-the `SXB?` signature and retries an incomplete armed reply. No RAM loading, flash image
-readback, or physical migration was performed for this kit.
+the `SXB?` signature and retries an incomplete armed reply. The later RAM load,
+preservation copy, and alpha24 F installation are recorded above.
 
 The measured `SXB6` on this W65C816SXB differs from the earlier `SXB3`
 assumption. WDC board/firmware identity tags are changing across boards or

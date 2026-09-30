@@ -5,7 +5,8 @@ param(
     [string]$TopBinPath = 'BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin',
     [string]$CandidateBinPath = 'BUILD/v1.35/bin/str8n-v1.35-bank3-f000-ffff.bin',
     [string]$VersionText = '1.35',
-    [switch]$V2Signature
+    [switch]$V2Signature,
+    [switch]$W65C816Entry
 )
 
 Set-StrictMode -Version Latest
@@ -121,8 +122,15 @@ for ($address = 0x2000; $address -le $maxAddress; $address++) {
     0xA9, 0xFF, 0x8D, 0xA0, 0x7F,
     0xA9, 0x34, 0x8D, 0xA1, 0x7F,
     0x9C, 0xA0, 0x7F
+$quietOffset = 0
+if ($W65C816Entry) {
+    if ($memory[0x2000] -ne 0x38 -or $memory[0x2001] -ne 0xFB) {
+        throw 'W65C816 entry must force emulation mode with SEC/XCE'
+    }
+    $quietOffset = 2
+}
 for ($i = 0; $i -lt $quietStart.Length; $i++) {
-    if ($memory[0x2000 + $i] -ne $quietStart[$i]) {
+    if ($memory[0x2000 + $quietOffset + $i] -ne $quietStart[$i]) {
         throw 'Installer must mute the EDU buzzer, configure all LED pins as outputs, and clear Port A before other initialization'
     }
 }

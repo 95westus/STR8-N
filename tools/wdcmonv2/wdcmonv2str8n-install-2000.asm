@@ -1,7 +1,8 @@
 ; ----------------------------------------------------------------------------
 ; WDCMONV2STR8N-INSTALL-2000.ASM
 ;
-; Conservative stock W65C02SXB (+ optional W65C02EDU) -> STR8-N installer.
+; Conservative stock SXB -> STR8-N installer. The alpha24 816 build has an
+; entry shim that forces 65C816 emulation mode; the 65C02 builds omit it.
 ; Load under stock WDCMONv2 at $2000.  After the complete stock Bank 3 is
 ; preserved in Bank 0, receive the canonical 4096-byte STR8-N top BIN at
 ; $4000-$4FFF.  $0A00-$19FF is the one-sector staging buffer.
@@ -12,9 +13,9 @@
 ; A used, different B0 is refused.  It must be archived and resolved by a
 ; separate operator policy; this first installer never silently replaces it.
 ;
-; The operator/host must type the displayed whole-bank B3 FNV as
-; `ARCHIVE xxxxxxxx` before any flash operation.  This is an acknowledgement
-; gate.  The host archive extractor remains the proof that a local BIN exists.
+; The installer prints the whole-bank B3 FNV and requires the operator to type
+; `COPY B3 TO B0` before writing the erased destination. Host archival is a
+; separate step; this RAM installer does not produce a host-side bank BIN.
 ;
 ; After B0 == original B3 is proven, the program installs only B3:F.  On
 ; success, RESET enters STR8-N.  STR8-N I then installs R-YORS B3:8-E, making
@@ -72,6 +73,13 @@ W2I_SOFT_RESET_SIG1     EQU             $7DE8
                         ORG             $2000
 
 START:
+                        IF              STR8_V2_A24_816
+; WDCMONv2 on the newer 816 firmware can execute while the CPU is in native
+; mode. Force emulation mode before any 8-bit immediates or zero-page access.
+; SEC / XCE is safe whether the caller was already in emulation or native.
+                        SEC
+                        DB              $FB
+                        ENDIF
                         SEI
 ; The EDU buzzer sounds while PIA CA2 is high.  Silence it at the first safe
 ; instruction boundary, then make all eight active-high LED pins outputs and

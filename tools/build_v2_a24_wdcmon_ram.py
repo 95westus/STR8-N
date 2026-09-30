@@ -38,7 +38,7 @@ def main():
     local_source = BUILD / SOURCE.name
     shutil.copyfile(SOURCE, local_source)
     run('wdc02as', '-G', '-L', '-S', '-W', '-I', str(BUILD),
-        '-DSTR8_V2_RC1=1', '-DSTR8_V2_A24=1', str(local_source))
+        '-DSTR8_V2_RC1=1', '-DSTR8_V2_A24=1', '-DSTR8_V2_A24_816=1', str(local_source))
     s19 = BUILD / (NAME + '.s19')
     run('wdcln', '-g', '-s', '-t', '-hm19', '-j', '-o', str(s19),
         str(local_source.with_suffix('.obj')))
@@ -50,6 +50,8 @@ def main():
             or set(linked) != set(range(0x2000, max(linked) + 1)):
         raise ValueError('alpha24 installer is outside its dense $2000-$3FFF RAM window')
     code = bytes(linked[address] for address in range(0x2000, max(linked) + 1))
+    if not code.startswith(bytes.fromhex('38 FB 78')):
+        raise ValueError('816 installer must enter emulation mode before 8-bit code')
     for marker in (b'WDCMONV2 -> STR8-N 2.0a24',
                    b'TYPE INSTALL STR8-N 2.0a24> ',
                    b'INSTALL STR8-N 2.0A24'):
@@ -60,7 +62,7 @@ def main():
         '-SourcePath', str(SOURCE), '-S19Path', str(s19),
         '-MapPath', str(s19.with_suffix('.map')),
         '-TopBinPath', str(candidate), '-CandidateBinPath', str(candidate),
-        '-VersionText', a24.VERSION, '-V2Signature')
+        '-VersionText', a24.VERSION, '-V2Signature', '-W65C816Entry')
     run('powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
         str(ROOT / 'tools/wdcmonv2/start_wdcmonv2_ram.ps1'),
         '-ImagePath', str(s19), '-ValidateOnly')

@@ -16,10 +16,11 @@ Defects and hardware investigations are indexed in the
   registers/flags, calling conventions, RAM layouts, bank and CPU-mode
   assumptions, error returns, and optional-device discovery. Preserve existing
   contracts while that inventory is completed; do not silently break callers.
-- [ ] Finish alpha24 host and physical-board regression, including exact E/F
-  readback, physical reset, and cold power-cycle evidence.
-  Host regression passed `make v2-a24-check` on 2026-09-30; physical gates
-  remain open. See the [a24 prerequisite record](docs/STR8N_V2_A24_FT245_ONLY.md).
+- [ ] Finish alpha24 host and physical-board regression, including exact E
+  readback and native/EDU checks. Host regression passed `make v2-a24-check`
+  on 2026-09-30. Board 2609's B3:F passed exact readback, physical RESET,
+  and a receive-only power-cycle capture. See the
+  [a24 prerequisite record](docs/STR8N_V2_A24_FT245_ONLY.md).
 - [ ] Then qualify the WDC 02/816-to-STR8N-v2 migration using the W65C816SXB.
   Bind the migration artifacts to the current candidate before the board run;
   older alpha21/alpha22 migration evidence does not qualify alpha24 or the 816.
@@ -27,10 +28,16 @@ Defects and hardware investigations are indexed in the
   shipped native EDU demo and then returned `SXB6`, HW 3.00, WDCMON 2.00 on a
   successful binary board-info probe. The bridge now checks `SXB?`, retries an
   early incomplete reply, and requires physical board-type confirmation before
-  RAM loading; no memory or flash readbacks were made. WDC identity suffixes
+  RAM loading. WDC identity suffixes
   vary across boards or revisions, so record each exact tag and physical model.
   The [alpha24 WDCMONv2 migration kit](docs/STR8N_V2_A24_WDCMON_MIGRATION_KIT.md)
-  now builds and passes offline checks; physical 816 qualification remains open.
+  now builds and passes offline checks. On board 2609, the 816-entry RAM installer
+  verified byte-exact, identified flash `BF/B5`, and copied original B3 to an
+  erased B0 with whole-bank exact verification. In a separate run, it installed
+  alpha24 B3:F; physical RESET booted `STR8-N 2.0a24 B3 65C816`, and a complete
+  `D F000 FFFF` readback matched the pinned F BIN byte for byte. B2 was
+  untouched. A later USB power disconnect/reconnect booted alpha24 at `B3>`.
+  E-sector and native/EDU qualification remain open.
 - [ ] Next alpha: EDU board testing. Bank 3 holds the 816SXB version; Bank 2
   holds W65C02SXB with SPI/I2C/RTC updates. Both need EDU presence detection
   without LEDs or buzzer. Start with read-only RTC date/time probing; leave
