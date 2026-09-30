@@ -169,8 +169,11 @@ def check_backpressure_and_queue():
 
 
 def main():
+    import build_v2 as firmware
     for test in (check_load, check_s19_led_activity, check_acia_load_and_cancel, check_rejections, check_cancel_load,
                  check_cancel_commands, check_backpressure_and_queue):
+        if test is check_acia_load_and_cancel and getattr(firmware, 'FT245_ONLY', False):
+            continue
         test()
         print('PASS:', CASES[-1])
     (OUT / 'load-test-results.json').write_text(json.dumps({

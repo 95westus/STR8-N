@@ -134,8 +134,8 @@ def call_sr(cpu, entry, request=0x2100):
     return bool(cpu.p & cpu.CARRY), cpu.a
 
 
-def main():
-    check_cold_usb_start()
+def main(cold_start_check=check_cold_usb_start):
+    cold_start_check()
     check_no_usb_autostart()
     cpu, mem = flash.boot_flash(3)
     original = bytes(range(32))

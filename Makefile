@@ -573,3 +573,4 @@ v2-a24-check:
 	python tools/build_v2_a23.py
 	python tools/build_v2_a24.py --full-bank
 	python tools/test_v2_a24_console.py
+	python tools/test_v2_a24_regression.py

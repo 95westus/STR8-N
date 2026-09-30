@@ -165,7 +165,8 @@ def check_vector_autostart():
             assert mem.bank == target and cpu.sp == 255
     # An erased target vector holds at the monitor rather than jumping to $FFFF.
     cpu, mem = startup(config(bank=1, address=0, mode=1), bank=0)
-    run(cpu, lambda: cpu.pc == SYM['V2_AUTO_TICK'])
+    # Run the first tick's host discovery before accelerating the timeout.
+    run(cpu, lambda: cpu.pc == SYM['V2_AUTO_POLL'])
     mem.ram[SYM['V2_TICKS']] = 1
     cpu.pc = SYM['V2_AUTO_POLL']; cpu.x = cpu.y = 1
     hold(cpu)

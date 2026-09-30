@@ -324,7 +324,7 @@ def select_flash_bank(memory, bank):
     memory[0x7FEC] = (memory.ram[0x7FEC] & 0x11) | PATTERNS[bank]
 
 
-def check_ram_abi_all_banks():
+def check_ram_abi_all_banks(acia_enabled=True):
     for resident in range(4):
         cpu, mem = boot(resident)
         assert bytes(mem.ram[0x7E60:0x7E64]) == b'RA\x01\x0d'
@@ -343,7 +343,8 @@ def check_ram_abi_all_banks():
 
             cpu.a, cpu.x, cpu.y = 0, 0x39, 0xC7
             call_public(cpu, VSYM['STR8V2_RAM_BOARD_QUERY'])
-            assert (cpu.a, cpu.x, cpu.y) == (1, 0x02, 0x17) and cpu.p & cpu.CARRY
+            flags = 0x17 if acia_enabled else 0x11
+            assert (cpu.a, cpu.x, cpu.y) == (1, 0x02, flags) and cpu.p & cpu.CARRY
 
             start = len(mem.tx)
             cpu.a, cpu.x, cpu.y = ord('Z'), 0x39, 0xC7
@@ -399,6 +400,9 @@ def check_ram_abi_all_banks():
         assert mem.bank == 3 and mem.ram[SYM['V2_RESIDENT']] == 3
         assert f'STR8-N {VERSION} B3'.encode() in mem.tx
 
+    if not acia_enabled:
+        CASES.append('RAM ABI signature/table and every returning FT245 service from all 16 resident/caller mappings')
+        return
     cpu, mem = boot(3, ft245_present=False)
     select_flash_bank(mem, 0)
     change_count = len(mem.bank_changes)

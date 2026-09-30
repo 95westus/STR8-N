@@ -13,6 +13,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = '2.0a24'
+FT245_ONLY = True
 BOOT_WAITS = 160
 LINE_LIMIT = 40
 SR_EXTENSION = True
