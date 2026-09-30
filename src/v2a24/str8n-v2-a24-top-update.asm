@@ -132,6 +132,14 @@ TU_PF_SUM_LO_OK:
                         BEQ             TU_PF_SUM_HI_OK
                         JMP             TU_CANDIDATE_FAIL
 TU_PF_SUM_HI_OK:
+; Never erase an occupied B2:F. Board 2609 keeps its W65C02SXB guest here.
+                        LDA             #TU_BACKUP_BANK
+                        JSR             TU_SELECT
+                        JSR             TU_BACKUP_ERASED
+                        BCS             TU_B2_EMPTY
+                        JMP             TU_PREFLIGHT_FAIL
+TU_B2_EMPTY:            LDA             #TU_BANK3
+                        JSR             TU_SELECT
                         IF              STR8_DIRECTORY_REFRESH
                         ELSE
                         JSR             TU_SAVE_META
@@ -311,6 +319,24 @@ TU_PC_BYTE:             LDA             (TU_SRC_LO),Y
                         IF              STR8_DIRECTORY_REFRESH
                         RTS
 
+TU_BACKUP_ERASED:       STZ             TU_DST_LO
+                        LDA             #$F0
+                        STA             TU_DST_HI
+                        LDX             #$10
+TU_BE_PAGE:             LDY             #$00
+TU_BE_BYTE:             LDA             (TU_DST_LO),Y
+                        CMP             #$FF
+                        BNE             TU_BE_USED
+                        INY
+                        BNE             TU_BE_BYTE
+                        INC             TU_DST_HI
+                        DEX
+                        BNE             TU_BE_PAGE
+                        SEC
+                        RTS
+TU_BE_USED:             CLC
+                        RTS
+
 TU_MATCH_OLD_F:         STZ             TU_SRC_LO
                         LDA             #$50
                         STA             TU_SRC_HI
@@ -365,6 +391,14 @@ TU_PROGRAM_STAGE:      STZ             TU_FAIL_LO
                         STZ             TU_DST_LO
                         LDA             #$F0
                         STA             TU_DST_HI
+; B2:F was required to be blank at preflight. Program it directly rather
+; than starting an erase whose first FF poll could finish too early.
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             TU_PCR
+                        AND             #$EE
+                        CMP             #TU_BACKUP_BANK
+                        BEQ             TU_ERASED
+                        ENDIF
                         JSR             TU_UNLOCK
                         LDA             #$80
                         STA             $D555

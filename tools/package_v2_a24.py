@@ -24,6 +24,7 @@ MAINT_SHA256 = "9dda57fe5a9ab0744c3db40b6ea3507efbc8ad15d2ddb2e66d8a623ad2559736
 
 SOURCES = {
     "FIRMWARE/str8n-v2-alpha24-f000-ffff.bin": BUILD / "str8n-v2-alpha24-f000-ffff.bin",
+    "FIRMWARE/str8n-v2-alpha24-e000-efff.bin": BUILD / "str8n-v2-alpha24-e000-efff.bin",
     "FIRMWARE/str8n-v2-alpha24-e000-ffff.bin": BUILD / "str8n-v2-alpha24-e000-ffff.bin",
     "FIRMWARE/str8n-v2-alpha24-e000-ffff.s19": BUILD / "str8n-v2-alpha24-e000-ffff.s19",
     "FIRMWARE/str8n-v2-alpha24-8000-ffff.bin": BUILD / "str8n-v2-alpha24-8000-ffff.bin",
@@ -31,9 +32,14 @@ SOURCES = {
     "FIRMWARE/str8n-v2-alpha24-wdcmonv2-install-2000.s19": MIGRATION / "str8n-v2-alpha24-wdcmonv2-install-2000.s19",
     "APPLICATIONS/str8n-v2-bank-maint-2000.s19": ROOT / "tools/v2-apps/str8n-v2-bank-maint-2000.s19",
     "APPLICATIONS/str8n-v2-bank-maint-2000.a": ROOT / "tools/v2-apps/str8n-v2-bank-maint-2000.a",
+    "APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.s19": BUILD / "str8n-v2-alpha24-b3-top-update-2000.s19",
+    "APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.a": BUILD / "str8n-v2-alpha24-b3-top-update-2000.a",
     "PUBLIC/str8n-v2-public.inc": ROOT / "src/v2a24/str8n-v2-public.inc",
-    "START-STR8N-V2-A24.ps1": ROOT / "tools/wdcmonv2/START-STR8N-V2-A24.ps1",
-    "TOOLS/start_wdcmonv2_ram.ps1": ROOT / "tools/wdcmonv2/start_wdcmonv2_ram.ps1",
+    "MIGRATE-STR8N-V2-A24.ps1": ROOT / "tools/wdcmonv2/MIGRATE-STR8N-V2-A24.ps1",
+    "GUIDE-816.md": ROOT / "docs/STR8N_V2_A24_816_MANUAL_MIGRATION.md",
+    "MAPS.md": ROOT / "docs/STR8N_V2_A24_MAPS.md",
+    "CHECKLIST-816.md": ROOT / "docs/STR8N_V2_A24_816_CHECKLIST.md",
+    "CHECKLIST-816.pdf": ROOT / "output/pdf/STR8N_V2_A24_816_CHECKLIST.pdf",
     "README.md": ROOT / "docs/STR8N_V2_A24_PACKAGE_README.md",
     "LICENSE": ROOT / "LICENSE",
 }
@@ -62,6 +68,9 @@ def validate_payload(payload: dict[str, bytes], scratch: Path) -> None:
         raise ValueError("F image differs from board-tested alpha24")
     if len(ef) != 8192 or ef[-4096:] != f:
         raise ValueError("E/F image does not contain the exact alpha24 F")
+    e = payload["FIRMWARE/str8n-v2-alpha24-e000-efff.bin"]
+    if len(e) != 4096 or e != ef[:4096]:
+        raise ValueError("T48 E page does not match canonical E/F image")
     if sha256(ef[0x800:0xF00]) != SR_SHA256:
         raise ValueError("E S/R slice differs from board-tested code")
     if len(bank) != 32768 or bank[-8192:] != ef:
@@ -85,6 +94,15 @@ def validate_payload(payload: dict[str, bytes], scratch: Path) -> None:
     image = bytes(maint[address] for address in range(0x2000, 0x2000 + len(maint)))
     if len(image) != 703 or sha256(image) != MAINT_SHA256:
         raise ValueError("Static bank-maintenance image changed")
+    updater_s19 = payload["APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.s19"]
+    scratch.write_bytes(updater_s19)
+    try:
+        updater, updater_entry = read_s19(scratch)
+    finally:
+        scratch.unlink()
+    updater_carrier = decode_carrier(payload["APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.a"].decode("ascii"))
+    if updater_entry != 0x2000 or updater_carrier != updater or bytes(updater[a] for a in range(0x4000, 0x5000)) != f:
+        raise ValueError("Top updater S19/.a mismatch or wrong candidate")
 
 
 def verify_archive(archive: Path) -> dict:

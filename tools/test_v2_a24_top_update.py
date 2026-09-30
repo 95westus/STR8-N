@@ -27,7 +27,7 @@ def main():
     for address, value in updater.items():
         mem.ram[address] = value
     mem.banks[3][0x7000:] = old
-    mem.banks[2][0x7000:] = b'\xa5' * 4096
+    mem.banks[2][0x7000:] = b'\xff' * 4096
     cpu = MPU(memory=mem)
 
     def run(start, stop, recovery=False):
@@ -56,6 +56,23 @@ def main():
     assert all(bank == 3 and address >= 0xF000
                for _, bank, address, _ in mem.mutations[backup_count:])
 
+    occupied = FlashMemory(b'')
+    occupied.ram[PCR], occupied.ram[LED] = 0xEE, 0x01
+    for address, value in updater.items():
+        occupied.ram[address] = value
+    occupied.banks[3][0x7000:] = old
+    occupied.banks[2][0x7000:] = b'\xff' * 4096
+    occupied.banks[2][0x7000] = 0x00
+    blocked_cpu = MPU(memory=occupied)
+    blocked_cpu.pc, blocked_cpu.sp = sym['START'], 0xFF
+    for _ in range(300_000):
+        if blocked_cpu.pc == sym['TU_PREFLIGHT_FAIL']:
+            break
+        blocked_cpu.step()
+    else:
+        raise AssertionError('occupied B2:F did not fail preflight')
+    assert not occupied.mutations
+
     mem = FlashMemory(b'')
     mem.ram[PCR], mem.ram[LED] = 0xEE, 0x01
     for address, value in updater.items():
@@ -71,7 +88,7 @@ def main():
     else:
         raise AssertionError('mismatched old F did not fail preflight')
     assert not mem.mutations
-    print('PASS: exact old F gate, B2:F backup, a24 F install, recovery, mismatch rejection')
+    print('PASS: old F gate, erased B2:F gate, backup, install, recovery, mismatch rejection')
 
 
 if __name__ == '__main__':
