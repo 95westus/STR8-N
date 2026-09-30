@@ -6,10 +6,11 @@ STR8-N is a guarded reset monitor and flash loader for WDC SXB boards. Current d
 
 ## STR8-N 2.0a24 board-test release
 
-The [v2.0a24 release](https://github.com/95westus/STR8-N/releases/tag/v2.0a24) provides a unified WDCMONv2 migrator for W65C02SXB and W65C816SXB boards, firmware images, bank-maintenance tools, maps, and test records. It is an alpha board-test release. The EDU daughterboard was absent during qualification.
+The [v2.0a24 release](https://github.com/95westus/STR8-N/releases/tag/v2.0a24) provides a unified WDCMONv2 migrator for W65C02SXB and W65C816SXB boards, firmware images, bank-maintenance tools, an optional guarded B3:E binary SAVE/RESTORE installer builder, maps, and test records. It is an alpha board-test release. The EDU daughterboard was absent during qualification.
 
 - [Download the alpha24 board-test ZIP](https://github.com/95westus/STR8-N/releases/download/v2.0a24/str8n-v2-alpha24-board-test.zip) ([SHA-256 checksum](https://github.com/95westus/STR8-N/releases/download/v2.0a24/str8n-v2-alpha24-board-test.sha256))
 - [W65C816SXB migration guide](https://github.com/95westus/STR8-N/blob/v2/docs/STR8N_V2_A24_816_MANUAL_MIGRATION.md)
+- [Guarded B3:E installation guide](https://github.com/95westus/STR8-N/blob/v2/docs/STR8N_V2_A24_B3_E_INSTALL.md)
 - [Package contents and limits](https://github.com/95westus/STR8-N/blob/v2/docs/STR8N_V2_A24_PACKAGE_README.md)
 
 ## STR8-N v1.34
