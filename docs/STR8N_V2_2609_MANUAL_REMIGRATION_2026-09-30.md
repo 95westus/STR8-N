@@ -31,3 +31,6 @@ the installer reported its internal verification and alpha24 boot succeeded.
 
 The extracted kit's host evidence is in its `LOCAL` directory under the
 `v2-a24-migration-20260930-152511.raw` and `.raw.events.txt` filenames.
+The later [operator-session record](STR8N_V2_A24_2609_OPERATOR_SESSION.md)
+includes both exact files in the distributable kit and explains why the
+lowercase host input appears uppercase in the board echo.
