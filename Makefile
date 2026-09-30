@@ -544,7 +544,7 @@ clean:
 
 # V2 is an independent milestone; these targets never rebuild v1 artifacts.
 .PHONY: v2 v2-full-bank v2-check v2-interrupt-probe-check
-.PHONY: v2-a23-check v2-a24-check v2-a24-migration-kit
+.PHONY: v2-a23-check v2-a24-check v2-a24-migration-kit v2-a24-package
 v2:
 	python tools/build_v2.py
 
@@ -582,3 +582,6 @@ v2-a24-migration-kit:
 	python tools/verify_v2_a24_bank_maint_carrier.py
 	python tools/test_v2_a24_bank_maint.py
 	python tools/wdcmonv2/probe_wdcmonv2_binary.py --self-test
+
+v2-a24-package: v2-a24-check v2-a24-migration-kit
+	python tools/package_v2_a24.py
