@@ -1,3 +1,5 @@
+> **AI assistance and human validation:** This project is developed with AI assistance and grounded in human engineering judgment. Unless explicitly stated otherwise, code has been tested on physical hardware and approved by a human.
+
 # STR8-N
 
 STR8-N is a guarded reset monitor and flash loader for WDC SXB boards. Current development is on the **[v2 branch](https://github.com/95westus/STR8-N/tree/v2)**.
@@ -13,7 +15,5 @@ The [v2.0a24 release](https://github.com/95westus/STR8-N/releases/tag/v2.0a24) p
 ## STR8-N v1.34
 
 The earlier W65C02SXB/EDU release has its own [v1.34 README](README-v1.34.md), including its commands, safety boundaries, documentation, and validation record.
-
-> **AI assistance and human validation:** This project is developed with AI assistance and grounded in human engineering judgment. Unless explicitly stated otherwise, code has been tested on physical hardware and approved by a human.
 
 STR8-N is independent of WDC and R-YORS; see [LICENSE](LICENSE).
