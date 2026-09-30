@@ -751,7 +751,7 @@ try {
         Write-Host "SESSION EVENT LOG = $eventFull"
         Write-SessionEvent ("SESSION START PORT={0} BAUD={1} RESET={2}" -f $Port, $BaudRate, (-not $NoReset))
         if ($null -ne $image) {
-            Write-SessionEvent ("IMAGE SHA256={0} RANGE=${1:X4}-${2:X4} BYTES={3} ENTRY=${4:X4} FNV1A={5:X8}" -f $image.Sha256, $image.First, $image.Last, $image.Bytes.Length, $image.Entry, $image.Fnv1a)
+            Write-SessionEvent ('IMAGE SHA256={0} RANGE=${1:X4}-${2:X4} BYTES={3} ENTRY=${4:X4} FNV1A={5:X8}' -f $image.Sha256, $image.First, $image.Last, $image.Bytes.Length, $image.Entry, $image.Fnv1a)
         }
         if ($null -ne $transferBytes) {
             Write-SessionEvent ("TRANSFER READY NAME={0} BYTES={1} SHA256={2}" -f $transferName, $transferBytes.Length, $transferSha256)

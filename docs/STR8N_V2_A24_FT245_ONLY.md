@@ -10,7 +10,9 @@ The guarded F updater accepts the exact a23 F image and backs it up to B2:F.
 The E extension was relinked because it calls RAM worker addresses that moved
 in a24. A separate E updater accepts the exact previously verified E sector,
 preserves its configuration and saved records, and changes four extension bytes.
-Each updater verifies its programmed sector. No sector readbacks were performed.
+Each updater verifies its programmed sector. No independent sector readbacks
+were performed in that board 2205 updater session; board 2609's later B3:F
+readback is recorded below.
 
 Build and host regression: `make v2-a24-check`. The a24 runner covers boot,
 handoff, vectors, capabilities, the RAM ABI across all resident/caller banks,
@@ -23,13 +25,16 @@ execution still requires the physical 816 board. A successful run writes
 
 ## Remaining current-alpha prerequisites
 
-- Complete physical regression with exact E/F readback, physical reset, and
-  cold power-cycle evidence. Retain the artifact hashes and transcripts.
+- Complete physical regression with exact E readback and native/EDU checks.
+  Board 2609's B3:F passed exact readback after physical RESET and booted
+  again after USB power disconnect/reconnect; retain its
+  [board record](STR8N_V2_2609_INVENTORY_2026-09-30.md).
 - The [a24 WDCMONv2 installer and bank maintenance kit](STR8N_V2_A24_WDCMON_MIGRATION_KIT.md)
   passes offline build and host checks. Board 2609 returned WDCMONv2 `SXB6`
-  through the binary interface; the physical migration path remains untested.
-- Record the 816's stock identity and bank inventory, preserve its stock image,
-  and qualify migration and native execution on that board.
+  through the binary interface. Its Bank 3 stock image was preserved exactly
+  in Bank 0, and alpha24 B3:F was installed and read back byte-for-byte.
+- Complete the 816's remaining bank inventory and qualify native execution
+  and E-sector behavior on that board.
 
 The next alpha is the EDU presence/RTC test described in
 [the agreed requirements](../TASKS.md#current-alpha-and-next-edu-alpha-agreed-2026-09-30).
