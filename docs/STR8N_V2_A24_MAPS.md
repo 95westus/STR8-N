@@ -1,6 +1,8 @@
 # STR8-N 2.0a24 maps and diagrams
 
-These maps describe the alpha24 W65C816SXB migration kit. The 128 KiB
+These maps describe the alpha24 W65C816SXB migration kit. Board 2609 was
+subsequently [restored from B0 to stock B3](STR8N_V2_2609_B0_TO_B3_RESTORE_2026-09-30.md),
+with B0 retained; its table below records the alpha24 test layout. The 128 KiB
 SST39SF010A is selected in four 32 KiB banks. CPU `$8000-$FFFF` is the
 selected bank window; CPU `$0000-$7FFF` contains RAM and I/O.
 
