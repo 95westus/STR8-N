@@ -32,6 +32,7 @@ SOURCES = {
     "FIRMWARE/str8n-v2-alpha24-8000-ffff.bin": BUILD / "str8n-v2-alpha24-8000-ffff.bin",
     "FIRMWARE/str8n-v2-alpha24-8000-ffff.s19": BUILD / "str8n-v2-alpha24-8000-ffff.s19",
     "FIRMWARE/str8n-v2-alpha24-wdcmonv2-install-2000.s19": MIGRATION / "str8n-v2-alpha24-wdcmonv2-install-2000.s19",
+    "TESTS/wdcmon-65c02-test.json": BUILD / "wdcmon-65c02-test.json",
     "APPLICATIONS/str8n-v2-bank-maint-2000.s19": ROOT / "tools/v2-apps/str8n-v2-bank-maint-2000.s19",
     "APPLICATIONS/str8n-v2-bank-maint-2000.a": ROOT / "tools/v2-apps/str8n-v2-bank-maint-2000.a",
     "APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.s19": BUILD / "str8n-v2-alpha24-b3-top-update-2000.s19",
@@ -41,6 +42,8 @@ SOURCES = {
     "GUIDE-816.md": ROOT / "docs/STR8N_V2_A24_816_MANUAL_MIGRATION.md",
     "CHECKLIST-02-NO-EDU.md": ROOT / "docs/STR8N_V2_A24_02_NO_EDU_CHECKLIST.md",
     "BOARD-2205-NO-EDU.md": ROOT / "docs/STR8N_V2_A24_2205_NO_EDU_2026-09-30.md",
+    "MANUAL-816-INVENTORY.md": ROOT / "docs/STR8N_V2_2609_INVENTORY_2026-09-30.md",
+    "MANUAL-816-E-INSTALL.md": ROOT / "docs/STR8N_V2_A24_816_E_INSTALL_2026-09-30.md",
     "MAPS.md": ROOT / "docs/STR8N_V2_A24_MAPS.md",
     "STR8N_V2_2609_B0_TO_B3_RESTORE_2026-09-30.md": ROOT / "docs/STR8N_V2_2609_B0_TO_B3_RESTORE_2026-09-30.md",
     "STR8N_V2_2609_MANUAL_REMIGRATION_2026-09-30.md": ROOT / "docs/STR8N_V2_2609_MANUAL_REMIGRATION_2026-09-30.md",
@@ -91,6 +94,12 @@ def validate_payload(payload: dict[str, bytes], scratch: Path) -> None:
     installer = payload["FIRMWARE/str8n-v2-alpha24-wdcmonv2-install-2000.s19"]
     if sha256(installer) != INSTALLER_SHA256:
         raise ValueError("Migration installer identity changed")
+    cpu_test = json.loads(payload["TESTS/wdcmon-65c02-test.json"])
+    if (cpu_test.get("installer_s19_sha256") != INSTALLER_SHA256
+            or cpu_test.get("cpu_model") != "W65C02S ($FB one-byte NOP)"
+            or cpu_test.get("physical_hardware_tested") is not False
+            or cpu_test.get("cases") != ["success", "occupied_b0_refusal", "bad_candidate_refusal"]):
+        raise ValueError("Automated W65C02 migrator test receipt invalid")
     maint_s19 = payload["APPLICATIONS/str8n-v2-bank-maint-2000.s19"]
     scratch.write_bytes(maint_s19)
     try:
@@ -155,6 +164,8 @@ def build() -> Path:
         "board_2609_bank3_f_sha256": TOP_SHA256,
         "board_2609_sr_slice_sha256": SR_SHA256,
         "board_2205_no_edu_qualified": True,
+        "automated_w65c02_migrator_model_tested": True,
+        "manual_w65c816_board_tested": True,
         "edu_attached_qualified": False,
         "stock_wdcmonv2_firmware_included": False,
         "owner_bank_archives_included": False,
