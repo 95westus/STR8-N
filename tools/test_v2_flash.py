@@ -328,15 +328,16 @@ def check_failures_and_self():
     assert bytes(mem.tx).endswith(b'B1> ')
     # The self-edit completion prompt and CPU-level restart must remain wholly
     # RAM-resident and usable through the selected backup ACIA as well.
-    cpu, mem = boot_flash(1, ft245_present=False)
-    safe = SYM['V2_END']
-    mem.acia_rx.extend(f'F {safe:04X} FF\rY\rB1\r'.encode())
-    run(cpu, lambda: cpu.pc == W['V2W_RESET_WAIT'], limit=3000000)
-    assert b'OK; press Y to soft reset' in mem.acia_tx and not mem.tx
-    mem.acia_rx.extend(b'Y')
-    run(cpu, lambda: waiting(cpu), limit=1500000)
-    assert mem.acia_tx.count(f'STR8-N {VERSION} B1 65C02'.encode()) == 2
-    assert bytes(mem.acia_tx).endswith(b'B1> ') and not mem.tx
+    if not getattr(firmware, 'FT245_ONLY', False):
+        cpu, mem = boot_flash(1, ft245_present=False)
+        safe = SYM['V2_END']
+        mem.acia_rx.extend(f'F {safe:04X} FF\rY\rB1\r'.encode())
+        run(cpu, lambda: cpu.pc == W['V2W_RESET_WAIT'], limit=3000000)
+        assert b'OK; press Y to soft reset' in mem.acia_tx and not mem.tx
+        mem.acia_rx.extend(b'Y')
+        run(cpu, lambda: waiting(cpu), limit=1500000)
+        assert mem.acia_tx.count(f'STR8-N {VERSION} B1 65C02'.encode()) == 2
+        assert bytes(mem.acia_tx).endswith(b'B1> ') and not mem.tx
     cpu, mem = boot_flash()
     command(cpu, b'B1\r')
     mem.banks[1][0] = 0

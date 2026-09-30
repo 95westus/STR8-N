@@ -8,6 +8,37 @@ out of published release artifacts.
 Defects and hardware investigations are indexed in the
 [repo issue tracker](ISSUES.md).
 
+## Current alpha and next EDU alpha (agreed 2026-09-30)
+
+- All future board upgrades must preserve compatibility with static-bank
+  `maint.a` and `.s19` artifacts, with S/R optional. This is a compatibility
+  requirement; a complete ABI freeze awaits an inventory of entry addresses,
+  registers/flags, calling conventions, RAM layouts, bank and CPU-mode
+  assumptions, error returns, and optional-device discovery. Preserve existing
+  contracts while that inventory is completed; do not silently break callers.
+- [ ] Finish alpha24 host and physical-board regression, including exact E/F
+  readback, physical reset, and cold power-cycle evidence.
+  Host regression passed `make v2-a24-check` on 2026-09-30; physical gates
+  remain open. See the [a24 prerequisite record](docs/STR8N_V2_A24_FT245_ONLY.md).
+- [ ] Then qualify the WDC 02/816-to-STR8N-v2 migration using the W65C816SXB.
+  Bind the migration artifacts to the current candidate before the board run;
+  older alpha21/alpha22 migration evidence does not qualify alpha24 or the 816.
+- [ ] Next alpha: EDU board testing. Bank 3 holds the 816SXB version; Bank 2
+  holds W65C02SXB with SPI/I2C/RTC updates. Both need EDU presence detection
+  without LEDs or buzzer. Start with read-only RTC date/time probing; leave
+  crypto untouched. Handle absent/unresponsive hardware without hanging core
+  operation; report inconclusive detection rather than assuming presence.
+- [ ] Measure whether minimal resident integration fits v2 free space and
+  place the driver/HAL in the optional `$E000` sector, following S/R. Core boot
+  and static-bank maintenance must work with that extension absent.
+- For the EDU test, set date/time with the board's shipped native SPI firmware.
+  Future STR8N clock setting requires permission/security. Defer alarms,
+  power-fail handling, RTC SRAM/EEPROM use, and parallel/SPI SRAM allocations.
+  Verify the reported 16-byte EEPROM capacity before assigning persistent state;
+  desired hard state must survive loss of both main and battery power.
+- Alpha is a maturity label, independent of API/ABI, feature, or code freezes.
+  Make further EDU and memory-allocation decisions at the next-alpha test.
+
 ## Deferred v2 hardware issue
 
 - [x] Package the unchanged alpha21 image as a scoped

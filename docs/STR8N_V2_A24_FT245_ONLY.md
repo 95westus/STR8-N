@@ -12,10 +12,49 @@ in a24. A separate E updater accepts the exact previously verified E sector,
 preserves its configuration and saved records, and changes four extension bytes.
 Each updater verifies its programmed sector. No sector readbacks were performed.
 
-Build: `make v2-a24-check`. The targeted host model checks normal FT245 commands,
-public console selection after USB removal, absent-USB startup, and zero ACIA
-register accesses. The linked monitor suite also passed. Existing legacy ACIA
-suite cases require revision before they can serve as an a24 full regression.
+Build and host regression: `make v2-a24-check`. The a24 runner covers boot,
+handoff, vectors, capabilities, the RAM ABI across all resident/caller banks,
+monitor commands, S19 loading, flash operations, configuration, interrupt
+probes, S/R/T, and absent-extension behavior. FT245-only checks replace the
+legacy backup-console expectations and include delayed USB arrival and zero
+ACIA register accesses. The native 816 probe is checked structurally; its
+execution still requires the physical 816 board. A successful run writes
+`BUILD/v2-alpha24/a24-regression.json` with the tested image hash.
+
+## Remaining current-alpha prerequisites
+
+- Complete physical regression with exact E/F readback, physical reset, and
+  cold power-cycle evidence. Retain the artifact hashes and transcripts.
+- Prepare and verify a migration installer bound to the exact a24 F image.
+  The existing `build_v2_a22_wdcmon_ram.py` still builds an a22 installer;
+  it is not the current-alpha migration artifact. Verify its banner,
+  confirmation token, payload, preservation/refusal gates, and S19 entry
+  before the WDC 02/816 migration test on the W65C816SXB.
+- Record the 816's stock identity and bank inventory, preserve its stock image,
+  and qualify migration and native execution on that board.
+
+The next alpha is the EDU presence/RTC test described in
+[the agreed requirements](../TASKS.md#current-alpha-and-next-edu-alpha-agreed-2026-09-30).
+Future upgrades must preserve static-bank maintenance `.a`/`.s19` compatibility
+with S/R optional. A complete ABI freeze awaits the explicit interface inventory.
+The a24 rebuild reports 31 bytes free before the vectors; EDU resident hooks
+and the optional E-sector HAL still require a measured fit.
+
+## Host prerequisite evidence, 2026-09-30
+
+`make v2-a24-check` passed all 15 reported checks/suite groups. The result
+receipt explicitly leaves physical hardware and native 816 execution untested.
+
+The rebuilt E/F image SHA-256 is
+`988795dc7c211302f9295d6e1afd1fc7d3d7eafd29541c6d4963353ce26bf457`.
+The exact-F updater and board-specific E updater host tests passed, including
+backup/recovery and mismatch/cancel refusal. The existing a22 maintenance S19
+also passed its copy, occupied-destination refusal, erase, and B3-protection
+cases against the a24 model, both with S/R present and with its code erased.
+This is scoped S19 compatibility evidence; the `.a` carrier and physical 816
+maintenance paths still need qualification. Local logs are
+`tmp/a24-maint-compatibility.log`, `tmp/a24-maint-without-sr.log`, and
+`tmp/a24-prerequisites.log`.
 
 ## Board 2205 installation, 2026-09-27
 
@@ -31,5 +70,5 @@ Evidence: `output/qualification/board-2205-a24-2026-09-27/` contains the F and
 E installation transcripts and command checks. `test_v2_a24_top_update.py`
 passed exact-old-F rejection, backup, install, restore, and mismatch tests;
 `test_v2_a24_e_update.py` passed exact-old-E rejection, update, preservation,
-and cancel tests. The legacy full suite has ACIA-specific expectations and
-is not an a24 qualification result.
+and cancel tests. This installation record does not establish full physical
+a24 regression or W65C816 qualification.

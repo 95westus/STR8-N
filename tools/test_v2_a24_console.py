@@ -8,6 +8,8 @@ import test_v2_boot as boot
 def step(self):
     if self.pc == boot.REPORT['worker']['V2W_BOOT_DELAY']:
         self.boot_waits += 1
+        if self.boot_waits == getattr(self.memory, 'host_ready_after_wait', None):
+            self.memory.ft245_present = True
         self.processorCycles += 329_000
         self.pc = boot.REPORT['worker']['V2W_BOOT_DELAY_DONE']
         return
@@ -37,6 +39,16 @@ def main():
     assert absent.ram[boot.SYM['V2_CONSOLE']] == 0
     assert not ACIA.intersection(absent.io_reads + absent.writes)
     assert not absent.acia_tx
+    # A host that appears during the cold-start wait must reach the prompt.
+    late = boot.Memory(3, ft245_present=False)
+    late.host_ready_after_wait = 80
+    cpu = boot.MPU(memory=late, pc=boot.SYM['START'])
+    late.cpu = cpu
+    boot.hold(cpu)
+    assert cpu.boot_waits == 160
+    assert late.tx.startswith(b'.' * 81)
+    assert b'STR8-N 2.0a24 B3 65C02' in late.tx
+    assert not ACIA.intersection(late.io_reads + late.writes)
     print('a24 FT245-only console: PASS')
 
 
