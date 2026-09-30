@@ -562,3 +562,9 @@ v2-check: v2-full-bank
 	python tools/test_v2_flash.py
 	python tools/test_v2_config.py
 	python tools/test_v2_interrupt_probe.py
+
+.PHONY: v2-a23-check
+v2-a23-check:
+	python tools/build_v2_a22.py
+	python tools/build_v2_a23.py --full-bank
+	python tools/test_v2_a23_regression.py

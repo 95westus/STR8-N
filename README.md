@@ -1,5 +1,9 @@
 # STR8-N v2
 
+**2.0a23** names the 20-byte F-sector reduction and has passed host and
+W65C02SXB board 2205 regression checks. See the
+[a23 regression record](docs/STR8N_V2_A23_REGRESSION_2026-09-27.md).
+
 **Guarded board monitor and loader for WDC W65C02SXB.** The RC1 resident
 monitor occupies the 4 KB F sector; the later 2.0a22 candidate adds an
 optional S/R/T extension in the E sector. It supports bank selection,

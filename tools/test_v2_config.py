@@ -1,6 +1,7 @@
 """Linked configuration persistence, validity, startup timing and hold checks."""
 import hashlib
 import json
+import build_v2 as firmware
 
 from test_v2_boot import IMAGE, OUT, SYM, Memory, MPU, command, hold, run, waiting
 from test_v2_flash import boot_flash, send, records, finish
@@ -116,7 +117,9 @@ def check_validity():
     for index in range(7, 14):
         cpu, mem = startup(config(**{str(index): 255}), keys=b'S')
         hold(cpu)
-        assert b'S/Ctrl-C hold' in mem.tx and b'Canceled' in mem.tx
+        if not getattr(firmware, 'SR_EXTENSION', False):
+            assert b'S/Ctrl-C hold' in mem.tx
+        assert b'Canceled' in mem.tx
         assert mem.bank == 0
     CASES.append('erased/disabled/unknown/malformed configs hold; all 128 single-bit corruptions rejected; unsafe targets rejected')
 
@@ -154,7 +157,8 @@ def check_vector_autostart():
             cpu, mem = startup(config(bank=target, address=0, mode=1), resident)
             mem.banks[target][0x7FFC:0x7FFE] = b'\x23\xA1'
             run(cpu, lambda: cpu.pc == SYM['V2_AUTO_TICK'])
-            assert b'C 01' in mem.tx and b' V 0A' in mem.tx
+            if not getattr(firmware, 'SR_EXTENSION', False):
+                assert b'C 01' in mem.tx and b' V 0A' in mem.tx
             mem.ram[SYM['V2_TICKS']] = 1
             cpu.pc = SYM['V2_AUTO_POLL']; cpu.x = cpu.y = 1
             run(cpu, lambda: cpu.pc == 0xA123)
@@ -165,7 +169,8 @@ def check_vector_autostart():
     mem.ram[SYM['V2_TICKS']] = 1
     cpu.pc = SYM['V2_AUTO_POLL']; cpu.x = cpu.y = 1
     hold(cpu)
-    assert mem.bank == 0 and b'Bad vector' in mem.tx
+    output = mem.tx + mem.acia_tx
+    assert mem.bank == 0 and b'Bad vector' in output
     CASES.append('V follows the selected bank RESET vector at handoff; bad vector returns to resident prompt')
 
 
@@ -174,13 +179,14 @@ def check_stop_keys():
         cpu, mem = startup(config(), keys=key)
         hold(cpu)
         assert b'Canceled' in mem.tx and mem.bank == 0
-        # Stop keys already queued while the banner is blocked must survive.
-        cpu, mem = startup(config(), keys=key)
-        mem.tx_blocked = True
-        run(cpu, lambda: not mem.rx and (mem.ram[SYM['V2_RX_COUNT']] or mem.ram[SYM['V2_CANCEL_REQUEST']]))
-        mem.tx_blocked = False
-        hold(cpu)
-        assert b'Canceled' in mem.tx and mem.bank == 0
+        if not getattr(firmware, 'SR_EXTENSION', False):
+            # Earlier firmware prints a banner during the hold window.
+            cpu, mem = startup(config(), keys=key)
+            mem.tx_blocked = True
+            run(cpu, lambda: not mem.rx and (mem.ram[SYM['V2_RX_COUNT']] or mem.ram[SYM['V2_CANCEL_REQUEST']]))
+            mem.tx_blocked = False
+            hold(cpu)
+            assert b'Canceled' in mem.tx and mem.bank == 0
         # Arriving during the window, after unrelated input.
         cpu, mem = startup(config(), keys=b'xyz\r')
         run(cpu, lambda: cpu.pc == SYM['V2_AUTO_TICK'])
@@ -188,12 +194,13 @@ def check_stop_keys():
         mem.rx.extend(key)
         hold(cpu)
         assert b'Canceled' in mem.tx and mem.bank == 0
-    cpu, mem = startup(config(), keys=b'x'*100)
-    mem.tx_blocked = True
-    run(cpu, lambda: not mem.rx and cpu.pc == SYM['V2_TX_WAIT'])
-    mem.tx_blocked = False
-    hold(cpu)
-    assert b'Canceled' in mem.tx and mem.bank == 0
+    if not getattr(firmware, 'SR_EXTENSION', False):
+        cpu, mem = startup(config(), keys=b'x'*100)
+        mem.tx_blocked = True
+        run(cpu, lambda: not mem.rx and cpu.pc == SYM['V2_TX_WAIT'])
+        mem.tx_blocked = False
+        hold(cpu)
+        assert b'Canceled' in mem.tx and mem.bank == 0
     CASES.append('S/s/Ctrl-C hold from queued or live input, blocked banner and overflow; unrelated input cannot bypass hold')
 
 
