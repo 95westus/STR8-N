@@ -1,0 +1,806 @@
+; STR8-N v1.35 BANK-3 TOP-SECTOR UPDATE / DIRECTORY REFRESH TOOL.
+; Load with an installed STR8-N v1.1/v1.2/v1.21 L command; S9 starts at $2000.
+; The exact host-verified v1.35 top-sector BIN is generated into the $4000 image.
+; This program uses direct FT245R and flash access after active erase begins.
+; STR8_DIRECTORY_REFRESH=0 preserves the live directory and installs the
+; candidate configuration pocket. STR8_DIRECTORY_REFRESH=1 clears only the
+; directory and installs the same candidate configuration.
+; ENTER AT EITHER PRE-ERASE CONFIRMATION CANCELS AND RETURNS TO STR8-N.
+
+; STR8_TOP_EMBED=1 relocates the updater behind Bank Maintenance and returns
+; pre-erase failures/cancellation to its menu. Active-write success or recovery
+; still ends through RESET, exactly like the standalone updater.
+                        IF              STR8_TOP_EMBED
+                        ORG             $3700
+                        ELSE
+                        MODULE          STR8N_V122_TOP_UPDATE
+                        ORG             $2000
+                        ENDIF
+
+TU_FTDI_CTRL            EQU             $7FE0
+TU_FTDI_DATA            EQU             $7FE1
+TU_FTDI_DDRA            EQU             $7FE3
+TU_FTDI_TXE             EQU             $01
+TU_FTDI_RXF             EQU             $02
+TU_FTDI_WR              EQU             $04
+TU_FTDI_RD              EQU             $08
+TU_PCR                   EQU             $7FEC
+TU_BACKUP_BANK           EQU             $EC
+TU_BANK3                 EQU             $EE
+                        IF              STR8_V2_TOP_IMAGE
+TU_LED                   EQU             $7FA0
+TU_LED_CRA               EQU             $7FA1
+TU_LED_RUNNING           EQU             $01
+TU_LED_WAIT              EQU             $43
+TU_LED_RX                EQU             $07
+TU_LED_TX                EQU             $0B
+TU_LED_FLASH             EQU             $F0
+                        ENDIF
+
+TU_STATUS                EQU             $7C00
+TU_FAIL_LO               EQU             $7C01
+TU_FAIL_HI               EQU             $7C02
+TU_ACTIVE                EQU             $7C03
+TU_OLD_SUM_LO            EQU             $7C04
+TU_OLD_SUM_HI            EQU             $7C05
+TU_INPUT                 EQU             $7C20
+TU_META                  EQU             $7C40
+TU_META_SIZE             EQU             $40
+TU_SOFT_RESET_SIG0       EQU             $7DE7
+TU_SOFT_RESET_SIG1       EQU             $7DE8
+
+TU_SRC_LO                EQU             $C8
+TU_SRC_HI                EQU             $C9
+TU_DST_LO                EQU             $CA
+TU_DST_HI                EQU             $CB
+TU_DATA                  EQU             $CC
+TU_TMO0                  EQU             $CD
+TU_TMO1                  EQU             $DE
+TU_TMO2                  EQU             $CF
+TU_SUM_LO                EQU             $D0
+TU_SUM_HI                EQU             $D1
+
+START:                  SEI
+                        CLD
+                        LDX             #$FF
+                        TXS
+                        STZ             TU_STATUS
+                        STZ             TU_ACTIVE
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #$30
+                        STA             TU_LED_CRA
+                        LDA             #$FF
+                        STA             TU_LED
+                        LDA             #$34
+                        STA             TU_LED_CRA
+                        LDA             #TU_LED_RUNNING
+                        STA             TU_LED
+                        ENDIF
+                        LDX             #<TU_MSG_TITLE
+                        LDY             #>TU_MSG_TITLE
+                        JSR             TU_PUTS
+                        LDA             #TU_BANK3
+                        JSR             TU_SELECT
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             $F000
+                        CMP             #'S'
+                        BEQ             TU_PF_V2_SIG0_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_V2_SIG0_OK:      LDA             $F001
+                        CMP             #'N'
+                        BEQ             TU_PF_V2_SIG1_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_V2_SIG1_OK:      LDA             $F002
+                        CMP             #$02
+                        BEQ             TU_PF_V2_SIG2_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_V2_SIG2_OK:      LDA             $F003
+                        CMP             #$00
+                        BEQ             TU_PF_SIGNATURE_OK
+                        JMP             TU_PREFLIGHT_FAIL
+                        ELSE
+                        LDA             $F000
+                        CMP             #$4C
+                        BEQ             TU_PF_HEAD_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_HEAD_OK:
+                        LDA             $F00C
+                        CMP             #'S'
+                        BEQ             TU_PF_SIG0_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_SIG0_OK:
+                        LDA             $F00D
+                        CMP             #'R'
+                        BEQ             TU_PF_SIGNATURE_OK
+                        JMP             TU_PREFLIGHT_FAIL
+                        ENDIF
+TU_PF_SIGNATURE_OK:
+; This updater is matched to the exact source-built a23 F image.
+; Reject a different v2 image before overwriting the operator-approved B2:F.
+                        JSR             TU_MATCH_OLD_F
+                        BCS             TU_PF_OLD_OK
+                        JMP             TU_PREFLIGHT_FAIL
+TU_PF_OLD_OK:
+                        JSR             TU_SUM_CANDIDATE
+                        LDA             TU_SUM_LO
+                        CMP             #<TU_CANDIDATE_SUM
+                        BEQ             TU_PF_SUM_LO_OK
+                        JMP             TU_CANDIDATE_FAIL
+TU_PF_SUM_LO_OK:
+                        LDA             TU_SUM_HI
+                        CMP             #>TU_CANDIDATE_SUM
+                        BEQ             TU_PF_SUM_HI_OK
+                        JMP             TU_CANDIDATE_FAIL
+TU_PF_SUM_HI_OK:
+                        IF              STR8_DIRECTORY_REFRESH
+                        ELSE
+                        JSR             TU_SAVE_META
+                        ENDIF
+                        LDX             #<TU_MSG_BACKUP
+                        LDY             #>TU_MSG_BACKUP
+                        JSR             TU_PUTS
+                        JSR             TU_READ_LINE
+                        LDX             #<TU_CONFIRM_BACKUP
+                        LDY             #>TU_CONFIRM_BACKUP
+                        JSR             TU_MATCH_INPUT
+                        BCS             TU_BACKUP_CONFIRMED
+                        JMP             TU_CANCEL
+TU_BACKUP_CONFIRMED:
+                        LDA             #TU_BANK3
+                        JSR             TU_SELECT
+                        JSR             TU_FLASH_TO_STAGE
+                        JSR             TU_SUM_STAGE
+                        LDA             TU_SUM_LO
+                        STA             TU_OLD_SUM_LO
+                        LDA             TU_SUM_HI
+                        STA             TU_OLD_SUM_HI
+                        LDA             #TU_BACKUP_BANK
+                        JSR             TU_SELECT
+                        JSR             TU_PROGRAM_STAGE
+                        BCS             TU_BACKUP_PROGRAMMED
+                        JMP             TU_BACKUP_FAIL
+TU_BACKUP_PROGRAMMED:
+                        JSR             TU_FLASH_TO_STAGE
+                        JSR             TU_SUM_STAGE
+                        LDA             TU_SUM_LO
+                        CMP             TU_OLD_SUM_LO
+                        BEQ             TU_BACKUP_SUM_LO_OK
+                        JMP             TU_BACKUP_FAIL
+TU_BACKUP_SUM_LO_OK:
+                        LDA             TU_SUM_HI
+                        CMP             TU_OLD_SUM_HI
+                        BEQ             TU_BACKUP_SUM_HI_OK
+                        JMP             TU_BACKUP_FAIL
+TU_BACKUP_SUM_HI_OK:
+                        LDA             #TU_BANK3
+                        JSR             TU_SELECT
+                        LDX             #<TU_MSG_BACKUP_OK
+                        LDY             #>TU_MSG_BACKUP_OK
+                        JSR             TU_PUTS
+                        LDX             #<TU_MSG_RECEIPT
+                        LDY             #>TU_MSG_RECEIPT
+                        JSR             TU_PUTS
+                        LDA             TU_OLD_SUM_HI
+                        JSR             TU_HEX
+                        LDA             TU_OLD_SUM_LO
+                        JSR             TU_HEX
+                        LDA             #$0D
+                        JSR             TU_OUT
+                        LDA             #$0A
+                        JSR             TU_OUT
+                        JSR             TU_PREPARE_CANDIDATE
+                        LDX             #<TU_MSG_FINAL
+                        LDY             #>TU_MSG_FINAL
+                        JSR             TU_PUTS
+                        JSR             TU_READ_LINE
+                        LDX             #<TU_CONFIRM_FINAL
+                        LDY             #>TU_CONFIRM_FINAL
+                        JSR             TU_MATCH_INPUT
+                        BCS             TU_FINAL_CONFIRMED
+                        JMP             TU_CANCEL
+TU_FINAL_CONFIRMED:
+                        LDX             #<TU_MSG_ERASE
+                        LDY             #>TU_MSG_ERASE
+                        JSR             TU_PUTS
+                        LDA             #$01
+                        STA             TU_ACTIVE
+TU_RETRY_CANDIDATE:     JSR             TU_PREPARE_CANDIDATE
+                        LDA             #TU_BANK3
+                        JSR             TU_SELECT
+                        JSR             TU_PROGRAM_STAGE
+                        BCC             TU_RECOVERY
+TU_SUCCESS:             LDX             #<TU_MSG_OK
+                        LDY             #>TU_MSG_OK
+                        JSR             TU_PUTS
+                        JSR             TU_ARM_SOFT_RESET
+                        JMP             ($FFFC)
+
+TU_RECOVERY:            LDX             #<TU_MSG_RECOVERY
+                        LDY             #>TU_MSG_RECOVERY
+                        JSR             TU_PUTS
+                        JSR             TU_READ_LINE
+                        LDA             TU_INPUT+1
+                        BNE             TU_RECOVERY
+                        LDA             TU_INPUT
+                        CMP             #'R'
+                        BEQ             TU_RETRY_CANDIDATE
+                        CMP             #'O'
+                        BNE             TU_RECOVERY
+                        LDA             #TU_BACKUP_BANK
+                        JSR             TU_SELECT
+                        JSR             TU_FLASH_TO_STAGE
+                        JSR             TU_SUM_STAGE
+                        LDA             TU_SUM_LO
+                        CMP             TU_OLD_SUM_LO
+                        BNE             TU_RECOVERY
+                        LDA             TU_SUM_HI
+                        CMP             TU_OLD_SUM_HI
+                        BNE             TU_RECOVERY
+                        LDA             #TU_BANK3
+                        JSR             TU_SELECT
+                        JSR             TU_PROGRAM_STAGE
+                        BCC             TU_RECOVERY
+                        LDX             #<TU_MSG_OLD_OK
+                        LDY             #>TU_MSG_OLD_OK
+                        JSR             TU_PUTS
+                        JSR             TU_ARM_SOFT_RESET
+                        JMP             ($FFFC)
+
+; Commit the one-shot reset-source record last, immediately before RESET-vector
+; entry. The new resident consumes it before initialization.
+TU_ARM_SOFT_RESET:      STZ             TU_SOFT_RESET_SIG1
+                        LDA             #'R'
+                        STA             TU_SOFT_RESET_SIG0
+                        LDA             #'S'
+                        STA             TU_SOFT_RESET_SIG1
+                        RTS
+
+TU_PREFLIGHT_FAIL:      LDA             #$E0
+                        BRA             TU_FAIL_SAFE
+TU_CANDIDATE_FAIL:      LDA             #$E4
+                        BRA             TU_FAIL_SAFE
+TU_BACKUP_FAIL:         LDA             #$E5
+                        BRA             TU_FAIL_SAFE
+TU_CANCEL:              LDA             #$E0
+TU_FAIL_SAFE:           STA             TU_STATUS
+                        LDA             #TU_BANK3
+                        JSR             TU_SELECT
+                        LDX             #<TU_MSG_ABORT
+                        LDY             #>TU_MSG_ABORT
+                        JSR             TU_PUTS
+; STR8-N L jumps to S9 with a fresh stack and no return address. Empty or
+; rejected pre-erase confirmations therefore leave through resident STR8,
+; never RTS. The active-write failure path remains in TU_RECOVERY above.
+                        IF              STR8_TOP_EMBED
+                        JMP             BM_MAIN
+                        ELSE
+                        IF              STR8_V2_TOP_IMAGE
+                        JMP             $F004
+                        ELSE
+                        JSR             TU_ARM_SOFT_RESET
+                        JMP             $F000
+                        ENDIF
+                        ENDIF
+
+; Save the live directory $FFB0-$FFEF before using the staging tray. The
+; candidate-owned $FFF0-$FFF9 configuration pocket is not overlaid.
+TU_SAVE_META:           LDX             #$00
+TU_SAVE_META_BYTE:      LDA             $FFB0,X
+                        STA             TU_META,X
+                        INX
+                        CPX             #TU_META_SIZE
+                        BNE             TU_SAVE_META_BYTE
+                        RTS
+
+TU_PREPARE_CANDIDATE:   STZ             TU_SRC_LO
+                        LDA             #$40
+                        STA             TU_SRC_HI
+                        STZ             TU_DST_LO
+                        LDA             #$0A
+                        STA             TU_DST_HI
+                        LDX             #$10
+TU_PC_PAGE:             LDY             #$00
+TU_PC_BYTE:             LDA             (TU_SRC_LO),Y
+                        STA             (TU_DST_LO),Y
+                        INY
+                        BNE             TU_PC_BYTE
+                        INC             TU_SRC_HI
+                        INC             TU_DST_HI
+                        DEX
+                        BNE             TU_PC_PAGE
+                        IF              STR8_DIRECTORY_REFRESH
+                        RTS
+
+TU_MATCH_OLD_F:         STZ             TU_SRC_LO
+                        LDA             #$50
+                        STA             TU_SRC_HI
+                        STZ             TU_DST_LO
+                        LDA             #$F0
+                        STA             TU_DST_HI
+                        LDX             #$10
+TU_OLD_PAGE:            LDY             #$00
+TU_OLD_BYTE:            LDA             (TU_SRC_LO),Y
+                        CMP             (TU_DST_LO),Y
+                        BNE             TU_OLD_DIFFERENT
+                        INY
+                        BNE             TU_OLD_BYTE
+                        INC             TU_SRC_HI
+                        INC             TU_DST_HI
+                        DEX
+                        BNE             TU_OLD_PAGE
+                        SEC
+                        RTS
+TU_OLD_DIFFERENT:       CLC
+                        RTS
+                        ELSE
+                        LDX             #$00
+TU_PC_META:             LDA             TU_META,X
+                        STA             $19B0,X
+                        INX
+                        CPX             #TU_META_SIZE
+                        BNE             TU_PC_META
+                        RTS
+                        ENDIF
+
+TU_FLASH_TO_STAGE:      STZ             TU_SRC_LO
+                        LDA             #$F0
+                        STA             TU_SRC_HI
+                        STZ             TU_DST_LO
+                        LDA             #$0A
+                        STA             TU_DST_HI
+                        LDX             #$10
+TU_FS_PAGE:             LDY             #$00
+TU_FS_BYTE:             LDA             (TU_SRC_LO),Y
+                        STA             (TU_DST_LO),Y
+                        INY
+                        BNE             TU_FS_BYTE
+                        INC             TU_SRC_HI
+                        INC             TU_DST_HI
+                        DEX
+                        BNE             TU_FS_PAGE
+                        RTS
+
+TU_PROGRAM_STAGE:      STZ             TU_FAIL_LO
+                        STZ             TU_FAIL_HI
+                        STZ             TU_DST_LO
+                        LDA             #$F0
+                        STA             TU_DST_HI
+                        JSR             TU_UNLOCK
+                        LDA             #$80
+                        STA             $D555
+                        JSR             TU_UNLOCK
+                        LDA             #$30
+                        LDY             #$00
+                        STA             (TU_DST_LO),Y
+                        STZ             TU_TMO0
+                        STZ             TU_TMO1
+                        LDA             #$08
+                        STA             TU_TMO2
+TU_ERASE_POLL:          LDA             (TU_DST_LO),Y
+                        CMP             #$FF
+                        BEQ             TU_ERASED
+                        DEC             TU_TMO0
+                        BNE             TU_ERASE_POLL
+                        DEC             TU_TMO1
+                        BNE             TU_ERASE_POLL
+                        DEC             TU_TMO2
+                        BNE             TU_ERASE_POLL
+                        LDA             #$E1
+                        STA             TU_STATUS
+                        IF              STR8_V2_TOP_IMAGE
+                        JMP             TU_FLASH_FAIL
+                        ELSE
+                        BRA             TU_FLASH_FAIL
+                        ENDIF
+TU_ERASED:              STZ             TU_SRC_LO
+                        LDA             #$0A
+                        STA             TU_SRC_HI
+                        STZ             TU_DST_LO
+                        LDA             #$F0
+                        STA             TU_DST_HI
+TU_PROGRAM_BYTE:        LDA             TU_DST_HI
+                        CMP             #$FF
+                        BNE             TU_PROGRAM_NORMAL
+                        LDA             TU_DST_LO
+                        CMP             #$FC
+                        BEQ             TU_PROGRAM_NEXT
+                        CMP             #$FD
+                        BEQ             TU_PROGRAM_NEXT
+TU_PROGRAM_NORMAL:      LDY             #$00
+                        LDA             (TU_SRC_LO),Y
+                        JSR             TU_PROGRAM_A
+                        BCC             TU_PROGRAM_FAIL
+TU_PROGRAM_NEXT:        INC             TU_SRC_LO
+                        INC             TU_DST_LO
+                        BNE             TU_PROGRAM_BYTE
+                        INC             TU_SRC_HI
+                        INC             TU_DST_HI
+                        LDA             TU_DST_HI
+                        BNE             TU_PROGRAM_BYTE
+                        LDA             #$FC
+                        STA             TU_SRC_LO
+                        STA             TU_DST_LO
+                        LDA             #$19
+                        STA             TU_SRC_HI
+                        LDA             #$FF
+                        STA             TU_DST_HI
+                        LDY             #$00
+                        LDA             (TU_SRC_LO),Y
+                        JSR             TU_PROGRAM_A
+                        BCC             TU_PROGRAM_FAIL
+                        INC             TU_SRC_LO
+                        INC             TU_DST_LO
+                        LDA             (TU_SRC_LO),Y
+                        JSR             TU_PROGRAM_A
+                        BCC             TU_PROGRAM_FAIL
+                        JSR             TU_VERIFY_STAGE
+                        BCC             TU_VERIFY_FAIL
+                        LDA             #$AC
+                        STA             TU_STATUS
+                        LDA             #$F0
+                        STA             $D555
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_RUNNING
+                        STA             TU_LED
+                        ENDIF
+                        SEC
+                        RTS
+TU_PROGRAM_FAIL:       LDA             #$E2
+                        STA             TU_STATUS
+                        BRA             TU_RECORD_FAIL
+TU_VERIFY_FAIL:        LDA             #$E3
+                        STA             TU_STATUS
+TU_RECORD_FAIL:        LDA             TU_DST_LO
+                        STA             TU_FAIL_LO
+                        LDA             TU_DST_HI
+                        STA             TU_FAIL_HI
+TU_FLASH_FAIL:         LDA             #$F0
+                        STA             $D555
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_RUNNING
+                        STA             TU_LED
+                        ENDIF
+                        CLC
+                        RTS
+
+TU_PROGRAM_A:          CMP             #$FF
+                        BEQ             TU_PROGRAM_OK
+                        STA             TU_DATA
+                        JSR             TU_UNLOCK
+                        LDA             #$A0
+                        STA             $D555
+                        LDA             TU_DATA
+                        LDY             #$00
+                        STA             (TU_DST_LO),Y
+                        STZ             TU_TMO0
+                        STZ             TU_TMO1
+                        LDA             #$02
+                        STA             TU_TMO2
+TU_WRITE_POLL:         LDA             (TU_DST_LO),Y
+                        CMP             TU_DATA
+                        BEQ             TU_PROGRAM_OK
+                        DEC             TU_TMO0
+                        BNE             TU_WRITE_POLL
+                        DEC             TU_TMO1
+                        BNE             TU_WRITE_POLL
+                        DEC             TU_TMO2
+                        BNE             TU_WRITE_POLL
+                        CLC
+                        RTS
+TU_PROGRAM_OK:         SEC
+                        RTS
+
+TU_VERIFY_STAGE:       STZ             TU_SRC_LO
+                        LDA             #$0A
+                        STA             TU_SRC_HI
+                        STZ             TU_DST_LO
+                        LDA             #$F0
+                        STA             TU_DST_HI
+TU_V_PAGE:             LDY             #$00
+TU_V_BYTE:             LDA             (TU_SRC_LO),Y
+                        CMP             (TU_DST_LO),Y
+                        BNE             TU_V_FAIL
+                        INY
+                        BNE             TU_V_BYTE
+                        INC             TU_SRC_HI
+                        INC             TU_DST_HI
+                        LDA             TU_DST_HI
+                        BNE             TU_V_PAGE
+                        SEC
+                        RTS
+TU_V_FAIL:             TYA
+                        STA             TU_DST_LO
+                        CLC
+                        RTS
+
+TU_UNLOCK:
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             TU_DST_HI
+                        AND             #$01
+                        ORA             #TU_LED_FLASH
+                        STA             TU_LED
+                        ENDIF
+                        LDA             #$AA
+                        STA             $D555
+                        LDA             #$55
+                        STA             $AAAA
+                        RTS
+
+TU_SELECT:             PHA
+                        LDA             #$EE
+                        TRB             TU_PCR
+                        PLA
+                        TSB             TU_PCR
+                        RTS
+
+TU_SUM_CANDIDATE:      STZ             TU_SRC_LO
+                        LDA             #$40
+                        BRA             TU_SUM_START
+TU_SUM_STAGE:          STZ             TU_SRC_LO
+                        LDA             #$0A
+TU_SUM_START:          STA             TU_SRC_HI
+                        STZ             TU_SUM_LO
+                        STZ             TU_SUM_HI
+                        LDX             #$10
+TU_SUM_PAGE:           LDY             #$00
+TU_SUM_BYTE:           CLC
+                        LDA             TU_SUM_LO
+                        ADC             (TU_SRC_LO),Y
+                        STA             TU_SUM_LO
+                        BCC             TU_SUM_NO_CARRY
+                        INC             TU_SUM_HI
+TU_SUM_NO_CARRY:       INY
+                        BNE             TU_SUM_BYTE
+                        INC             TU_SRC_HI
+                        DEX
+                        BNE             TU_SUM_PAGE
+                        RTS
+
+TU_MATCH_INPUT:
+                        STX             TU_SRC_LO
+                        STY             TU_SRC_HI
+                        LDY             #$00
+TU_MATCH_BYTE:         LDA             (TU_SRC_LO),Y
+                        CMP             TU_INPUT,Y
+                        BNE             TU_MATCH_FAIL
+                        CMP             #$00
+                        BEQ             TU_MATCH_OK
+                        INY
+                        CPY             #$10
+                        BNE             TU_MATCH_BYTE
+TU_MATCH_FAIL:         CLC
+                        RTS
+TU_MATCH_OK:           SEC
+                        RTS
+
+TU_READ_LINE:          LDY             #$00
+TU_READ_NEXT:          JSR             TU_IN
+                        CMP             #$0D
+                        BEQ             TU_READ_DONE
+                        CMP             #$0A
+                        BEQ             TU_READ_NEXT
+                        CMP             #'a'
+                        BCC             TU_READ_STORE
+                        CMP             #'z'+1
+                        BCS             TU_READ_STORE
+                        AND             #$DF
+TU_READ_STORE:         CPY             #$0F
+                        BCS             TU_READ_NEXT
+                        STA             TU_INPUT,Y
+                        JSR             TU_OUT
+                        INY
+                        BRA             TU_READ_NEXT
+TU_READ_DONE:          LDA             #$00
+                        STA             TU_INPUT,Y
+                        LDA             #$0D
+                        JSR             TU_OUT
+                        LDA             #$0A
+                        JSR             TU_OUT
+                        RTS
+
+TU_PUTS:               STX             TU_SRC_LO
+                        STY             TU_SRC_HI
+                        LDY             #$00
+TU_PUTS_BYTE:          LDA             (TU_SRC_LO),Y
+                        BEQ             TU_PUTS_DONE
+                        JSR             TU_OUT
+                        INY
+                        BNE             TU_PUTS_BYTE
+                        INC             TU_SRC_HI
+                        BRA             TU_PUTS_BYTE
+TU_PUTS_DONE:          RTS
+
+TU_HEX:                PHA
+                        LSR             A
+                        LSR             A
+                        LSR             A
+                        LSR             A
+                        JSR             TU_NIBBLE
+                        PLA
+                        AND             #$0F
+TU_NIBBLE:             CMP             #$0A
+                        BCC             TU_HEX_DIGIT
+                        ADC             #$06
+TU_HEX_DIGIT:          ADC             #'0'
+                        JMP             TU_OUT
+
+TU_OUT:                PHA
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_TX
+                        STA             TU_LED
+                        PLA
+                        PHA
+                        ENDIF
+                        STZ             TU_FTDI_DDRA
+                        STA             TU_FTDI_DATA
+TU_OUT_READY:          LDA             #TU_FTDI_TXE
+                        BIT             TU_FTDI_CTRL
+                        BNE             TU_OUT_READY
+                        LDA             #TU_FTDI_WR
+                        TSB             TU_FTDI_CTRL
+                        DEC             TU_FTDI_DDRA
+                        NOP
+                        NOP
+                        TRB             TU_FTDI_CTRL
+                        STZ             TU_FTDI_DDRA
+                        PLA
+                        RTS
+
+TU_IN:
+                        IF              STR8_V2_TOP_IMAGE
+                        LDA             #TU_LED_WAIT
+                        STA             TU_LED
+                        ENDIF
+                        STZ             TU_FTDI_DDRA
+TU_IN_READY:           LDA             #TU_FTDI_RXF
+                        BIT             TU_FTDI_CTRL
+                        BNE             TU_IN_READY
+                        LDA             #TU_FTDI_RD
+                        TRB             TU_FTDI_CTRL
+                        NOP
+                        NOP
+                        LDA             TU_FTDI_DATA
+                        PHA
+                        LDA             #TU_FTDI_RD
+                        TSB             TU_FTDI_CTRL
+                        PLA
+                        IF              STR8_V2_TOP_IMAGE
+                        PHA
+                        LDA             #TU_LED_RX
+                        STA             TU_LED
+                        PLA
+                        ENDIF
+                        RTS
+
+                        IF              STR8_V2_TOP_IMAGE
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 2.0a24 B3 INSTALL",$0D,$0A
+                        ELSE
+                        IF              STR8_DIRECTORY_REFRESH
+                        IF              STR8_IN65_VERSION_135
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.35 DIRECTORY REFRESH",$0D,$0A
+                        ELSE
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 DIRECTORY REFRESH",$0D,$0A
+                        ENDIF
+                        ELSE
+                        IF              STR8_IN65_VERSION_135
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.35 TOP UPDATE",$0D,$0A
+                        ELSE
+                        IF              STR8_IN65_VERSION_133
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 TOP UPDATE",$0D,$0A
+                        ELSE
+TU_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.23 TOP UPDATE",$0D,$0A
+                        ENDIF
+                        ENDIF
+                        ENDIF
+                        ENDIF
+                        DB              "BACKUP B2:F; TARGET B3:F",$0D,$0A,0
+TU_MSG_BACKUP:         DB              "TYPE BACKUP B2F> ",0
+TU_MSG_BACKUP_OK:      DB              "BACKUP VERIFIED",$0D,$0A,0
+TU_MSG_RECEIPT:        DB              "SAFE PHY $17000-$17FFF; TARGET PHY "
+                        DB              "$1F000-$1FFFF; SUM=$",0
+                        IF              STR8_V2_TOP_IMAGE
+TU_MSG_FINAL:          DB              "TYPE STR8-N 2.0a24> ",0
+                        ELSE
+                        IF              STR8_DIRECTORY_REFRESH
+TU_MSG_FINAL:          DB              "TYPE ERASE DIRECTORY> ",0
+                        ELSE
+                        IF              STR8_IN65_VERSION_135
+TU_MSG_FINAL:          DB              "TYPE STR8-N 1.35> ",0
+                        ELSE
+                        IF              STR8_IN65_VERSION_133
+TU_MSG_FINAL:          DB              "TYPE STR8-N 1.33> ",0
+                        ELSE
+TU_MSG_FINAL:          DB              "TYPE STR8-N 1.23> ",0
+                        ENDIF
+                        ENDIF
+                        ENDIF
+                        ENDIF
+TU_MSG_ERASE:          DB              "ERASING B3:F - NO RESET/NMI/POWER",$0D,$0A,0
+TU_MSG_RECOVERY:       DB              "WRITE FAIL: R=RETRY O=RESTORE OLD> ",0
+                        IF              STR8_V2_TOP_IMAGE
+TU_MSG_OK:             DB              "STR8-N 2.0a24 VERIFIED; RESET",$0D,$0A,0
+                        ELSE
+                        IF              STR8_DIRECTORY_REFRESH
+TU_MSG_OK:             DB              "DIRECTORY EMPTY; STR8-N VERIFIED; RESET",$0D,$0A,0
+                        ELSE
+                        IF              STR8_IN65_VERSION_135
+TU_MSG_OK:             DB              "STR8-N 1.35 VERIFIED; RESET",$0D,$0A,0
+                        ELSE
+                        IF              STR8_IN65_VERSION_133
+TU_MSG_OK:             DB              "STR8-N 1.33 VERIFIED; RESET",$0D,$0A,0
+                        ELSE
+TU_MSG_OK:             DB              "STR8-N 1.23 VERIFIED; RESET",$0D,$0A,0
+                        ENDIF
+                        ENDIF
+                        ENDIF
+                        ENDIF
+TU_MSG_OLD_OK:         DB              "OLD TOP RESTORED; RESET",$0D,$0A,0
+                        IF              STR8_V2_TOP_IMAGE
+TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE V2 INSTALL",$0D,$0A,0
+                        ELSE
+                        IF              STR8_DIRECTORY_REFRESH
+TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE DIRECTORY REFRESH",$0D,$0A,0
+                        ELSE
+TU_MSG_ABORT:          DB              "ABORT - NO ACTIVE TOP UPDATE",$0D,$0A,0
+                        ENDIF
+                        ENDIF
+TU_CONFIRM_BACKUP:     DB              "BACKUP B2F",0
+                        IF              STR8_V2_TOP_IMAGE
+TU_CONFIRM_FINAL:      DB              "STR8-N 2.0A24",0
+                        ELSE
+                        IF              STR8_DIRECTORY_REFRESH
+TU_CONFIRM_FINAL:      DB              "ERASE DIRECTORY",0
+                        ELSE
+                        IF              STR8_IN65_VERSION_135
+TU_CONFIRM_FINAL:      DB              "STR8-N 1.35",0
+                        ELSE
+                        IF              STR8_IN65_VERSION_133
+TU_CONFIRM_FINAL:      DB              "STR8-N 1.33",0
+                        ELSE
+TU_CONFIRM_FINAL:      DB              "STR8-N 1.23",0
+                        ENDIF
+                        ENDIF
+                        ENDIF
+                        ENDIF
+
+; TU_CONFIRM receives the expected string in X/Y. These call sites use a
+; prompt pointer first, so expose small wrappers with fixed expected strings.
+; The assembler resolves the rewritten calls below through these entry labels.
+
+                        IF              STR8_TOP_EMBED
+                        INCLUDE         "str8n-v1.23-bank-maint-rename.inc"
+                        ENDIF
+
+                        ORG             $4000
+TU_CANDIDATE_IMAGE:
+                        IF              STR8_V2_TOP_IMAGE
+                        INCLUDE         "str8n-v2-current-top-image.inc"
+                        ELSE
+                        IF              STR8_IN65_TOP_IMAGE
+                        IF              STR8_IN65_VERSION_135
+                        INCLUDE         "str8n-v1.35-str8-in65-top-image.inc"
+                        ELSE
+                        IF              STR8_IN65_VERSION_133
+                        INCLUDE         "str8n-v1.33-str8-in65-top-image.inc"
+                        ELSE
+                        INCLUDE         "str8n-v1.23-str8-in65-top-image.inc"
+                        ENDIF
+                        ENDIF
+                        ELSE
+                        IF              STR8_IN65_VERSION_135
+                        INCLUDE         "str8n-v1.35-top-image.inc"
+                        ELSE
+                        IF              STR8_IN65_VERSION_133
+                        INCLUDE         "str8n-v1.33-top-image.inc"
+                        ELSE
+                        INCLUDE         "str8n-v1.23-top-image.inc"
+                        ENDIF
+                        ENDIF
+                        ENDIF
+                        ENDIF
+                        ORG             $5000
+TU_OLD_IMAGE:           INCLUDE         "str8n-v2-a23-old-top.inc"
+                        IF              STR8_TOP_EMBED
+                        ELSE
+                        END
+                        ENDIF
