@@ -1,8 +1,8 @@
 ; ----------------------------------------------------------------------------
 ; WDCMONV2STR8N-INSTALL-2000.ASM
 ;
-; Conservative stock SXB -> STR8-N installer. The alpha24 816 build has an
-; entry shim that forces 65C816 emulation mode; the 65C02 builds omit it.
+; Conservative stock SXB -> STR8-N installer. The alpha24 unified build uses
+; SEC/$FB: XCE enters 65C816 emulation mode; $FB is a one-byte W65C02S NOP.
 ; Load under stock WDCMONv2 at $2000.  After the complete stock Bank 3 is
 ; preserved in Bank 0, receive the canonical 4096-byte STR8-N top BIN at
 ; $4000-$4FFF.  $0A00-$19FF is the one-sector staging buffer.
@@ -78,10 +78,10 @@ W2I_SOFT_RESET_SIG1     EQU             $7DE8
                         ORG             $2000
 
 START:
-                        IF              STR8_V2_A24_816
-; WDCMONv2 on the newer 816 firmware can execute while the CPU is in native
-; mode. Force emulation mode before any 8-bit immediates or zero-page access.
-; SEC / XCE is safe whether the caller was already in emulation or native.
+                        IF              STR8_V2_A24_UNIFIED
+; WDCMONv2 on the 816 can execute in native mode. SEC / XCE forces emulation
+; before any 8-bit immediate or zero-page access. On W65C02S, $FB is a
+; documented one-byte NOP, so the same image proceeds to SEI on both CPUs.
                         SEC
                         DB              $FB
                         ENDIF
@@ -1265,10 +1265,14 @@ W2I_MSG_ABORT:          DB              "HALTED IN RAM; PHYSICAL RESET SELECTS B
 W2R_MSG_TITLE:          DB              $0D,$0A,"BOARD 2609 B0 TO B3 RESTORE",$0D,$0A
                         DB              "B0 RETAINED; NO RESET/NMI/POWER DURING WRITE",$0D,$0A,0
                         ELSE
+                        IF              STR8_V2_A24
+W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 2.0a24 STOCK RESTORE",$0D,$0A
+                        ELSE
                         IF              STR8_IN65_VERSION_135
 W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.35 STOCK RESTORE",$0D,$0A
                         ELSE
 W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 STOCK RESTORE",$0D,$0A
+                        ENDIF
                         ENDIF
                         DB              "FACTORY BASELINE: B0 -> B3, THEN ERASE B0",$0D,$0A
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0",$0D,$0A,0

@@ -7,7 +7,7 @@ It opens no serial port and changes no board flash.
 
 | Artifact | Purpose | SHA-256 |
 | --- | --- | --- |
-| `BUILD/v2-alpha24-wdcmon-ram/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | WDCMONv2 816 RAM installer at `$2000` | `66bd1030c2f48444826f03562886fc4828d4047f36d4ba42d1e5f8e5396cbebe` |
+| `BUILD/v2-alpha24-wdcmon-ram/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | Unified WDCMONv2 W65C02SXB/W65C816SXB RAM installer at `$2000` | `66bd1030c2f48444826f03562886fc4828d4047f36d4ba42d1e5f8e5396cbebe` |
 | `BUILD/v2-alpha24-wdcmon-ram/str8n-v2-alpha24-f000-ffff.bin` | Exact F image supplied separately to installer | `43e6ee966963e1cc401986581742cc75b302cd0a02cfaf22965fe7ab8a43ec1a` |
 | `tools/v2-apps/str8n-v2-bank-maint-2000.s19` | Bank maintenance, `L` then `G 2000` under STR8-N | `7fad3875a12d0e606ee045b13cd5e5ab7802dc7d206e08fd10e561b4bdc6b06c` |
 | `tools/v2-apps/str8n-v2-bank-maint-2000.a` | Exact ASM-F2 `ORG`/`DB` carrier for bank maintenance | `a9254a351df0eab96d06dcb63a4a19441906178c6351ec56b3a2ffd8af40bef3` |
@@ -38,9 +38,15 @@ with `-ExpectedBoardTag`. The installer also requires an expected SST39SF010A
 existing copy, receives the 4,096-byte alpha24 F BIN, and programs B3:F only
 after the exact confirmation. The offline checker verified its `$2000-$299B`
 RAM range, S9 entry, candidate F identity, refusal and recovery gate order,
-and that B1/B2 are untouched. The 816 entry begins with `SEC/XCE`, forcing
-emulation mode before the 8-bit installer code. The alpha22 installer still builds and validates
-after the shared source change.
+and that B1/B2 are untouched. The unified entry starts `SEC; $FB; SEI`. WDC
+documents `$FB` as a one-byte NOP on W65C02S; on W65C816S it is XCE, so the
+entry forces emulation mode before the shared 8-bit code. The renamed build
+switch produces the same alpha24 S19 SHA-256 above. This is offline CPU-entry
+qualification; the W65C02SXB alpha24 migration still needs a physical run.
+The alpha22 installer still builds and validates after the shared source change.
+
+Use the [02SXB no-EDU checklist](STR8N_V2_A24_02_NO_EDU_CHECKLIST.md) for that
+run. Do not treat absent EDU peripherals as a migration failure.
 
 The first board 2609 load had exact RAM readback, but execution returned to
 the shipped native EDU menu without showing the installer prompt. The revised

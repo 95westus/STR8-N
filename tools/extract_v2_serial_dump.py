@@ -13,8 +13,8 @@ def main():
     parser.add_argument('end', type=lambda s: int(s, 16))
     parser.add_argument('out', type=Path)
     args = parser.parse_args()
-    if not 0x8000 <= args.start <= args.end <= 0xFFFF:
-        parser.error('range must lie in flash')
+    if not 0x2000 <= args.start <= args.end <= 0xFFFF:
+        parser.error('range must lie in RAM or flash')
     transcript = b''.join(bytes.fromhex(json.loads(line)['hex'])
                           for line in args.log.read_text().splitlines()
                           if json.loads(line).get('direction') == 'RX').decode('ascii')

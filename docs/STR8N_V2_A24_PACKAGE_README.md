@@ -14,7 +14,7 @@ recorded scope.
 | --- | --- |
 | `FIRMWARE/str8n-v2-alpha24-f000-ffff.bin` | Exact 4 KiB Bank 3 F image for the installer or T48 offset `$1F000`; SHA-256 `43e6ee966963e1cc401986581742cc75b302cd0a02cfaf22965fe7ab8a43ec1a`. |
 | `FIRMWARE/str8n-v2-alpha24-e000-efff.bin` | Separate 4 KiB generic E page for T48 offset `$1E000`; merge board-specific E margins before using on an occupied board. |
-| `FIRMWARE/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | RAM installer for a stock WDCMONv2 board. It preserves original B3 in erased B0 before installing F. |
+| `FIRMWARE/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | Unified 02/816 RAM installer for a stock WDCMONv2 board. It preserves original B3 in erased B0 before installing F. The 02 alpha24 path awaits physical qualification. |
 | `FIRMWARE/str8n-v2-alpha24-e000-ffff.bin` and `.s19` | Generic E/F image for a deliberate external-programmer or compatible new-bank workflow. Its E margins are `$FF`; board 2609 retained its pre-existing E margins instead. |
 | `FIRMWARE/str8n-v2-alpha24-8000-ffff.bin` and `.s19` | Generic full 32 KiB bank image for an external-programmer or expressly selected full-bank workflow. It replaces the entire target bank. |
 | `APPLICATIONS/str8n-v2-bank-maint-2000.s19` | Static RAM bank maintenance image, load with STR8-N `L` then `G 2000`. |
@@ -22,7 +22,7 @@ recorded scope.
 | `APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.s19` and `.a` | Matching alpha23-to-alpha24 B3:F updater carriers. They require erased B2:F for backup and therefore refuse board 2609. |
 | `PUBLIC/str8n-v2-public.inc` | Published ROM/RAM ABI addresses, modes, and capability bits. |
 | `MIGRATE-STR8N-V2-A24.ps1` | Single Windows WDCMONv2 migration script; prompts for COM if `-Port` omitted. |
-| `GUIDE-816.md`, `MAPS.md` | Manual 816 migration, T48 offsets, preservation map, and diagrams. |
+| `GUIDE-816.md`, `CHECKLIST-02-NO-EDU.md`, `MAPS.md` | 816 manual migration, 02 no-EDU test gates, T48 offsets, preservation map, and diagrams. |
 | `STR8N_V2_2609_*` | Board 2609 stock restore and later F-only remigration records linked from the map. |
 | `STR8N_V2_A24_2609_OPERATOR_SESSION.md`, `EVIDENCE/*.raw`, `EVIDENCE/*.raw.events.txt` | Owner-approved, byte-exact COM8 migration session showing the typed line, normalized board echo, and accepted install. |
 | `CHECKLIST-816.md`, `CHECKLIST-816.pdf` | Printable and fillable qualification record. |
