@@ -24,6 +24,11 @@
 ; WARNING: power loss while B3:F is erased/programmed still requires an
 ; external programmer.  While this RAM process remains alive, B0:F can be
 ; selected as the old-top recovery source.
+;
+; W2I_RESTORE_STOCK=1 with W2I_RESTORE_KEEP_B0=1 builds the board-2609
+; inverse path: require the recorded original-B3 FNV in B0, copy B0 to B3,
+; verify every byte twice, retain B0, and wait for physical RESET. The
+; ordinary factory-restore build still erases B0 after verification.
 ; ----------------------------------------------------------------------------
 
                         MODULE          WDCMONV2STR8N_INSTALL
@@ -324,6 +329,21 @@ W2R_ID_OK:
                         LDA             W2I_ERASED
                         BNE             W2R_SOURCE_BAD
                         JSR             W2I_SAVE_SOURCE_HASH
+                        IF              W2I_RESTORE_KEEP_B0
+; Board 2609's original stock B3 was copied into B0 with this full-bank FNV.
+                        LDA             W2I_SOURCE_HASH0
+                        CMP             #$EC
+                        BNE             W2R_SOURCE_BAD
+                        LDA             W2I_SOURCE_HASH1
+                        CMP             #$28
+                        BNE             W2R_SOURCE_BAD
+                        LDA             W2I_SOURCE_HASH2
+                        CMP             #$09
+                        BNE             W2R_SOURCE_BAD
+                        LDA             W2I_SOURCE_HASH3
+                        CMP             #$28
+                        BNE             W2R_SOURCE_BAD
+                        ENDIF
                         LDA             $FFFC
                         STA             W2R_RESET_LO
                         LDA             $FFFD
@@ -413,12 +433,39 @@ W2R_FINAL_EXACT_OK:
                         LDX             #<W2R_MSG_VERIFIED
                         LDY             #>W2R_MSG_VERIFIED
                         JSR             W2I_PUTS
+                        IF              W2I_RESTORE_KEEP_B0
+                        JMP             W2R_KEEP_B0_VERIFY
+                        ELSE
                         JMP             W2R_ERASE_B0
+                        ENDIF
+
+                        IF              W2I_RESTORE_KEEP_B0
+W2R_KEEP_B0_VERIFY:
+                        LDA             #$00
+                        JSR             W2I_SELECT_BANK_A
+                        JSR             W2I_HASH_BANK
+                        JSR             W2I_HASH_EQUALS_SOURCE
+                        BCC             W2R_FINAL_FAIL
+                        LDA             #$03
+                        JSR             W2I_SELECT_BANK_A
+                        JSR             W2I_HASH_BANK
+                        JSR             W2I_HASH_EQUALS_SOURCE
+                        BCC             W2R_FINAL_FAIL
+                        JSR             W2I_COMPARE_B0_B3_EXACT
+                        BCC             W2R_FINAL_FAIL
+                        LDX             #<W2R_MSG_KEEP_OK
+                        LDY             #>W2R_MSG_KEEP_OK
+                        JSR             W2I_PUTS
+                        JSR             W2I_LED_RELEASE
+W2R_KEEP_WAIT:          BRA             W2R_KEEP_WAIT
+                        ENDIF
 
 ; Only after the complete stock image is exact in B3 may the retained source
 ; be erased.  This recreates the factory migration precondition instead of
 ; merely leaving two stock copies, which would exercise the installer's
 ; already-preserved path rather than its first-consumer preservation prompts.
+                        IF              W2I_RESTORE_KEEP_B0
+                        ELSE
 W2R_ERASE_B0:
                         LDX             #<W2R_MSG_ERASE_B0
                         LDY             #>W2R_MSG_ERASE_B0
@@ -499,6 +546,7 @@ W2R_B3_CHANGED:
                         LDX             #<W2R_MSG_B3_CHANGED
                         LDY             #>W2R_MSG_B3_CHANGED
                         JMP             W2R_ABORT_XY
+                        ENDIF
 
 W2R_FINAL_FAIL:
                         LDX             #<W2R_MSG_FINAL_FAIL
@@ -1213,6 +1261,10 @@ W2I_MSG_CANCEL:         DB              "CANCELLED; NOTHING FURTHER WRITTEN",$0D
 W2I_MSG_ABORT:          DB              "HALTED IN RAM; PHYSICAL RESET SELECTS B3",$0D,$0A,0
 
                         IF              W2I_RESTORE_STOCK
+                        IF              W2I_RESTORE_KEEP_B0
+W2R_MSG_TITLE:          DB              $0D,$0A,"BOARD 2609 B0 TO B3 RESTORE",$0D,$0A
+                        DB              "B0 RETAINED; NO RESET/NMI/POWER DURING WRITE",$0D,$0A,0
+                        ELSE
                         IF              STR8_IN65_VERSION_135
 W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.35 STOCK RESTORE",$0D,$0A
                         ELSE
@@ -1220,12 +1272,21 @@ W2R_MSG_TITLE:          DB              $0D,$0A,"STR8-N 1.33 STOCK RESTORE",$0D,
                         ENDIF
                         DB              "FACTORY BASELINE: B0 -> B3, THEN ERASE B0",$0D,$0A
                         DB              "NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0",$0D,$0A,0
+                        ENDIF
 W2R_MSG_SOURCE:         DB              "SOURCE B0 FNV1A=",0
 W2R_MSG_RESET:          DB              " RESET=$",0
 W2R_MSG_ORDER:          DB              "DEST B3 WILL BE REPLACED",$0D,$0A
                         DB              "SECTORS 8-E FIRST; RESET SECTOR F LAST",$0D,$0A
+                        IF              W2I_RESTORE_KEEP_B0
+                        DB              "B0 WILL BE RETAINED",$0D,$0A,0
+                        ELSE
                         DB              "AFTER B3 VERIFIES, B0 WILL BE ERASED",$0D,$0A,0
+                        ENDIF
+                        IF              W2I_RESTORE_KEEP_B0
+W2R_MSG_CONFIRM:        DB              "TYPE RESTORE B0 TO B3> ",0
+                        ELSE
 W2R_MSG_CONFIRM:        DB              "TYPE RESTORE FACTORY BOARD> ",0
+                        ENDIF
 W2R_MSG_SOURCE_BAD:     DB              "REFUSE: B0 ERASED OR RESET OUTSIDE $8000-$FFFE",$0D,$0A,0
 W2R_MSG_COPY_LOWER:     DB              "COPY/VERIFY B0 -> B3 8-E ",0
 W2R_MSG_COPY_TOP:       DB              "B3:F LAST ",0
@@ -1233,12 +1294,18 @@ W2R_MSG_SECTOR_FAIL:    DB              $0D,$0A,"B3 SECTOR $",0
 W2R_MSG_RETRY:          DB              " WRITE/VERIFY FAIL; TYPE R TO RETRY> ",0
 W2R_MSG_FINAL_FAIL:     DB              "WHOLE-BANK VERIFY FAIL; TYPE R TO REWRITE ALL> ",0
 W2R_MSG_VERIFIED:       DB              "B0 == B3 WHOLE BANK VERIFIED",$0D,$0A,0
+                        IF              W2I_RESTORE_KEEP_B0
+W2R_MSG_KEEP_OK:        DB              "B0 PRESERVED; B3 STOCK VERIFIED; PRESS PHYSICAL RESET",$0D,$0A,0
+                        ENDIF
+                        IF              W2I_RESTORE_KEEP_B0
+                        ELSE
 W2R_MSG_ERASE_B0:       DB              "ERASE/VERIFY FACTORY B0 ",0
 W2R_MSG_ERASE_FAIL:     DB              $0D,$0A,"B0 SECTOR $",0
 W2R_MSG_FACTORY_FAIL:   DB              "B0 NOT FULLY ERASED; TYPE R TO RETRY ALL> ",0
 W2R_MSG_B3_CHANGED:     DB              "REFUSE BOOT: B3 HASH CHANGED AFTER B0 ERASE",$0D,$0A,0
 W2R_MSG_FACTORY_OK:     DB              "FACTORY BASELINE VERIFIED: B0 ERASED; B3 STOCK",$0D,$0A,0
 W2R_MSG_BOOT:           DB              "BOOT STOCK B3",$0D,$0A,0
+                        ENDIF
                         ENDIF
 
 W2I_TOKEN_COPY:         DB              "COPY B3 TO B0",0
@@ -1261,7 +1328,11 @@ W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 1.33",0
                         ENDIF
 W2I_ARCHIVE_TOKEN:      DB              "ARCHIVE ",0,0,0,0,0,0,0,0,0
                         IF              W2I_RESTORE_STOCK
+                        IF              W2I_RESTORE_KEEP_B0
+W2R_TOKEN_RESTORE:      DB              "RESTORE B0 TO B3",0
+                        ELSE
 W2R_TOKEN_RESTORE:      DB              "RESTORE FACTORY BOARD",0
+                        ENDIF
 W2R_TOKEN_RETRY:        DB              "R",0
                         ENDIF
 W2I_INPUT:              DS              32
