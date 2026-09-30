@@ -36,7 +36,7 @@ foreach ($required in @(
 if (-not $source.Contains('NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0')) {
     throw 'Installer must tell the operator that solid LED $F0 marks active flash mutation'
 }
-if ($V2Signature -and -not $source.Contains('W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N 2.0A21",0')) {
+if ($V2Signature -and -not $source.Contains(('W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N {0}",0' -f $VersionText.ToUpperInvariant()))) {
     throw 'RC install token must match the uppercase input produced by W2I_READ_LINE'
 }
 $eraseBody = $source.Substring(

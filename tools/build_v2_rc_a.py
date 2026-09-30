@@ -50,14 +50,15 @@ def s19_bytes(path: Path) -> tuple[dict[int, int], int]:
     return data, entry
 
 
-def make_carrier(data: dict[int, int], output: Path, role: str) -> None:
+def make_carrier(data: dict[int, int], output: Path, role: str,
+                 origin: str = "RC1") -> None:
     last = max(data)
     lines = [
         f"; {output.name.upper()}",
         "; ASM-F2 ORG/DB image carrier for the public R-YORS 00.0915(2324) assembler.",
         f"; {role}",
         "; ASM NEW; send complete file; require END/SEAL with no ERR; enter .; G 2000.",
-        "; Source bytes are checked against the matching RC1 S19; do not edit DB rows.",
+        f"; Source bytes are checked against the matching {origin} S19; do not edit DB rows.",
         "",
         "        ORG $2000",
     ]

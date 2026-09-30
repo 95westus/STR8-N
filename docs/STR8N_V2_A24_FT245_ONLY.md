@@ -25,11 +25,9 @@ execution still requires the physical 816 board. A successful run writes
 
 - Complete physical regression with exact E/F readback, physical reset, and
   cold power-cycle evidence. Retain the artifact hashes and transcripts.
-- Prepare and verify a migration installer bound to the exact a24 F image.
-  The existing `build_v2_a22_wdcmon_ram.py` still builds an a22 installer;
-  it is not the current-alpha migration artifact. Verify its banner,
-  confirmation token, payload, preservation/refusal gates, and S19 entry
-  before the WDC 02/816 migration test on the W65C816SXB.
+- The [a24 WDCMONv2 installer and bank maintenance kit](STR8N_V2_A24_WDCMON_MIGRATION_KIT.md)
+  passes offline build and host checks. Board 2609 returned WDCMONv2 `SXB6`
+  through the binary interface; the physical migration path remains untested.
 - Record the 816's stock identity and bank inventory, preserve its stock image,
   and qualify migration and native execution on that board.
 

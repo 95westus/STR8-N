@@ -23,6 +23,14 @@ Defects and hardware investigations are indexed in the
 - [ ] Then qualify the WDC 02/816-to-STR8N-v2 migration using the W65C816SXB.
   Bind the migration artifacts to the current candidate before the board run;
   older alpha21/alpha22 migration evidence does not qualify alpha24 or the 816.
+  [Board 2609 inventory](docs/STR8N_V2_2609_INVENTORY_2026-09-30.md) found the
+  shipped native EDU demo and then returned `SXB6`, HW 3.00, WDCMON 2.00 on a
+  successful binary board-info probe. The bridge now checks `SXB?`, retries an
+  early incomplete reply, and requires physical board-type confirmation before
+  RAM loading; no memory or flash readbacks were made. WDC identity suffixes
+  vary across boards or revisions, so record each exact tag and physical model.
+  The [alpha24 WDCMONv2 migration kit](docs/STR8N_V2_A24_WDCMON_MIGRATION_KIT.md)
+  now builds and passes offline checks; physical 816 qualification remains open.
 - [ ] Next alpha: EDU board testing. Bank 3 holds the 816SXB version; Bank 2
   holds W65C02SXB with SPI/I2C/RTC updates. Both need EDU presence detection
   without LEDs or buzzer. Start with read-only RTC date/time probing; leave
