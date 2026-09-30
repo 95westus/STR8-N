@@ -24,11 +24,15 @@ recorded scope.
 | `MIGRATE-STR8N-V2-A24.ps1` | Single Windows WDCMONv2 migration script; prompts for COM if `-Port` omitted. |
 | `GUIDE-816.md`, `MAPS.md` | Manual 816 migration, T48 offsets, preservation map, and diagrams. |
 | `STR8N_V2_2609_*` | Board 2609 stock restore and later F-only remigration records linked from the map. |
+| `STR8N_V2_A24_2609_OPERATOR_SESSION.md`, `EVIDENCE/*.raw`, `EVIDENCE/*.raw.events.txt` | Owner-approved, byte-exact COM8 migration session showing the typed line, normalized board echo, and accepted install. |
 | `CHECKLIST-816.md`, `CHECKLIST-816.pdf` | Printable and fillable qualification record. |
 
 `MANIFEST.json` records every packaged file's SHA-256 and the source commit.
-The archive contains no WDCMONv2 firmware, stock-bank image, raw board capture,
-HIMON, ASM-F2 firmware, or crypto-device access code.
+The archive contains no WDCMONv2 firmware, stock-bank image, HIMON, ASM-F2
+firmware, or crypto-device access code. The included COM8 session logs are
+the specific operator evidence described in
+`STR8N_V2_A24_2609_OPERATOR_SESSION.md`; they
+record the owner's local path and COM port.
 
 ## Stock-board migration
 

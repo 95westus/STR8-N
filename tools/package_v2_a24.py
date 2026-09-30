@@ -21,6 +21,8 @@ TOP_SHA256 = "43e6ee966963e1cc401986581742cc75b302cd0a02cfaf22965fe7ab8a43ec1a"
 SR_SHA256 = "6df4b51df973ac5159b27e1bb5a32601d8c31c66b12717ed129201b2eb274f2d"
 INSTALLER_SHA256 = "66bd1030c2f48444826f03562886fc4828d4047f36d4ba42d1e5f8e5396cbebe"
 MAINT_SHA256 = "9dda57fe5a9ab0744c3db40b6ea3507efbc8ad15d2ddb2e66d8a623ad2559736"
+SESSION_RAW_SHA256 = "d84513887537443752f42763bd960fff0729064751f5d1913ef1c067c3d9f6d3"
+SESSION_EVENTS_SHA256 = "082a97a3acc96032bfb7c95a8d9d7227acbaa620704f4f3e48ae7d90e4267192"
 
 SOURCES = {
     "FIRMWARE/str8n-v2-alpha24-f000-ffff.bin": BUILD / "str8n-v2-alpha24-f000-ffff.bin",
@@ -40,6 +42,9 @@ SOURCES = {
     "MAPS.md": ROOT / "docs/STR8N_V2_A24_MAPS.md",
     "STR8N_V2_2609_B0_TO_B3_RESTORE_2026-09-30.md": ROOT / "docs/STR8N_V2_2609_B0_TO_B3_RESTORE_2026-09-30.md",
     "STR8N_V2_2609_MANUAL_REMIGRATION_2026-09-30.md": ROOT / "docs/STR8N_V2_2609_MANUAL_REMIGRATION_2026-09-30.md",
+    "STR8N_V2_A24_2609_OPERATOR_SESSION.md": ROOT / "docs/STR8N_V2_A24_2609_OPERATOR_SESSION.md",
+    "EVIDENCE/v2-a24-migration-20260930-152511.raw": ROOT / "docs/evidence/board-2609-a24/v2-a24-migration-20260930-152511.raw",
+    "EVIDENCE/v2-a24-migration-20260930-152511.raw.events.txt": ROOT / "docs/evidence/board-2609-a24/v2-a24-migration-20260930-152511.raw.events.txt",
     "CHECKLIST-816.md": ROOT / "docs/STR8N_V2_A24_816_CHECKLIST.md",
     "CHECKLIST-816.pdf": ROOT / "output/pdf/STR8N_V2_A24_816_CHECKLIST.pdf",
     "README.md": ROOT / "docs/STR8N_V2_A24_PACKAGE_README.md",
@@ -96,6 +101,15 @@ def validate_payload(payload: dict[str, bytes], scratch: Path) -> None:
     image = bytes(maint[address] for address in range(0x2000, 0x2000 + len(maint)))
     if len(image) != 703 or sha256(image) != MAINT_SHA256:
         raise ValueError("Static bank-maintenance image changed")
+    raw = payload["EVIDENCE/v2-a24-migration-20260930-152511.raw"]
+    events = payload["EVIDENCE/v2-a24-migration-20260930-152511.raw.events.txt"]
+    if sha256(raw) != SESSION_RAW_SHA256 or sha256(events) != SESSION_EVENTS_SHA256:
+        raise ValueError("Operator session evidence changed")
+    if (b"TYPE INSTALL STR8-N 2.0a24> INSTALL STR8-N 2.0A24" not in raw
+            or b"MIGRATION VERIFIED; PRESS PHYSICAL RESET" not in raw
+            or b"TX LINE install str8-n 2.0a24" not in events
+            or b"SESSION END OUTCOME=TERMINAL CLOSED BY OPERATOR" not in events):
+        raise ValueError("Operator session prompt, input, or result missing")
     updater_s19 = payload["APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.s19"]
     scratch.write_bytes(updater_s19)
     try:
@@ -141,6 +155,7 @@ def build() -> Path:
         "edu_attached_qualified": False,
         "stock_wdcmonv2_firmware_included": False,
         "owner_bank_archives_included": False,
+        "owner_approved_operator_session_included": True,
         "files": {name: sha256(data) for name, data in sorted(payload.items())},
     }
     payload["MANIFEST.json"] = (json.dumps(manifest, indent=2) + "\n").encode("utf-8")

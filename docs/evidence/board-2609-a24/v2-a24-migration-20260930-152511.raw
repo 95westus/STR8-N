@@ -1,0 +1,49 @@
+
+WDCMONV2 -> STR8-N 2.0a24 CANDIDATE MIGRATION
+B3 STOCK -> B0; STR8-N 2.0a24 -> B3:F
+NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0
+FLASH ID=BF/B5
+STOCK B3 FNV1A=280928EC
+B0 == ORIGINAL B3 VERIFIED
+SEND STR8-N TOP BIN; 4096 BYTES; START $F000
+STR8-N TOP RECEIVED
+TYPE INSTALL STR8-N 2.0a24> INSTALL STR8-N 2.0A24
+ERASING/PROGRAMMING B3:F
+MIGRATION VERIFIED; PRESS PHYSICAL RESET
+................................................................................................................................................................
+STR8-N 2.0a24 B3 65C816
+ABI 65C02 | 816E | 816N-VEC
+B3> J0
+
+================================
+  W65C816SXB + EDU Kit Rev 1.0
+  W65C816S @ 8 MHz [Native Mode]
+  Bank 0: 32KB SRAM + I/O + ROM
+  Banks 08-0F: 512KB Ext SRAM
+================================
+Initializing...
+Scanning devices...
+  OLED (SSD1306)     $3C  OK
+  RTC  (MCP79411)    $6F  OK
+  SPI SRAM (23LCV)        OK
+  Ext SRAM (512KB)         OK
+  ADC  (ADS1015)     $48  OK
+  CardKB             $5F  OK
+Init complete.
+
+--- W65C816SXB + EDU Kit ---
+  T - Set Time   (HHMMSS)
+  D - Set Date   (MMDDYY+DOW)
+  P - Print Time/Date
+  N - Set Name   (16 max)
+  S - SRAM Test  (23LCV1024)
+  A - ADC Read all 4 channels
+  G - Get Temperature (MCP9700A)
+  K - CardKB Status
+  (On CardKB: TAB opens OLED menu)
+  --- W65C816 Demos ---
+  E - hex Editor for ext SRAM
+  B - Block move (MVN demo)
+  M - native Mode info / 16-bit math
+  H/? - Help
+> 
