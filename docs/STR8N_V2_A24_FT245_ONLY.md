@@ -19,22 +19,29 @@ handoff, vectors, capabilities, the RAM ABI across all resident/caller banks,
 monitor commands, S19 loading, flash operations, configuration, interrupt
 probes, S/R/T, and absent-extension behavior. FT245-only checks replace the
 legacy backup-console expectations and include delayed USB arrival and zero
-ACIA register accesses. The native 816 probe is checked structurally; its
-execution still requires the physical 816 board. A successful run writes
+ACIA register accesses. The host checks the native 816 probe structurally;
+board 2609 later executed it and passed. A successful host run writes
 `BUILD/v2-alpha24/a24-regression.json` with the tested image hash.
 
-## Remaining current-alpha prerequisites
+## Scoped current-alpha board qualification
 
-- Complete physical regression with exact E readback and native/EDU checks.
-  Board 2609's B3:F passed exact readback after physical RESET and booted
-  again after USB power disconnect/reconnect; retain its
-  [board record](STR8N_V2_2609_INVENTORY_2026-09-30.md).
+- Board 2609's B3:E/F passed exact readback. It booted after physical RESET and a USB power
+  disconnect/reconnect before E installation, then cold-booted to `B3>` again
+  after E installation. The S/R descriptor remained readable after the latter
+  cycle. Native BRK/NMI, emulation BRK/IRQ/NMI, cross-bank RAM ABI, and a
+  bounded B1 S/R save/restore also passed. EDU-attached tests belong to the
+  next alpha. Retain
+  its [board record](STR8N_V2_2609_INVENTORY_2026-09-30.md)
+  and [E report](STR8N_V2_A24_816_E_INSTALL_2026-09-30.md).
 - The [a24 WDCMONv2 installer and bank maintenance kit](STR8N_V2_A24_WDCMON_MIGRATION_KIT.md)
   passes offline build and host checks. Board 2609 returned WDCMONv2 `SXB6`
   through the binary interface. Its Bank 3 stock image was preserved exactly
   in Bank 0, and alpha24 B3:F was installed and read back byte-for-byte.
-- Complete the 816's remaining bank inventory and qualify native execution
-  and E-sector behavior on that board.
+- Two read-only B2 full-bank captures matched byte-for-byte. The published
+  bank-maintenance `.s19` ran its read-only map on the board; the `.a` carrier
+  independently decoded to the identical 703-byte machine image. A direct
+  ASM-F2 assembly session of `.a` was not available on this board. See the
+  [board record](STR8N_V2_2609_INVENTORY_2026-09-30.md).
 
 The next alpha is the EDU presence/RTC test described in
 [the agreed requirements](../TASKS.md#current-alpha-and-next-edu-alpha-agreed-2026-09-30).

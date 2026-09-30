@@ -20,6 +20,14 @@ The `.a` and `.s19` carry the same machine bytes. The host flash model passed
 copy, occupied-destination refusal, erase, and B3 protection with S/R
 both present and absent.
 
+On board 2609, the published `.s19` loaded into RAM and its read-only `M` map
+reported B0/B2/B3 occupied and B1 erased; `Q` returned to alpha24 at `B3>`.
+The `.a` carrier was independently decoded as one `$2000` ORG, 703 DB bytes,
+and END. Every byte matched the published `.s19` and pinned machine SHA-256.
+`make v2-a24-migration-kit` now runs this check. An ASM-F2 guest was not present
+on board 2609, so this is carrier-byte qualification plus execution of the
+identical `.s19` image, not a live ASM-F2 assembly session.
+
 The installer accepts only WDCMONv2. The host bridge requires a four-byte
 `SXB?` board-info signature (`?` is one printable ASCII character), displays
 the exact tag and versions, then asks the operator to type the physical board
@@ -53,8 +61,12 @@ After `INSTALL STR8-N 2.0A24`, it reported `MIGRATION VERIFIED`. A physical
 RESET booted `STR8-N 2.0a24 B3 65C816` at `B3>`. The independent
 `D F000 FFFF` readback captured all 256 rows and matched that BIN byte for
 byte. Bank 2 was not selected or written. A later USB power disconnect/reconnect
-also booted the alpha24 core at `B3>`. E-sector installation and broader
-816/EDU acceptance remain separate tests.
+also booted the alpha24 core at `B3>`. The separate
+[board-specific E installation](STR8N_V2_A24_816_E_INSTALL_2026-09-30.md)
+subsequently passed exact E/F readback and post-E cold boot. The
+[board inventory](STR8N_V2_2609_INVENTORY_2026-09-30.md) records a bounded B1
+S/R save/restore and two matching read-only B2 full-bank captures. EDU-attached
+testing remains the next-alpha task.
 
 ## Binary identity probe
 
