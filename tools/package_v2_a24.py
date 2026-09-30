@@ -19,6 +19,7 @@ MIGRATION = ROOT / "BUILD/v2-alpha24-wdcmon-ram"
 DEST = ROOT / "output/release/str8n-v2-alpha24"
 TOP_SHA256 = "43e6ee966963e1cc401986581742cc75b302cd0a02cfaf22965fe7ab8a43ec1a"
 SR_SHA256 = "6df4b51df973ac5159b27e1bb5a32601d8c31c66b12717ed129201b2eb274f2d"
+E_TEMPLATE_SHA256 = "75627feb8004207d00a7ab4a266d4006a743cb29699a0535be3375c00f736d92"
 INSTALLER_SHA256 = "66bd1030c2f48444826f03562886fc4828d4047f36d4ba42d1e5f8e5396cbebe"
 MAINT_SHA256 = "9dda57fe5a9ab0744c3db40b6ea3507efbc8ad15d2ddb2e66d8a623ad2559736"
 SESSION_RAW_SHA256 = "d84513887537443752f42763bd960fff0729064751f5d1913ef1c067c3d9f6d3"
@@ -37,6 +38,9 @@ SOURCES = {
     "APPLICATIONS/str8n-v2-bank-maint-2000.a": ROOT / "tools/v2-apps/str8n-v2-bank-maint-2000.a",
     "APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.s19": BUILD / "str8n-v2-alpha24-b3-top-update-2000.s19",
     "APPLICATIONS/str8n-v2-alpha24-b3-top-update-2000.a": BUILD / "str8n-v2-alpha24-b3-top-update-2000.a",
+    "TOOLS/BUILD-B3-E-UPDATER.py": ROOT / "tools/v2-apps/BUILD-B3-E-UPDATER.py",
+    "TOOLS/b3-e-guarded-template-2000.s19": ROOT / "BUILD/v2-alpha24-e-template/b3-e-guarded-template-2000.s19",
+    "GUIDE-B3-E.md": ROOT / "docs/STR8N_V2_A24_B3_E_INSTALL.md",
     "PUBLIC/str8n-v2-public.inc": ROOT / "src/v2a24/str8n-v2-public.inc",
     "MIGRATE-STR8N-V2-A24.ps1": ROOT / "tools/wdcmonv2/MIGRATE-STR8N-V2-A24.ps1",
     "GUIDE-816.md": ROOT / "docs/STR8N_V2_A24_816_MANUAL_MIGRATION.md",
@@ -85,6 +89,8 @@ def validate_payload(payload: dict[str, bytes], scratch: Path) -> None:
         raise ValueError("T48 E page does not match canonical E/F image")
     if sha256(ef[0x800:0xF00]) != SR_SHA256:
         raise ValueError("E S/R slice differs from board-tested code")
+    if sha256(payload["TOOLS/b3-e-guarded-template-2000.s19"]) != E_TEMPLATE_SHA256:
+        raise ValueError("Guarded B3:E updater template changed")
     if len(bank) != 32768 or bank[-8192:] != ef:
         raise ValueError("Full bank does not contain the canonical E/F")
     exact_s19(payload["FIRMWARE/str8n-v2-alpha24-e000-ffff.s19"],

@@ -57,9 +57,10 @@ against that complete working image and retain the original backup.
 The packaged E BIN is generic: `$E000-$E7FF` and `$EF00-$EFFF` are `$FF`.
 Those margins can carry existing board data/configuration. For board 2609,
 preserve its observed E margins and replace only `$E800-$EEFF` from the
-packaged E BIN. Verify the combined E page before programming. The separately
-qualified board-2609 E updater used its exact observed preimage; this public
-kit does not contain a universal resident E installer. Do not use monitor
+packaged E BIN. Verify the combined E page before programming. The included
+`GUIDE-B3-E.md` describes a second path: build a guarded RAM installer `.s19`
+from an exact B3:E/F binary readback of the target board. It preserves that
+board's E margins and refuses a changed E preimage. Do not use monitor
 `I E000 EFFF` on resident B3. If E is already qualified, as on board 2609,
 leave it unchanged.
 
