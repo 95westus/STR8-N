@@ -23,6 +23,7 @@ recorded scope.
 | `PUBLIC/str8n-v2-public.inc` | Published ROM/RAM ABI addresses, modes, and capability bits. |
 | `MIGRATE-STR8N-V2-A24.ps1` | Single Windows WDCMONv2 migration script; prompts for COM if `-Port` omitted. |
 | `GUIDE-816.md`, `MAPS.md` | Manual 816 migration, T48 offsets, preservation map, and diagrams. |
+| `STR8N_V2_2609_*` | Board 2609 stock restore and later F-only remigration records linked from the map. |
 | `CHECKLIST-816.md`, `CHECKLIST-816.pdf` | Printable and fillable qualification record. |
 
 `MANIFEST.json` records every packaged file's SHA-256 and the source commit.
