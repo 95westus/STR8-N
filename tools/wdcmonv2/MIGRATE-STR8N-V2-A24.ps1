@@ -348,7 +348,14 @@ function Get-WdcBoardInfoAfterResetArm {
     $Serial.ReadTimeout = 100
     try {
         $Serial.DiscardInBuffer()
+        $firstAttempt = $true
         while ([DateTime]::UtcNow -lt $deadline) {
+            if (-not $firstAttempt) { Start-Sleep -Milliseconds 400 }
+            $firstAttempt = $false
+            # A reset can emit a long demo banner. Start each binary frame
+            # with an empty receive queue instead of reading banner bytes as
+            # WDCMON acknowledgements or flooding sync pairs during reset.
+            $Serial.DiscardInBuffer()
             Write-SerialBytes -Serial $Serial -Bytes (Convert-ToByteArray @($script:WdcSync0, $script:WdcSync1))
             try {
                 $value = $Serial.ReadByte()
