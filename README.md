@@ -13,6 +13,18 @@ optional E-sector S/R/T extension. W65C816SXB board 2609 passed the core
 migration and regression checks. W65C02SXB board 2205 passed the unified
 installer and no-EDU migration checks. The EDU daughterboard was absent.
 
+The [alpha25 EDU date/time candidate](docs/STR8N_V2_A25_RTC_DISPLAY.md)
+was subsequently installed on W65C02SXB board 2205 with EDU attached.
+Its guarded E/F update, complete readback, and physical RESET passed;
+the [board record](docs/STR8N_V2_A25_2205_EDU_INSTALL_2026-09-30.md)
+contains image hashes and the observed date/time line.
+The later [E-only EDU status update](docs/STR8N_V2_A25_2205_EDU_STATUS_2026-09-30.md)
+adds a detected/inconclusive heading and an indented RTC line; its physical
+RESET and exact E/F readback also passed on board 2205. The
+[weekday update](docs/STR8N_V2_A25_2205_DOW_2026-09-30.md) now reads the
+MCP79411 weekday and displays `Wed` before the date; the guarded E-only
+update, complete readback, and physical RESET passed.
+
 [Download the alpha24 board-test package](https://github.com/95westus/STR8-N/releases/download/v2.0a24/str8n-v2-alpha24-board-test.zip)
 and its [SHA-256 checksum](https://github.com/95westus/STR8-N/releases/download/v2.0a24/str8n-v2-alpha24-board-test.sha256).
 
