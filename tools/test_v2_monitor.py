@@ -6,6 +6,7 @@ import hashlib
 import json
 import random
 import re
+import build_v2 as firmware
 
 from test_v2_boot import OUT, IMAGE, SYM, boot, command, hold, run, waiting
 
@@ -161,7 +162,8 @@ def check_review_regressions():
     assert mem.ram[SYM['V2_NMI_HOLD']] == 0
     assert mem.ram[0x7E00:0x7E1A] == pointers
     exact = b'M 0200 01 02 03 04 05 06 07 08  '
-    assert len(exact) == 32
+    exact += b' ' * (getattr(firmware, 'LINE_LIMIT', 32) - len(exact))
+    assert len(exact) == getattr(firmware, 'LINE_LIMIT', 32)
     assert b'Bad' not in command(cpu, exact + b'\r')
     before = bytes(mem.ram[0x0200:0x0208])
     assert b'Long line' in command(cpu, exact + b' \r')

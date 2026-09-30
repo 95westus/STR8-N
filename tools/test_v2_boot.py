@@ -13,6 +13,7 @@ import sys
 
 from build_v2 import (OUT, ROOT, STEM, VERSION, RESIDENT_START, PUBLIC_CALLS,
                       RAM_PUBLIC_CALLS, read_s19, symbols)
+import build_v2 as firmware
 
 for directory in reversed([
     *(Path(p) for key in ('STR8_TEST_DEPS', 'PY65_PATH')
@@ -145,7 +146,7 @@ def boot(bank, reset_pcr=False, ft245_present=True):
     assert all(memory.ram[SYM[name]] == bank for name in ('V2_RESIDENT', 'V2_SELECTED', 'V2_TARGET'))
     assert memory.ram[SYM['V2_CPU']] == 0x02
     assert memory.ram[SYM['V2_CONSOLE']] == (0 if ft245_present else 1)
-    assert cpu.boot_waits == 1
+    assert cpu.boot_waits == getattr(firmware, 'BOOT_WAITS', 1)
     assert memory.ram[0x7FA0] == 0x01
     assert memory.led_events[-1] == 0x01
     assert not ({0x43, 0x41, 0x07, 0x0B} & set(memory.led_events))
@@ -262,8 +263,9 @@ def check_image_and_instructions():
     assert bytes(memory[a] for a in range(0xF035, 0xF039)) == b'CA\x01\x17'
     assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
     assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
-    assert SYM['V2_END'] <= 0xFF20
-    assert bytes(memory[a] for a in range(0xFF20, 0xFFE0)) == b'\xff'*192
+    reserve = firmware.EXPANSION_RESERVE_START
+    assert SYM['V2_END'] <= reserve
+    assert bytes(memory[a] for a in range(reserve, 0xFFE0)) == b'\xff'*(0xFFE0-reserve)
     assert bytes(memory[a] for a in range(SYM['V2_END'], 0xFFE0)) == b'\xff' * (0xFFE0-SYM['V2_END'])
     for address in (0xFFE0, 0xFFE2, 0xFFEC, 0xFFF0, 0xFFF2, 0xFFF6):
         assert bytes(memory[a] for a in range(address, address+2)) == b'\xff\xff'
@@ -291,7 +293,7 @@ def check_image_and_instructions():
             assert mnemonic != '???' and not mnemonic.startswith(('RMB', 'SMB', 'BBR', 'BBS'))
             pc += length
         assert pc == end
-    CASES.append('dense S19, disabled config, $FF20-$FFDF reserve, reserved vectors, isolated XCE audit')
+    CASES.append('dense S19, disabled config, expansion reserve, reserved vectors, isolated XCE audit')
 
 
 def check_capability_abi():
@@ -518,7 +520,8 @@ def check_v135_roundtrip():
 
 
 def check_compact_messages():
-    messages = json.loads((ROOT / 'src/v2/str8n-v2-text.json').read_text())
+    messages = json.loads((getattr(firmware, 'SOURCE', ROOT / 'src/v2') /
+                           'str8n-v2-text.json').read_text())
     cpu, mem = boot(0)
     for index, message in enumerate(messages):
         start = len(mem.tx)

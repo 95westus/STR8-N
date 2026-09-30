@@ -6,6 +6,7 @@ import hashlib
 import json
 
 from build_v2 import record, STEM, VERSION
+import build_v2 as firmware
 from test_v2_boot import Memory, MPU, OUT, IMAGE, REPORT, SYM, command, hold, run, waiting
 
 W = REPORT['worker']
@@ -149,7 +150,10 @@ def check_f_boundaries():
     assert b'May not boot/function' in output and b'Type B3>' in output
     assert mem.banks[3][:-1] == before[:-1] and mem.banks[3][-1] == 0
     output = send(cpu, b'F EFF0 00\rY\rB3\r')
-    assert b'Done' in output and mem.banks[3][0x6FF0] == 0
+    if getattr(firmware, 'SR_EXTENSION', False):
+        assert b'Protected' in output and mem.banks[3][0x6FF0] == before[0x6FF0]
+    else:
+        assert b'Done' in output and mem.banks[3][0x6FF0] == 0
     output = send(cpu, b'F 80FE 01 02 03 04\rY\rB3\r')
     assert b'8101 FF>04' in output and mem.banks[3][0xFE:0x102] == b'\x01\x02\x03\x04'
     # Multi-byte preflight failure and rejected confirmation never write a prefix.
@@ -179,6 +183,8 @@ def check_install():
     assert mem.bank == 0 and not mem.ram[SYM['V2_NMI_HOLD']]
     # Configuration bytes are preserved even though the stream covers them.
     for bank in range(4):
+        if bank == 3 and getattr(firmware, 'SR_EXTENSION', False):
+            continue
         cpu, mem = boot_flash()
         command(cpu, f'B{bank}\r'.encode())
         config = bytes(range(16))

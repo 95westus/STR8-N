@@ -31,9 +31,13 @@ def main():
     mem.ram[PCR], mem.ram[LED] = 0xEE, 0x01
     for address, value in updater.items():
         mem.ram[address] = value
-    old_top = bytearray((i * 29 + 7) & 255 for i in range(4096))
-    old_top[:4] = b'SN\x02\x00'
-    old_top = bytes(old_top)
+    # Exact-image updaters require their embedded previous top on the board.
+    if all(a in updater for a in range(0x5000, 0x6000)):
+        old_top = bytes(updater[a] for a in range(0x5000, 0x6000))
+    else:
+        old_top = bytearray((i * 29 + 7) & 255 for i in range(4096))
+        old_top[:4] = b'SN\x02\x00'
+        old_top = bytes(old_top)
     mem.banks[3][0x7000:] = old_top
     mem.banks[2][0x7000:] = b'\xa5' * 4096
     untouched = [bytes(mem.banks[i]) for i in (0, 1)]
