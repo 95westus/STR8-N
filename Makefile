@@ -584,4 +584,5 @@ v2-a24-migration-kit:
 	python tools/wdcmonv2/probe_wdcmonv2_binary.py --self-test
 
 v2-a24-package: v2-a24-check v2-a24-migration-kit
+	python tools/build_v2_a24_816_checklist_pdf.py
 	python tools/package_v2_a24.py

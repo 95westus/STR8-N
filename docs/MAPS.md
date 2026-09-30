@@ -1,5 +1,8 @@
 # STR8-N v1.35 Maps and Diagrams
 
+For the alpha24 W65C816SXB migration map and T48 page offsets, see
+[STR8-N 2.0a24 maps and diagrams](STR8N_V2_A24_MAPS.md).
+
 These diagrams describe the v1.35 release. Its focused update/reset results
 and historical v1.34 interrupt/worker and factory results are linked from the
 [operator guide](OPERATORS_GUIDE.md#validation-status). The complete hardware

@@ -357,6 +357,12 @@ def main():
     parsed_updater, updater_entry = read_s19(updater_path)
     assert parsed_updater == updater_mem and updater_entry == 0x2000
     artifacts[updater_path.name] = hashlib.sha256(updater_path.read_bytes()).hexdigest()
+    from build_v2_rc_a import make_carrier
+    updater_carrier = OUT / f'{updater_name}.a'
+    make_carrier(updater_mem, updater_carrier,
+                 'Alpha23 to alpha24 B3:F updater; requires erased B2:F backup.',
+                 origin='alpha24')
+    artifacts[updater_carrier.name] = hashlib.sha256(updater_carrier.read_bytes()).hexdigest()
     probe_source_name = 'str8n-v2-interrupt-probe-2000'
     probe_name = f'{STEM}-interrupt-probe-2000'
     probe_memory, probe_symbols = assemble(
