@@ -64,6 +64,18 @@ Defects and hardware investigations are indexed in the
 - [ ] Measure whether minimal resident integration fits v2 free space and
   place the driver/HAL in the optional `$E000` sector, following S/R. Core boot
   and static-bank maintenance must work with that extension absent.
+- RAM-first RTC read/display probe is available in
+  [tools/v2-rtc-test](tools/v2-rtc-test/README.md). Its host checks cover
+  valid/invalid dates, advancing/stopped clocks, and absent/stuck buses.
+  The probe remains a RAM-only diagnostic; the alpha24 image is unchanged.
+- The [alpha25 RTC display candidate](docs/STR8N_V2_A25_RTC_DISPLAY.md)
+  prints `EDU KIT       DETECTED` and an indented
+  `RTC         Wed 26-09-30 HH:MM:SS` line after the ABI banner when the RTC
+  returns valid, advancing time. Host startup, S/R smoke, and guarded E/F
+  updater checks pass. The [board 2205 EDU install](docs/STR8N_V2_A25_2205_EDU_INSTALL_2026-09-30.md)
+  [E-only status update](docs/STR8N_V2_A25_2205_EDU_STATUS_2026-09-30.md),
+  and [weekday update](docs/STR8N_V2_A25_2205_DOW_2026-09-30.md)
+  passed exact E/F readback and physical RESET; W65C816 EDU remains pending.
 - For the EDU test, validate date/time setting with the board's shipped EDU
   firmware before STR8-N relies on RTC time. The observed B2 W65C02SXB guest
   uses bit-banged I2C/SPI via W65C22; the B0 W65C816SXB guest runs in native

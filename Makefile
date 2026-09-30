@@ -544,7 +544,16 @@ clean:
 
 # V2 is an independent milestone; these targets never rebuild v1 artifacts.
 .PHONY: v2 v2-full-bank v2-check v2-interrupt-probe-check
-.PHONY: v2-a23-check v2-a24-check v2-a24-migration-kit v2-a24-package
+.PHONY: v2-a23-check v2-a24-check v2-a24-migration-kit v2-a24-package v2-rtc-check v2-a25-rtc-check
+
+v2-rtc-check:
+	python tools/build_v2_rtc_test.py
+	python tools/test_v2_rtc_test.py
+
+v2-a25-rtc-check:
+	python tools/build_v2_a25.py
+	python tools/test_v2_a25_rtc.py
+	python tools/test_v2_a25_boot.py
 v2:
 	python tools/build_v2.py
 
