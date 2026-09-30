@@ -40,8 +40,9 @@ VERIFIED; PRESS PHYSICAL RESET`, press physical RESET and confirm the
 `STR8-N 2.0a24 B3 65C816` banner. Session raw and event logs are saved under
 `LOCAL` beside the script. The script does not install E.
 
-For board 2609, which already runs alpha24, skip this stock-board step. The
-standalone script is for a stock WDCMONv2 board, not a repeat install.
+Skip this stock-board step whenever B3 already runs alpha24. The standalone
+script is for a stock WDCMONv2 B3 image; its preflight checks the source and
+preserved B0 before writing F.
 
 ## 3. E sector and T48 workflow
 
