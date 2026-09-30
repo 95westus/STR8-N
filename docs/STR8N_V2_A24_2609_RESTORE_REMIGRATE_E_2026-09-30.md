@@ -64,6 +64,11 @@ readbacks proved B0, B1, and B2 unchanged byte-for-byte:
 | B1 | `64f94bdd2ba08ed01da20092ec4cce18e0d7e29688b2704a4772960f107fc9c8` |
 | B2 | `2f0000c74eceec809a814e31f822702977d7bfed5ee6f3bc4869627864ca59a8` |
 
-A separate physical RESET after E installation was requested but had not been
-captured when this record was written. A new S/R save/restore operation was not
-performed in this run. EDU hardware was absent and was not qualified.
+The operator reported pressing physical RESET after E installation. The
+receive-only capture had timed out before that press, so no reset banner was
+recorded. Immediate serial checks returned `B3>`, showed the exact descriptor
+`E800: 53 52 01 01 18 00 00 00`, and ran `T 3` without `SR unavailable`.
+This confirms the monitor and extension remained responsive after the
+operator-reported reset; it is not an independently captured reset edge. A new
+S/R save/restore operation was not performed in this run. EDU hardware was
+absent and was not qualified.
