@@ -16,12 +16,15 @@ Defects and hardware investigations are indexed in the
   registers/flags, calling conventions, RAM layouts, bank and CPU-mode
   assumptions, error returns, and optional-device discovery. Preserve existing
   contracts while that inventory is completed; do not silently break callers.
-- [ ] Finish alpha24 host and physical-board regression, including exact E
-  readback and native/EDU checks. Host regression passed `make v2-a24-check`
-  on 2026-09-30. Board 2609's B3:F passed exact readback, physical RESET,
-  and a receive-only power-cycle capture. See the
+- [x] Finish scoped alpha24 host and W65C816SXB board regression without the
+  EDU daughterboard. Host regression passed `make v2-a24-check` on 2026-09-30.
+  Board 2609's B3:E/F passed exact readback, physical RESET, and cold power
+  cycles before and after E installation. Native and emulation interrupt probes,
+  cross-bank RAM ABI, and a bounded B1 S/R save/restore passed. EDU-attached
+  device qualification belongs to the next alpha. See the
   [a24 prerequisite record](docs/STR8N_V2_A24_FT245_ONLY.md).
-- [ ] Then qualify the WDC 02/816-to-STR8N-v2 migration using the W65C816SXB.
+- [x] Qualify the WDCMONv2-to-STR8N-v2 alpha24 migration on board 2609,
+  the W65C816SXB.
   Bind the migration artifacts to the current candidate before the board run;
   older alpha21/alpha22 migration evidence does not qualify alpha24 or the 816.
   [Board 2609 inventory](docs/STR8N_V2_2609_INVENTORY_2026-09-30.md) found the
@@ -37,20 +40,40 @@ Defects and hardware investigations are indexed in the
   alpha24 B3:F; physical RESET booted `STR8-N 2.0a24 B3 65C816`, and a complete
   `D F000 FFFF` readback matched the pinned F BIN byte for byte. B2 was
   untouched. A later USB power disconnect/reconnect booted alpha24 at `B3>`.
-  E-sector and native/EDU qualification remain open.
+  The [board-specific E report](docs/STR8N_V2_A24_816_E_INSTALL_2026-09-30.md)
+  records exact preimage gating, E installation, and complete E/F readback.
+  Native BRK/NMI and emulation BRK/IRQ/NMI probes passed on board 2609. A
+  bounded B1 S/R save/restore passed; two complete read-only B2 inventory
+  passes matched byte-for-byte. An unattended
+  post-E run confirmed CPU/console state, the ROM and S/R descriptors, a
+  four-bank RAM ABI probe (`PASS`), and read-only static-maintenance sector
+  mapping (B0/B2/B3 occupied, B1 erased before the S/R test). The `.a` carrier
+  decodes to the same 703-byte machine image as the board-tested `.s19`;
+  a live ASM-F2 assembly session was not available on this board. See the
+  board inventory.
 - [ ] Next alpha: EDU board testing. Bank 3 holds the 816SXB version; Bank 2
   holds W65C02SXB with SPI/I2C/RTC updates. Both need EDU presence detection
-  without LEDs or buzzer. Start with read-only RTC date/time probing; leave
-  crypto untouched. Handle absent/unresponsive hardware without hanging core
-  operation; report inconclusive detection rather than assuming presence.
+  without LEDs or buzzer. Start with read-only RTC device/register probing,
+  then separately verify valid date/time and a running clock before using
+  date/time as a presence signal. With EDU absent, the stock menus still
+  reported RTC `$6F` as `OK`, while date/time remained zero even after B2
+  reported `Time set!`. This is a useful absent-board negative control; startup
+  `OK` alone cannot establish presence. Leave crypto untouched. Handle
+  absent/unresponsive hardware without hanging core operation; report
+  inconclusive detection rather than assuming presence.
 - [ ] Measure whether minimal resident integration fits v2 free space and
   place the driver/HAL in the optional `$E000` sector, following S/R. Core boot
   and static-bank maintenance must work with that extension absent.
-- For the EDU test, set date/time with the board's shipped native SPI firmware.
-  Future STR8N clock setting requires permission/security. Defer alarms,
+- For the EDU test, validate date/time setting with the board's shipped EDU
+  firmware before STR8-N relies on RTC time. The observed B2 W65C02SXB guest
+  uses bit-banged I2C/SPI via W65C22; the B0 W65C816SXB guest runs in native
+  CPU mode. Future STR8N clock setting requires permission/security. Defer alarms,
   power-fail handling, RTC SRAM/EEPROM use, and parallel/SPI SRAM allocations.
   Verify the reported 16-byte EEPROM capacity before assigning persistent state;
   desired hard state must survive loss of both main and battery power.
+- [ ] With the EDU board fitted, repeat bounded RTC, SPI SRAM, and 816 extended
+  RAM checks. The absent-board menu failures (SPI SRAM B2 `$10` and B0 `$96`,
+  zero RTC date/time, and B0 Bank 0-to-8 block move) do not qualify the devices.
 - Alpha is a maturity label, independent of API/ABI, feature, or code freezes.
   Make further EDU and memory-allocation decisions at the next-alpha test.
 

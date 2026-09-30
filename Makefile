@@ -579,5 +579,6 @@ v2-a24-migration-kit:
 	python tools/build_v2_a24.py --full-bank
 	python tools/build_v2_a24_wdcmon_ram.py
 	python tools/build_v2_a24_bank_maint.py
+	python tools/verify_v2_a24_bank_maint_carrier.py
 	python tools/test_v2_a24_bank_maint.py
 	python tools/wdcmonv2/probe_wdcmonv2_binary.py --self-test
