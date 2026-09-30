@@ -606,6 +606,7 @@ if ($SelfTest) {
             if ($_.Exception.Message -notlike 'Unsupported WDCMONv2 board identity*') { throw }
         }
         if ((Assert-BoardTypeConfirmation -Answer 'W65C816SXB') -ne 'W65C816SXB') { throw 'Board-type confirmation self-test failed' }
+        if ((Assert-BoardTypeConfirmation -Answer 'W65C02SXB') -ne 'W65C02SXB') { throw 'W65C02SXB confirmation self-test failed' }
         try {
             $null = Assert-BoardTypeConfirmation -Answer 'yes'
             throw 'Unconfirmed board type was accepted'

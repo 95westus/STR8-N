@@ -12,14 +12,16 @@ selection, RAM/S19 loading, verified flash writes, boot handoff, and an
 optional E-sector S/R/T extension. W65C816SXB board 2609 passed the core
 migration and regression checks. The EDU daughterboard was absent.
 
-**Next hardware test:** migrate a stock W65C02SXB. The alpha24 kit's current
-WDCMONv2 RAM installer has an 816 `SEC/XCE` entry shim; build and qualify a
-65C02-specific installer before loading it on that board.
+**Next hardware test:** migrate a stock W65C02SXB without the EDU board. The
+same alpha24 WDCMONv2 RAM installer runs on both SXB CPU families: its `$FB`
+entry byte is XCE on the 816 and a one-byte NOP on the W65C02S. The 02 path
+has passed offline checks and awaits its physical-board run.
 
 - [W65C816SXB manual migration guide](docs/STR8N_V2_A24_816_MANUAL_MIGRATION.md)
 - [Alpha24 package contents and limits](docs/STR8N_V2_A24_PACKAGE_README.md)
 - [Alpha24 maps and diagrams](docs/STR8N_V2_A24_MAPS.md)
 - [816 qualification checklist](docs/STR8N_V2_A24_816_CHECKLIST.md)
+- [02SXB no-EDU migration checklist](docs/STR8N_V2_A24_02_NO_EDU_CHECKLIST.md)
 
 Run `make v2-a24-package` to build and verify the local alpha24 ZIP. The
 [v2 development guide](docs/STR8N_V2.md) and
