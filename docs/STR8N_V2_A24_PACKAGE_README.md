@@ -4,9 +4,9 @@ This package contains the alpha24 FT245-only monitor and its project-authored
 WDCMONv2 migration and bank-maintenance tools. It is a tested alpha package,
 not a beta release. The 816 board 2609 migration, Bank 3 E/F readback, cold
 boot, RAM ABI, native and emulation interrupt probes, and bounded S/R test
-passed. The EDU daughterboard was absent; EDU presence and RTC work belong to
-the next alpha. The W65C02SXB alpha24 board results have their separately
-recorded scope.
+passed. W65C02SXB board 2205 passed the unified WDCMONv2 installer, exact
+Bank 0/B3:F readbacks, and bank-maintenance read-only map. The EDU daughterboard
+was absent on both boards; EDU presence and RTC work belong to the next alpha.
 
 ## Contents and use
 
@@ -14,7 +14,7 @@ recorded scope.
 | --- | --- |
 | `FIRMWARE/str8n-v2-alpha24-f000-ffff.bin` | Exact 4 KiB Bank 3 F image for the installer or T48 offset `$1F000`; SHA-256 `43e6ee966963e1cc401986581742cc75b302cd0a02cfaf22965fe7ab8a43ec1a`. |
 | `FIRMWARE/str8n-v2-alpha24-e000-efff.bin` | Separate 4 KiB generic E page for T48 offset `$1E000`; merge board-specific E margins before using on an occupied board. |
-| `FIRMWARE/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | Unified 02/816 RAM installer for a stock WDCMONv2 board. It preserves original B3 in erased B0 before installing F. The 02 alpha24 path awaits physical qualification. |
+| `FIRMWARE/str8n-v2-alpha24-wdcmonv2-install-2000.s19` | Unified 02/816 RAM installer for a stock WDCMONv2 board. It preserves original B3 in erased B0 before installing F. |
 | `FIRMWARE/str8n-v2-alpha24-e000-ffff.bin` and `.s19` | Generic E/F image for a deliberate external-programmer or compatible new-bank workflow. Its E margins are `$FF`; board 2609 retained its pre-existing E margins instead. |
 | `FIRMWARE/str8n-v2-alpha24-8000-ffff.bin` and `.s19` | Generic full 32 KiB bank image for an external-programmer or expressly selected full-bank workflow. It replaces the entire target bank. |
 | `APPLICATIONS/str8n-v2-bank-maint-2000.s19` | Static RAM bank maintenance image, load with STR8-N `L` then `G 2000`. |
@@ -25,6 +25,7 @@ recorded scope.
 | `GUIDE-816.md`, `CHECKLIST-02-NO-EDU.md`, `MAPS.md` | 816 manual migration, 02 no-EDU test gates, T48 offsets, preservation map, and diagrams. |
 | `STR8N_V2_2609_*` | Board 2609 stock restore and later F-only remigration records linked from the map. |
 | `STR8N_V2_A24_2609_OPERATOR_SESSION.md`, `EVIDENCE/*.raw`, `EVIDENCE/*.raw.events.txt` | Owner-approved, byte-exact COM8 migration session showing the typed line, normalized board echo, and accepted install. |
+| `BOARD-2205-NO-EDU.md` | Physical 02SXB migration and no-EDU test result; its detailed serial logs remain owner-local. |
 | `CHECKLIST-816.md`, `CHECKLIST-816.pdf` | Printable and fillable qualification record. |
 
 `MANIFEST.json` records every packaged file's SHA-256 and the source commit.
