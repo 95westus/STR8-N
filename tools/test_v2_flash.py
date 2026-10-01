@@ -193,7 +193,7 @@ def check_install():
         output = send(cpu, b'I E000 EFFF\rY\r' + records(0xE000, payload) + finish(0xE000))
         assert b'Done' in output, output[-200:]
         assert mem.banks[bank][0x6000:0x6FF0] == payload[:-16]
-        assert mem.banks[bank][0x6FF0:0x7000] == (config if bank == 0 else payload[-16:])
+        assert mem.banks[bank][0x6FF0:0x7000] == (config if bank == 0 and not getattr(firmware, 'EEPROM_CONFIG', False) else payload[-16:])
     # Guest top and FFFF are legal; own/recovery top are covered separately.
     cpu, mem = boot_flash()
     command(cpu, b'B2\r')

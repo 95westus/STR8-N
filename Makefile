@@ -554,6 +554,42 @@ v2-a25-rtc-check:
 	python tools/build_v2_a25.py
 	python tools/test_v2_a25_rtc.py
 	python tools/test_v2_a25_boot.py
+
+.PHONY: v2-a26-check
+v2-a26-check:
+	python tools/build_v2_a26.py
+	python tools/test_v2_a26_rtc.py
+	python tools/test_v2_a26_eeprom.py
+	python tools/test_v2_a26_regression.py
+
+.PHONY: v2-a27-check
+v2-a27-check:
+	python tools/build_v2_a27.py
+	python tools/test_v2_a27_rtc.py
+	python tools/test_v2_a27_eeprom.py
+	python tools/test_v2_a27_regression.py
+
+.PHONY: v2-a28-check
+v2-a28-check:
+	python tools/build_v2_a28.py
+	python tools/test_v2_a28_rtc.py
+	python tools/test_v2_a28_eeprom.py
+	python tools/test_v2_a28_regression.py
+
+.PHONY: v2-a29-check
+v2-a29-check:
+	python tools/build_v2_a29.py
+	python tools/test_v2_a29_rtc.py
+	python tools/test_v2_a29_eeprom.py
+	python tools/test_v2_a29_regression.py
+
+.PHONY: v2-a30-check
+v2-a30-check:
+	python tools/build_v2_a30.py
+	python tools/test_v2_a30_rtc.py
+	python tools/test_v2_a30_eeprom.py
+	python tools/test_v2_a30_regression.py
+
 v2:
 	python tools/build_v2.py
 

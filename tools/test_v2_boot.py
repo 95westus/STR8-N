@@ -152,8 +152,15 @@ def boot(bank, reset_pcr=False, ft245_present=True):
     assert not ({0x43, 0x41, 0x07, 0x0B} & set(memory.led_events))
     output = memory.tx if ft245_present else memory.acia_tx
     other = memory.acia_tx if ft245_present else memory.tx
+    status = ('EDU KIT       INCONCLUSIVE\r\n'
+              + ('    EEPROM    $57  UNAVAILABLE\r\n      SETTINGS     UNREADABLE\r\n'
+                 if VERSION in ('2.0a28', '2.0a29', '2.0a30') else
+                 '      EEPROM  $57  UNAVAILABLE\r\n        SETTINGS     UNREADABLE\r\n'
+                 if VERSION == '2.0a27' else
+                 '  EEPROM      UNAVAILABLE\r\n    SETTINGS  UNREADABLE\r\n')
+              if bank == 3 and getattr(firmware, 'EEPROM_CONFIG', False) else '')
     assert (f'STR8-N {VERSION} B{bank} 65C02\r\n'
-            f'ABI 65C02 | 816E | 816N-VEC\r\nB{bank}> '.encode()) in output
+            f'ABI 65C02 | 816E | 816N-VEC\r\n{status}B{bank}> '.encode()) in output
     assert not other
     assert not memory.bank_changes
     assert memory.ram[:0xE0] == bytes([0x5A])*0xE0
@@ -262,7 +269,8 @@ def check_image_and_instructions():
     assert SYM['STR8V2_CAPS_DATA'] == SYM['V2_CAPS_DATA'] == 0xF035
     assert bytes(memory[a] for a in range(0xF035, 0xF039)) == b'CA\x01\x17'
     assert bytes(memory[a] for a in range(0xE000, 0x10000)) == IMAGE
-    assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
+    if not getattr(firmware, 'EEPROM_CONFIG', False):
+        assert bytes(memory[a] for a in range(0xEFF0, 0xF000)) == b'\xff'*16
     reserve = firmware.EXPANSION_RESERVE_START
     assert SYM['V2_END'] <= reserve
     assert bytes(memory[a] for a in range(reserve, 0xFFE0)) == b'\xff'*(0xFFE0-reserve)
@@ -284,6 +292,10 @@ def check_image_and_instructions():
                        (VSYM['V2V_RAM_RESET'], VSYM['V2V_END'])]:
         pc = start
         while pc < end:
+            if pc == SYM.get('V2_RTC_MAGIC'):
+                assert bytes(memory[a] for a in range(pc, pc+2)) == b'RT'
+                pc += 3
+                continue
             if pc in (SYM['V2_CPU_XCE_PROBE'], SYM['V2_CPU_XCE_RESTORE']):
                 assert bytes(memory[a] for a in range(pc, pc+2)) == b'\xfb\xea'
                 pc += 1

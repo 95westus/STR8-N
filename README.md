@@ -13,6 +13,54 @@ optional E-sector S/R/T extension. W65C816SXB board 2609 passed the core
 migration and regression checks. W65C02SXB board 2205 passed the unified
 installer and no-EDU migration checks. The EDU daughterboard was absent.
 
+## Alpha30 I2C hierarchy
+
+Alpha30 places I2C at the top display level and indents the MCP79xxx and its
+features beneath it. Board 2205 passed guarded E/F installation, exact full
+readback, software reentry, and preserved EEPROM settings. Run
+`make v2-a30-check`; see the
+[board 2205 result](docs/STR8N_V2_A30_2205_INSTALL_2026-09-30.md).
+
+## Alpha29 VIA1 base display
+
+Alpha29 adds `VIA1 @ $7FC0` to the I2C line on EDU boards. Board 2205 passed
+guarded E/F installation, exact full readback, software reentry, and preserved
+EEPROM settings. Run `make v2-a29-check`; see the
+[board 2205 result](docs/STR8N_V2_A29_2205_INSTALL_2026-09-30.md).
+
+## Alpha28 I2C display
+
+Alpha28 uses the selected, less-indented I2C hierarchy on EDU boards. Board
+2205 passed guarded E/F installation, exact full readback, software reentry,
+and saved EEPROM configuration checks. Run `make v2-a28-check`; see the
+[board 2205 result](docs/STR8N_V2_A28_2205_INSTALL_2026-09-30.md).
+
+## Alpha27 I2C display candidate
+
+Alpha27 adds an indented I2C inventory on EDU boards: MCP79XXX, RTC `$6F`
+with date/time, shared-address 64-byte SRAM, and EEPROM `$57` with aligned
+settings. The EEPROM format and commands remain those of alpha26. Run
+`make v2-a27-check`. Board 2205 passed a guarded installation, exact full
+E/F readback, and preserved EEPROM settings. See the
+[alpha27 display design](docs/STR8N_V2_A27_I2C_DISPLAY.md) and
+[board 2205 result](docs/STR8N_V2_A27_2205_INSTALL_2026-09-30.md).
+
+## Alpha26 EEPROM settings candidate
+
+Alpha26 moves autostart settings into two validated MCP79411 EEPROM records
+and adds the aligned EEPROM/settings startup display. It frees the former
+B3:E `$EFF0-$EFFF` configuration pocket; 812 bytes are free in E.
+Additional EEPROM uses are deferred. Run `make v2-a26-check` for host checks.
+Board 2205 passed guarded E/F installation, full flash readback, EEPROM saves,
+record recovery, autostart/hold, and physical RESET persistence with the EDU.
+Board 2512 passed guarded installation, full flash readback, and no-EDU
+software reentry. Board 2609 passed installation and software reentry without
+an EDU. See the
+[alpha26 design and layout](docs/STR8N_V2_A26_EEPROM.md),
+[board 2205 result](docs/STR8N_V2_A26_2205_INSTALL_2026-09-30.md),
+[board 2512 result](docs/STR8N_V2_A26_2512_INSTALL_2026-09-30.md), and
+[board 2609 result](docs/STR8N_V2_A26_2609_INSTALL_2026-09-30.md).
+
 ## Alpha25 EDU/RTC board tests
 
 Alpha25 is a board-test candidate. With an attached EDU and a valid, advancing

@@ -1,0 +1,126 @@
+        MODULE V2_EEPROM_DISPLAY
+        XDEF DISPLAY_END
+        INCLUDE "str8n-v2-public.inc"
+        INCLUDE "eeprom-symbols.inc"
+        CODE
+DISPLAY_ENTRY:
+        JSR EE_READ
+        LDX #<LABEL_EEPROM
+        LDY #>LABEL_EEPROM
+        JSR TEXT
+        LDA EE_STATE
+        ASL A
+        TAX
+        LDA STATES,X
+        LDY STATES+1,X
+        TAX
+        JSR TEXT
+        LDA EE_STATE
+        CMP #3
+        BCS SHOW_SETTINGS
+        ASL A
+        TAX
+        LDA REASONS,X
+        LDY REASONS+1,X
+        TAX
+        JMP TEXT
+SHOW_SETTINGS:
+        LDX #<LABEL_AUTO
+        LDY #>LABEL_AUTO
+        JSR TEXT
+        LDX #<DISABLED
+        LDY #>DISABLED
+        LDA EE_CFG+1
+        BEQ AUTO_TEXT
+        LDX #<ENABLED
+        LDY #>ENABLED
+AUTO_TEXT:
+        JSR TEXT
+        LDX #<LABEL_TARGET
+        LDY #>LABEL_TARGET
+        JSR TEXT
+        LDA EE_CFG+2
+        ORA #'0'
+        JSR STR8V2_RAM_PUTC
+        LDA EE_CFG+6
+        BEQ FIXED
+        LDX #<VECTOR
+        LDY #>VECTOR
+        JSR TEXT
+        BRA DELAY
+FIXED:
+        LDA #' '
+        JSR STR8V2_RAM_PUTC
+        LDA #'$'
+        JSR STR8V2_RAM_PUTC
+        LDA EE_CFG+4
+        JSR STR8V2_RAM_HEX_OUT
+        LDA EE_CFG+3
+        JSR STR8V2_RAM_HEX_OUT
+DELAY:
+        LDX #<LABEL_DELAY
+        LDY #>LABEL_DELAY
+        JSR TEXT
+        LDA EE_CFG+5
+        LDX #0
+DIV10:  CMP #10
+        BCC TENTHS
+        SBC #10
+        INX
+        BRA DIV10
+TENTHS: PHA
+        TXA
+        LDX #0
+DIV100: CMP #10
+        BCC SECONDS
+        SBC #10
+        INX
+        BRA DIV100
+SECONDS:
+        PHA
+        TXA
+        BEQ ONES
+        ORA #'0'
+        JSR STR8V2_RAM_PUTC
+ONES:   PLA
+        ORA #'0'
+        JSR STR8V2_RAM_PUTC
+        LDA #'.'
+        JSR STR8V2_RAM_PUTC
+        PLA
+        ORA #'0'
+        JSR STR8V2_RAM_PUTC
+        LDX #<SEC_TEXT
+        LDY #>SEC_TEXT
+TEXT:   STX $E0
+        STY $E1
+        LDY #0
+TEXT_LOOP:
+        LDA ($E0),Y
+        BEQ TEXT_DONE
+        JSR STR8V2_RAM_PUTC
+        INY
+        BRA TEXT_LOOP
+TEXT_DONE:
+        RTS
+STATES: DW UNAVAILABLE,EMPTY,INVALID,VALID_TEXT,RECOVERED
+REASONS: DW UNREADABLE,NONE_TEXT,NO_COPY
+LABEL_EEPROM DB $0D,$0A,"      EEPROM  $57  ",0
+UNAVAILABLE DB "UNAVAILABLE",0
+EMPTY DB "EMPTY",0
+INVALID DB "INVALID",0
+VALID_TEXT DB "VALID",0
+RECOVERED DB "RECOVERED",0
+UNREADABLE DB $0D,$0A,"        SETTINGS     UNREADABLE",0
+NONE_TEXT DB $0D,$0A,"        SETTINGS     NONE",0
+NO_COPY DB $0D,$0A,"        SETTINGS     NO VALID COPY",0
+LABEL_AUTO DB $0D,$0A,"        AUTOSTART  ",0
+ENABLED DB "ENABLED",0
+DISABLED DB "DISABLED",0
+LABEL_TARGET DB $0D,$0A,"        TARGET     B",0
+VECTOR DB " RESET VECTOR",0
+LABEL_DELAY DB $0D,$0A,"        DELAY      ",0
+SEC_TEXT DB " SEC",0
+DISPLAY_END:
+        ENDMOD
+        END
