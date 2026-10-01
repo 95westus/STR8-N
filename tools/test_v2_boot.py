@@ -168,8 +168,8 @@ def boot(bank, reset_pcr=False, ft245_present=True):
                   '    SRAM           128 KB\r\n'
                   '    RANGE          $00000-$1FFFF\r\n'
                   '    RETENTION      VOLATILE / BATTERY-BACKED\r\n')
-    if bank == 3 and VERSION in ('2.0a32', '2.0a33', '2.0a34'):
-        controller = ('  VIA1 $7FC0  A:I2C  B:SPI\r\n\r\n' if VERSION == '2.0a34'
+    if bank == 3 and VERSION in ('2.0a32', '2.0a33', '2.0a34', '2.0a35', '2.0a36'):
+        controller = ('  VIA1 $7FC0  A:I2C  B:SPI\r\n\r\n' if VERSION in ('2.0a34', '2.0a35', '2.0a36')
                       else '  I2C CONTROLLER  VIA1 @ $7FC0\r\n\r\n')
         status = ('SYSTEM CONFIGURATION\r\n'
                   '  EDU KIT         UNKNOWN\r\n'
@@ -182,6 +182,14 @@ def boot(bank, reset_pcr=False, ft245_present=True):
                   '23LCV1024 SRAM  SPI    --  128 KB LIST\r\n\r\n'
                   'CRYPTO STATUS\r\nUNAVAILABLE\r\n\r\n'
                   'BOOT SETTINGS\r\n  SETTINGS       UNKNOWN\r\n')
+    if VERSION in ('2.0a35', '2.0a36'):
+        for heading in ('SYSTEM CONFIGURATION', 'CRYPTO STATUS', 'BOOT SETTINGS'):
+            status = status.replace(heading, '[' + heading + ']')
+    if VERSION == '2.0a36':
+        clear = b'\x1b[H\x1b[J'
+        assert output.count(clear) == 1
+        assert clear + f'STR8-N {VERSION} B{bank}'.encode() in output
+        assert output.split(clear)[0] == b'.' * getattr(firmware, 'BOOT_WAITS', 1)
     assert (f'STR8-N {VERSION} B{bank} 65C02\r\n'
             f'ABI 65C02 | 816E | 816N-VEC\r\n{status}B{bank}> '.encode()) in output
     assert not other

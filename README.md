@@ -13,6 +13,22 @@ optional E-sector S/R/T extension. W65C816SXB board 2609 passed the core
 migration and regression checks. W65C02SXB board 2205 passed the unified
 installer and no-EDU migration checks. The EDU daughterboard was absent.
 
+## Alpha36 VT102 startup clear
+
+Alpha36 sends `ESC[H` (cursor home) and `ESC[J` (erase from cursor to end
+of screen) after the startup dots and immediately before the banner. The
+banner starts at the top-left corner. Build and host checks: `make v2-a36-check`.
+Board 2205 passed guarded E/F installation, exact full readback, and software
+reset with the VT102 sequence verified. See the
+[board report](docs/STR8N_V2_A36_2205_INSTALL_2026-10-01.md).
+
+## Alpha35 section headings
+
+Alpha35 adds bracketed startup section headings for system configuration,
+crypto status, and boot settings. Build and host checks: `make v2-a35-check`.
+Board 2205 passed guarded E/F installation, exact full readback, and software
+reset. See the [board report](docs/STR8N_V2_A35_2205_INSTALL_2026-10-01.md).
+
 ## Alpha34 VIA port labels
 
 Alpha34 shows `VIA1 $7FC0  A:I2C  B:SPI` in the startup inventory. Board

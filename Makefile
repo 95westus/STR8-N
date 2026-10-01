@@ -659,3 +659,15 @@ v2-a34-check:
 	python tools/build_v2_a34.py
 	python tools/test_v2_a34_display.py
 	python tools/test_v2_a34_regression.py
+
+.PHONY: v2-a35-check
+v2-a35-check:
+	python tools/build_v2_a35.py
+	python tools/test_v2_a35_display.py
+	python tools/test_v2_a35_regression.py
+
+.PHONY: v2-a36-check
+v2-a36-check:
+	python tools/build_v2_a36.py
+	python tools/test_v2_a36_display.py
+	python tools/test_v2_a36_regression.py
