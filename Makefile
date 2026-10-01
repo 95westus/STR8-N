@@ -634,3 +634,10 @@ v2-a24-package: v2-a24-check v2-a24-migration-kit
 	python tools/test_v2_a24_e_package.py
 	python tools/build_v2_a24_816_checklist_pdf.py
 	python tools/package_v2_a24.py
+
+.PHONY: v2-a31-check
+v2-a31-check:
+	python tools/build_v2_a31.py
+	python tools/test_v2_a31_rtc.py
+	python tools/test_v2_a31_eeprom.py
+	python tools/test_v2_a31_regression.py

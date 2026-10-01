@@ -13,6 +13,14 @@ optional E-sector S/R/T extension. W65C816SXB board 2609 passed the core
 migration and regression checks. W65C02SXB board 2205 passed the unified
 installer and no-EDU migration checks. The EDU daughterboard was absent.
 
+## Alpha31 memory retention and SPI display
+
+Alpha31 adds the 23LCV1024 SPI inventory, address range, and SRAM/EEPROM
+retention labels. Board 2205 passed guarded E/F installation, exact full
+readback, software reentry, and preserved settings. The SPI and battery text
+is descriptive; neither is tested by this display. Run `make v2-a31-check`;
+see the [board 2205 result](docs/STR8N_V2_A31_2205_INSTALL_2026-09-30.md).
+
 ## Alpha30 I2C hierarchy
 
 Alpha30 places I2C at the top display level and indents the MCP79xxx and its

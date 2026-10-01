@@ -159,6 +159,15 @@ def boot(bank, reset_pcr=False, ft245_present=True):
                  if VERSION == '2.0a27' else
                  '  EEPROM      UNAVAILABLE\r\n    SETTINGS  UNREADABLE\r\n')
               if bank == 3 and getattr(firmware, 'EEPROM_CONFIG', False) else '')
+    if bank == 3 and VERSION == '2.0a31':
+        status = ('EDU KIT       INCONCLUSIVE\r\n'
+                  '    EEPROM    $57  UNAVAILABLE\r\n'
+                  '      RETENTION    NONVOLATILE\r\n'
+                  '      SETTINGS     UNREADABLE\r\n'
+                  'SPI\r\n  23LCV1024\r\n'
+                  '    SRAM           128 KB\r\n'
+                  '    RANGE          $00000-$1FFFF\r\n'
+                  '    RETENTION      VOLATILE / BATTERY-BACKED\r\n')
     assert (f'STR8-N {VERSION} B{bank} 65C02\r\n'
             f'ABI 65C02 | 816E | 816N-VEC\r\n{status}B{bank}> '.encode()) in output
     assert not other
