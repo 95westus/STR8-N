@@ -168,6 +168,20 @@ def boot(bank, reset_pcr=False, ft245_present=True):
                   '    SRAM           128 KB\r\n'
                   '    RANGE          $00000-$1FFFF\r\n'
                   '    RETENTION      VOLATILE / BATTERY-BACKED\r\n')
+    if bank == 3 and VERSION in ('2.0a32', '2.0a33', '2.0a34'):
+        controller = ('  VIA1 $7FC0  A:I2C  B:SPI\r\n\r\n' if VERSION == '2.0a34'
+                      else '  I2C CONTROLLER  VIA1 @ $7FC0\r\n\r\n')
+        status = ('SYSTEM CONFIGURATION\r\n'
+                  '  EDU KIT         UNKNOWN\r\n'
+                  + controller +
+                  'DEVICE          BUS   ADDR  STATUS\r\n'
+                  'MCP79XXX RTC    I2C   $6F  UNAVAILABLE\r\n'
+                  'MCP79XXX SRAM   I2C   $6F  64 BYTES\r\n'
+                  'MCP79XXX EEPROM I2C   $57  UNAVAILABLE\r\n'
+                  'ATECC608        I2C   $60  UNAVAILABLE\r\n'
+                  '23LCV1024 SRAM  SPI    --  128 KB LIST\r\n\r\n'
+                  'CRYPTO STATUS\r\nUNAVAILABLE\r\n\r\n'
+                  'BOOT SETTINGS\r\n  SETTINGS       UNKNOWN\r\n')
     assert (f'STR8-N {VERSION} B{bank} 65C02\r\n'
             f'ABI 65C02 | 816E | 816N-VEC\r\n{status}B{bank}> '.encode()) in output
     assert not other

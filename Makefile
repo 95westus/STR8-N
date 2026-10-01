@@ -641,3 +641,21 @@ v2-a31-check:
 	python tools/test_v2_a31_rtc.py
 	python tools/test_v2_a31_eeprom.py
 	python tools/test_v2_a31_regression.py
+
+.PHONY: v2-a32-check
+v2-a32-check:
+	python tools/build_v2_a32.py
+	python tools/test_v2_a32_display.py
+	python tools/test_v2_a32_regression.py
+
+.PHONY: v2-a33-check
+v2-a33-check:
+	python tools/build_v2_a33.py
+	python tools/test_v2_a33_display.py
+	python tools/test_v2_a33_regression.py
+
+.PHONY: v2-a34-check
+v2-a34-check:
+	python tools/build_v2_a34.py
+	python tools/test_v2_a34_display.py
+	python tools/test_v2_a34_regression.py

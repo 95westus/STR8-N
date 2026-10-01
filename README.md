@@ -13,6 +13,30 @@ optional E-sector S/R/T extension. W65C816SXB board 2609 passed the core
 migration and regression checks. W65C02SXB board 2205 passed the unified
 installer and no-EDU migration checks. The EDU daughterboard was absent.
 
+## Alpha34 VIA port labels
+
+Alpha34 shows `VIA1 $7FC0  A:I2C  B:SPI` in the startup inventory. Board
+2205 passed guarded E/F installation, exact full readback, and software
+reset. Run `make v2-a34-check`; see the
+[board report](docs/STR8N_V2_A34_2205_INSTALL_2026-10-01.md).
+
+## Alpha33 crypto serial number
+
+Alpha33 reads the crypto chip's nine-byte serial number at startup and prints
+it beneath the ATECC608 device row. Board 2205 passed guarded E/F installation,
+complete image readback, and software reset. Run `make v2-a33-check`; see the
+[board report](docs/STR8N_V2_A33_2205_INSTALL_2026-09-30.md).
+
+## Alpha32 device inventory and crypto status
+
+Alpha32 prints a fixed-column EDU inventory and reads the ATECC608 family
+chip at I2C `$60` for revision, configuration/data lock state, and two
+counters. The crypto replies are CRC-checked; failed reads display
+`UNAVAILABLE`. SPI SRAM remains a listed component, not an active capacity
+probe. `make v2-a32-check` builds and tests the candidate. Board 2205 passed
+guarded E/F installation and exact full readback; see the
+[board report](docs/STR8N_V2_A32_2205_INSTALL_2026-09-30.md).
+
 ## Alpha31 memory retention and SPI display
 
 Alpha31 adds the 23LCV1024 SPI inventory, address range, and SRAM/EEPROM

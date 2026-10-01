@@ -61,6 +61,20 @@ Defects and hardware investigations are indexed in the
   `OK` alone cannot establish presence. Leave crypto untouched. Handle
   absent/unresponsive hardware without hanging core operation; report
   inconclusive detection rather than assuming presence.
+- [x] Identify VIA1 Port A as I2C and Port B as SPI in alpha34. Board 2205
+  passed exact E/F readback and software reset. See the
+  [alpha34 board report](docs/STR8N_V2_A34_2205_INSTALL_2026-10-01.md).
+- [ ] Keep the detailed VIA pin display as a future option when ROM space
+  permits: PA0=SCL, PA7=SDA; PB0=CLK, PB1=MOSI, PB5=MISO, PB2=SRAM CS.
+- [x] Add the live crypto serial number beneath the ATECC608 row in alpha33.
+  Board 2205 passed exact E/F readback and software reset; serial
+  `01231454D6545F9FEE` is read from the chip. See the
+  [alpha33 board report](docs/STR8N_V2_A33_2205_INSTALL_2026-09-30.md).
+- [x] Implement the selected fixed-column alpha32 startup inventory on board
+  2205. The crypto entry uses bounded, CRC-checked Info/Read/Counter commands
+  and reports unavailable responses without blocking the prompt. Guarded E/F
+  installation, full E/F exact readback, and software reentry passed on
+  2026-09-30. See the [alpha32 board report](docs/STR8N_V2_A32_2205_INSTALL_2026-09-30.md).
 - [ ] Measure whether minimal resident integration fits v2 free space and
   place the driver/HAL in the optional `$E000` sector, following S/R. Core boot
   and static-bank maintenance must work with that extension absent.
