@@ -1,76 +1,107 @@
-# STR8-N
+# STR8-N v2.0a24c1
 
-STR8-N v2 is a standalone reset monitor and flash loader for WDC SXB boards,
-intended as a base from which others can begin their own board projects.
-It occupies Bank 3's `$F000-$FFFF` sector and provides the basic tools to
-load programs, maintain flash, and hand control to other firmware.
+STR8-N is a standalone reset monitor and flash loader for the **WDC
+W65C02SXB and W65C816SXB** boards. It provides a small foundation for
+loading programs, inspecting memory, maintaining flash, and starting other
+firmware. On the W65C816SXB, the monitor runs in emulation mode.
 
-Development took a different branch through alpha36, exploring board
-discovery, hardware information, and a broader midrange/mainframe feel.
-That was a false start for the core product: the useful direction is a
-small, dependable foundation that others can understand and build on.
-Alpha36 remains part of the project's history. The current working baseline
-is **2.0a24c1**, built from the tested alpha24 base.
+**Current branch: `v2.0a24c1`.** The matching
+[release](https://github.com/95westus/STR8-N/releases/tag/v2.0a24c1) is an
+a24c1 board-test prerelease.
 
-The core should stand on its own. Additional board hardware is optional;
-RTC, SPI SRAM and crypto hardware are not prerequisites. Configuration
-belongs to the core flash sector.
+## What it does
 
-## RAM bank maintenance utility
+The resident monitor occupies Bank 3's 4 KiB `$F000-$FFFF` sector. Its
+flash-writing worker runs from RAM. The core needs no EDU daughterboard,
+RTC, SPI SRAM, crypto hardware, HIMON, or other monitor. It uses the board's
+FT245 USB console.
 
-`make bank-maint-v2` builds a `$2000` S19 utility with bank/sector erase,
-all four RAM/flash copy modes, a buffered 4 KiB editor, and sector read/write.
-B3:F writes require two confirmations. See the
-[command guide and validation limits](docs/STR8N_BANK_MAINT_V2.md).
+- Select any of the four flash banks and inspect its contents.
+- Display memory, edit permitted RAM, load S19 programs into RAM, and execute them.
+- Install aligned whole-sector S19 images and perform guarded flash edits.
+- Boot another bank through its RESET vector.
+- Save boot settings, including the target bank, address or RESET-vector target,
+  startup delay, and whether autostart is enabled. Configuration lives in the
+  core at `$FFD0-$FFDF`.
+- Provide fixed RAM console and interrupt interfaces for application programs.
 
-## Current development baseline: 2.0a24c1
+The separate **Bank Maintenance 1.0** RAM utility adds sector erase,
+RAM/flash copies in all four directions, comparisons, and a buffered
+4 KiB editor with sector read/write and CRC. It is included in the package.
+See the [maintenance guide](docs/STR8N_BANK_MAINT_V2.md) for commands and limits.
 
-The alpha24-derived `2.0a24c1` candidate moves configuration to
-`$FFD0-$FFDF`, keeping saved boot settings in the core. Build with `make v2-config`; validate with `make v2-config-check`.
-COM3 installation, readback and software handoffs passed; physical reset and
-cold-power checks remain pending. See the [layout, ABI and guarded migration guide](docs/STR8N_V2_FLASH_CONFIG.md).
-Run the current stock-board launcher from the repository root:
+## Download and start
+
+Download the
+[board-test ZIP](https://github.com/95westus/STR8-N/releases/download/v2.0a24c1/str8n-v2-a24c1-board-test.zip)
+and extract it. The ZIP contains the Windows and Linux launchers, the
+matching BIN/S19 images, Bank Maintenance, the public assembly include,
+and the current documentation. Start with `docs/QUICKSTART.pdf` or
+`docs/QUICKSTART.md` inside the ZIP.
+
+For a board with stock WDCMONv2 in Bank 3, run the launcher from the extracted
+folder. On Windows:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\INSTALL-A24C1.ps1
 ```
 
-On Linux, install Python 3 and pyserial, then run `sh ./INSTALL-A24C1.sh`.
-Use `/dev/ttyUSB0` or the actual detected device with serial-access permission.
-Linux offline tests pass. The owner reported a successful native Linux run
-on 2026-10-02; see the [Linux test record](docs/STR8N_V2_A24C1_LINUX_TEST_2026-10-02.md).
+On native Linux, install Python 3 and pyserial, then run:
 
-It prompts for COM port and physical RESET, confirms the board, and supplies
-the matching installer/core/maintenance files. Console colors identify
-information (cyan), input and writes (yellow), success (green), and failure
-or refusal (red). See the [current manual](docs/STR8N_V2_A24C1_MANUAL.md),
-[current maps and diagrams](docs/STR8N_V2_A24C1_MAPS.md), and
-[release ZIP proposal](docs/STR8N_V2_A24C1_RELEASE_ZIP_PROPOSAL.md).
+```sh
+sh ./INSTALL-A24C1.sh
+```
 
-For stock boards, build the [unified C02/816 WDCMON to a24c1 installer](docs/STR8N_V2_CONFIG_WDCMON_INSTALL.md)
-with `make v2-config-wdcmon`. Its C02 model checks are available via
-`make v2-config-wdcmon-check`; physical qualification remains pending.
+The launcher prompts for the serial port, physical RESET, and board type.
+It loads the installer into RAM and verifies readback before execution.
+The installer accepts a selected backup bank/range or an explicitly
+confirmed no-backup choice, then installs the matching core image.
+Console colors mark information in cyan, input and writes in yellow,
+success in green, and failures in red.
 
-Use the [quick start](docs/STR8N_V2_A24C1_QUICK_START.md) for installation
-and the [detailed technical guide](docs/STR8N_V2_A24C1_TECHNICAL_GUIDE.md)
-for memory maps, Mermaid flows, charts, interfaces and board acceptance checks.
-Successful verified stock migration and physical RESET into STR8-N establish
-the beta 1 milestone. Record remaining tests separately for each CPU family.
-The [local board-test ZIP](output/release/str8n-v2-a24c1-board-test.zip) includes
-both colored launchers, bank maintenance, the public include and documentation.
-The a24c1 sources and board-test ZIP are maintained on `codex/v2-flash-config`.
-The ZIP is available from the repository; this remains a board-test candidate.
+For an already installed STR8-N board, follow the
+[operator manual](docs/STR8N_V2_A24C1_MANUAL.md) for reconnecting and the
+[configuration guide](docs/STR8N_V2_FLASH_CONFIG.md) for supported updates.
 
-## Historical sources and board tests
+## Documentation
 
-Earlier sources, tags and board-test records remain available for reference.
-The repository's current package is a24c1; old RC and alpha build packages
-have been removed locally. Historical results do not qualify the current image.
+| Guide | Contents |
+| --- | --- |
+| [Quickstart](docs/STR8N_V2_A24C1_QUICK_START.md) | Installation, RESET timing, colors, first commands, and maintenance loading |
+| [Operator and technical manual](docs/STR8N_V2_A24C1_MANUAL.md) | Monitor commands, startup settings, reconnecting, and application interfaces |
+| [Detailed technical guide](docs/STR8N_V2_A24C1_TECHNICAL_GUIDE.md) | Mermaid maps, flows, diagrams, ABI, flash behavior, and acceptance checks |
+| [Maps and charts](docs/STR8N_V2_A24C1_MAPS.md) | RAM/flash allocation, installation flow, and capacity |
+| [Stock-board installer guide](docs/STR8N_V2_CONFIG_WDCMON_INSTALL.md) | Unified C02/816 installer, backup selection, verification, and recovery |
+| [Configuration guide](docs/STR8N_V2_FLASH_CONFIG.md) | Core boot settings and guarded migration |
+| [Bank Maintenance guide](docs/STR8N_BANK_MAINT_V2.md) | Utility commands, editor, copies, erase, and staging |
+| [Package contents](docs/STR8N_V2_A24C1_RELEASE_ZIP_PROPOSAL.md) | The exact 18-file ZIP inventory |
+| [Manual index](docs/RELEASE_MANUALS.md) | Current guides and test records |
 
-- [Historical alpha24 source commit](https://github.com/95westus/STR8-N/tree/0e46332b3e5b431e48e021036fd2ab4c0615f936)
-- [816 alpha24 board result](docs/STR8N_V2_A24_2609_RESTORE_REMIGRATE_E_2026-09-30.md)
-- [02SXB board 2205 result](docs/STR8N_V2_A24_2205_NO_EDU_2026-09-30.md)
-- [a24c1 C02 installation result](docs/STR8N_V2_CONFIG_COM3_INSTALL_2026-10-01.md)
-- [Manual index](docs/RELEASE_MANUALS.md)
+## Sources and validation
 
-STR8-N is independent of WDC and R-YORS; see [LICENSE](LICENSE).
+The current firmware sources are in [src/v2-config](src/v2-config).
+Builds require Python 3 and the WDC assembler/linker on PATH:
+
+```text
+make v2-config-wdcmon
+make bank-maint-v2
+```
+
+Validation targets are `make v2-config-check`,
+`make v2-config-wdcmon-check`, and `make bank-maint-v2-check`.
+`python tools/package_v2_a24c1.py` builds and verifies the release ZIP.
+The [public assembly include](src/v2-config/str8n-v2-public.inc) defines
+application entry addresses and interrupt pointers.
+
+The firmware, installer, safety/recovery, maintenance, and offline launcher
+checks passed. The owner also reported a successful
+[native Linux run](docs/STR8N_V2_A24C1_LINUX_TEST_2026-10-02.md) on 2026-10-02.
+The [C02 installation report](docs/STR8N_V2_CONFIG_COM3_INSTALL_2026-10-01.md)
+records the detailed a24c1 board observations. Qualification remains scoped
+to the recorded tests; this release remains a board-test candidate.
+
+Historical sources and dated board reports remain in the repository. Their
+results apply to the versions tested. The a24c2 RAM layout is a proposal
+and is not implemented in a24c1.
+
+STR8-N is independent of WDC and R-YORS. See [LICENSE](LICENSE).
