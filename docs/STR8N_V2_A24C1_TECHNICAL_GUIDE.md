@@ -12,6 +12,14 @@ Use the a24c1 configuration addresses given here.
 
 ## System components and ownership
 
+**WARNING - power failure during flashing can be dangerous.** Loss of power
+during flash erase/programming, installation or a configuration save can
+corrupt firmware or boot vectors and leave the board unbootable. Recovery
+may require an external flash programmer. STR8-N does not guarantee
+power-loss recovery or automatic rollback. Keep power stable, retain a
+recovery backup, and do not disconnect USB/power or press RESET/NMI until
+the operation reports verified completion.
+
 The resident core executes from F in its resident bank. Code that must
 continue while banks change or F is being modified executes from RAM.
 The console bridge adds colors on the PC; the firmware sends plain bytes.
@@ -464,10 +472,22 @@ on known scratch sectors with neighboring-bank preservation.
 
 Repeat backup reuse/refusal and permitted recovery cases separately.
 Native-vector behavior needs its own recorded results.
-Host-model success is not a substitute for physical qualification. The user
-has confirmed the colored script works well; this does not by itself record
-completed migration/reset acceptance on both boards. The successful verified
-stock migration plus physical reset milestone is still the basis for beta 1.
+Host-model success is not a substitute for physical qualification.
+[The 2026-10-03 acceptance record](STR8N_V2_A24C1_TWO_BOARD_ACCEPTANCE_2026-10-03.md)
+records owner-confirmed verified stock migration through the packaged
+launcher on both CPU families, followed by captured physical RESET banners,
+responsive prompts, and exact full core readbacks. The beta 1 migration/reset
+milestone is met. The subsequent
+[cold-start/configuration record](STR8N_V2_A24C1_COLD_CONFIG_ACCEPTANCE_2026-10-03.md)
+also passes cold power, configuration save/persistence, fixed-address
+autostart and S hold on both boards. The
+[practical regression record](STR8N_V2_A24C1_REGRESSION_ACCEPTANCE_2026-10-03.md)
+also passes the listed command, RAM ABI, interrupt and maintenance cases,
+with exact final bank preservation; 2609 passed native BRK/NMI. The
+[backup/recovery record](STR8N_V2_A24C1_BACKUP_RECOVERY_ACCEPTANCE_2026-10-03.md)
+passes linked fault-model checks and both-board RAM-fixture backup/guard and
+R/O routine execution. Actual physical flash-failure/interruption recovery
+and the broader untested matrix remain outside the qualification claim.
 
 ## Proposed a24c2 differences
 

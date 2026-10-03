@@ -2,10 +2,18 @@
 
 Local archive: `str8n-v2-a24c1-board-test.zip`. The agreed contents
 are the scripts, BIN/S19 images, documentation, and public assembly include.
-This is a board-test candidate. The archive is built locally at
+This is the original board-test package inventory. The archive is built locally at
 `output/release/str8n-v2-a24c1-board-test.zip` using
 `python tools/package_v2_a24c1.py`. The ZIP is distributed through the repository.
 The owner reported a successful native Linux run on 2026-10-02.
+
+Beta 1 is `str8n-v2-b1.zip`, built with
+`python tools/package_v2_a24c1.py --beta1`. It retains all 18 kit files and
+their tested firmware/launcher names, and adds five Markdown files:
+`BETA1-RELEASE-NOTES.md`, `MIGRATION-RESET-ACCEPTANCE.md`,
+`COLD-CONFIG-ACCEPTANCE.md`, `REGRESSION-ACCEPTANCE.md`, and
+`BACKUP-RECOVERY-ACCEPTANCE.md`, all under `docs/`. PDFs are refreshed.
+See the [beta notes](STR8N_V2_BETA1_RELEASE_NOTES.md) for scope and identity.
 
 ## Agreed file list
 

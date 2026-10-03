@@ -13,11 +13,22 @@ matching update procedure; see `docs/STR8N_V2_FLASH_CONFIG.md` for alpha24.
 Already on v2: skip installation and continue with monitor commands on page 2.
 For reconnecting, use the operator manual's terminal-only instructions.
 
-This is the current board-test candidate. Physical acceptance remains pending
-for each CPU family. Verified stock migration and a working physical RESET
-establish the beta 1 milestone; packaging does not establish qualification.
+This firmware is distributed as beta 1 (`v2.0b1`), with its tested a24c1
+banner and installer confirmation retained. See the
+[beta notes](STR8N_V2_BETA1_RELEASE_NOTES.md). Stock migration is owner-confirmed
+on both CPU families; physical RESET and exact core readbacks passed on
+[boards 2205 and 2609](STR8N_V2_A24C1_TWO_BOARD_ACCEPTANCE_2026-10-03.md).
+Cold/configuration, practical regression and scoped backup/recovery checks
+also passed; the beta notes link the results and state the untested limits.
 
 ## 2. Prepare and launch the installer
+
+**WARNING - power failure during flashing can be dangerous.** Losing power
+during erase/programming, installation or a configuration save can corrupt
+firmware or boot vectors and leave the board unbootable. Recovery may require
+an external flash programmer. Power-loss recovery and automatic rollback
+are not guaranteed. Keep power stable and retain a recovery backup. Do not
+disconnect USB/power or press RESET/NMI until verified completion.
 
 For an extracted kit, use the supplied files. In a source checkout with the
 WDC assembler/linker installed, build them using:
@@ -85,7 +96,6 @@ loading. Connection: **115200 baud, 8 data bits, no parity, 1 stop bit**.
 The installer replaces **B3:F only** and preserves the rest of B3. Do not reset,
 press NMI, or remove power during a flash operation.
 
-<!-- pagebreak -->
 
 ## 4. First steps at the monitor
 
