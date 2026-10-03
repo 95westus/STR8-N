@@ -23,6 +23,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+Import-Module Microsoft.PowerShell.Utility
 
 class Wdcmonv2ProtocolMock {
     [System.Collections.Generic.Queue[byte]]$Receive
@@ -327,7 +328,7 @@ function Assert-WdcBoardTag {
         ($script:ExpectedBoardTag -notin @('Auto', 'SXB?') -and $Tag -ne $script:ExpectedBoardTag)) {
         throw ('Unsupported WDCMONv2 board identity {0}; expected {1}' -f ([BitConverter]::ToString($Reply)), $script:ExpectedBoardTag)
     }
-    Write-Host ('BOARD SIGNATURE = {0}; PHYSICAL BOARD TYPE UNCONFIRMED' -f $Tag)
+    Write-Host ('BOARD SIGNATURE = {0}; PHYSICAL BOARD TYPE UNCONFIRMED' -f $Tag) -ForegroundColor Yellow
 }
 
 function Assert-BoardTypeConfirmation {
@@ -445,6 +446,15 @@ function Start-WdcMemory {
     Write-SerialBytes -Serial $Serial -Bytes (Convert-ToU24LE $Address)
 }
 
+function Write-ColoredBoardText {
+    param([string]$Text)
+    $color = 'Cyan'
+    if ($Text -match 'FAIL|REFUSE|CANCEL|HALTED|INVALID|ERROR') { $color = 'Red' }
+    elseif ($Text -match 'NO RESET|NO RECOVERY|ERASING|PROGRAMMING|TYPE|CHOOSE|PRESS|SEND|>') { $color = 'Yellow' }
+    elseif ($Text -match 'VERIFIED|COMPLETE|SUCCESS|==') { $color = 'Green' }
+    Write-Host -NoNewline $Text -ForegroundColor $color
+}
+
 function Start-RawTerminal {
     param(
         [Parameter(Mandatory = $true)][System.IO.Ports.SerialPort]$Serial,
@@ -456,17 +466,18 @@ function Start-RawTerminal {
         [string]$Transfer2Name,
         [string]$Transfer2Sha256
     )
-    $stdout = [Console]::OpenStandardOutput()
+    $displayLine = [System.Text.StringBuilder]::new()
+    $lastReceive = [DateTime]::UtcNow
     $oldControlC = [Console]::TreatControlCAsInput
     [Console]::TreatControlCAsInput = $true
     $txLine = [System.Text.StringBuilder]::new()
     Write-SessionEvent 'TERMINAL START'
     if ($null -ne $Transfer2Bytes) {
-        Write-Host ("TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; CTRL+U SENDS {0}; CTRL+D SENDS {1}; ENTER SENDS CR" -f $TransferName, $Transfer2Name)
+        Write-Host ("TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; CTRL+U SENDS {0}; CTRL+D SENDS {1}; ENTER SENDS CR" -f $TransferName, $Transfer2Name) -ForegroundColor Cyan
     } elseif ($null -ne $TransferBytes) {
-        Write-Host ("TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; CTRL+U SENDS {0}; ENTER SENDS CR" -f $TransferName)
+        Write-Host ("TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; CTRL+U SENDS {0}; ENTER SENDS CR" -f $TransferName) -ForegroundColor Cyan
     } else {
-        Write-Host 'TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; ENTER SENDS CR'
+        Write-Host 'TERMINAL ACTIVE; CTRL+] EXITS; CTRL+B PROBES WDCMON; ENTER SENDS CR' -ForegroundColor Cyan
     }
     try {
         $buffer = New-Object byte[] 4096
@@ -475,10 +486,22 @@ function Start-RawTerminal {
             if ($available -gt 0) {
                 $count = $Serial.Read($buffer, 0, [Math]::Min($available, $buffer.Length))
                 if ($count -gt 0) {
-                    $stdout.Write($buffer, 0, $count)
-                    $stdout.Flush()
+                    $lastReceive = [DateTime]::UtcNow
+                    for ($displayIndex = 0; $displayIndex -lt $count; $displayIndex++) {
+                        $displayChar = [char]$buffer[$displayIndex]
+                        $null = $displayLine.Append($displayChar)
+                        if ($displayChar -eq "`n" -or $displayChar -eq '>') {
+                            Write-ColoredBoardText $displayLine.ToString()
+                            $null = $displayLine.Clear()
+                        }
+                    }
                     if ($null -ne $Log) { $Log.Write($buffer, 0, $count); $Log.Flush() }
                 }
+            }
+            # Show partial prompts and progress without waiting for a newline.
+            if ($displayLine.Length -gt 0 -and ([DateTime]::UtcNow - $lastReceive).TotalMilliseconds -ge 100) {
+                Write-ColoredBoardText $displayLine.ToString()
+                $null = $displayLine.Clear()
             }
             if ([Console]::KeyAvailable) {
                 $key = [Console]::ReadKey($true)
@@ -492,7 +515,7 @@ function Start-RawTerminal {
                         $probe = Get-WdcBoardInfo -Serial $Serial
                         if ($null -ne $Log) { $Log.Write($probe.Raw, 0, $probe.Raw.Length); $Log.Flush() }
                         Write-SessionEvent ("CTRL+B WDCMON PROBE PASS TAG={0} HW={1:N2} WDCMON={2:N2}" -f $probe.Tag, ($probe.Hardware / 100.0), ($probe.Software / 100.0))
-                        Write-Host ("`nWDCMON PROBE = {0}; HW={1:N2}; WDCMON={2:N2}" -f $probe.Tag, ($probe.Hardware / 100.0), ($probe.Software / 100.0))
+                        Write-Host ("`nWDCMON PROBE = {0}; HW={1:N2}; WDCMON={2:N2}" -f $probe.Tag, ($probe.Hardware / 100.0), ($probe.Software / 100.0)) -ForegroundColor Cyan
                     } catch {
                         Write-SessionEvent ("CTRL+B WDCMON PROBE FAIL {0}" -f $_.Exception.Message)
                         Write-Warning ("WDCMON probe failed: {0}" -f $_.Exception.Message)
@@ -501,24 +524,24 @@ function Start-RawTerminal {
                 }
                 if ($value -eq 0x15 -and $null -ne $TransferBytes) {
                     Write-SessionEvent ("CTRL+U FILE SEND NAME={0} BYTES={1} SHA256={2}" -f $TransferName, $TransferBytes.Length, $TransferSha256)
-                    Write-Host ("`nSENDING {0} ({1} bytes)" -f $TransferName, $TransferBytes.Length)
+                    Write-Host ("`nSENDING {0} ({1} bytes)" -f $TransferName, $TransferBytes.Length) -ForegroundColor Cyan
                     for ($offset = 0; $offset -lt $TransferBytes.Length; $offset += 64) {
                         $count = [Math]::Min(64, $TransferBytes.Length - $offset)
                         $Serial.Write($TransferBytes, $offset, $count)
                         Start-Sleep -Milliseconds 2
                     }
-                    Write-Host 'FILE SENT'
+                    Write-Host 'FILE SENT' -ForegroundColor Green
                     continue
                 }
                 if ($value -eq 0x04 -and $null -ne $Transfer2Bytes) {
                     Write-SessionEvent ("CTRL+D FILE SEND NAME={0} BYTES={1} SHA256={2}" -f $Transfer2Name, $Transfer2Bytes.Length, $Transfer2Sha256)
-                    Write-Host ("`nSENDING {0} ({1} bytes)" -f $Transfer2Name, $Transfer2Bytes.Length)
+                    Write-Host ("`nSENDING {0} ({1} bytes)" -f $Transfer2Name, $Transfer2Bytes.Length) -ForegroundColor Cyan
                     for ($offset = 0; $offset -lt $Transfer2Bytes.Length; $offset += 64) {
                         $count = [Math]::Min(64, $Transfer2Bytes.Length - $offset)
                         $Serial.Write($Transfer2Bytes, $offset, $count)
                         Start-Sleep -Milliseconds 2
                     }
-                    Write-Host 'FILE SENT'
+                    Write-Host 'FILE SENT' -ForegroundColor Green
                     continue
                 }
                 if ($key.Key -eq [ConsoleKey]::Enter) {
@@ -539,6 +562,7 @@ function Start-RawTerminal {
             if ($available -eq 0) { Start-Sleep -Milliseconds 10 }
         }
     } finally {
+        if ($displayLine.Length -gt 0) { Write-ColoredBoardText $displayLine.ToString() }
         Write-SessionEvent 'TERMINAL STOP'
         [Console]::TreatControlCAsInput = $oldControlC
     }
@@ -568,7 +592,7 @@ function Receive-SerialWindow {
             Start-Sleep -Milliseconds 10
         }
     }
-    Write-Host ("`nLISTEN ONLY = COMPLETE; RX={0} BYTES; TX=0 BYTES" -f $total)
+    Write-Host ("`nLISTEN ONLY = COMPLETE; RX={0} BYTES; TX=0 BYTES" -f $total) -ForegroundColor Cyan
 }
 
 if ($ListPorts) {
@@ -643,25 +667,25 @@ if ($SelfTest) {
     $eventText = $eventEncoding.GetString($eventMemory.ToArray())
     $eventMemory.Dispose()
     if ($eventText -notmatch 'SELFTEST EVENT') { throw 'Session event-log self-test failed' }
-    Write-Host 'WDCMONV2 HOST BRIDGE SELF-TEST = PASS'
-    Write-Host 'PROTOCOL EMULATOR = PASS; $0C/$02/$03/$06 EXACT WIRE FRAMES'
-    Write-Host 'SESSION EVENT LOG SELF-TEST = PASS'
+    Write-Host 'WDCMONV2 HOST BRIDGE SELF-TEST = PASS' -ForegroundColor Green
+    Write-Host 'PROTOCOL EMULATOR = PASS; $0C/$02/$03/$06 EXACT WIRE FRAMES' -ForegroundColor Green
+    Write-Host 'SESSION EVENT LOG SELF-TEST = PASS' -ForegroundColor Green
     if (-not $ImagePath) { return }
 }
 
 $image = $null
 if ($ImagePath) {
     $image = Read-MigrationS19 -Path $ImagePath
-    Write-Host ('S19 SHA256 = {0}' -f $image.Sha256)
-    Write-Host ('RAM RANGE  = ${0:X4}-${1:X4} ({2} bytes)' -f $image.First, $image.Last, $image.Bytes.Length)
-    Write-Host ('ENTRY      = ${0:X4}' -f $image.Entry)
-    Write-Host ('RAM FNV1A  = {0:X8}' -f $image.Fnv1a)
+    Write-Host ('S19 SHA256 = {0}' -f $image.Sha256) -ForegroundColor Cyan
+    Write-Host ('RAM RANGE  = ${0:X4}-${1:X4} ({2} bytes)' -f $image.First, $image.Last, $image.Bytes.Length) -ForegroundColor Cyan
+    Write-Host ('ENTRY      = ${0:X4}' -f $image.Entry) -ForegroundColor Cyan
+    Write-Host ('RAM FNV1A  = {0:X8}' -f $image.Fnv1a) -ForegroundColor Cyan
 } elseif (-not $ProbeOnly -and $ListenOnlySeconds -eq 0 -and -not $TerminalOnly) {
     throw 'Specify -ImagePath, or use -ListPorts/-ProbeOnly/-ListenOnlySeconds/-SelfTest'
 }
 if ($ValidateOnly) {
     if ($null -eq $image) { throw '-ValidateOnly requires -ImagePath' }
-    Write-Host 'MIGRATION S19 = VALID'
+    Write-Host 'MIGRATION S19 = VALID' -ForegroundColor Green
     return
 }
 
@@ -748,7 +772,7 @@ try {
         if ($Force) { $eventMode = [System.IO.FileMode]::Create }
         $eventStream = [System.IO.File]::Open($eventFull, $eventMode, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
         $script:EventWriter = [System.IO.StreamWriter]::new($eventStream, $eventEncoding)
-        Write-Host "SESSION EVENT LOG = $eventFull"
+        Write-Host "SESSION EVENT LOG = $eventFull" -ForegroundColor Cyan
         Write-SessionEvent ("SESSION START PORT={0} BAUD={1} RESET={2}" -f $Port, $BaudRate, (-not $NoReset))
         if ($null -ne $image) {
             Write-SessionEvent ('IMAGE SHA256={0} RANGE=${1:X4}-${2:X4} BYTES={3} ENTRY=${4:X4} FNV1A={5:X8}' -f $image.Sha256, $image.First, $image.Last, $image.Bytes.Length, $image.Entry, $image.Fnv1a)
@@ -764,7 +788,7 @@ try {
         $rawMode = [System.IO.FileMode]::CreateNew
         if ($Force) { $rawMode = [System.IO.FileMode]::Create }
         $rawLog = [System.IO.File]::Open($transcriptFull, $rawMode, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
-        Write-Host "RAW RX TRANSCRIPT = $transcriptFull"
+        Write-Host "RAW RX TRANSCRIPT = $transcriptFull" -ForegroundColor Cyan
         Write-SessionEvent ("RAW RX LOG READY PATH={0}" -f $transcriptFull)
     }
     $serial.Open()
@@ -785,15 +809,15 @@ try {
         $startupByteCount = $serial.BytesToRead
         $serial.DiscardInBuffer()
         Write-SessionEvent ("RESET SETTLE=1000ms STARTUP_RX_DISCARDED={0}" -f $startupByteCount)
-        Write-Host ("RESET SETTLE = 1000 ms; STARTUP RX DISCARDED = {0}" -f $startupByteCount)
+        Write-Host ("RESET SETTLE = 1000 ms; STARTUP RX DISCARDED = {0}" -f $startupByteCount) -ForegroundColor Yellow
     }
     if ($PhysicalResetGate) {
-        Write-Host 'PHYSICAL RESET GATE: reset the board, wait two seconds, then press ENTER here'
+        Write-Host 'PHYSICAL RESET GATE: reset the board, wait two seconds, then press ENTER here' -ForegroundColor Yellow
         $null = Read-Host
         $startupByteCount = $serial.BytesToRead
         $serial.DiscardInBuffer()
         Write-SessionEvent ("PHYSICAL RESET GATE STARTUP_RX_DISCARDED={0}" -f $startupByteCount)
-        Write-Host ("PHYSICAL RESET GATE = RELEASED; STARTUP RX DISCARDED = {0}" -f $startupByteCount)
+        Write-Host ("PHYSICAL RESET GATE = RELEASED; STARTUP RX DISCARDED = {0}" -f $startupByteCount) -ForegroundColor Yellow
     }
 
     if ($ListenOnlySeconds -gt 0) {
@@ -803,7 +827,7 @@ try {
     }
 
     if ($PhysicalResetArmSeconds -gt 0) {
-        Write-Host ("PHYSICAL RESET ARM = ACTIVE FOR {0} SECONDS; PRESS PHYSICAL RESET NOW" -f $PhysicalResetArmSeconds)
+        Write-Host ("PHYSICAL RESET ARM = ACTIVE FOR {0} SECONDS; PRESS PHYSICAL RESET NOW" -f $PhysicalResetArmSeconds) -ForegroundColor Yellow
         Write-SessionEvent ("PHYSICAL RESET ARM START SECONDS={0}" -f $PhysicalResetArmSeconds)
         $board = Get-WdcBoardInfoAfterResetArm -Serial $serial -Seconds $PhysicalResetArmSeconds
         Write-SessionEvent 'PHYSICAL RESET ARM SYNC=PASS'
@@ -811,17 +835,17 @@ try {
         $board = Get-WdcBoardInfo -Serial $serial
     }
     Write-SessionEvent ('BOARD TAG={0} HW={1:N2} WDCMON={2:N2}' -f $board.Tag, ($board.Hardware / 100.0), ($board.Software / 100.0))
-    Write-Host ('BOARD      = {0}; HW={1:N2}; WDCMON={2:N2}' -f $board.Tag, ($board.Hardware / 100.0), ($board.Software / 100.0))
+    Write-Host ('BOARD      = {0}; HW={1:N2}; WDCMON={2:N2}' -f $board.Tag, ($board.Hardware / 100.0), ($board.Software / 100.0)) -ForegroundColor Cyan
     if ($ProbeOnly) {
         $sessionOutcome = 'PROBE PASS; NO RAM OR FLASH COMMAND ISSUED'
-        Write-Host 'WDCMONV2 PROBE = PASS; NO RAM OR FLASH COMMAND ISSUED'
+        Write-Host 'WDCMONV2 PROBE = PASS; NO RAM OR FLASH COMMAND ISSUED' -ForegroundColor Green
         return
     }
 
-    Write-Host ('WDCMON reports {0}. Check the physical SXB label before loading RAM.' -f $board.Tag)
+    Write-Host ('WDCMON reports {0}. Check the physical SXB label before loading RAM.' -f $board.Tag) -ForegroundColor Cyan
     $confirmedType = Assert-BoardTypeConfirmation -Answer (Read-Host 'Type W65C02SXB or W65C816SXB to confirm board type')
     Write-SessionEvent ('PHYSICAL BOARD TYPE CONFIRMED={0} TAG={1}' -f $confirmedType, $board.Tag)
-    Write-Host ('PHYSICAL BOARD TYPE = {0}; BOARD SIGNATURE = {1}' -f $confirmedType, $board.Tag)
+    Write-Host ('PHYSICAL BOARD TYPE = {0}; BOARD SIGNATURE = {1}' -f $confirmedType, $board.Tag) -ForegroundColor Green
 
     for ($offset = 0; $offset -lt $image.Bytes.Length; $offset += $ChunkBytes) {
         $count = [Math]::Min($ChunkBytes, $image.Bytes.Length - $offset)
@@ -835,11 +859,11 @@ try {
                 throw ('RAM readback mismatch at ${0:X4}: wrote ${1:X2}, read ${2:X2}' -f ($address + $i), $chunk[$i], $readback[$i])
             }
         }
-        Write-Host -NoNewline '.'
+        Write-Host -NoNewline '.' -ForegroundColor Cyan
     }
     Write-SessionEvent 'RAM READBACK BYTE-EXACT'
-    Write-Host "`nRAM READBACK = BYTE-EXACT"
-    Write-Host ('EXECUTE      = ${0:X4}' -f $image.Entry)
+    Write-Host "`nRAM READBACK = BYTE-EXACT" -ForegroundColor Green
+    Write-Host ('EXECUTE      = ${0:X4}' -f $image.Entry) -ForegroundColor Cyan
     Write-SessionEvent ('EXECUTE ${0:X4}' -f $image.Entry)
     Start-WdcMemory -Serial $serial -Address $image.Entry
 

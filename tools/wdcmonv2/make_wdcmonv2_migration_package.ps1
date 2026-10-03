@@ -13,6 +13,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+throw 'Older release documentation is retired. Use python tools/package_v2_a24c1.py and docs/RELEASE_MANUALS.md.'
+
 function Get-FullPath {
     param([Parameter(Mandatory = $true)][string]$Path)
     if ([System.IO.Path]::IsPathRooted($Path)) { return [System.IO.Path]::GetFullPath($Path) }

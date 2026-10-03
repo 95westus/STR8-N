@@ -6,6 +6,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+throw 'Older release documentation is retired. Use python tools/package_v2_a24c1.py and docs/RELEASE_MANUALS.md.'
+
 # Every distributable input is explicit. Owner archives and other products
 # are intentionally outside this standalone product's release inventory.
 $files = [ordered]@{

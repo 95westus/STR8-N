@@ -47,7 +47,7 @@ def main():
     boot.hold(cpu)
     assert cpu.boot_waits == 160
     assert late.tx.startswith(b'.' * 81)
-    assert b'STR8-N 2.0a24 B3 65C02' in late.tx
+    assert f'STR8-N {a24.VERSION} B3 65C02'.encode() in late.tx
     assert not ACIA.intersection(late.io_reads + late.writes)
     print('a24 FT245-only console: PASS')
 

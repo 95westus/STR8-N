@@ -34,9 +34,9 @@ release; this announcement covers the v2 branch and its RC1 qualification
 status.
 
 - [Start with the v2 README](https://github.com/95westus/STR8-N/tree/v2#str8-n-v2)
-- [Read the RC1 scope and evidence](https://github.com/95westus/STR8-N/blob/v2/docs/STR8N_V2_RC1_2026-09-24.md)
-- [Read the W65C816SXB/EDU getting-started guide](https://github.com/95westus/STR8-N/blob/v2/docs/STR8N_V2_RC1_GETTING_STARTED_816.md)
-- [Review the RC1 package contents](https://github.com/95westus/STR8-N/blob/v2/docs/STR8N_V2_RC1_PACKAGE_README.md)
+- Read the RC1 scope and evidence (retired release decision)
+- Read the W65C816SXB/EDU getting-started guide (retired guide)
+- Review the RC1 package contents (retired guide)
 
 Comments and questions are welcome in the
 [announcement discussion](https://github.com/95westus/STR8-N/discussions/2).

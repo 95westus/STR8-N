@@ -34,5 +34,5 @@ qualification gates remain pending.
 The statements above record the state **at freeze time**. Alpha21 was later
 installed and read back exactly on board 2512; cold USB banner capture and
 configured Bank 1 handoff passed. See the [board report](STR8N_V2_ALPHA21_2512_INSTALL_2026-09-24.md)
-and the scoped [2.0 RC1 decision](STR8N_V2_RC1_2026-09-24.md). The frozen
+and the scoped 2.0 RC1 decision (retired release decision). The frozen
 source snapshot and artifact hashes were not changed.

@@ -21,6 +21,7 @@ INSTALLER = a24.ROOT / 'BUILD/v2-alpha24-wdcmon-ram/str8n-v2-alpha24-wdcmonv2-in
 MAP = INSTALLER.with_suffix('.map')
 TOP = a24.OUT / f'{a24.STEM}-f000-ffff.bin'
 INSTALLER_SHA256 = '66bd1030c2f48444826f03562886fc4828d4047f36d4ba42d1e5f8e5396cbebe'
+INSTALL_TOKEN = b'INSTALL STR8-N 2.0A24\r'
 
 
 class InstallerMemory(FlashMemory):
@@ -92,7 +93,7 @@ def check_success():
     top = TOP.read_bytes()
     assert len(top) == 4096
     untouched = [bytes(memory.banks[index]) for index in (1, 2)]
-    memory.rx.extend(b'COPY B3 TO B0\r' + top + b'INSTALL STR8-N 2.0A24\r')
+    memory.rx.extend(b'COPY B3 TO B0\r' + top + INSTALL_TOKEN)
     run(cpu, lambda: cpu.pc == symbols['W2I_V2_RESET_WAIT'])
     assert bytes(memory.banks[0]) == stock
     assert bytes(memory.banks[3][:0x7000]) == stock[:0x7000]

@@ -109,4 +109,4 @@ The v1 host format validator can check an image without contacting a board:
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/compose_str8n_install_s19.ps1 -PayloadS19Path BUILD/v2-alpha1/str8n-v2-alpha1-e000-ffff.s19 -PayloadStart 57344 -PayloadEndExclusive 65536 -Bank 0 -S19Path BUILD/v2-alpha1/validated-bank0.s19
 ```
 
-The full [v2 design](STR8N_V2.md) remains the implementation roadmap.
+The full v2 design (retired development document) remains the implementation roadmap.

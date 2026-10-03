@@ -1,5 +1,36 @@
 ASM ?= wdc02as
 LINKER ?= wdcln
+.DEFAULT_GOAL := all
+
+
+.PHONY: v2-quick-start-pdf
+v2-quick-start-pdf:
+	python tools/build_v2_quick_start_pdf.py
+
+.PHONY: v2-config-wdcmon v2-config-wdcmon-check
+v2-config-wdcmon: v2-config
+	python tools/build_v2_config_wdcmon_ram.py
+
+v2-config-wdcmon-check: v2-config-wdcmon
+	python -u tools/test_v2_config_wdcmon.py
+
+.PHONY: bank-maint-v2 bank-maint-v2-check
+bank-maint-v2:
+	python tools/build_bank_maint_v2.py
+
+bank-maint-v2-check: v2-config bank-maint-v2
+	python -u tools/test_bank_maint_v2.py
+
+# Alpha24-derived candidate with a core-owned FFD0-FFDF configuration pocket.
+# Frozen alpha24 remains independently buildable and supplies migration proofs.
+.PHONY: v2-config v2-config-check
+v2-config:
+	python tools/build_v2_config.py
+
+v2-config-check: v2-a24-check v2-config
+	python tools/test_v2_config_candidate.py
+	python tools/test_v2_config_safety.py
+	python tools/test_v2_config_safety.py --legacy
 
 SRC_DIR := src
 BUILD_DIR := BUILD
@@ -174,9 +205,8 @@ size-optimization-check: programmer-bin
 	python tools/test_size_optimization.py
 	python tools/test_worker_optimization.py
 
-release-package: all bank-maint-menu wdcmonv2-package led-worker-test irq-test $(RELEASE_PACKAGE_TOOL) $(RELEASE_PACKAGE_VERIFY)
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RELEASE_PACKAGE_TOOL) -PackageDir "$(RELEASE_PACKAGE_DIR)" -ZipPath "$(RELEASE_PACKAGE_ZIP)"
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RELEASE_PACKAGE_VERIFY) -Root "$(RELEASE_PACKAGE_DIR)"
+release-package:
+	$(error Older release documentation is retired. Use python tools/package_v2_a24c1.py and docs/RELEASE_MANUALS.md.)
 
 resident: $(STR8_S19)
 
@@ -259,7 +289,8 @@ wdcmonv2-host-check: $(WDCMONV2_HOST_LOADER) $(WDCMONV2_ARCHIVE_S19) $(WDCMONV2_
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$(WDCMONV2_ARCHIVE_S19)" -ValidateOnly
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$(WDCMONV2_INSTALL_S19)" -ValidateOnly
 
-wdcmonv2-package: $(WDCMONV2_PACKAGE_ZIP)
+wdcmonv2-package:
+	$(error Older release documentation is retired. Use python tools/package_v2_a24c1.py and docs/RELEASE_MANUALS.md.)
 
 layout-check: $(STR8_S19) $(WORKER_S19) $(LAYOUT_CHECK_TOOL)
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(LAYOUT_CHECK_TOOL)
@@ -470,13 +501,8 @@ $(STR8_IN65_STOCK_RESTORE_S19): $(STR8_IN65_STOCK_RESTORE_OBJ) $(STR8_IN65_STOCK
 $(WDCMONV2_INSTALL_TOP_BIN): $(WDCMONV2_INSTALL_INC)
 	@powershell -NoProfile -ExecutionPolicy Bypass -Command "if (-not (Test-Path -LiteralPath '$@' -PathType Leaf)) { throw 'Missing generated migration candidate: $@' }"
 
-$(WDCMONV2_PACKAGE_ZIP): $(WDCMONV2_ARCHIVE_S19) $(WDCMONV2_INSTALL_S19) $(TOP_BIN) $(STR8_S19) $(STR8_IN65_BANK_MAINT_S19) $(WDCMONV2_INSTALL_INC) $(WDCMONV2_HOST_LOADER) $(WDCMONV2_QUICK_MIGRATE) tools/wdcmonv2/start_wdcmonv2_ram.py tools/wdcmonv2/MIGRATE-WDC-TO-STR8N.py $(WDCMONV2_PACKAGE_TOOL) $(WDCMONV2_PACKAGE_CHECK) $(WDCMONV2_PACKAGE_VERIFY) $(WDCMONV2_ARCHIVE_SRC) $(WDCMONV2_INSTALL_SRC) $(WDCMONV2_ARCHIVE_EXTRACT) docs/STR8_IN65_QUICKSTART.txt docs/WDCMONV2_MIGRATION.md docs/WDCMONV2_MIGRATION_BOARD_TEST.md docs/WDCMONV2_MIGRATION_PROVENANCE.md docs/STR8_IN65_BANK_MAINTENANCE.md docs/HIMON_ASMF2_AFTER_STR8N.md LICENSE | dirs
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -SelfTest
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$(WDCMONV2_ARCHIVE_S19)" -ValidateOnly
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_HOST_LOADER) -ImagePath "$(WDCMONV2_INSTALL_S19)" -ValidateOnly
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_PACKAGE_TOOL) -ArchiveS19Path "$(WDCMONV2_ARCHIVE_S19)" -InstallS19Path "$(WDCMONV2_INSTALL_S19)" -CandidateBinPath "$(TOP_BIN)" -CanonicalS19Path "$(STR8_S19)" -BankMaintS19Path "$(STR8_IN65_BANK_MAINT_S19)" -InstallIncludePath "$(WDCMONV2_INSTALL_INC)" -KitDirectory "$(WDCMONV2_PACKAGE_DIR)" -ZipPath "$@"
-	@powershell -NoProfile -ExecutionPolicy Bypass -File $(WDCMONV2_PACKAGE_CHECK) -KitDirectory "$(WDCMONV2_PACKAGE_DIR)" -ZipPath "$@" -ArchiveS19Path "$(WDCMONV2_ARCHIVE_S19)" -InstallS19Path "$(WDCMONV2_INSTALL_S19)" -TopBinPath "$(TOP_BIN)" -CandidateBinPath "$(TOP_BIN)" -CanonicalS19Path "$(STR8_S19)" -BankMaintS19Path "$(STR8_IN65_BANK_MAINT_S19)"
-	@powershell -NoProfile -ExecutionPolicy Bypass -File "$(WDCMONV2_PACKAGE_DIR)/VERIFY-PACKAGE.ps1"
+$(WDCMONV2_PACKAGE_ZIP):
+	$(error Older release documentation is retired. Use python tools/package_v2_a24c1.py and docs/RELEASE_MANUALS.md.)
 
 $(RYORS_FULL_BANK_S19): $(RYORS_28K_S19) $(TOP_BIN) $(RYORS_FULL_BANK_TOOL) | dirs
 	@powershell -NoProfile -ExecutionPolicy Bypass -File $(RYORS_FULL_BANK_TOOL) -PayloadS19Path "$(RYORS_28K_S19)" -TopBinPath "$(TOP_BIN)" -S19Path "$@"
@@ -584,8 +610,5 @@ v2-a24-migration-kit:
 	python tools/test_v2_a24_bank_maint.py
 	python tools/wdcmonv2/probe_wdcmonv2_binary.py --self-test
 
-v2-a24-package: v2-a24-check v2-a24-migration-kit
-	python tools/build_v2_a24_e_template.py
-	python tools/test_v2_a24_e_package.py
-	python tools/build_v2_a24_816_checklist_pdf.py
-	python tools/package_v2_a24.py
+v2-a24-package:
+	$(error Older release documentation is retired. Use python tools/package_v2_a24c1.py and docs/RELEASE_MANUALS.md.)
