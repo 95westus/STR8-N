@@ -102,7 +102,7 @@ $F000-$FFFF  STR8-N, verified external 4096-byte BIN
 ```
 
 R-YORS code binds only to interfaces listed in the
-[Technical Guide](TECHNICAL_GUIDE.md#resident-callable-abi). Its Banked-AP helper
+Technical Guide (retired guide). Its Banked-AP helper
 runs at `$0300` after the STR8-N selector prefix at `$0200-$0226`; it shares
 the larger `$0200-$0437` worker tray rather than coexisting with the complete
 mutation worker. The R-YORS build must reject overlap with the selector prefix

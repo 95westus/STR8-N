@@ -33,7 +33,7 @@ board 2609 later executed it and passed. A successful host run writes
   next alpha. Retain
   its [board record](STR8N_V2_2609_INVENTORY_2026-09-30.md)
   and [E report](STR8N_V2_A24_816_E_INSTALL_2026-09-30.md).
-- The [a24 WDCMONv2 installer and bank maintenance kit](STR8N_V2_A24_WDCMON_MIGRATION_KIT.md)
+- The a24 WDCMONv2 installer and bank maintenance kit (retired guide)
   passes offline build and host checks. Board 2609 returned WDCMONv2 `SXB6`
   through the binary interface. Its Bank 3 stock image was preserved exactly
   in Bank 0, and alpha24 B3:F was installed and read back byte-for-byte.

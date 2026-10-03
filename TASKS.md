@@ -33,7 +33,7 @@ Defects and hardware investigations are indexed in the
   early incomplete reply, and requires physical board-type confirmation before
   RAM loading. WDC identity suffixes
   vary across boards or revisions, so record each exact tag and physical model.
-  The [alpha24 WDCMONv2 migration kit](docs/STR8N_V2_A24_WDCMON_MIGRATION_KIT.md)
+  The alpha24 WDCMONv2 migration kit (retired guide)
   now builds and passes offline checks. On board 2609, the 816-entry RAM installer
   verified byte-exact, identified flash `BF/B5`, and copied original B3 to an
   erased B0 with whole-bank exact verification. In a separate run, it installed
@@ -80,7 +80,7 @@ Defects and hardware investigations are indexed in the
 ## Deferred v2 hardware issue
 
 - [x] Package the unchanged alpha21 image as a scoped
-  [STR8-N 2.0 RC1](docs/STR8N_V2_RC1_2026-09-24.md), with exact artifact and
+  STR8-N 2.0 RC1 (retired release decision), with exact artifact and
   board top-sector hash verification. The remaining hardware qualifications
   are disclosed in the RC decision.
 
@@ -285,7 +285,7 @@ working stock-monitor recovery guest.
   contract even when the chosen policy makes their targets minimal.
 - [ ] Build a dense, validated Bank-1 S19 whose selected range, S9, RESET
   vector, padding, checksums, and manifest hash satisfy
-  [BANK_0_2_GUEST_S19.md](docs/BANK_0_2_GUEST_S19.md).
+  BANK_0_2_GUEST_S19.md (retired guide).
 - [ ] Install it with `I`, commit its Bank-1 directory row, and prove both `J1`
   and the reset selector reach it.
 - [ ] Press physical RESET and prove recovery to Bank 3, then re-prove `J0`

@@ -25,6 +25,13 @@ class FlashMemory(Memory):
         self.resident = bank
 
     def __getitem__(self, address):
+        if (self.cpu and getattr(firmware, 'CONFIG_IN_F', False)
+                and self.cpu.pc == W['V2W_NORMAL_RESULT']
+                and self.ram[SYM['V2_SELF']] == 2
+                and self.ram[SYM['V2_FLASH_ERROR']] == 0):
+            assert not self.busy
+            assert self.banks[self.resident][0x7000:] == self.ram[0x6900:0x7900]
+            self.self_changed = False
         if self.cpu and (self.busy or self.self_changed):
             assert self.cpu.pc < 0x8000, f'ROM execution during/after mutation: {self.cpu.pc:04X}'
         if isinstance(address, int) and address >= 0x8000 and self.busy:
@@ -193,7 +200,7 @@ def check_install():
         output = send(cpu, b'I E000 EFFF\rY\r' + records(0xE000, payload) + finish(0xE000))
         assert b'Done' in output, output[-200:]
         assert mem.banks[bank][0x6000:0x6FF0] == payload[:-16]
-        assert mem.banks[bank][0x6FF0:0x7000] == (config if bank == 0 else payload[-16:])
+        assert mem.banks[bank][0x6FF0:0x7000] == (config if bank == 0 and not getattr(firmware, 'CONFIG_IN_F', False) else payload[-16:])
     # Guest top and FFFF are legal; own/recovery top are covered separately.
     cpu, mem = boot_flash()
     command(cpu, b'B2\r')
@@ -308,14 +315,14 @@ def check_failures_and_self():
             mem.rx.extend(f'F {SYM["START"]:04X} {value:02X}\rY\rB{resident}\r'.encode())
             run(cpu, lambda: cpu.pc == W['V2W_RESET_WAIT'], limit=2000000)
             assert b'Self edit' in mem.tx and b'May not boot/function' in mem.tx
-            assert b'OK; press Y to soft reset' in mem.tx
+            assert (b'OK; Y retry/reset' if getattr(firmware, 'CONFIG_IN_F', False) else b'OK; press Y to soft reset') in mem.tx
             assert mem.banks[resident][SYM['START']-0x8000] == value
             assert mem.bank == resident and cpu.pc < 0x8000
     cpu, mem = boot_flash()
     mem.fault = 'timeout'
     mem.rx.extend(f'F {SYM["START"]:04X} 00\rY\rB0\r'.encode())
     run(cpu, lambda: cpu.pc == W['V2W_RESET_WAIT'], limit=3000000)
-    assert b'Flash fail; press Y to soft reset' in mem.tx
+    assert (b'Flash fail; Y retry/reset' if getattr(firmware, 'CONFIG_IN_F', False) else b'Flash fail; press Y to soft reset') in mem.tx
     # A harmless no-op self edit proves the RAM-only prompt can initiate a
     # CPU-level reset and return through the newly written fixed F000 entry.
     cpu, mem = boot_flash(1)

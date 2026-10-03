@@ -474,7 +474,7 @@ Migration ends after Phase D and the persistent D0/`J0` proof below. No
 R-YORS payload is an input, acceptance gate, or packaged artifact.
 
 HIMON and ASM-F2 may be added afterward as separate Bank-3 component loads.
-Use [HIMON_ASMF2_AFTER_STR8N.md](HIMON_ASMF2_AFTER_STR8N.md); do not merge that
+Use HIMON_ASMF2_AFTER_STR8N.md (retired guide); do not merge that
 optional procedure into this migration transcript.
 
 ## 2026-08-28 Phase G: enroll retained B0 and prove J0 persistence

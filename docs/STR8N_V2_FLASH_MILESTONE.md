@@ -78,7 +78,7 @@ or interrupted installation may leave a RESET vector that still passes `J`'s
 address checks even though the payload is incomplete or damaged. Verify the
 intended image by readback or reinstall successfully before booting, then
 confirm application behavior on the target board. See the
-[v2 validation limits](STR8N_V2.md#validation-limits-and-operator-responsibility).
+v2 validation limits (retired development document).
 
 ## Cancellation and failures
 

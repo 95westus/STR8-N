@@ -7,11 +7,13 @@ param(
     [string]$VersionText = '1.35',
     [switch]$V2Signature,
     [switch]$W65C816Entry,
-    [switch]$Unified02And816Entry
+    [switch]$Unified02And816Entry,
+    [switch]$SelectableBackup
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+Import-Module Microsoft.PowerShell.Utility
 
 foreach ($path in @($SourcePath, $S19Path, $MapPath, $TopBinPath, $CandidateBinPath)) {
     if (-not (Test-Path -LiteralPath $path)) { throw "Missing installer component: $path" }
@@ -38,6 +40,14 @@ foreach ($required in @(
 if (-not $source.Contains('NO RESET/NMI/POWER DURING ACTIVE WRITE; LED=$F0')) {
     throw 'Installer must tell the operator that solid LED $F0 marks active flash mutation'
 }
+if ($SelectableBackup) {
+    foreach ($gate in @('W2I_CHOOSE_BACKUP:', 'W2I_BACKUP_ERASED:',
+        'W2I_NO_BACKUP', 'W2I_BACK_FIRST', 'W2I_BACK_END',
+        'NO BACKUP CONFIRMED TWICE', 'INSTALL WITHOUT BACKUP',
+        'W2I_SOURCE_UNCHANGED:', 'BACKUP RANGE USED AND DIFFERENT')) {
+        if (-not $source.Contains($gate)) { throw "Missing selectable backup gate: $gate" }
+    }
+}
 if ($V2Signature -and -not $source.Contains(('W2I_TOKEN_INSTALL:      DB              "INSTALL STR8-N {0}",0' -f $VersionText.ToUpperInvariant()))) {
     throw 'RC install token must match the uppercase input produced by W2I_READ_LINE'
 }
@@ -63,6 +73,11 @@ if ($source.Contains('W2I_BANK1') -or $source.Contains('W2I_BANK2')) {
 $b0PolicyGate = $source.IndexOf('W2I_B0_NOT_EQUAL:')
 $copyGate = $source.IndexOf('W2I_COPY_CONFIRMED:')
 $b0Gate = $source.IndexOf('W2I_B0_PROVEN:')
+if ($SelectableBackup) {
+    $b0PolicyGate = $source.IndexOf('W2I_CHOOSE_BACKUP:')
+    $copyGate = $source.IndexOf('W2I_BACKUP_EMPTY:')
+    $b0Gate = $source.IndexOf('W2I_BACKUP_READY:')
+}
 $receiveGate = $source.IndexOf('JSR             W2I_RECEIVE_CANDIDATE', $b0Gate)
 $installGate = $source.IndexOf('W2I_INSTALL_CONFIRMED:')
 if ($b0PolicyGate -lt 0 -or $copyGate -le $b0PolicyGate -or
@@ -160,4 +175,8 @@ if (-not $V2Signature) {
 
 Write-Host ('WDCMONV2 LOADER S19  = PASS; range=${0:X4}-${1:X4}; S9=$2000; no embedded top' -f $minAddress, $maxAddress)
 Write-Host ('EXTERNAL STR8-N BIN  = PASS; exact canonical 4096-byte top; SHA256={0}' -f (Get-FileHash -Algorithm SHA256 -LiteralPath $CandidateBinPath).Hash)
-Write-Host 'GATE ORDER           = B0 POLICY -> COPY -> B0 EXACT -> RECEIVE BIN -> INSTALL; B1/B2 untouched'
+if ($SelectableBackup) {
+    Write-Host 'GATE ORDER           = SELECT BACKUP -> RANGE EXACT OR DOUBLE NONE -> RECEIVE BIN -> SOURCE CHECK -> INSTALL'
+} else {
+    Write-Host 'GATE ORDER           = B0 POLICY -> COPY -> B0 EXACT -> RECEIVE BIN -> INSTALL; B1/B2 untouched'
+}

@@ -1,5 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+*.sh text eol=lf
 
 # Firmware/programmer images must remain byte-for-byte exact.
 *.bin binary

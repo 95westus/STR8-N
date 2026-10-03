@@ -1,9 +1,12 @@
-# BUILD is disposable compiler output. Current release firmware and source
-# snapshots are published to the adjacent R-YORS/RELEASE directory.
+# BUILD is disposable compiler output. The current release ZIP is tracked
+# under output/release; qualification evidence remains owner-local.
 BUILD/**
 __pycache__/
 
 # Generated books are archived in a separate local Git repository, without a remote.
 /local-books/
-/output/
+/output/*
+!/output/release/
+/output/release/*
+!/output/release/str8n-v2-a24c1-board-test.zip
 /tmp/

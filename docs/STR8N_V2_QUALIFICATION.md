@@ -11,7 +11,7 @@ alpha20 is installed and tested separately.
 
 ## Current release scope decision
 
-The [2.0 RC1 decision](STR8N_V2_RC1_2026-09-24.md) accepts the frozen alpha21
+The 2.0 RC1 decision (retired release decision) accepts the frozen alpha21
 image for a scoped W65C02SXB/FT245 release candidate. This matrix preserves
 the earlier alpha19 evidence and does not relabel it as alpha21 board testing.
 
@@ -120,4 +120,4 @@ pending, or narrow the eventual release claim with a documented disposition.
 
 Whole-image boot validation, installation atomicity, and automatic rollback are
 not implemented; qualification must preserve the documented
-[validation limits](STR8N_V2.md#validation-limits-and-operator-responsibility).
+validation limits (retired development document).

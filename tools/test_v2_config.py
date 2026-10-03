@@ -7,6 +7,8 @@ from test_v2_boot import IMAGE, OUT, SYM, Memory, MPU, command, hold, run, waiti
 from test_v2_flash import boot_flash, send, records, finish
 
 CASES = []
+CONFIG_START = getattr(firmware, 'CONFIG_ADDRESS', 0xEFF0) - 0x8000
+CONFIG_END = CONFIG_START + 16
 
 
 def config(enable=1, bank=1, address=0x9000, delay=10, mode=0, **changes):
@@ -23,7 +25,7 @@ def config(enable=1, bank=1, address=0x9000, delay=10, mode=0, **changes):
 
 def startup(data, bank=0, keys=b''):
     mem = Memory(bank)
-    mem.banks[bank][0x6FF0:0x7000] = data
+    mem.banks[bank][CONFIG_START:CONFIG_END] = data
     mem.rx.extend(keys)
     cpu = MPU(memory=mem, pc=SYM['START'])
     return cpu, mem
@@ -39,28 +41,28 @@ def check_config_command():
         output = send(cpu, b'C 1 2 9000 0A\rY\r')
         assert b'C 01 02 9000 0A' in output and b'Done' in output, output
         assert f'B{resident}\r\n'.encode() in output
-        assert mem.banks[resident][0x6FF0:0x7000] == config(bank=2)
-        assert mem.banks[resident][:0x6FF0] == before[resident][:0x6FF0]
-        assert mem.banks[resident][0x7000:] == before[resident][0x7000:]
+        assert mem.banks[resident][CONFIG_START:CONFIG_END] == config(bank=2)
+        assert mem.banks[resident][:CONFIG_START] == before[resident][:CONFIG_START]
+        assert mem.banks[resident][CONFIG_END:] == before[resident][CONFIG_END:]
         assert all(mem.banks[b] == before[b] for b in range(4) if b != resident)
         assert mem.bank == resident and mem.ram[SYM['V2_SELECTED']] == selected
         assert b'C 01 02 9000 0A' in command(cpu, b'C\r')
         # Replace a programmed config, requiring erase; preserve all neighbors.
         output = send(cpu, b'C 0 3 F000 FF\rY\r')
         assert b'Erase+write' in output
-        assert mem.banks[resident][0x6FF0:0x7000] == config(0, 3, 0xF000, 255)
-        assert mem.banks[resident][:0x6FF0] == before[resident][:0x6FF0]
-        assert mem.banks[resident][0x7000:] == before[resident][0x7000:]
+        assert mem.banks[resident][CONFIG_START:CONFIG_END] == config(0, 3, 0xF000, 255)
+        assert mem.banks[resident][:CONFIG_START] == before[resident][:CONFIG_START]
+        assert mem.banks[resident][CONFIG_END:] == before[resident][CONFIG_END:]
         events = len(mem.events)
         # Zero-padded enable/bank fields remain accepted for compatibility.
         send(cpu, b'C 00 03 F000 FF\rY\r')
         assert len(mem.events) == events
         output = send(cpu, b'C 1 2 V 0A\rY\r')
         assert b'C 01 02 V 0A' in output and b'Done' in output, output
-        assert mem.banks[resident][0x6FF0:0x7000] == config(bank=2, address=0, mode=1)
+        assert mem.banks[resident][CONFIG_START:CONFIG_END] == config(bank=2, address=0, mode=1)
         assert b'C 01 02 V 0A' in command(cpu, b'C\r')
         output = send(cpu, b'C 1 2 9000 0A\rY\r')
-        assert b'Done' in output and mem.banks[resident][0x6FF0:0x7000] == config(bank=2)
+        assert b'Done' in output and mem.banks[resident][CONFIG_START:CONFIG_END] == config(bank=2)
     CASES.append('C show/set in all resident banks, exact integrity bytes, neighbor preservation, selected bank restored, no-op writes skipped')
 
 
@@ -81,9 +83,11 @@ def check_rejection_and_failure():
         output = send(cpu, line)
         assert expected in output, (line, output)
         assert not mem.events and mem.ram[SYM['V2_SELECTED']] == 2 and mem.bank == 0
-    mem.fault = 'timeout'
-    assert b'Flash timeout' in send(cpu, b'C 1 0 9000 0A\rY\r')
-    assert mem.bank == 0 and mem.ram[SYM['V2_SELECTED']] == 2
+    if not getattr(firmware, 'CONFIG_IN_F', False):
+        mem.fault = 'timeout'
+        assert b'Flash timeout' in send(cpu, b'C 1 0 9000 0A\rY\r')
+        assert mem.bank == 0 and mem.ram[SYM['V2_SELECTED']] == 2
+    # F-sector failure and retry are exercised by test_v2_config_safety.
     cpu, mem = boot_flash()
     command(cpu, b'B2\r')
     mem.rx.extend(b'C 1 1 9000 0A\rY\r')
@@ -91,7 +95,7 @@ def check_rejection_and_failure():
     run(cpu, lambda: cpu.pc == W['V2W_PROGRAM'], limit=300000)
     mem.rx.extend(b'\x03')
     run(cpu, lambda: waiting(cpu), limit=1000000)
-    assert b'Canceled' in mem.tx and mem.banks[0][0x6FF0:0x7000] == config()
+    assert b'Canceled' in mem.tx and mem.banks[0][CONFIG_START:CONFIG_END] == config()
     assert mem.ram[SYM['V2_SELECTED']] == 2
     CASES.append('C syntax/range/confirmation rejection, flash failure, atomic cancellation, bank restoration on every exit')
 
@@ -242,7 +246,7 @@ def check_command_transitions():
     output = send(cpu, b'I 9000 9FFF\rY\r' + records(0x9000, payload) + finish(0x9000))
     assert b'Done' in output and mem.banks[1][0x1000:0x2000] == payload
     assert b'Done' in send(cpu, b'C 1 2 9000 0A\rY\r')
-    assert mem.banks[0][0x6FF0:0x7000] == config(bank=2)
+    assert mem.banks[0][CONFIG_START:CONFIG_END] == config(bank=2)
     assert b'9000: 00 01 02 03' in command(cpu, b'D 9000 9003\r')
     assert b'Done' in send(cpu, b'F 9000 FF\rY\r')
     assert mem.banks[1][0x1000:0x2000] == b'\xff' + payload[1:]

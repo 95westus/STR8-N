@@ -64,7 +64,7 @@ def check_no_usb_autostart():
         second = (second + first) & 255
     record[14:] = bytes((first, second))
     mem = boot.Memory(3, ft245_present=False)
-    mem.banks[3][0x6FF0:0x7000] = record
+    mem.banks[3][getattr(a23, 'CONFIG_ADDRESS', 0xEFF0)-0x8000:getattr(a23, 'CONFIG_ADDRESS', 0xEFF0)-0x8000+16] = record
     mem.banks[1][0x7FFC:0x7FFE] = b'\x00\x90'
     cpu = boot.MPU(memory=mem, pc=boot.SYM['START'])
     mem.cpu = cpu
@@ -80,7 +80,7 @@ def check_no_usb_autostart():
     assert 8_000_000 <= window_cycles <= 8_900_000, window_cycles
     assert mem.bank == 1
     ready = boot.Memory(3, ft245_present=True)
-    ready.banks[3][0x6FF0:0x7000] = record
+    ready.banks[3][getattr(a23, 'CONFIG_ADDRESS', 0xEFF0)-0x8000:getattr(a23, 'CONFIG_ADDRESS', 0xEFF0)-0x8000+16] = record
     cpu = boot.MPU(memory=ready, pc=boot.SYM['START'])
     ready.cpu = cpu
     boot.run(cpu, lambda: cpu.pc == boot.SYM['V2_AUTO_TICK'])
@@ -92,7 +92,7 @@ def check_no_usb_autostart():
     boot.hold(cpu)
     assert b'Canceled' in ready.tx and b'B3> ' in ready.tx
     late = boot.Memory(3, ft245_present=False)
-    late.banks[3][0x6FF0:0x7000] = record
+    late.banks[3][getattr(a23, 'CONFIG_ADDRESS', 0xEFF0)-0x8000:getattr(a23, 'CONFIG_ADDRESS', 0xEFF0)-0x8000+16] = record
     late.banks[1][0x7FFC:0x7FFE] = b'\x00\x90'
     cpu = boot.MPU(memory=late, pc=boot.SYM['START'])
     late.cpu = cpu
@@ -106,7 +106,7 @@ def check_no_usb_autostart():
     assert not ({0x7F80, 0x7F81, 0x7F82, 0x7F83} & set(late.writes))
     blocked = boot.Memory(3, ft245_present=True)
     blocked.tx_blocked = True
-    blocked.banks[3][0x6FF0:0x7000] = record
+    blocked.banks[3][getattr(a23, 'CONFIG_ADDRESS', 0xEFF0)-0x8000:getattr(a23, 'CONFIG_ADDRESS', 0xEFF0)-0x8000+16] = record
     blocked.banks[1][0x7FFC:0x7FFE] = b'\x00\x90'
     cpu = boot.MPU(memory=blocked, pc=boot.SYM['START'])
     blocked.cpu = cpu
