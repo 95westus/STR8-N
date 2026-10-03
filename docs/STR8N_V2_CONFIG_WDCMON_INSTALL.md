@@ -1,5 +1,12 @@
 # Unified WDCMONv2 to STR8-N 2.0a24c1 installer
 
+**WARNING - power failure during flashing can be dangerous.** Loss of power
+during flash erase/programming or installation can corrupt firmware or boot
+vectors and leave the board unbootable. Recovery may require an external
+flash programmer. STR8-N does not guarantee power-loss recovery or automatic
+rollback. Keep power stable and retain a recovery backup. Do not disconnect
+USB/power or press RESET/NMI until verified completion.
+
 Build with `make v2-config-wdcmon`; check the linked installer with
 `make v2-config-wdcmon-check`. Output is under
 `BUILD/v2-a24c1-wdcmon-ram`:
@@ -69,6 +76,14 @@ checksums, bridge S19 validation, and C02 model execution. The C02 checks
 include selected-bank/range copying, preservation of neighboring sectors,
 identical-range reuse, refusal of occupied ranges, both no-backup
 confirmations, unified-entry migration, image/source guards, backup failure,
-and refusal to restore F without an F backup. Physical C02 and 816 qualification of
-this a24c1 installer remains pending; alpha24's board results are prior
+and refusal to restore F without an F backup. Stock migration through the
+packaged launcher is owner-confirmed on C02 board 2205 and 816 board 2609;
+physical RESET and exact installed-core readbacks passed on 2026-10-03.
+See the [acceptance record](STR8N_V2_A24C1_TWO_BOARD_ACCEPTANCE_2026-10-03.md)
+for the distinction between reported migration and captured reset/readback
+evidence. The [backup/recovery record](STR8N_V2_A24C1_BACKUP_RECOVERY_ACCEPTANCE_2026-10-03.md)
+adds passing linked fault-model checks and controlled RAM-fixture execution
+of backup/guard and R/O recovery routines on both boards, with exact final
+bank restoration. Actual physical flash-failure entry/recovery and
+interruption recovery remain unqualified. Alpha24's board results are prior
 evidence for the shared engine.

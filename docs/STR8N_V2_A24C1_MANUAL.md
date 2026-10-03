@@ -1,6 +1,6 @@
 # STR8-N 2.0a24c1 operator and technical manual
 
-This manual covers the current a24c1 candidate on W65C02SXB and W65C816SXB.
+This manual covers the a24c1 firmware distributed as beta 1 on W65C02SXB and W65C816SXB.
 The 816 monitor and applications using its services run in emulation mode.
 Start with the [quick start](STR8N_V2_A24C1_QUICK_START.md) and use the
 [detailed technical guide](STR8N_V2_A24C1_TECHNICAL_GUIDE.md) for Mermaid
@@ -9,8 +9,18 @@ diagrams, interfaces and board acceptance checks. See the
 
 ## Versions and prerequisites
 
+**WARNING - power failure during flashing can be dangerous.** Loss of power
+during flash erase/programming, installation or a configuration save can
+corrupt firmware or boot vectors and leave the board unbootable. Recovery
+may require an external flash programmer. STR8-N does not guarantee
+power-loss recovery or automatic rollback. Keep power stable, retain a
+recovery backup, and do not disconnect USB/power or press RESET/NMI until
+the operation reports verified completion.
+
 The firmware identifies itself as `2.0a24c1`; filenames use `a24c1`.
-Bank maintenance has its own version, `1.0`. Neither name means beta 1.
+Bank maintenance has its own version, `1.0`. Release `v2.0b1` promotes these
+exact tested artifacts; their internal version names are unchanged. See the
+[beta notes](STR8N_V2_BETA1_RELEASE_NOTES.md).
 The a24c2 RAM layout is a proposal and is not implemented in this image.
 Alpha24 and a22 manuals describe older firmware. a24c1 stores configuration
 in resident F at `$FFD0-$FFDF`.
@@ -134,11 +144,13 @@ disabled and decimal clear; on 816 use E=1, DBR=0 and PBR=0. Services are
 not native-mode or reentrant. The public include supplies exact symbols.
 
 Host installer tests pass for backup ranges, refusal, no-backup confirmation,
-full migration and recovery. Recorded C02 core installation/readback and
-software handoffs passed. The user reports the colored launcher works well;
-this does not establish completed installation or reset acceptance on both
-boards. Physical reset, cold startup, configuration and 816 qualification
-remain governed by the technical guide acceptance checks.
+full migration and recovery. The
+[two-board record](STR8N_V2_A24C1_TWO_BOARD_ACCEPTANCE_2026-10-03.md) establishes
+owner-confirmed stock migration and captured physical RESET/core readbacks.
+The [cold-start/configuration record](STR8N_V2_A24C1_COLD_CONFIG_ACCEPTANCE_2026-10-03.md)
+records cold startup, configuration persistence, fixed-address autostart and
+S hold on both CPU families. Broader qualification remains governed by the
+technical guide acceptance checks.
 
 ## Source references
 

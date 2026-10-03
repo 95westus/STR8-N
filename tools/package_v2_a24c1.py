@@ -1,5 +1,6 @@
 """Assemble the agreed minimal a24c1 board-test ZIP; no serial access."""
 import hashlib
+import argparse
 import json
 from pathlib import Path, PurePosixPath
 import re
@@ -67,6 +68,21 @@ def package_markdown(text):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--beta1', action='store_true', help='Package beta 1 with the exact qualified a24c1 firmware')
+    args = parser.parse_args()
+    output_path = OUTPUT
+    title = 'STR8-N a24c1'
+    if args.beta1:
+        output_path = ROOT / 'output/release/str8n-v2-b1.zip'
+        title = 'STR8-N beta 1 (a24c1 firmware)'
+        FILES.update({
+            'docs/BETA1-RELEASE-NOTES.md': 'docs/STR8N_V2_BETA1_RELEASE_NOTES.md',
+            'docs/MIGRATION-RESET-ACCEPTANCE.md': 'docs/STR8N_V2_A24C1_TWO_BOARD_ACCEPTANCE_2026-10-03.md',
+            'docs/COLD-CONFIG-ACCEPTANCE.md': 'docs/STR8N_V2_A24C1_COLD_CONFIG_ACCEPTANCE_2026-10-03.md',
+            'docs/REGRESSION-ACCEPTANCE.md': 'docs/STR8N_V2_A24C1_REGRESSION_ACCEPTANCE_2026-10-03.md',
+            'docs/BACKUP-RECOVERY-ACCEPTANCE.md': 'docs/STR8N_V2_A24C1_BACKUP_RECOVERY_ACCEPTANCE_2026-10-03.md',
+        })
     # Refresh print copies before collecting the allowlist.
     for script in ('build_v2_quick_start_pdf.py', 'build_v2_a24c1_manuals_pdf.py'):
         subprocess.run([sys.executable, str(ROOT / 'tools' / script)], check=True)
@@ -98,7 +114,7 @@ def main():
         document = SimpleDocTemplate(str(output), pagesize=A4,
                                      leftMargin=42, rightMargin=42,
                                      topMargin=32, bottomMargin=46,
-                                     title=f'STR8-N a24c1 {subtitle}', author='STR8-N')
+                                     title=f'{title} {subtitle}', author='STR8-N')
         document.build(story, onFirstPage=renderer.typography.footer,
                        onLaterPages=renderer.typography.footer)
         payload[f'docs/{stem}.pdf'] = output.read_bytes()
@@ -127,12 +143,12 @@ def main():
                     parts.append(part)
             if '/'.join(parts) not in payload:
                 raise ValueError(f'Broken packaged link: {name} -> {target}')
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     # Atomic replacement prevents an incomplete archive being mistaken for a kit.
-    temporary = OUTPUT.with_suffix('.zip.tmp')
+    temporary = output_path.with_suffix('.zip.tmp')
     with zipfile.ZipFile(temporary, 'w', zipfile.ZIP_DEFLATED) as archive:
         for name, data in payload.items():
-            info = zipfile.ZipInfo(name, (2026, 10, 2, 12, 0, 0))
+            info = zipfile.ZipInfo(name, (2026, 10, 3, 12, 0, 0))
             info.create_system = 3
             mode = 0o755 if name == 'INSTALL-A24C1.sh' else 0o644
             info.external_attr = (0o100000 | mode) << 16
@@ -144,9 +160,12 @@ def main():
         for name, data in payload.items():
             if archive.read(name) != data:
                 raise ValueError(f'Archive readback differs: {name}')
-    temporary.replace(OUTPUT)
+    temporary.replace(output_path)
     print(f'PASS: {len(payload)} allowlisted files; image hashes, document links and ZIP readback')
-    print(f'{OUTPUT}\nSHA256 {sha(OUTPUT.read_bytes())}')
+    digest = sha(output_path.read_bytes())
+    if args.beta1:
+        output_path.with_suffix('.sha256').write_text(f'{digest}  {output_path.name}\n', encoding='ascii')
+    print(f'{output_path}\nSHA256 {digest}')
 
 
 if __name__ == '__main__':

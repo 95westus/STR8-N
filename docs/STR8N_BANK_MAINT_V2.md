@@ -65,6 +65,13 @@ is replaced. `E 1 A-C` erases B1 sectors A–C after confirmation.
 
 ## Write behavior
 
+**WARNING - power failure during flashing can be dangerous.** Loss of power
+during flash erase, copy or buffer write can corrupt the destination. If it
+contains firmware or boot vectors, the board may become unbootable and need
+an external flash programmer for recovery. Power-loss recovery and automatic
+rollback are not guaranteed. Keep power stable and retain a recovery backup.
+Do not disconnect USB/power or press RESET/NMI until verified completion.
+
 Every erase, copy, and buffer write displays the operation and normalized
 destination range and requires `Y` followed by Enter. Any operation touching
 **B3:F** additionally requires `B3F` followed by Enter. Both confirmations
@@ -114,8 +121,12 @@ its commands. Lines are limited to 79 characters; overflow is rejected.
 ## Validation and next features
 
 The executable is tested in the repository's 65C02 CPU, banked flash, and
-console model. This utility has not yet been qualified on physical hardware;
-the existing monitor's board proofs do not qualify new maintenance commands.
+console model. Bank Maintenance 1.0 also passed scoped physical-board
+editor, CRC, four-direction copy, staging, erase and protection checks on
+C02 board 2205 and 816 board 2609; see the
+[2026-10-03 regression record](STR8N_V2_A24C1_REGRESSION_ACCEPTANCE_2026-10-03.md).
+Full before/after bank readbacks verified scratch cleanup and preservation.
+Fault recovery and the broader stress matrix remain outside that record.
 The build manifest and test results identify the exact S19 hash tested.
 
 Useful next additions, in priority order:

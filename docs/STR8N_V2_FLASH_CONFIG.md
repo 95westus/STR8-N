@@ -2,8 +2,13 @@
 
 Version: **2.0a24c1**. Based on alpha24 at `56dd3f7`. The COM3 W65C02
 installation, exact readback and software handoffs passed; see the
-[board report](STR8N_V2_CONFIG_COM3_INSTALL_2026-10-01.md). Physical reset,
-cold power and W65C816 qualification remain pending.
+[board report](STR8N_V2_CONFIG_COM3_INSTALL_2026-10-01.md). Physical RESET
+and exact core readbacks subsequently passed on both C02 and 816; see the
+[2026-10-03 acceptance record](STR8N_V2_A24C1_TWO_BOARD_ACCEPTANCE_2026-10-03.md).
+Cold power, configuration save/persistence, fixed-address autostart and S
+hold subsequently passed on both boards; see the
+[cold-start/configuration record](STR8N_V2_A24C1_COLD_CONFIG_ACCEPTANCE_2026-10-03.md).
+Broader configuration/failure and 816 qualification remain pending.
 
 Historical `src/v2a24` sources remain unchanged. The retired a24 release
 and tag have been removed; source history is retained.
@@ -12,6 +17,13 @@ For operation and addresses, use the [a24c1 manual](STR8N_V2_A24C1_MANUAL.md)
 and [maps](STR8N_V2_A24C1_MAPS.md). a24c2 remains a separate RAM-layout proposal.
 
 ## Layout and behavior
+
+**WARNING - power failure during flashing can be dangerous.** A configuration
+save can erase/rewrite the sector containing firmware and boot vectors.
+Losing power during that write can corrupt them and leave the board unbootable;
+recovery may require an external flash programmer. Power-loss recovery and
+automatic rollback are not guaranteed. Keep power stable and retain a recovery
+backup. Do not disconnect USB/power or press RESET/NMI until verified completion.
 
 The single 16-byte configuration record resides at **`$FFD0-$FFDF`**. Its format, two accumulated checksums,
 `C` syntax, reset-only autostart and hold behavior remain unchanged.

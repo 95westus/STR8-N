@@ -1,13 +1,15 @@
-# STR8-N v2.0a24c1
+# STR8-N 2.0 beta 1
 
 STR8-N is a standalone reset monitor and flash loader for the **WDC
 W65C02SXB and W65C816SXB** boards. It provides a small foundation for
 loading programs, inspecting memory, maintaining flash, and starting other
 firmware. On the W65C816SXB, the monitor runs in emulation mode.
 
-**Current branch: `v2.0a24c1`.** The matching
-[release](https://github.com/95westus/STR8-N/releases/tag/v2.0a24c1) is an
-a24c1 board-test prerelease.
+**Current release: [v2.0b1](https://github.com/95westus/STR8-N/releases/tag/v2.0b1).**
+Beta 1 promotes the exact tested `2.0a24c1` firmware. Its banner, filenames,
+launchers and installation confirmation retain a24c1; Bank Maintenance
+remains 1.0. See the [beta notes](docs/STR8N_V2_BETA1_RELEASE_NOTES.md)
+for qualification scope and remaining limits.
 
 ## What it does
 
@@ -32,8 +34,16 @@ See the [maintenance guide](docs/STR8N_BANK_MAINT_V2.md) for commands and limits
 
 ## Download and start
 
+**WARNING - power failure during flashing can be dangerous.** Loss of power
+during flash erase/programming, including installation or a configuration
+save, can corrupt firmware or boot vectors and leave the board unbootable.
+Recovery may require an external flash programmer. STR8-N does not guarantee
+power-loss recovery or automatic rollback. Keep power stable, retain a
+recovery backup, and do not disconnect USB/power or press RESET/NMI until
+the operation reports verified completion.
+
 Download the
-[board-test ZIP](https://github.com/95westus/STR8-N/releases/download/v2.0a24c1/str8n-v2-a24c1-board-test.zip)
+[beta 1 ZIP](https://github.com/95westus/STR8-N/releases/download/v2.0b1/str8n-v2-b1.zip)
 and extract it. The ZIP contains the Windows and Linux launchers, the
 matching BIN/S19 images, Bank Maintenance, the public assembly include,
 and the current documentation. Start with `docs/QUICKSTART.pdf` or
@@ -74,7 +84,8 @@ For an already installed STR8-N board, follow the
 | [Stock-board installer guide](docs/STR8N_V2_CONFIG_WDCMON_INSTALL.md) | Unified C02/816 installer, backup selection, verification, and recovery |
 | [Configuration guide](docs/STR8N_V2_FLASH_CONFIG.md) | Core boot settings and guarded migration |
 | [Bank Maintenance guide](docs/STR8N_BANK_MAINT_V2.md) | Utility commands, editor, copies, erase, and staging |
-| [Package contents](docs/STR8N_V2_A24C1_RELEASE_ZIP_PROPOSAL.md) | The exact 18-file ZIP inventory |
+| [Package contents](docs/STR8N_V2_A24C1_RELEASE_ZIP_PROPOSAL.md) | The original kit inventory and beta additions |
+| [Beta notes](docs/STR8N_V2_BETA1_RELEASE_NOTES.md) | Release identity, qualification and flashing disclaimer |
 | [Manual index](docs/RELEASE_MANUALS.md) | Current guides and test records |
 
 ## Sources and validation
@@ -97,8 +108,14 @@ The firmware, installer, safety/recovery, maintenance, and offline launcher
 checks passed. The owner also reported a successful
 [native Linux run](docs/STR8N_V2_A24C1_LINUX_TEST_2026-10-02.md) on 2026-10-02.
 The [C02 installation report](docs/STR8N_V2_CONFIG_COM3_INSTALL_2026-10-01.md)
-records the detailed a24c1 board observations. Qualification remains scoped
-to the recorded tests; this release remains a board-test candidate.
+records the detailed a24c1 board observations. The
+[two-board acceptance record](docs/STR8N_V2_A24C1_TWO_BOARD_ACCEPTANCE_2026-10-03.md)
+closes the beta 1 migration/reset milestone: owner-confirmed stock migration
+and captured physical RESET/core readbacks on both CPU families.
+The cold/configuration, practical regression and backup/recovery records
+linked in the beta notes cover the subsequent two-board acceptance work.
+Qualification remains scoped to those records, including the distinction
+between modeled flash faults and physical RAM-fixture recovery checks.
 
 Historical sources and dated board reports remain in the repository. Their
 results apply to the versions tested. The a24c2 RAM layout is a proposal
