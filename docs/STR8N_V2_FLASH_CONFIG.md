@@ -3,8 +3,10 @@
 Version: **2.0a24c1**. Based on alpha24 at `56dd3f7`. The COM3 W65C02
 installation, exact readback and software handoffs passed; see the
 [board report](STR8N_V2_CONFIG_COM3_INSTALL_2026-10-01.md). Physical reset,
-cold power and W65C816 qualification remain pending. The original
-`v2.0a24` release and `src/v2a24` remain unchanged.
+cold power and W65C816 qualification remain pending.
+
+Historical `src/v2a24` sources remain unchanged. The retired a24 release
+and tag have been removed; source history is retained.
 
 For operation and addresses, use the [a24c1 manual](STR8N_V2_A24C1_MANUAL.md)
 and [maps](STR8N_V2_A24C1_MAPS.md). a24c2 remains a separate RAM-layout proposal.

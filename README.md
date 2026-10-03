@@ -67,7 +67,7 @@ Earlier sources, tags and board-test records remain available for reference.
 The repository's current package is a24c1; old RC and alpha build packages
 have been removed locally. Historical results do not qualify the current image.
 
-- [Alpha24 source tag](https://github.com/95westus/STR8-N/tree/v2.0a24)
+- [Historical alpha24 source commit](https://github.com/95westus/STR8-N/tree/0e46332b3e5b431e48e021036fd2ab4c0615f936)
 - [816 alpha24 board result](docs/STR8N_V2_A24_2609_RESTORE_REMIGRATE_E_2026-09-30.md)
 - [02SXB board 2205 result](docs/STR8N_V2_A24_2205_NO_EDU_2026-09-30.md)
 - [a24c1 C02 installation result](docs/STR8N_V2_CONFIG_COM3_INSTALL_2026-10-01.md)
