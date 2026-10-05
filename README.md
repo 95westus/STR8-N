@@ -1,4 +1,15 @@
-# STR8-N 2.0 beta 1
+# STR8-N experimental extensions
+
+This branch, `codex/experimental-extensions`, preserves the manager, named RTS,
+command/service registration, selective autoload, configuration, and related
+post-beta1 code reductions. It is experimental development, not a beta2 release
+or a commitment to the next release's design. Existing `v2-b2` paths, build
+targets, firmware banners, and qualification records retain their original
+names so tested artifacts remain traceable.
+
+Beta1 maintenance continues separately on `codex/beta1-release`, based on
+the published, qualified a24c1 firmware. Moving this work to a branch does not
+change firmware already installed on a board.
 
 STR8-N is a standalone reset monitor and flash loader for the **WDC
 W65C02SXB and W65C816SXB** boards. It provides a small foundation for
@@ -103,6 +114,61 @@ Validation targets are `make v2-config-check`,
 `python tools/package_v2_a24c1.py` builds and verifies the release ZIP.
 The [public assembly include](src/v2-config/str8n-v2-public.inc) defines
 application entry addresses and interrupt pointers.
+
+The working source includes post-beta core reductions totaling 34 bytes, leaving
+53 contiguous bytes at `$FF9B-$FFCF`. It preserves the beta 1 ABI and exact
+S/R extension image; the published beta 1 package remains the qualified
+release baseline. These source changes require fresh board qualification.
+
+The latest installed experimental candidate implements [selective autoload](docs/STR8N_V2_B2_AUTOLOAD.md)
+through `K AUTO`, independently of application boot C, with optional startup
+registration messages. It is installed and checked on 2205 with C autostart off
+and R/S/T/X/H selected. Startup dots precede registration messages and the
+banner. F is 4,039 bytes (9 free), including named-command registration;
+the public ABI, 21.5 KiB application and 2 KiB overlay ranges stay intact.
+
+`COMMAND.REGISTER` v2 is installed and checked on 2205. HELLO/ECHO can be
+called directly or through X; H lists both names. Existing v1 registration
+remains compatible. See the [command extension guide](docs/STR8N_V2_COMMAND_EXTENSIONS.md).
+
+The separate [2.0b2 manager/RTS candidate](docs/STR8N_V2_B2_MANAGER_RTS.md)
+implements one optional manager, service lookup, command registration and named
+S/R/T with automatic placement. Build with `python tools/build_v2_b2.py` and
+test with `make v2-b2-check`. Application RAM ends at `$57FF`; K selects a
+reserved configuration sector and persistent bank/sector masks. Missing or
+invalid configuration disables RTS storage while core boot remains independent.
+The preceding core/E image passed the scoped [board 2205 checks](docs/STR8N_V2_B2_2205_BOARD_TEST_2026-10-04.md)
+on 65C02/FT245. The current host-tested command-catalog revision saves nine
+F bytes (3,984 used, 64 free), exposes read-only built-ins through COMMAND.CORE
+v1, and preserves the fixed ABI and RAM limits. It requires a matched E/F
+update and is now installed and checked on 2205. Permanent H is an independent B3:C flash provider, adding zero
+core/E bytes and using zero application/overlay RAM. Build and model-check it
+with `make v2-b2-help-flash-check`; its sector S19 uses I, and the existing C
+boot setting runs its initializer after reset. It uses a three-byte manager
+RAM stub and one registry slot. Application RAM remains 22,016 bytes and the
+2 KiB overlay workspace remains available. Permanent H was installed and
+passed software-reset automatic registration on 2205, with full RAM/flash
+readbacks confirming only B3:C and boot settings changed. Physical RESET and
+power-cycle qualification remain pending; the earlier RAM H check is historical. 65C816/native and ACIA qualification, general maintenance
+integration and release packaging remain pending.
+The [consolidated design](docs/STR8N_V2_BETA2_DESIGN.md) records remaining
+configuration and AP runtime work.
+
+[Writing a command extension](docs/STR8N_V2_COMMAND_EXTENSIONS.md) walks through
+a buildable, separate H+X flash example, single-letter commands with longer
+subcommands, the changes needed for named top-level commands, and optional
+ACIA driver integration. The example adds no core/E or application/overlay
+RAM bytes. H+X is now installed on 2205, with software-reset autostart at C700;
+full bank readbacks and restoration of temporary updater RAM passed. The
+[service-provider proposal](docs/STR8N_V2_SERVICE_PROVIDER_PROPOSAL.md) describes
+`SERVICE.REGISTER` v1, now implemented in a separate candidate with eight
+dynamic entries. It requires reserved B3:B manager backing plus E, uses 49
+table/count bytes, and reduces total occupied manager RAM by four bytes.
+Core F and application/overlay limits are unchanged. This service revision is
+now installed and checked on 2205: callable/data versions, duplicates,
+descriptor copying, revalidation and reset withdrawal passed. Full readbacks
+prove only B3:B/E changed and temporary RAM was restored. Optional console
+binding remains unimplemented.
 
 The firmware, installer, safety/recovery, maintenance, and offline launcher
 checks passed. The owner also reported a successful

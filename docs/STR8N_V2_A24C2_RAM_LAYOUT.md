@@ -7,6 +7,14 @@ the a24c1 candidate. It reserves space for an RST (Restore Save Table)
 worker copied from flash into RAM. The RST design remains preliminary.
 This document does not change firmware or establish a tested release.
 
+Historical note, October 3, 2026: the subsequent b2 design selects application
+RAM ending at `$57FF`, adds a separate `$5800-$5FFF` overlay reservation, and
+adapts `$7100-$78FF` for manager/modules. See the
+[b2 design](STR8N_V2_BETA2_DESIGN.md#execution-and-ram-lifetime) for that selected
+allocation, now implemented in a separate host-tested
+[b2 candidate](STR8N_V2_B2_MANAGER_RTS.md). The original a24c2 proposal below is
+retained as recorded; neither layout changes the current a24c1 firmware.
+
 ## Agreed RAM allocation
 
 All addresses below are CPU bank zero on the W65C816.

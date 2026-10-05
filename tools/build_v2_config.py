@@ -185,7 +185,8 @@ def main():
         stream.write('V2_TEXT:\n' + encoded)
     worker_mem, worker_sym = assemble('str8n-v2-worker', 0x7900, assembler, linker)
     ram_targets = ('V2W_SELECT', 'V2W_CON_INIT', 'V2W_PUTC', 'V2W_GETC',
-                   'V2W_RAW_POLL', 'V2W_CHECK_CANCEL', 'V2W_RX_RESET')
+                   'V2W_RAW_POLL', 'V2W_CHECK_CANCEL', 'V2W_RX_RESET',
+                   'V2W_BOARD_QUERY')
     (OUT / 'asm/worker-public-symbols.inc').write_text(''.join(
         f'{name:24} EQU     ${worker_sym[name]:04X}\n' for name in ram_targets),
         encoding='ascii')

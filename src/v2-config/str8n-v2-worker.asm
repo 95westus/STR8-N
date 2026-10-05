@@ -5,7 +5,10 @@
                         XDEF    V2W_READ
                         XDEF    V2W_EXECUTE
                         XDEF    V2W_BOOT_DELAY
+                        INCLUDE "str8n-v2-public.inc"
                         INCLUDE "str8n-v2-eq.inc"
+; Reuse the unused ACIA transmit slot for the core's RAM board query.
+V2W_CORE_BOARD_QUERY     EQU     1
                         CODE
 START:
                         SEI
@@ -62,15 +65,6 @@ V2W_SELECT:
 V2W_BITS:               DB      $CC,$CE,$EC,$EE
                         INCLUDE "str8n-v2-flash-worker.inc"
                         INCLUDE "str8n-v2-ram-console.inc"
-; One reset wait tick, with no console I/O and Y preserved.
-V2W_BOOT_DELAY:         LDX     #$00
-V2W_BOOT_DELAY_OUTER:
-V2W_BOOT_DELAY_MIDDLE:  LDA     #$00
-V2W_BOOT_DELAY_INNER:   DEC     A
-                        BNE     V2W_BOOT_DELAY_INNER
-                        DEX
-                        BNE     V2W_BOOT_DELAY_OUTER
-V2W_BOOT_DELAY_DONE:    RTS
 V2W_END:
                         ENDMOD
                         END

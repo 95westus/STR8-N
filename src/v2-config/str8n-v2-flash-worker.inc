@@ -141,6 +141,19 @@ V2W_SEND:              STA     V2_DATA
                         TRB     V2_CTRL
                         STZ     V2_DDRA
                         RTS
+                        IF      V2W_CORE_BOARD_QUERY
+; Exactly replace the unused 16-byte ACIA transmitter in the core worker.
+; Later worker addresses remain fixed for the already-installed S/R image.
+V2W_BOARD_QUERY:       LDX     V2_CPU
+                        LDY     #(STR8V2_BOARD_FT245|STR8V2_BOARD_FT245_PRESENT)
+                        LDA     V2_CONSOLE
+                        BEQ     V2W_BOARD_DONE
+                        LDY     #STR8V2_BOARD_FT245
+V2W_BOARD_DONE:        LDA     #STR8V2_BOARD_FORMAT
+                        SEC
+                        RTS
+                        ELSE
+; Bank Maintenance retains its original bytes in this shared include.
 ; W65C51N TDRE is not usable. Pace every write by more than one 10-bit frame
 ; at 19200 baud. At 8 MHz this loop is at least 4,184 cycles (523 us), while
 ; preserving X/Y for the public console contract and RAM self-edit strings.
@@ -154,6 +167,7 @@ V2W_ACIA_DELAY_INNER:  DEX
                         BNE     V2W_ACIA_DELAY_OUTER
                         PLX
                         RTS
+                        ENDIF
 V2W_UNLOCK:            LDA     V2_FLASH_PTR+1
                         AND     #$01
                         ORA     #V2_LED_FLASH

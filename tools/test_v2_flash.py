@@ -30,7 +30,8 @@ class FlashMemory(Memory):
                 and self.ram[SYM['V2_SELF']] == 2
                 and self.ram[SYM['V2_FLASH_ERROR']] == 0):
             assert not self.busy
-            assert self.banks[self.resident][0x7000:] == self.ram[0x6900:0x7900]
+            staging = getattr(firmware, 'STAGING_START', 0x6900)
+            assert self.banks[self.resident][0x7000:] == self.ram[staging:staging + 0x1000]
             self.self_changed = False
         if self.cpu and (self.busy or self.self_changed):
             assert self.cpu.pc < 0x8000, f'ROM execution during/after mutation: {self.cpu.pc:04X}'

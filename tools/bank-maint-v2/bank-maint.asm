@@ -1157,6 +1157,7 @@ V2W_SELECT:             TAX
 BANK_BITS:              DB $CC,$CE,$EC,$EE
 V2W_PUTC                EQU PUTC
 V2W_GETC                EQU GETC
+V2W_CORE_BOARD_QUERY    EQU 0
                         INCLUDE "str8n-v2-flash-worker.inc"
 TITLE:                  DB $0D,$0A,"STR8-N BANK MAINT 1.0",$0D,$0A,0
 PROMPT:                 DB $0D,$0A,"BM> ",0

@@ -84,7 +84,8 @@ V2W_CON_INIT:          LDA     #$0C
                         STA     V2_CTRL
                         STA     V2_DDRB
                         STZ     V2_DDRA
-; a24 uses FT245 exclusively. Keep the ACIA routines below for later use.
+; a24 uses FT245 exclusively. Retain the unreachable ACIA initialization
+; bytes here to preserve worker addresses called by the installed S/R image.
                         LDA     #V2_CONSOLE_FT245
 V2W_CON_SELECTED:      CMP     V2_CONSOLE
                         BEQ     V2W_CON_INITIALIZE
@@ -119,12 +120,19 @@ V2W_RAW_POLL:          LDA     V2_CONSOLE
                         RTS
 V2W_RAW_EMPTY:         CLC
                         RTS
-V2W_ACIA_RAW_POLL:     LDA     #V2_ACIA_RDRF
-                        BIT     V2_ACIA_STATUS
-                        BEQ     V2W_RAW_EMPTY
-                        LDA     V2_ACIA_DATA
-                        SEC
-                        RTS
+; Reuse the unreachable 12-byte ACIA receive slot for the 11-byte reset
+; delay. Keep one padding byte so V2W_PUTC stays at $7BBF for installed S/R.
+; One reset wait tick, with no console I/O and Y preserved. Both loop
+; branches remain within one page, retaining the original delay timing.
+V2W_BOOT_DELAY:         LDX     #$00
+V2W_BOOT_DELAY_OUTER:
+V2W_BOOT_DELAY_MIDDLE:  LDA     #$00
+V2W_BOOT_DELAY_INNER:   DEC     A
+                        BNE     V2W_BOOT_DELAY_INNER
+                        DEX
+                        BNE     V2W_BOOT_DELAY_OUTER
+V2W_BOOT_DELAY_DONE:    RTS
+                        DB      $EA
 
 V2W_PUTC:              PHA
                         LDA     V2_CANCEL_REQUEST
@@ -143,9 +151,6 @@ V2W_TX_WAIT:           BIT     V2_CTRL
 V2W_TX_READY:          PLA
                         PHA
                         JSR     V2W_SEND
-                        BRA     V2W_TX_CANCEL
-V2W_TX_ACIA:           PLA
-                        PHA
-                        JSR     V2W_ACIA_SEND
+; FT245 is the only reachable transmit path; return directly after SEND.
 V2W_TX_CANCEL:         PLA
                         RTS

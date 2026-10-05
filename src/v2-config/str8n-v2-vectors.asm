@@ -134,14 +134,9 @@ V2V_RAM_NEWLINE:       LDA     #$0D
                         LDA     #$0A
                         JMP     V2W_PUTC
 
-V2V_RAM_BOARD_QUERY:   LDX     V2_CPU
-                        LDY     #(STR8V2_BOARD_FT245|STR8V2_BOARD_FT245_PRESENT)
-                        LDA     V2_CONSOLE
-                        BEQ     V2V_RAM_BOARD_DONE
-                        LDY     #STR8V2_BOARD_FT245
-V2V_RAM_BOARD_DONE:    LDA     #STR8V2_BOARD_FORMAT
-                        SEC
-                        RTS
+; The public entry stays at $7E88; its implementation now lives in RAM's
+; unused ACIA transmit slot so the copied vector image is 16 bytes smaller.
+V2V_RAM_BOARD_QUERY    EQU     V2W_BOARD_QUERY
 V2V_END:
                         ENDMOD
                         END

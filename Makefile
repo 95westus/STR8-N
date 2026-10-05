@@ -2,6 +2,43 @@ ASM ?= wdc02as
 LINKER ?= wdcln
 .DEFAULT_GOAL := all
 
+# Separate, unqualified beta 2 manager/RTS candidate; never programs hardware.
+.PHONY: v2-b2 v2-b2-check
+v2-b2:
+	python tools/build_v2_b2.py
+
+v2-b2-check: v2-b2
+	python tools/test_v2_b2.py
+	python tools/test_v2_b2_config.py
+	python tools/test_v2_b2_services.py
+	python tools/build_v2_b2_command_example.py
+	python tools/test_v2_b2_autoload.py
+	python tools/test_v2_b2_autoload_headless.py
+	python tools/test_v2_b2_named.py
+
+.PHONY: v2-b2-autoload-check
+v2-b2-autoload-check: v2-b2-check
+	python tools/build_v2_b2_help_flash.py
+	python tools/test_v2_b2_help_flash.py
+	python tools/test_v2_b2_command_example.py
+	python tools/build_v2_b2_help.py
+	python tools/test_v2_b2_help.py
+	python tools/qualify_v2_b2_autoload.py
+
+.PHONY: v2-b2-help v2-b2-help-check
+v2-b2-help:
+	python tools/build_v2_b2_help.py
+
+v2-b2-help-check: v2-b2-help
+	python tools/test_v2_b2_help.py
+
+.PHONY: v2-b2-help-flash v2-b2-help-flash-check
+v2-b2-help-flash:
+	python tools/build_v2_b2_help_flash.py
+
+v2-b2-help-flash-check: v2-b2-help-flash
+	python tools/test_v2_b2_help_flash.py
+
 
 .PHONY: v2-quick-start-pdf
 v2-quick-start-pdf:
