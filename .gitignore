@@ -9,4 +9,16 @@ __pycache__/
 !/output/release/
 /output/release/*
 !/output/release/str8n-v2-a24c1-board-test.zip
+!/output/release/str8n-v2-b4.zip
+!/output/release/str8n-v2-b4.sha256
 /tmp/
+
+# Raw board evidence and recovery images stay owner-local, never in Git.
+/docs/evidence/
+/backups/
+/board-backups/
+**/prior-b[0-3].bin
+**/final-b[0-3].bin
+**/baseline-b[0-3].bin
+**/*-readback.bin
+**/*-backup.bin

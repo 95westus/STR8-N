@@ -1,0 +1,4 @@
+{
+  "monitor": "MEMORY\r\n B0-3\r\n D addr [end]\r\n M addr bytes\r\n F addr bytes\r\n G addr\r\n L\r\n\r\nMAPS\r\n M [1 grid|2 ranges|3 wear]\r\n\r\nFLASH\r\n I start end\r\n W\r\n U A|B\r\n\r\nSTORAGE\r\n S bank flash start end [label]\r\n R [bank] label|bank flash [L]\r\n T [bank|first-last]\r\n\r\nBOOT\r\n J0-3\r\n C [0|1 bank addr|V delay]\r\n P [A|B]",
+  "extension": "\r\n\r\nPROGRAMS\r\n APPS       List installed programs\r\n R MAINT    Restore saved maintenance\r\n\r\nL loads S19; W shows wear; U updates a slot.\r\nM edits RAM; F edits flash.\r\nC: startup settings; P: boot preference.\r\nNumbers: hex. []: optional."
+}

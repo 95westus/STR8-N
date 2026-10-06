@@ -1,0 +1,9 @@
+# Build and validate the beta4 release.
+.DEFAULT_GOAL := all
+.PHONY: all check
+all:
+	python tools/package_v2_beta4.py
+
+check: all
+	python tools/test_v2_beta4.py
+	python tools/test_v2_beta4_migration.py
