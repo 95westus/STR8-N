@@ -8,6 +8,7 @@ def main():
     for script in ('build_v2_beta4.py','build_v2_beta4_migrator.py','build_v2_beta4_manuals_pdf.py'):
         subprocess.run([sys.executable,str(ROOT/'tools'/script)],check=True)
     extra={
+        'README.md':ROOT/'README.md',
         'str8n-v2-b4-migrator-2000.s19':OUT/'migrator/str8n-v2-b4-migrator-2000.s19',
         'migrator.json':OUT/'migrator/migrator.json',
         'beta4_migration.py':ROOT/'tools/beta4_migration.py',
@@ -29,7 +30,10 @@ def main():
     manifest['artifacts'].pop('STR8N_V2_BETA4_CLEANUP_COM3_2026-10-06.md',None)
     for name,source in extra.items():
         shutil.copyfile(source,KIT/name)
-        manifest['artifacts'][name]=hashlib.sha256(source.read_bytes()).hexdigest()
+        if name=='README.md':
+            # Repository guides live under docs/; the release kit is flat.
+            (KIT/name).write_text(source.read_text().replace('](docs/',']('),encoding='utf-8')
+        manifest['artifacts'][name]=hashlib.sha256((KIT/name).read_bytes()).hexdigest()
     manifest.update(vendor_firmware_included=False,board_backups_included=False,
         installation='Use the stock-board or STR8-N a24-and-later migration launcher; retain its host backup.',
         migration_validation='COM3 stock-to-beta4 and COM8 a24c1/beta1-to-beta4 passed physical installation, RESET and full-bank checks; see the hardware acceptance report.',

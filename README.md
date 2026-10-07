@@ -6,10 +6,29 @@ Beta4 provides USB console access, RAM loading/execution, memory inspection,
 guarded flash operations, RESTORE/SAVE/TABLE storage, startup settings,
 erase-attempt accounting and a fixed recovery core with two monitor slots.
 
-The local release is `output/release/str8n-v2-b4.zip`. It includes both
+Current release: [v2.0b4](https://github.com/95westus/STR8-N/releases/tag/v2.0b4).
+Download the [beta4 ZIP](https://github.com/95westus/STR8-N/releases/download/v2.0b4/str8n-v2-b4.zip)
+and [SHA256 checksum](https://github.com/95westus/STR8-N/releases/download/v2.0b4/str8n-v2-b4.sha256).
+Extract the ZIP and start with `STR8N_V2_BETA4_QUICK_START.md` or
+`STR8N-2.0b4-Quick-Start.pdf`. The package includes both
 migration paths and unchanged BANK MAINT 1.5. Both migrators install a saved
 MAINT record in B3:8/9; enter `R MAINT` to restore/run it after RESET.
 The package contains no stock monitor firmware or board backups.
+
+## Previous releases
+
+| Release | Package and release information |
+| --- | --- |
+| [v2.0b1](https://github.com/95westus/STR8-N/releases/tag/v2.0b1) | Promotes the qualified a24c1 firmware unchanged; banners, launchers and installation confirmation retain a24c1. BANK MAINT is version 1.0. [Beta1 package](https://github.com/95westus/STR8-N/releases/download/v2.0b1/str8n-v2-b1.zip) and [release notes](https://github.com/95westus/STR8-N/blob/v2.0b1/docs/STR8N_V2_BETA1_RELEASE_NOTES.md). |
+| [v2.0a24c1](https://github.com/95westus/STR8-N/releases/tag/v2.0a24c1) | Original a24c1 board-test release. Its release page retains the original package and installation information. |
+
+For these releases, use their packaged `INSTALL-A24C1.ps1` or
+`INSTALL-A24C1.sh` launcher and the guides at their version tag. Their
+qualification applies to a24c1. For upgrades to beta4, use the beta4
+STR8-N migration launcher. The existing release notes and packages remain
+available at the links above.
+
+## Beta4 documentation
 
 | Guide | Contents |
 | --- | --- |
