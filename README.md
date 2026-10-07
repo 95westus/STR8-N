@@ -1,4 +1,4 @@
-# STR8-N 2.0 beta 4
+# STR8-N
 
 STR8-N is a reset monitor and flash loader for the WDC W65C02SXB and
 W65C816SXB boards. On the 816, the monitor runs in emulation mode.
@@ -14,6 +14,58 @@ Extract the ZIP and start with `STR8N_V2_BETA4_QUICK_START.md` or
 migration paths and unchanged BANK MAINT 1.5. Both migrators install a saved
 MAINT record in B3:8/9; enter `R MAINT` to restore/run it after RESET.
 The package contains no stock monitor firmware or board backups.
+
+## Current development: beta12 and CLOCK 1.4
+
+The optional MCP79411 RTCC work is implemented in the development tree and
+qualified on boards 2512 (W65C02SXB, no EDU), 2205 (W65C02SXB, EDU) and 2609
+(W65C816SXB, EDU). The published download above remains beta4; beta12 is not
+yet a packaged release.
+
+- **UTC access:** `TIME` displays time at the monitor. `R CLOCK` starts CLOCK
+  for time/status, EUI and outage-history inspection, with confirmed administrative
+  operations. Dates retain `YYYY-MM-DD hh:mm:ss`. DOW is **1 = Monday through
+  7 = Sunday**; CLOCK calculates it automatically from the entered SET date.
+- **Optional hardware and program access:** the versioned RTC/I2C service fails
+  safely when EDU is absent. User programs read decoded time and check success;
+  a [runnable read-only example](tools/v2-rtc/time-example.asm) is supplied.
+  RTC/I2C calls support 65C02 and 816 emulation with D/DBR/PBR zero.
+- **RAM ownership:** installed service software reserves `$6500-$66FF`, so
+  user/program RAM ends at **`$64FF`, inclusive, even without EDU**. Only absent
+  or rejected optional software on a cold boot can permit RAM through `$66FF`;
+  active reservations persist until RESET. Programs use the validated discovery
+  descriptor's limit rather than infer free RAM from hardware presence.
+- **Persistent power-fail history:** four 32-byte slots use the chip's ordinary
+  EEPROM. Boot saves, verifies and commits an event before acknowledging it.
+  CLOCK provides `HISTORY`, `SHOW n`, `CLEAR n` and `CLEAR ALL`; clearing history
+  is separate from power-fail ACK and leaves UTC unchanged.
+- **RTC identity:** boot and CLOCK show the protected factory EUI-48. Remembered
+  identities use spare space in existing B3 sector 9, with `unbound`/`changed`
+  indications and explicit `ACCEPT EUI`. No additional sector is allocated.
+- **Placement and qualification:** RTC/I2C code is in B3:8, outage/identity
+  services in B3:9, MAINT 1.7 in B1:8/9 and CLOCK in B2:8/9. Fixed recovery F
+  remains unchanged. On-board monitor, ABI, loader/restore, guards, RTC/I2C,
+  CLOCK/history and physical BRK/IRQ/NMI regressions passed on all three boards.
+  2609 also passed native BRK/NMI; native RTC/I2C calls remain deferred.
+
+**Alarm 0 and Alarm 1 are deferred**, along with RTC SRAM, saved-record
+timestamps and native RTC calls. Longer clock-drift measurements remain pending;
+current UTC baselines are retained without automatic time or trim adjustments.
+
+| Development guide | Contents |
+| --- | --- |
+| [RTCC/CLOCK operation and identity binding](docs/STR8N_V2_RTCC_BINDING_2026-10-07.md) | Commands, boot messages, existing-sector identity storage and ownership |
+| [TIME and program example](docs/STR8N_V2_TIME_COMMAND_2026-10-07.md) | Compact monitor command and read-only program access |
+| [Shared I2C interface](tools/v2-rtc/I2C_API.md) | Discovery, transaction buffers, bounded errors and managed-device policy |
+| [Hardware installation](docs/STR8N_V2_RTCC_BINDING_HARDWARE_2026-10-07.md) | Verified updates, EUI acceptance and preservation checks |
+| [On-board regression](docs/STR8N_V2_BETA12_BOARD_REGRESSION_2026-10-07.md) | Physical coverage, results and limits |
+| [Latest drift comparison](docs/STR8N_V2_RTC_DRIFT_POST_BETA12_2026-10-07.md) | UTC offsets, baseline changes and measurement uncertainty |
+
+Development sources/builders are under `src/v2-rtc-kernel` and `tools/v2-rtc`.
+Generated images and raw qualification records stay owner-local under `BUILD`
+and `output/qualification`; they are not release downloads or board backups
+included in Git. Development upgrade scripts are bound to verified source
+images and must not be substituted for the published beta4 migration launcher.
 
 ## New since v2.0b1
 

@@ -8,6 +8,180 @@ out of published release artifacts.
 Defects and hardware investigations are indexed in the
 [repo issue tracker](ISSUES.md).
 
+## Optional EDU clock direction recorded 2026-10-06
+
+See [the MCP79411 design direction](docs/STR8N_V2_RTC_DIRECTION.md) for the
+consolidated scope. The optional RAM prototype is followed by the integrated
+local beta5 candidate. See [phase 1 acceptance](docs/STR8N_V2_RTC_PHASE1_2026-10-06.md)
+and [phase 2 acceptance](docs/STR8N_V2_RTC_PHASE2_2026-10-06.md).
+
+- [x] Build an optional RAM service and separate client with discovery, bounded
+  clock status/read, explicit SET/ACK, owned RAM, and provisional application ABI.
+  Linked-code host checks and 02SXB boards 2512 (COM4, no EDU) and 2205 (COM3,
+  EDU) passed their scoped tests. Both complete flash backups matched repeats
+  and final readbacks; no flash was changed. 2205's RTC was explicitly set to UTC.
+- [x] After the user-reported main-power outage on 2205, verify retained advancing
+  time, a newly latched outage, read-only evidence preservation, and explicit ACK
+  retaining its RAM capture. Same-minute outage fields do not establish duration;
+  this does not certify remaining battery life. See the phase 1 follow-up record.
+- [x] Qualify reported total power loss with main power and CR2032 removed on
+  2205: stopped/default-like time was rejected without automatic initialization;
+  explicit UTC setting restored a running clock and backup enable. Outage
+  evidence was lost. Final four-bank flash readbacks matched the original backup.
+- [x] Qualify the same optional RTC images on W65C816SXB 2609, COM8, EDU fitted:
+  measured E=1/D=DBR=PBR=0, stopped-clock rejection, explicit UTC SET with bounded
+  advancement checks, ACK without a latched event, and calls in all four overlays.
+  All four complete backups, repeats, and final readbacks matched; no flash changed.
+  RTC native calls remain outside this scoped acceptance. See the phase 1
+  follow-up record.
+- [x] After the user-reported main-power cycle on 2609, verify retained advancing
+  time, a newly latched outage, read-only preservation, and explicit ACK retaining
+  its RAM capture. Battery removal on 2609 is deliberately skipped by user direction;
+  expected behavior is assumed from 2205, not recorded as tested on 2609.
+- [x] Define and implement protected service lifetime and versioned discovery:
+  verified optional software reserves RAM $6500-$66FF from RESET; the first
+  clock or I2C request initializes it. HOLD revalidates code while preserving
+  initialized outage capture. Existing public tables remain unchanged; kernel
+  discovery is at $7D04. M/L/G and RST/MAINT honor ownership. Final ABI freeze
+  remains separate from this versioned candidate.
+- [x] Integrate the resident-flash RTC/I2C extension in local beta5 generation 14:
+  1760 provider bytes plus a 512-byte gateway template in B3 sector 8. MAINT 1.6
+  relocated to B1 sectors 8/9; B3 sector 9 is free. Exact backup-bound migrations,
+  physical RESET, first requests, both A/B slots, all caller banks, MAINT/guards,
+  and repeated final four-bank readbacks passed on 2512, 2205 and 2609. B0/B2
+  preserved; beta4 F unchanged on 2205/2609. See the phase 2 acceptance record.
+- [x] Publish the shared I2C transaction ABI with caller-owned buffers,
+  read/write/repeated-START, whole-operation ownership, bounded errors and
+  partial progress, separate discovery, and managed clock-write policy. Models
+  qualify a second device with RTC absent. Hardware checks qualify public MCP
+  reads on both SXB CPU types and bounded no-EDU failure on 2512. A physical
+  second peripheral remains untested. SRAM/EEPROM drivers remain deferred.
+  See [the versioned candidate ABI](tools/v2-rtc/I2C_API.md).
+- [x] Synchronize installed RTCs on 2205 and 2609 to a fresh external UTC
+  reference and save final sync times, pre-write outage evidence, advancing
+  readbacks and initial offset intervals. See
+  [the drift baseline](docs/STR8N_V2_RTC_UTC_BASELINE_2026-10-06.md).
+- [ ] Measure drift with read-only checks against those baselines after about
+  48 hours and a week; retain raw evidence and report uncertainty in seconds/day
+  and ppm. No clock SET or trim changes during the measurement interval.
+- [x] Take the requested early drift check on 2026-10-07 before changing power-fail
+  handling: after about 69 minutes, 2205's offset-change interval is -0.825 to
+  +1.164 seconds and 2609's is -0.869 to +0.899 seconds. Both include zero;
+  no measurable drift is established at this precision. Original baselines remain
+  intact. Longer checks are still pending.
+- [x] Repeat the requested drift measurement after about 8.5 hours on 2026-10-07:
+  2205's change is -0.021 to +1.775 seconds and 2609's -0.267 to +1.478 seconds.
+  Both include zero; a fastward trend is suggested but no precise nonzero rate
+  is established. No SET/trim/ACK or baseline replacement occurred. See
+  [the drift record](docs/STR8N_V2_RTC_DRIFT_2026-10-07.md).
+- [x] Complete beta7/CLOCK 1.1 live qualification: explicit confirmed ACK,
+  latch verification and retained capture, decoded outage times and marker on
+  boot, stopped/invalid-field safety, and atomic CLOCK record update. Models
+  pass; all three updates, physical power-cycle restart, both slots, saved
+  CLOCK/MAINT and exact four-bank readbacks passed. Both EDU events were archived
+  and acknowledged once through CLOCK; retained RAM capture and advancing time,
+  backup enable and control/trim verified. Original drift baselines remain intact.
+  2609's reported four-red-LED transient did not reproduce as a persistent boot
+  failure; UART, both slots and flash verified, LED port/control read 00/34. See
+  [the power-fail update](docs/STR8N_V2_RTC_POWERFAIL_2026-10-07.md).
+- [x] In CLOCK 1.2, replace the ambiguous ACK confirmation sentence
+  with the user's exact wording: "ACK clears the power-fail flag and outage
+  timestamps. UTC time keeps running unchanged." Save and verify the evidence in
+  EEPROM before ACK and keep exact YES confirmation. ACK rearms the next outage;
+  while the latch remains set, later outages do not replace its recorded times.
+- [x] Finish beta8/CLOCK 1.2 EEPROM journal acceptance. All three installations,
+  physical RESET, both slots, CLOCK history/show/cancellation paths and exact
+  four-bank readbacks passed. 2205's authorized replacement of its backed-up
+  legacy EEPROM data passed; 2609 boot saved its latched outage automatically.
+  Both live flags are clear, UTC advances, and factory/protection bytes match.
+  A new main-power outage on each EDU board was saved and acknowledged on boot;
+  both prior entries survived. All three power-cycle checks, MAINT 1.7 sector-9
+  refusal, complete final flash comparisons and evidence audit passed. Original
+  UTC drift baselines and control/trim remain unchanged.
+  See [the journal design and commands](docs/STR8N_V2_RTC_JOURNAL_2026-10-07.md).
+- [x] Qualify and install the owner's shorter RTCC messages when flashing is
+  authorized. The beta9 candidate is built and model-tested separately; `R CLOCK` remains and
+  there is no `R RTCC` alias. Verified save/ACK progress selects the exact three
+  messages. No boards are accessed or flashed for this preparation. See
+  [the unflashed candidate and time access](docs/STR8N_V2_RTCC_MESSAGES_2026-10-07.md).
+  The later beta10 TIME candidate includes these messages; a separate beta9
+  installation is unnecessary.
+- [x] Physically qualify/install the beta10 TIME work through integrated beta12 when
+  flashing is authorized. A ten-byte monitor hook reuses the formatter; total
+  monitor growth is twenty bytes. The runnable read-only example is 304 bytes.
+  TIME/argument parsing, all four example banks, absent/stopped/invalid clock
+  paths, kernel, boot banner and journal model checks passed without data writes.
+  User programs read time only; CLOCK and boot own SET/power-fail administration.
+  See [TIME and the example](docs/STR8N_V2_TIME_COMMAND_2026-10-07.md).
+- [x] Physically qualify/install the beta11 EUI work through beta12/CLOCK 1.4.
+  The full factory EUI-48 is shown at boot, CLOCK entry and STATUS, and via the
+  read-only CLOCK EUI command. Identity reads do not require valid RTC time and
+  never modify factory identity, outage records or UTC. This candidate includes
+  the earlier shorter RTCC messages and TIME command; separate beta9/beta10
+  installation is unnecessary. See [the EUI candidate](docs/STR8N_V2_RTCC_EUI_2026-10-07.md).
+  EUI/TIME/kernel/banner/journal checks and CLOCK calendar, confirmation,
+  SET-preservation and history checks passed locally. No boards were accessed.
+- [x] Physically qualify/install beta12 and CLOCK 1.4 when flashing is authorized.
+  Keep the existing date/time format; RTCC failure prefixes are consistent.
+  Remembered EUI records use the spare tail of existing B3 sector 9, with a
+  separately sealed code prefix and per-record CRC/commit. Boot only compares;
+  CLOCK ACCEPT EUI requires YES, rejects stale identity and avoids matching writes.
+  No extra sector or user RAM reservation is used. Full storage refuses writes.
+  Upgrade preparation must preserve the identity tail with the supplied merge.
+  This candidate includes the earlier pending RTC/CLOCK changes, so separate
+  beta9/beta10/beta11 installation is unnecessary. See
+  [the binding and message changes](docs/STR8N_V2_RTCC_BINDING_2026-10-07.md).
+  Local checks passed: all 17 replacement-write interruption points, timeout,
+  stale confirmation, full storage, tail preservation, binding/boot states,
+  CLOCK administration/history, read-only TIME and kernel/banner regressions.
+  No board access or flashing occurred.
+  Follow-up: the owner authorized all three flashes. Eight-sector installers
+  completed device verification on 2512/2205/2609; full/repeated backups and
+  RTC/EEPROM archives passed. Restarted monitors were observed and all three
+  live checks passed: both slots, TIME, read-only example, CLOCK identity/history,
+  confirmed initial EUI acceptance on each EDU, no-EDU refusal, maintenance guard
+  and exact final banks. Both EEPROM histories, B0/B1/F and drift baselines were
+  retained unchanged. The final evidence audit passed.
+  See [hardware installation](docs/STR8N_V2_RTCC_BINDING_HARDWARE_2026-10-07.md).
+- [x] Perform the requested post-beta12 read-only UTC/drift comparison after
+  about 13.5 hours. 2205 is +0.915 to +1.629 s from UTC, with baseline change
+  +0.296 to +2.040 s. 2609 is +0.013 to +0.730 s from UTC, with change -0.242 to
+  +1.234 s. Reference retries/final checks passed; no SET/trim/ACK was issued.
+  See [the comparison](docs/STR8N_V2_RTC_DRIFT_POST_BETA12_2026-10-07.md).
+- [x] Perform beta12/CLOCK 1.4 on-board regression on 2512, 2205 and 2609.
+  Both slots, RAM ABI, physical BRK/VIA1 IRQ/NMI, loader/RAM/RESTORE, managed
+  RTC/I2C, CLOCK/EUI/history and ownership guards passed. 2609 also passed native
+  BRK/NMI and confirmed return to emulation. Complete before/after/post-NMI
+  images, EEPROM/factory/identity data, control/trim and UTC baselines matched.
+  No clock, trim, ACK or firmware mutation was issued. See
+  [the physical regression](docs/STR8N_V2_BETA12_BOARD_REGRESSION_2026-10-07.md).
+- [x] Build CLOCK 1.0 using the integrated clock API: UTC display, status/raw
+  outage evidence, validated SET with exact YES, cancel/overflow handling, and
+  safe optional-device failures. Host tests cover 437 calendar/weekday cases and
+  confirmed SET; live checks preserve the drift run by canceling SET. Saved to
+  erased B2 sector 8 on 2512, 2205 and 2609. `R CLOCK`, byte-exact RESTORE,
+  VIA/capture preservation and final four-bank readbacks passed. All other
+  flash bytes remain unchanged. See [CLOCK 1.0](docs/STR8N_V2_CLOCK_1_0_2026-10-06.md).
+- [ ] Later, add compatible versioned saved-record timestamps; SAVE must work
+  when usable time is unavailable.
+- [x] Finish beta6 UTC/status banner hardware acceptance. Formatter is optional
+  and verified in B3 sector 8; healthy/stopped/invalid/unavailable paths, stale
+  pointers and kernel regressions pass host checks. All three updates, physical
+  restart, both slots, CLOCK/MAINT return, guards and exact final four-bank
+  readbacks passed. The user-confirmed power cycles on both EDU boards retained
+  running time and latched new outage events; evidence remains unacknowledged.
+  Original drift baselines are unchanged; the sampling client now copies
+  its result before HOLD so a banner READ cannot replace the timed sample. See
+  [the banner record](docs/STR8N_V2_RTC_BANNER_2026-10-06.md).
+- [ ] Deferred by owner direction (2026-10-07): MCP79411 Alarm 0 and Alarm 1.
+  No current alarm commands, ownership, polling/ACK or MFP/VIA interrupt work.
+  Revisit only in a later explicitly authorized phase.
+- MCP79411 SRAM remains deferred. Beta8 allocates all 128 ordinary EEPROM
+  bytes to four 32-byte power-fail journal slots; the factory identity and
+  protection register are preserved. No general EEPROM write API or other
+  settings allocation is implemented. Essential state stays in board flash
+  and works without an EDU.
+
 ## Current alpha and next EDU alpha (agreed 2026-09-30)
 
 - All future board upgrades must preserve compatibility with static-bank
@@ -61,16 +235,21 @@ Defects and hardware investigations are indexed in the
   `OK` alone cannot establish presence. Leave crypto untouched. Handle
   absent/unresponsive hardware without hanging core operation; report
   inconclusive detection rather than assuming presence.
-- [ ] Measure whether minimal resident integration fits v2 free space and
-  place the driver/HAL in the optional `$E000` sector, following S/R. Core boot
-  and static-bank maintenance must work with that extension absent.
+- [ ] Measure persistent RTC service placement against the current beta4 layout.
+  Beta4 already uses `$E000` for launcher and RST services; the earlier optional
+  E-sector placement proposal is superseded by the
+  [RTC direction](docs/STR8N_V2_RTC_DIRECTION.md). Preserve core boot and
+  static-bank maintenance with RTC support absent.
 - For the EDU test, validate date/time setting with the board's shipped EDU
   firmware before STR8-N relies on RTC time. The observed B2 W65C02SXB guest
   uses bit-banged I2C/SPI via W65C22; the B0 W65C816SXB guest runs in native
-  CPU mode. Future STR8N clock setting requires permission/security. Defer alarms,
-  power-fail handling, RTC SRAM/EEPROM use, and parallel/SPI SRAM allocations.
-  Verify the reported 16-byte EEPROM capacity before assigning persistent state;
-  desired hard state must survive loss of both main and battery power.
+  CPU mode. Future STR8N clock setting requires explicit authorization. The
+  2026-10-06 RTC direction brings power-fail status into the first clock service;
+  alarms remain later work. RTC SRAM and parallel/SPI SRAM allocations remain
+  deferred; beta8 uses ordinary EEPROM for the outage journal described above.
+  MCP79411 ordinary EEPROM is 128 bytes, with a separate 8-byte
+  protected region; SRAM is 64 bytes. Desired hard state must survive loss of
+  both main and battery power and remain available without an EDU.
 - [ ] With the EDU board fitted, repeat bounded RTC, SPI SRAM, and 816 extended
   RAM checks. The absent-board menu failures (SPI SRAM B2 `$10` and B0 `$96`,
   zero RTC date/time, and B0 Bank 0-to-8 block move) do not qualify the devices.
