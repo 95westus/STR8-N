@@ -66,6 +66,8 @@ Generated images and raw qualification records stay owner-local under `BUILD`
 and `output/qualification`; they are not release downloads or board backups
 included in Git. Development upgrade scripts are bound to verified source
 images and must not be substituted for the published beta4 migration launcher.
+Before committing or publishing, audit tracked files, reachable history and
+release ZIP entries with `python tools/check_no_board_backups.py --history`.
 
 ## New since v2.0b1
 

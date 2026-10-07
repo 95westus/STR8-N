@@ -22,3 +22,20 @@ __pycache__/
 **/baseline-b[0-3].bin
 **/*-readback.bin
 **/*-backup.bin
+
+# Also protect raw board images if copied outside their usual local folders.
+**/board-backups/
+**/backups/
+**/qualification/
+**/b[0-3].bin
+**/b[0-3]-repeat.bin
+**/b[0-3].s19
+**/all-banks.bin
+**/all-banks.s19
+**/full-flash.bin
+**/before-b[0-3].bin
+**/after-b[0-3].bin
+**/installed-b[0-3].bin
+**/expected-b[0-3].bin
+**/*-readback.s19
+**/*-backup.s19
