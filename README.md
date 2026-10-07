@@ -15,6 +15,35 @@ migration paths and unchanged BANK MAINT 1.5. Both migrators install a saved
 MAINT record in B3:8/9; enter `R MAINT` to restore/run it after RESET.
 The package contains no stock monitor firmware or board backups.
 
+## New since v2.0b1
+
+Beta1 used the qualified a24c1 firmware and BANK MAINT 1.0. Beta4 adds:
+
+- **Two monitor slots and independent recovery.** RESET validates slots A/B
+  and supports a saved slot preference or a one-time boot selection. `U A`
+  and `U B` update an inactive, unpreferred slot with a newer image. The
+  separate recovery receiver remains available if both monitors are invalid.
+- **RESTORE / SAVE / TABLE (RST).** Save RAM programs or data as labeled
+  flash records, list them with `T`, and restore by label or address with
+  `R`. RESTORE runs programs by default; its `L` option loads without running.
+- **MAINT available after RESET.** The release installs BANK MAINT 1.5 as
+  a saved record in B3 sectors 8/9. `R MAINT` restores and starts it without
+  another host upload. SAVE/RESTORE are monitor commands; the utility retains
+  its own editor commands.
+- **Persistent journals, wear counts and richer maps.** Startup settings,
+  slot preference and erase-attempt counts for all 32 flash sectors use
+  checked journal snapshots. `W` reports counts; `M`, `M 1` and `M 3` show
+  ranges, sector ownership and wear through MAINT. Maintenance protects
+  B3:A-F, which hold the monitors, journals, storage services and recovery core.
+- **Two migration paths.** Windows and Linux launchers migrate stock boards
+  or upgrade STR8-N a24 and later, including a24c1/beta1. They verify a host
+  backup and RAM installer before flashing, install the saved MAINT record,
+  and check the result after physical RESET while preserving B0-B2.
+- **Updated guides and qualification.** Six Markdown/PDF guides cover
+  installation, operation, migration, RST and maintenance. COM3/COM8 hardware
+  checks and linked-model failure checks are recorded in the
+  [hardware acceptance report](docs/STR8N_V2_BETA4_HARDWARE_ACCEPTANCE_2026-10-06.md).
+
 ## Previous releases
 
 | Release | Package and release information |
