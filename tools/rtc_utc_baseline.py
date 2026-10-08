@@ -132,7 +132,8 @@ def main():
             end = time.monotonic()+.3
             while time.monotonic()<end:
                 link.read(max(1,link.serial.in_waiting))
-            link.command('',b'> ')
+            initial=link.command('',b'> ')
+            if b'CLOCK>' in initial or b'BM>' in initial:link.command('Q')
             link.command('B3')
             assert link.dump(0x7D04,0x7D0B)==b'SV\x01\x03\x00\x65\xFF\x64'
             assert link.dump(0x7E60,0x7E63)==b'RA\x01\x0d'

@@ -48,9 +48,14 @@ yet a packaged release.
   CLOCK/history and physical BRK/IRQ/NMI regressions passed on all three boards.
   2609 also passed native BRK/NMI; native RTC/I2C calls remain deferred.
 
-**Alarm 0 and Alarm 1 are deferred**, along with RTC SRAM, saved-record
+**Alarm 0, Alarm 1 and MFP output configuration are deferred**, along with RTC
+SRAM, saved-record
 timestamps and native RTC calls. Longer clock-drift measurements remain pending;
 current UTC baselines are retained without automatic time or trim adjustments.
+An [unflashed normal-trim CLOCK candidate](docs/STR8N_V2_TRIM_EEPROM_POLICY_2026-10-07.md)
+provides confirmed signed `TRIM` adjustments with coarse mode OFF. It is
+prepared separately; installed boards and EEPROM protection remain unchanged.
+The active outage journal requires ordinary EEPROM protection off.
 
 | Development guide | Contents |
 | --- | --- |

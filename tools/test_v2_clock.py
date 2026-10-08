@@ -124,7 +124,7 @@ def main():
     print('PASS',checks[-1],flush=True)
     m.bus.devices.pop(0x6F)
     output = launch(cpu)
-    error_prefix=b'RTCC: Error 02' if META['version']=='1.4' else b'RTC error 02'
+    error_prefix=b'RTCC: Error 02' if META['version'] in ('1.4','1.5') else b'RTC error 02'
     assert error_prefix in output and b'CLOCK> ' in output
     output = kernel.model.command(cpu,b'SET 2026-10-07 00:00:00\r',12000000)
     assert error_prefix in output and b'Type YES' not in output
@@ -132,7 +132,7 @@ def main():
     accesses = len(m.bus.accesses)
     m.ram[0x7D07] = 0
     output = launch(cpu)
-    software_message=b'RTCC: Services unavailable' if META['version']=='1.4' else b'RTC software unavailable'
+    software_message=b'RTCC: Services unavailable' if META['version'] in ('1.4','1.5') else b'RTC software unavailable'
     assert software_message in output and len(m.bus.accesses)==accesses
     kernel.model.command(cpu,b'S\r',12000000)
     assert len(m.bus.accesses)==accesses and not m.events

@@ -9,7 +9,7 @@ from build_v2_rtc_binding import merge_identity_tail
 
 ROOT=Path(__file__).resolve().parents[1]
 OLD=bytes.fromhex('5410ecb664d3');NEW=bytes.fromhex('5410ecb664af')
-CLOCK=ROOT/'BUILD/v2-clock-1.4'
+CLOCK=ROOT/os.environ.get('STR8_CLOCK_BUILD','BUILD/v2-clock-1.4')
 CELLS,ENTRY=read_s19(CLOCK/'clock.s19')
 CLOCK_META=json.loads((CLOCK/'build.json').read_text())
 

@@ -176,6 +176,19 @@ and [phase 2 acceptance](docs/STR8N_V2_RTC_PHASE2_2026-10-06.md).
 - [ ] Deferred by owner direction (2026-10-07): MCP79411 Alarm 0 and Alarm 1.
   No current alarm commands, ownership, polling/ACK or MFP/VIA interrupt work.
   Revisit only in a later explicitly authorized phase.
+- [ ] Deferred by owner direction (2026-10-07): MFP output configuration.
+  No general-output, square-wave, frequency or polarity controls are added.
+- [ ] Physically qualify/install the normal-trim CLOCK candidate when requested.
+  Unflashed beta13/CLOCK 1.5 provides TRIM/status and confirmed signed steps
+  -127..+127 (+ faster, - slower, 0 disabled). Each confirmed adjustment clears
+  and verifies coarse OFF before a new trim value. No COARSE ON command.
+  Installed boards retain zero trim and coarse OFF; no hardware changed.
+  MFP/alarm controls are deferred; active alarm/SQW causes trim refusal.
+  EEPROM protection remains discussion only; BP=00 is required by journaling.
+  See [normal trim and EEPROM policy](docs/STR8N_V2_TRIM_EEPROM_POLICY_2026-10-07.md).
+  Host checks cover all signed values, parser bounds, cancellation/exact YES,
+  readback failures, partial updates, all caller banks, preserved calendar/PF/
+  EEPROM/flash, identity-tail merge and existing service regressions.
 - MCP79411 SRAM remains deferred. Beta8 allocates all 128 ordinary EEPROM
   bytes to four 32-byte power-fail journal slots; the factory identity and
   protection register are preserved. No general EEPROM write API or other

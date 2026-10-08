@@ -9,7 +9,14 @@ STR8-N should provide programs with an optional real-time clock service for
 the EDU board's MCP79411. Saved records should eventually carry timestamps.
 Boards without an EDU, and installations without RTC software, must retain
 normal boot, recovery, console, maintenance, and SAVE/RESTORE operation.
-MCP79411 SRAM and EEPROM implementation is explicitly deferred.
+MCP79411 SRAM and EEPROM implementation was initially deferred; the later
+ordinary EEPROM outage-journal decision is recorded under storage direction.
+
+Owner decision, 2026-10-07: keep coarse trim OFF and expose normal signed
+digital trim through CLOCK. The unflashed candidate and calibration procedure
+are documented in [the trim policy](STR8N_V2_TRIM_EEPROM_POLICY_2026-10-07.md).
+Alarms and MFP output configuration remain deferred. No trim adjustment occurs
+automatically at boot or during time/status reads.
 
 ## Scope and delivery stages
 
@@ -169,6 +176,8 @@ Owner decision, 2026-10-07: **defer both Alarm 0 and Alarm 1**. No alarm
 configuration, ownership service, polling, acknowledgment or MFP/VIA interrupt
 integration is planned for the current RTCC/CLOCK work. The direction below is
 retained for a later explicitly authorized phase.
+MFP output-mode/frequency/polarity configuration is also deferred by owner
+direction; no output-control commands are being added to CLOCK.
 
 The MCP79411 has two calendar-match alarms, software-cleared pending flags,
 and a shared MFP output. MFP alarm output and square-wave output are mutually

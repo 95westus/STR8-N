@@ -36,6 +36,11 @@ RTCC: PF logged, unverified ACK
 
 ## CLOCK 1.4
 
+The installed version remains 1.4. The unflashed CLOCK 1.5 candidate adds
+confirmed normal `TRIM` adjustments with coarse mode OFF; see
+[the trim policy](STR8N_V2_TRIM_EEPROM_POLICY_2026-10-07.md). This does not change
+the installed board settings or the qualification recorded here.
+
 Both MCP79411 alarms, Alarm 0 and Alarm 1, are deferred by owner direction
 (2026-10-07). CLOCK adds no alarm commands or alarm notification behavior.
 

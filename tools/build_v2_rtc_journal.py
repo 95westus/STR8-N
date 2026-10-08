@@ -34,7 +34,8 @@ def finish():
     for name in ('kernel-rtc-api.inc','journal-eq.inc'):shutil.copyfile(ROOT/'tools/v2-rtc'/name,stage/name)
     (stage/'binding.inc').write_text(long_branches((ROOT/'tools/v2-rtc/binding.inc').read_text()).replace('BM_LONG_','BND_LONG_'))
     worker=json.loads((OUT/'build.json').read_text())['worker']['V2W_BYTE']
-    (stage/'journal-transport.inc').write_text(f'EE_TRANSFER EQU ${entry:04X}\nBIND_FLASH_BYTE EQU ${worker:04X}\n')
+    trim=meta['provider_symbols'].get('TRIM_CONTROL',0)
+    (stage/'journal-transport.inc').write_text(f'EE_TRANSFER EQU ${entry:04X}\nBIND_FLASH_BYTE EQU ${worker:04X}\nTRIM_CONTROL EQU ${trim:04X}\n')
     (stage/'journal.asm').write_text(long_branches((ROOT/'tools/v2-rtc'/JOURNAL_SOURCE).read_text()).replace('BM_LONG_','J_LONG_'))
     oldout,oldsource=compiler.OUT,compiler.SOURCE
     try:
