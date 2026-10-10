@@ -30,8 +30,10 @@ def clean_config(data):
     address=int.from_bytes(data[3:5],'little')
     if data[6]==0 and not (address<0xe0 or 0x200<=address<=0x66ff or address>=0x8000):
         raise ValueError('Stored startup address conflicts with beta4 reserved RAM')
-    # Retain the seven startup fields; the old slot preference/locator is obsolete.
-    new=bytearray(data[:7]+bytes(9));new[14:]=config_sum(new);return bytes(new)
+    # Retain startup fields and beta15's exact EDU-OFF tag. The obsolete slot
+    # locator is rebuilt by the profile-specific planner, never copied blindly.
+    new=bytearray(data[:7]+bytes(9));new[13]=0xA5 if data[13]==0xA5 else 0
+    new[14:]=config_sum(new);return bytes(new)
 def metadata(config,counts,sequence):
     if not 1<=sequence<=0xffffffff:raise ValueError('Journal sequence exhausted')
     r=bytearray(b'\xff'*128);r[:8]=b'WC\x01\0'+sequence.to_bytes(4,'little')
@@ -77,7 +79,7 @@ def source_settings(source,kind):
         return 'recovery format 1',default_config(),[0]*32,0
     counts=[int.from_bytes(record[24+i*3:27+i*3],'little') for i in range(32)]
     return 'recovery format 1',clean_config(record[8:24]),counts,int.from_bytes(record[4:8],'little')
-def read_s19(path):
+def read_s19(path,max_end=0x4000):
     cells={};entry=None
     for line in Path(path).read_text(encoding='ascii').splitlines():
         if not re.fullmatch(r'S[019][0-9A-Fa-f]+',line):raise ValueError('Unsupported S-record')
@@ -91,7 +93,7 @@ def read_s19(path):
             if entry is not None or len(raw)!=4:raise ValueError('Invalid S9 entry')
             entry=address
     if not cells or entry is None or set(cells)!=set(range(min(cells),max(cells)+1)):raise ValueError('Incomplete/sparse RAM image')
-    if not 0x2000<=min(cells)<=entry<=max(cells)<0x4000:raise ValueError('RAM installer outside approved range')
+    if not 0x2000<=min(cells)<=entry<=max(cells)<max_end:raise ValueError('RAM image outside approved range')
     return cells,entry
 def s_record(kind,address,data=b''):
     raw=bytes((len(data)+3,))+address.to_bytes(2,'big')+data
@@ -222,6 +224,18 @@ class Link:
             if b'MIGRATION REFUSED/FAILED' in self.pending:raise IOError('RAM migrator refused/failed; keep power on and inspect the log')
     def command(self,text,prompt=b'\r\nB3> '):
         self.send(text.encode('ascii')+b'\r');return self.until(prompt)
+    def write_ram(self,address,data,prompt=b'\r\nB3> '):
+        """Stage RAM in short monitor commands; refuse errors and verify bytes."""
+        data=bytes(data)
+        if not 0<=address<0x8000 or address+len(data)>0x8000:
+            raise ValueError('RAM staging must stay below 8000')
+        for offset in range(0,len(data),8):
+            line=f'M {address+offset:04X} '+' '.join(f'{v:02X}' for v in data[offset:offset+8])
+            reply=self.command(line,prompt)
+            if any(error in reply for error in (b'Long line',b'Bad',b'Protected',b'Wrap')):
+                raise IOError('Monitor rejected RAM staging at '+f'{address+offset:04X}'+': '+repr(reply))
+        if data and self.dump(address,address+len(data)-1,prompt)!=data:
+            raise IOError('RAM staging readback mismatch at '+f'{address:04X}')
     def dump(self,first,last,prompt=b'\r\nB3> '):
         result=self.command(f'D {first:04X} {last:04X}',prompt);cells={}
         for line in result.decode('ascii').splitlines():

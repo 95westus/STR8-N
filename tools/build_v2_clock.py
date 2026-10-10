@@ -39,7 +39,7 @@ def main():
     lines += [s_record('1',a,body[a-0x2000:a-0x2000+32]) for a in range(0x2000,end,32)]
     lines.append(s_record('9',0x2000))
     (OUT/'clock.s19').write_text('\n'.join(lines)+'\n',encoding='ascii')
-    loaded,entry = read_s19(OUT/'clock.s19')
+    loaded,entry = read_s19(OUT/'clock.s19',max_end=MAX_END)
     assert entry==0x2000 and bytes(loaded.values())==body
     (OUT/'build.json').write_text(json.dumps(dict(version=VERSION,entry=0x2000,end=end,bytes=len(body),
         sha256=hashlib.sha256(body).hexdigest(),s19_sha256=hashlib.sha256((OUT/'clock.s19').read_bytes()).hexdigest(),

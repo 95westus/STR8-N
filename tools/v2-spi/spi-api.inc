@@ -1,0 +1,42 @@
+; Proposed resident beta14 ABI. Not installed by Phase 3.
+; Validate SV format/gateway/RAM limit and capability before these entries.
+SPI_DISCOVERY EQU $7D04
+SPI_CAPABILITY EQU $04
+SRAM_CAPABILITY EQU $08
+SPI_SIGNATURE EQU $6646       ; "SP",1,1
+SPI_TRANSFER EQU $664A
+SRAM_SIGNATURE EQU $66A2      ; "SM",1,1
+SRAM_TRANSFER EQU $66A6
+SPI_REQUEST EQU $6650
+SPI_PROFILE EQU $6650         ; 0 managed SRAM denied; 1 mikroBUS
+SPI_FLAGS EQU $6651           ; bit0 duplex; other bits zero
+SPI_TX_PTR EQU $6652          ; LE16
+SPI_TX_COUNT EQU $6654        ; 0..64
+SPI_RX_PTR EQU $6655          ; LE16
+SPI_RX_COUNT EQU $6657        ; 0..64
+SPI_RESULT EQU $6658
+SPI_TX_DONE EQU $6659
+SPI_RX_DONE EQU $665A
+SPI_PHASE EQU $665B           ; 0 on validation/refusal, 3 completed
+SPI_FILLER EQU $665C
+SPI_MODE EQU $665D            ; only 0 supported
+SM_REQUEST EQU $6650
+SM_OP EQU $6650               ; 0 PROBE, 1 READ, 2 WRITE
+SM_FLAGS EQU $6651            ; zero
+SM_ADDRESS EQU $6652          ; LE24, 00000..1FFFF
+SM_BUFFER EQU $6655           ; LE16, caller RAM
+SM_COUNT EQU $6657            ; 1..64 for READ/WRITE, zero PROBE
+SM_RESULT EQU $6658
+SM_DONE EQU $6659
+SM_CAPACITY EQU $665B         ; LE24 on successful PROBE
+SM_HEALTH EQU $665E           ; 81: usable, retention/battery unknown
+SPI_MAX_BYTES EQU 64
+SPI_OK EQU 0
+SPI_PIN_BUSY EQU 1
+SPI_DENIED EQU 6
+SPI_UNVERIFIED EQU 7
+SPI_IN_USE EQU 8
+SPI_BAD_ARGUMENT EQU 9
+SPI_UNAVAILABLE EQU $80
+SPI_BAD_CODE EQU $81
+SPI_BAD_NMI EQU $82

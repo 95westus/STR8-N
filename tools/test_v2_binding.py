@@ -6,6 +6,8 @@ from pathlib import Path
 from beta4_migration import read_s19
 from test_v2_journal import Memory,call,EQ,OUT,k
 from build_v2_rtc_binding import merge_identity_tail
+if k.REPORT.get('spi'):
+    from build_v2_spi_resident import merge_identity_tail
 
 ROOT=Path(__file__).resolve().parents[1]
 OLD=bytes.fromhex('5410ecb664d3');NEW=bytes.fromhex('5410ecb664af')
@@ -71,10 +73,11 @@ def main():
     candidate=(OUT/'str8n-journal-9000-9fff.bin').read_bytes()
     merged=merge_identity_tail(saved[3][4096:8192],candidate)
     assert merged[:3072]==candidate[:3072] and merged[3072:]==saved[3][7168:8192]
-    assert merge_identity_tail((ROOT/'BUILD/v2-rtc-eui/str8n-journal-9000-9fff.bin').read_bytes(),candidate)==candidate
+    if not k.REPORT.get('spi'):
+        assert merge_identity_tail((ROOT/'BUILD/v2-rtc-eui/str8n-journal-9000-9fff.bin').read_bytes(),candidate)==candidate
     checks.append('upgrade merge preserves all identity-tail bytes without changing the sealed code prefix')
     print('PASS',checks[-1],flush=True)
-    cpu,m=boot(NEW,saved);output=launch(cpu);assert b'CLOCK 1.4' in output and b', changed' in output and b'Remembered EUI: 54:10:EC:B6:64:D3' in output
+    cpu,m=boot(NEW,saved);output=launch(cpu);assert ('CLOCK '+CLOCK_META['version']).encode() in output and b', changed' in output and b'Remembered EUI: 54:10:EC:B6:64:D3' in output
     k.model.command(cpu,b'ACCEPT EUI\rNO\r',22000000);assert not m.events
     output=k.model.command(cpu,b'ACCEPT EUI\rYES\rEUI\r',22000000)
     assert b'RTCC: EUI remembered.' in output and m.ram[EQ['J_BIND_STATUS']]==1

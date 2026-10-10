@@ -12,6 +12,7 @@ OUT = ROOT / 'BUILD/v2-rtc-kernel/migrator'
 VERSION = '2.0b5'
 COMMIT_BANK = 1
 MULTI_COMMIT = False
+COMMIT_ADDRESS = 0x8003
 
 
 def main():
@@ -66,6 +67,10 @@ def main():
         last=text.index('                        JSR V2W_SELECT\n',first)
         text=text[:first]+new+'\n'+text[last:]
         text=text.replace('MIG_BANKS:             DS 10','MIG_COMMITS:           DS 10\nMIG_BANKS:             DS 10')
+    if COMMIT_ADDRESS!=0x8003:
+        old='                        LDA #$03\n                        STA V2_FLASH_PTR\n                        LDA #$80\n                        STA V2_FLASH_PTR+1'
+        assert text.count(old)==1
+        text=text.replace(old,f'                        LDA #${COMMIT_ADDRESS&255:02X}\n                        STA V2_FLASH_PTR\n                        LDA #${COMMIT_ADDRESS>>8:02X}\n                        STA V2_FLASH_PTR+1')
     text = text.replace('STR8-N 2.0b4 + MAINT MIGRATOR; B3:8-F.',
                         f'STR8-N {VERSION} RTC/I2C MIGRATOR; MAINT B1, SYSTEM B3.')
     stage = OUT / 'asm'
@@ -85,7 +90,7 @@ def main():
     (OUT / 'manifest.json').write_text(json.dumps(dict(entry=0x2000, symbols=symbols,
         worker=json.loads((OUT / 'migrator.json').read_text())['worker'],
         count=symbols['MIG_PLAN_COUNT'], commit_after=symbols['MIG_COMMIT_AFTER'], commits=symbols.get('MIG_COMMITS'),
-        banks=symbols['MIG_BANKS'], table=symbols['MIG_TABLE'], table_bytes=90,
+        banks=symbols['MIG_BANKS'], table=symbols['MIG_TABLE'], table_bytes=90,commit_address=COMMIT_ADDRESS,
         sha256=hashlib.sha256(s19.read_bytes()).hexdigest()), indent=2) + '\n')
     print(f'RTC migrator: {len(body)} bytes; B1 record commits after both sectors; F last when required')
 

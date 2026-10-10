@@ -1,25 +1,38 @@
 # Shared I2C transaction interface
 
-The phase 2 extension candidate supplies a shared transaction engine for RTC and
-other I2C devices. This versioned candidate is installed in beta5 on 2512, 2205
-and 2609. It uses the same foreground 65C02/816-emulation
+Current checkpoint: this public request layout and $6514 entry are retained in
+frozen beta23, qualified on all four EDU-enabled boards. Earlier beta15/beta6
+deployment statements are historical. Use the
+[beta23 technical guide](../../docs/STR8N_V2_BETA23_TECHNICAL_GUIDE.md) for current
+boot/RAM ownership and lifecycle context.
+
+The shared transaction engine serves RTC and other I2C devices in the current
+beta15 development firmware, when saved EDU mode is ON. It uses the foreground
+65C02/816-emulation
 profile and caller-bank/NMI requirements as the clock gateway.
 
 Programs discover `I2`, format 1, entry count 1 at `$6510` and call `$6514` with
 JSR. Clock discovery remains `RG`, format 1, count 4 at `$6500`; its four entries
 are unchanged. First check the kernel descriptor at `$7D04`: `SV`, format 1,
-capability flags (bit 0 clock, bit 1 I2C), little-endian gateway pointer, and
-little-endian last application-RAM address. Installed bytes are
-`53 56 01 03 00 65 FF 64`. Missing/corrupt optional software clears capabilities
+capability flags (bit 0 clock, bit 1 I2C; beta15 also uses bits 2/3 for SPI/SRAM),
+little-endian gateway pointer, and little-endian last application-RAM address.
+With verified services ON, bytes are `53 56 01 0F 00 65 FF 64`.
+Missing/corrupt optional software clears capabilities
 and pointer; a cold boot then permits RAM through `$66FF`. Never call a stale
 gateway pointer after RESET or monitor reentry without checking discovery.
 The allocation is `$6500-$66FF`, protected by the monitor and MAINT 1.6.
-With service software installed, the highest user/program RAM address is
+With EDU mode ON and service software installed, the highest user/program RAM address is
 `$64FF`, inclusive, even when no EDU board or RTC is present. Only absent or
-rejected optional service software on a cold boot can permit user RAM through
+rejected optional service software on a cold boot, or explicit EDU OFF at RESET,
+can permit user RAM through
 `$66FF`. An active reservation survives later validation failures until RESET.
 Use the validated kernel descriptor's RAM limit; a device error does not free
 service RAM.
+EDU OFF publishes `53 56 01 00 00 00 FF 66`, disables all these services and
+does not touch `$6500-$66FF`. Check capabilities before touching signatures
+or request blocks; I2C cannot be used with OFF active. The saved mode changes
+only on RESET, never on monitor return. See
+[EDU mode](../../docs/STR8N_V2_EDU_MODE_2026-10-08.md).
 RESET must initialize the trusted gateway image; first request validates and
 activates the shared flash component. A valid bus service does not require an RTC
 to respond or have valid time.

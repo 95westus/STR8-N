@@ -21,6 +21,7 @@ VERSION = '2.0b5'
 GENERATION = 14
 PROFILE_HOOK = None
 COMPONENT_HOOK = None
+LAUNCHER_EXTRA = None
 TEMPLATE_BASE = None
 
 
@@ -145,6 +146,7 @@ SR_END:''')
         '                       LDA AP_DESC+15\n                       CMP #$90\n'
         '                       BCC AP_VALIDATE_BAD\n                       LDA AP_LIMIT+1\n                       CMP #$A0')
     launcher = replace_once(launcher, 'AP_END:', '                       INCLUDE "service-kernel.inc"\nAP_END:')
+    if LAUNCHER_EXTRA:launcher=LAUNCHER_EXTRA(launcher)
     path = OUT / 'launcher.asm'
     path.write_text(long_branches(launcher).replace('BM_LONG_', 'AP_LONG_'))
     memory, symbols = fw.link.assemble('launcher', 0xE000, shutil.which('wdc02as'), shutil.which('wdcln'), source_file=path)

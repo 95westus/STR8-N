@@ -36,10 +36,11 @@ RTCC: PF logged, unverified ACK
 
 ## CLOCK 1.4
 
-The installed version remains 1.4. The unflashed CLOCK 1.5 candidate adds
-confirmed normal `TRIM` adjustments with coarse mode OFF; see
-[the trim policy](STR8N_V2_TRIM_EEPROM_POLICY_2026-10-07.md). This does not change
-the installed board settings or the qualification recorded here.
+The beta12 qualification below records CLOCK 1.4. The subsequent verified
+beta13/CLOCK 1.5 update adds confirmed normal `TRIM` adjustments with coarse
+mode OFF; see [the trim policy](STR8N_V2_TRIM_EEPROM_POLICY_2026-10-07.md) and
+[installation record](STR8N_V2_TRIM_HARDWARE_2026-10-07.md). Board trim and UTC
+settings were retained; this earlier qualification remains historical evidence.
 
 Both MCP79411 alarms, Alarm 0 and Alarm 1, are deferred by owner direction
 (2026-10-07). CLOCK adds no alarm commands or alarm notification behavior.
@@ -101,11 +102,14 @@ and retain its normal complete flash backups before erasing/replacing sector 9.
 This preserves data in a completed update; a power cut during a whole-sector
 firmware replacement still requires the saved installer/backup for recovery.
 
-User RAM still ends at `$64FF`, inclusive, with service software installed,
+With EDU mode ON, user RAM ends at `$64FF`, inclusive, with service software installed,
 even without EDU. `$6500-$66FF` remains reserved. Only absent/rejected optional
-software on a cold boot can allow RAM through `$66FF`; active reservations
+software on a cold boot, or beta15's explicit EDU OFF at RESET, can allow RAM
+through `$66FF`; active reservations
 remain until RESET after later validation failures. No new RAM reservation is
 introduced; transient binding scratch uses the existing flash-staging workspace.
+EDU OFF disables RTC/I2C/SPI/SRAM and does not reinstall their RAM gateways on
+monitor return. See [saved EDU mode](STR8N_V2_EDU_MODE_2026-10-08.md).
 
 ## Candidate and checks
 

@@ -1,0 +1,337 @@
+; OFFSET changes only a separate TZ flash record, never RTC/EEPROM registers.
+OFFSET_TRY:
+        LDX #5
+OFFSET_PREFIX_CHECK:
+        LDA LINE,X
+        CMP OFFSET_WORD,X
+        BNE OFFSET_NOT_COMMAND
+        DEX
+        BPL OFFSET_PREFIX_CHECK
+        LDA LINE_LENGTH
+        CMP #6
+        BEQ OFFSET_QUERY
+        CMP #8
+        BNE OFFSET_SET
+        LDA LINE+6
+        CMP #' '
+        BNE OFFSET_BAD
+        LDA LINE+7
+        CMP #'?'
+        BEQ OFFSET_QUERY
+OFFSET_SET:
+        LDA LINE_LENGTH
+        CMP #13
+        BNE OFFSET_BAD
+        LDA LINE+6
+        CMP #' '
+        BNE OFFSET_BAD
+        LDA LINE+10
+        CMP #':'
+        BNE OFFSET_BAD
+        LDA LINE+7
+        CMP #'+'
+        BEQ OFFSET_SIGN_OK
+        CMP #'-'
+        BNE OFFSET_BAD
+OFFSET_SIGN_OK:
+        STA OFFSET_SIGN
+        LDX #8
+        JSR PAIR
+        BCC OFFSET_BAD
+        CMP #15
+        BCS OFFSET_BAD
+        STA OFFSET_HOUR
+        LDX #11
+        JSR PAIR
+        BCC OFFSET_BAD
+        CMP #60
+        BCS OFFSET_BAD
+        STA OFFSET_PENDING
+        STZ OFFSET_PENDING+1
+OFFSET_HOUR_ADD:
+        LDA OFFSET_HOUR
+        BEQ OFFSET_SIGN_APPLY
+        LDA OFFSET_PENDING
+        CLC
+        ADC #60
+        STA OFFSET_PENDING
+        BCC OFFSET_HOUR_LOW
+        INC OFFSET_PENDING+1
+OFFSET_HOUR_LOW:
+        DEC OFFSET_HOUR
+        BRA OFFSET_HOUR_ADD
+OFFSET_SIGN_APPLY:
+        LDA OFFSET_SIGN
+        CMP #'-'
+        BNE OFFSET_VALIDATE
+        LDA #0
+        SEC
+        SBC OFFSET_PENDING
+        STA OFFSET_PENDING
+        LDA #0
+        SBC OFFSET_PENDING+1
+        STA OFFSET_PENDING+1
+OFFSET_VALIDATE:
+        LDA OFFSET_PENDING
+        STA TZ_WORK
+        LDA OFFSET_PENDING+1
+        STA TZ_WORK+1
+        JSR TZ_RANGE
+        BCC OFFSET_BAD
+        JSR TZ_READ
+        LDA OFFSET_PENDING
+        CMP TZ_OFFSET
+        BNE OFFSET_CONFIRM
+        LDA OFFSET_PENDING+1
+        CMP TZ_OFFSET+1
+        BNE OFFSET_CONFIRM
+        LDX #<OFFSET_NO_CHANGE
+        LDY #>OFFSET_NO_CHANGE
+        JMP MESSAGE
+OFFSET_CONFIRM:
+        LDX #<OFFSET_WARNING
+        LDY #>OFFSET_WARNING
+        JSR PRINT
+        JSR READLINE
+        BCC CANCELED
+        LDX #<CMD_YES
+        LDY #>CMD_YES
+        JSR MATCH
+        BCC CANCELED
+        JSR OFFSET_SAVE
+        BCC OFFSET_FAILED
+        JSR OFFSET_SHOW
+        JMP MENU
+OFFSET_QUERY:
+        JSR OFFSET_SHOW
+        JMP MENU
+OFFSET_BAD:
+        LDX #<OFFSET_BAD_TEXT
+        LDY #>OFFSET_BAD_TEXT
+        JMP MESSAGE
+OFFSET_NOT_COMMAND:
+        CLC
+        RTS
+OFFSET_FAILED:
+        LDX #<OFFSET_FAILURE
+        LDY #>OFFSET_FAILURE
+        JMP MESSAGE
+OFFSET_SHOW:
+        JSR TZ_READ
+        LDX #<OFFSET_LABEL
+        LDY #>OFFSET_LABEL
+        JSR PRINT
+        JSR TZ_OFFSET_TEXT
+        LDX #<OFFSET_NOTE
+        LDY #>OFFSET_NOTE
+        JMP PRINT
+OFFSET_SETUP:
+        JSR TZ_READ
+        LDA TZ_FOUND
+        BNE OFFSET_SETUP_DONE
+        LDX #<OFFSET_SETUP_TEXT
+        LDY #>OFFSET_SETUP_TEXT
+        JSR PRINT
+        JSR READLINE
+        BCC OFFSET_SETUP_DONE
+        LDA LINE_LENGTH
+        BEQ OFFSET_SETUP_DONE
+        CMP #6
+        BNE OFFSET_BAD
+        LDX #6
+OFFSET_SETUP_MOVE:
+        LDA LINE,X
+        STA LINE+7,X
+        DEX
+        BPL OFFSET_SETUP_MOVE
+        LDX #5
+OFFSET_SETUP_WORD:
+        LDA OFFSET_WORD,X
+        STA LINE,X
+        DEX
+        BPL OFFSET_SETUP_WORD
+        LDA #' '
+        STA LINE+6
+        LDA #13
+        STA LINE_LENGTH
+        JMP OFFSET_SET
+OFFSET_SETUP_DONE:
+        RTS
+OFFSET_SAVE:
+        LDA $7FEC
+        PHA
+        AND #$11
+        ORA #$EE
+        STA $7FEC
+        LDX #3
+OFFSET_FORMAT_CHECK:
+        LDA $9000,X
+        CMP OFFSET_JOURNAL_MAGIC,X
+        BNE OFFSET_FORMAT_BAD
+        DEX
+        BPL OFFSET_FORMAT_CHECK
+        PLA
+        STA $7FEC
+        JSR TZ_READ
+        LDA TZ_FREE+1
+        BEQ OFFSET_REFUSE
+        LDX #3
+OFFSET_SEQ_FULL:
+        LDA TZ_SEQ,X
+        CMP #$FF
+        BNE OFFSET_RECORD
+        DEX
+        BPL OFFSET_SEQ_FULL
+OFFSET_REFUSE:
+        CLC
+        RTS
+OFFSET_FORMAT_BAD:
+        PLA
+        STA $7FEC
+        BRA OFFSET_REFUSE
+OFFSET_RECORD:
+        LDX #31
+        LDA #$FF
+OFFSET_FILL:
+        STA OFFSET_RECORD_BYTES,X
+        DEX
+        BPL OFFSET_FILL
+        LDX #3
+OFFSET_HEADER:
+        LDA TZ_MAGIC,X
+        STA OFFSET_RECORD_BYTES,X
+        DEX
+        BPL OFFSET_HEADER
+        INC TZ_SEQ
+        BNE OFFSET_SEQUENCE_READY
+        INC TZ_SEQ+1
+        BNE OFFSET_SEQUENCE_READY
+        INC TZ_SEQ+2
+        BNE OFFSET_SEQUENCE_READY
+        INC TZ_SEQ+3
+OFFSET_SEQUENCE_READY:
+        LDX #3
+OFFSET_SEQUENCE:
+        LDA TZ_SEQ,X
+        STA OFFSET_RECORD_BYTES+4,X
+        DEX
+        BPL OFFSET_SEQUENCE
+        LDA OFFSET_PENDING
+        STA OFFSET_RECORD_BYTES+8
+        LDA OFFSET_PENDING+1
+        STA OFFSET_RECORD_BYTES+9
+        LDA #<OFFSET_RECORD_BYTES
+        STA TZ_PTR
+        LDA #>OFFSET_RECORD_BYTES
+        STA TZ_PTR+1
+        JSR TZ_CRC
+        LDA TZ_SUM
+        STA OFFSET_RECORD_BYTES+28
+        LDA TZ_SUM+1
+        STA OFFSET_RECORD_BYTES+29
+        LDX #31
+OFFSET_SAVE_ZP:
+        LDA $E0,X
+        STA OFFSET_ZP,X
+        DEX
+        BPL OFFSET_SAVE_ZP
+        LDA $7FEC
+        STA OFFSET_BANK
+        AND #$11
+        ORA #$EE
+        STA $7FEC
+        LDA $7FA0
+        STA OFFSET_LED
+        LDA #3
+        STA $F3
+        LDA #1
+        STA $F4
+        STZ OFFSET_INDEX
+        STZ OFFSET_ERROR
+OFFSET_WRITE:
+        LDX OFFSET_INDEX
+        LDA OFFSET_RECORD_BYTES,X
+        CMP #$FF
+        BEQ OFFSET_NEXT_BYTE
+        STA $F0
+        TXA
+        CLC
+        ADC TZ_FREE
+        STA $E4
+        LDA TZ_FREE+1
+        ADC #0
+        STA $E5
+        JSR OFFSET_FLASH_BYTE
+        BCC OFFSET_WRITE_FAILED
+OFFSET_NEXT_BYTE:
+        INC OFFSET_INDEX
+        LDA OFFSET_INDEX
+        CMP #31
+        BNE OFFSET_WRITE
+        LDA TZ_FREE
+        STA TZ_PTR
+        LDA TZ_FREE+1
+        STA TZ_PTR+1
+        LDY #30
+OFFSET_VERIFY:
+        LDA (TZ_PTR),Y
+        CMP OFFSET_RECORD_BYTES,Y
+        BNE OFFSET_WRITE_FAILED
+        DEY
+        BPL OFFSET_VERIFY
+        LDA TZ_FREE
+        CLC
+        ADC #31
+        STA $E4
+        LDA TZ_FREE+1
+        ADC #0
+        STA $E5
+        STZ $F0
+        JSR OFFSET_FLASH_BYTE
+        BCC OFFSET_WRITE_FAILED
+        LDY #31
+        LDA (TZ_PTR),Y
+        BNE OFFSET_WRITE_FAILED
+        BRA OFFSET_RESTORE
+OFFSET_WRITE_FAILED:
+        INC OFFSET_ERROR
+OFFSET_RESTORE:
+        LDA OFFSET_LED
+        STA $7FA0
+        LDA OFFSET_BANK
+        STA $7FEC
+        LDX #31
+OFFSET_RESTORE_ZP:
+        LDA OFFSET_ZP,X
+        STA $E0,X
+        DEX
+        BPL OFFSET_RESTORE_ZP
+        LDA OFFSET_ERROR
+        BNE OFFSET_REFUSE
+        JSR TZ_READ
+        LDA TZ_OFFSET
+        CMP OFFSET_PENDING
+        BNE OFFSET_REFUSE
+        LDA TZ_OFFSET+1
+        CMP OFFSET_PENDING+1
+        BNE OFFSET_REFUSE
+        SEC
+        RTS
+OFFSET_WORD DB "OFFSET"
+OFFSET_JOURNAL_MAGIC DB "PJ",6,1
+OFFSET_LABEL DB "Local UTC offset: ",0
+OFFSET_SETUP_TEXT DB "Local UTC offset +/-HH:MM (Enter keeps +00:00): ",0
+OFFSET_NOTE DB " (fixed; adjust manually for daylight saving)",13,10,0
+OFFSET_WARNING DB "Save display offset? UTC and clock settings stay unchanged.",13,10,"Type YES to confirm: ",0
+OFFSET_BAD_TEXT DB "Use OFFSET +/-HH:MM (-12:00 through +14:00), OFFSET or OFFSET ?.",13,10,0
+OFFSET_NO_CHANGE DB "No change.",13,10,0
+OFFSET_FAILURE DB "Offset not saved. Record area full or write failed; no erase attempted.",13,10,0
+OFFSET_PENDING DS 2
+OFFSET_SIGN DB 0
+OFFSET_HOUR DB 0
+OFFSET_BANK DB 0
+OFFSET_LED DB 0
+OFFSET_INDEX DB 0
+OFFSET_ERROR DB 0
+OFFSET_RECORD_BYTES DS 32
+OFFSET_ZP DS 32

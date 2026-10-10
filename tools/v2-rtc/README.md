@@ -133,10 +133,13 @@ clients first check the `SV` descriptor at `$7D04`, then discover clock `RG` at
 `$6500` or bus `I2` at `$6510`. Clock results are at `$66C0`; the remaining
 phase 1 result/request offsets are unchanged relative to that base. The kernel
 reserves `$6500-$66FF` from RESET when the verified component is present.
-With that optional software installed, user/program RAM ends at `$64FF`,
+With EDU mode ON and that optional software installed, user/program RAM ends at `$64FF`,
 inclusive, even without an EDU board. An absent EDU alone does not release the
 reservation. User RAM can extend through `$66FF` only when optional service
-software is absent or rejected on a cold boot. An active reservation remains
+software is absent/rejected on a cold boot, or beta15's explicit EDU OFF is
+latched at RESET. OFF disables the services and leaves the reclaimed RAM
+untouched; see [EDU mode](../../docs/STR8N_V2_EDU_MODE_2026-10-08.md).
+An active reservation remains
 until RESET after later validation failures. Read the validated `SV`
 descriptor's RAM limit; do not infer free RAM from RTC presence or read errors.
 `kernel-client.asm` demonstrates this discovery and both interfaces.

@@ -6,9 +6,11 @@ from pathlib import Path
 from beta4_migration import read_s19
 from test_v2_journal import boot, call, EQ, OUT, k
 from build_v2_rtc_trim import merge_identity_tail
+if k.REPORT.get('spi'):
+    from build_v2_spi_resident import merge_identity_tail
 ROOT=Path(__file__).resolve().parents[1]
-CLOCK=ROOT/'BUILD/v2-clock-1.5'
-CM=json.loads((CLOCK/'build.json').read_text()); CELLS,e=read_s19(CLOCK/'clock.s19')
+CLOCK=ROOT/os.environ.get('STR8_CLOCK_BUILD','BUILD/v2-clock-1.5')
+CM=json.loads((CLOCK/'build.json').read_text()); CELLS,e=read_s19(CLOCK/'clock.s19',max_end=0x6500)
 
 def launch(cpu):
     cpu.pc=0x7E67; k.model.run(cpu,lambda:k.model.waiting(cpu),18000000)
@@ -62,7 +64,7 @@ def main():
     assert call(cpu,10,param=0x94,key=b'TR')==2 and m.bus.rtc_regs[8]==0x25
     passed('ignored writes and device disappearance return errors; no new trim after failed coarse readback; locks recover')
     cpu,m=boot();m.bus.rtc_regs[7]=0x80;m.bus.rtc_regs[8]=0;m.bus.writes.clear()
-    assert b'CLOCK 1.5' in launch(cpu)
+    assert ('CLOCK '+CM['version']).encode() in launch(cpu)
     output=k.model.command(cpu,b'TRIM\rSTATUS\r',18000000)
     assert b'Trim 0 steps; coarse OFF; OSCTRIM $00' in output and not m.bus.writes
     invalid=(b'TRIM +',b'TRIM -',b'TRIM 128',b'TRIM -128',b'TRIM 255',b'TRIM 999',b'TRIM 1000',b'TRIM 0000',b'TRIM 1X',b'TRIM +1 X',b'TRIM  1',b'COARSE ON')

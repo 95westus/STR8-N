@@ -13,7 +13,7 @@ MCP79411 SRAM and EEPROM implementation was initially deferred; the later
 ordinary EEPROM outage-journal decision is recorded under storage direction.
 
 Owner decision, 2026-10-07: keep coarse trim OFF and expose normal signed
-digital trim through CLOCK. The unflashed candidate and calibration procedure
+digital trim through CLOCK. The installed service and calibration procedure
 are documented in [the trim policy](STR8N_V2_TRIM_EEPROM_POLICY_2026-10-07.md).
 Alarms and MFP output configuration remain deferred. No trim adjustment occurs
 automatically at boot or during time/status reads.
@@ -58,6 +58,13 @@ honor the published memory ownership. Preserve existing public entry addresses
 and expose the optional service through versioned discovery rather than requiring
 programs to assume the prototype's `$3000` address. Measured phase 2 placement is
 B3 sector 8 and board RAM `$6500-$66FF`, with discovery at `$7D04`.
+
+Beta15 adds [saved EDU ON/OFF](STR8N_V2_EDU_MODE_2026-10-08.md). ON retains
+the software reservation even without responding hardware. Explicit OFF is
+latched at RESET, disables RTC/I2C/SPI/SRAM and returns all 512 bytes through
+`$66FF` to programs. Monitor return does not reinstall over reclaimed RAM;
+hardware faults never select OFF. The setting uses the existing configuration
+journal and the helpers use measured gaps in the existing E sector.
 
 RTC SRAM remains deferred from phase 2. Its future role is an optional cache of
 the last captured outage and associated metadata, retained through RESET and

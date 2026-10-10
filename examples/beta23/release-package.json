@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "target_firmware": "2.0b23",
+  "generation": 32,
+  "required_in_release_zip": true,
+  "required_in_published_source": true,
+  "required_files": {
+    "examples/beta23/README.md": "examples/beta23/README.md",
+    "examples/beta23/example-abi.inc": "examples/beta23/example-abi.inc",
+    "examples/beta23/read-time.asm": "examples/beta23/read-time.asm",
+    "examples/beta23/read-spisram.asm": "examples/beta23/read-spisram.asm",
+    "examples/beta23/work-area.asm": "examples/beta23/work-area.asm",
+    "examples/beta23/release-package.json": "examples/beta23/release-package.json",
+    "examples/beta23/bin/read-time.s19": "BUILD/beta23-examples/read-time/read-time.s19",
+    "examples/beta23/bin/read-spisram.s19": "BUILD/beta23-examples/read-spisram/read-spisram.s19",
+    "examples/beta23/bin/work-area.s19": "BUILD/beta23-examples/work-area/work-area.s19",
+    "docs/STR8N_V2_BETA23_TECHNICAL_GUIDE.md": "docs/STR8N_V2_BETA23_TECHNICAL_GUIDE.md",
+    "tools/build_v2_beta23_examples.py": "tools/build_v2_beta23_examples.py",
+    "tools/test_v2_beta23_examples.py": "tools/test_v2_beta23_examples.py"
+  },
+  "mapping_direction": "archive member to repository or generated source path",
+  "verification_requirements": [
+    "Rebuild and model-check examples against the exact final packaged firmware.",
+    "Verify S19 checksums, entry addresses and binary hashes against the passing example receipt.",
+    "Include build/test dependency closure or document the complete source kit needed to rebuild.",
+    "Preserve relative tutorial/technical-guide links or rewrite and verify them for the package layout.",
+    "Cover all example members in the release checksum manifest and verify ZIP readback.",
+    "Retain accurate model-tested versus hardware-tested qualification labels.",
+    "Exclude board backups, owner-bound installers and raw board qualification evidence."
+  ],
+  "release_zip_created_by_this_requirement": false
+}

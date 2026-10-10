@@ -34,7 +34,7 @@ def main():
             while time.monotonic() < stop:
                 link.read(max(1, link.serial.in_waiting))
             initial=link.command('', b'> ')
-            if b'CLOCK>' in initial or b'BM>' in initial:
+            if any(p in initial for p in (b'CLOCK>',b'BM>',b'EDU>',b'SRAM>',b'WORK>')):
                 link.command('Q')
             link.command('B3')
             (args.out / 'help.txt').write_bytes(link.command('?'))

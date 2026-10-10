@@ -16,6 +16,7 @@ from test_v2_i2c import Devices
 
 REPORT = json.loads((fw.OUT / 'build.json').read_text())
 BANNER = REPORT.get('banner_reads_rtc',False)
+CAPABILITIES = REPORT.get('capabilities',3)
 
 
 class Memory(model.Memory):
@@ -23,9 +24,20 @@ class Memory(model.Memory):
         super().__init__(banks, usb)
         if banks is None:
             self.banks[3][:4096] = (fw.OUT / 'str8n-rtc-component-8000-8fff.bin').read_bytes()
-            maintenance = fw.OUT / ('str8n-maint-'+REPORT.get('maintenance_version','1.6')+'-b1-8000-9fff.bin')
+            if REPORT.get('spi'):self.banks[3][4096:8192]=(fw.OUT/'str8n-journal-9000-9fff.bin').read_bytes()
+            if REPORT.get('status_banner'):
+                offset=REPORT['status_asset_address']-0x8000
+                self.banks[2][offset:offset+REPORT['status_asset_bytes']]=(fw.OUT/'boot-status/asset.bin').read_bytes()
+            if REPORT.get('local_time'):
+                offset=REPORT['local_asset_address']-0x8000
+                self.banks[2][offset:offset+REPORT['local_asset_bytes']]=(fw.OUT/'local-display/asset.bin').read_bytes()
+            if REPORT.get('storage_services'):
+                store=json.loads((fw.OUT/'store/build.json').read_text());body=(fw.OUT/'store/sram.bin').read_bytes()
+                head=b'SR\x01\x3F'+store['entry'].to_bytes(2,'little')+len(body).to_bytes(2,'little')+b'SRAM'.ljust(16,b'\0')
+                self.banks[2][0x2000:0x2000+len(head+body)]=head+body
+            maintenance = fw.OUT / REPORT.get('maintenance_storage_file','str8n-maint-'+REPORT.get('maintenance_version','1.6')+'-b1-8000-9fff.bin')
             if maintenance.exists():
-                self.banks[1][:8192] = maintenance.read_bytes()
+                body=maintenance.read_bytes();self.banks[1][:len(body)] = body
         self.bus = Devices()
         self.bus.ram = self.ram
 
@@ -72,10 +84,11 @@ def main():
     checks = []
     for keys in (b'', b'A\r', b'B\r'):
         cpu, mem = boot(keys=keys)
-        assert mem.ram[0x7D04:0x7D0C] == b'SV\x01\x03\x00\x65\xFF\x64'
+        assert mem.ram[0x7D04:0x7D0C] == b'SV\x01'+bytes((CAPABILITIES,))+b'\x00\x65\xFF\x64'
         assert mem.ram[0x6500:0x6504] == b'RG\x01\x04'
         assert mem.ram[0x6510:0x6514] == b'I2\x01\x01'
-        assert mem.ram[0x6664] == (3 if BANNER else 0)
+        expected=3 if BANNER else 0
+        assert mem.ram[0x6664] in ((expected,expected|4) if REPORT.get('status_banner') else (expected,))
         assert bool(mem.bus.accesses)==BANNER and not mem.bus.writes
         assert mem.ram[0x0200:0x6500] == bytes([0x5A]) * 0x6300
         assert not mem.events
@@ -127,7 +140,8 @@ def main():
     for bank in range(4):
         cpu, mem = boot()
         assert app_call(cpu, 0x6504, bank) == 0
-        assert mem.ram[0x7D07] == 3 and mem.ram[0x6664] == (3 if BANNER else 2)
+        expected=3 if BANNER and not REPORT.get('quiet_monitor_return') else 2
+        assert mem.ram[0x7D07] == CAPABILITIES and mem.ram[0x6664] in ((expected,expected|4) if REPORT.get('status_banner') else (expected,))
         assert mem.ram[0x7D0C] == 255
     checks.append('first request activates RTC through each bank; HOLD preserves initialized state and invalidates code cache')
     cpu, mem = boot()

@@ -19,7 +19,7 @@ S = MANIFEST['symbols']
 
 
 class Memory(kernel.model.Memory):
-    def __init__(self, banks, allowed, maintenance):
+    def __init__(self, banks, allowed, maintenance,record_base=0x8000,commit_records=None):
         super().__init__(banks)
         self.allowed = allowed
         self.maintenance = maintenance
@@ -27,6 +27,8 @@ class Memory(kernel.model.Memory):
         self.committed = False
         self.records=maintenance if isinstance(maintenance,dict) else ({2:maintenance} if len(maintenance)==4096 else {1:maintenance})
         self.record_commits=[]
+        self.record_base=record_base
+        self.commit_records=commit_records
         self.require_maintenance_commit = any(bank==1 for bank,sector in allowed)
 
     def __getitem__(self, a):
@@ -46,9 +48,15 @@ class Memory(kernel.model.Memory):
 
     def mutated(self, kind, address, value):
         assert (self.bank, address >> 12) in self.allowed
-        if self.bank in self.records and address == 0x8003 and value == 0x3F:
+        if self.commit_records is not None:
+            target=self.commit_records.get((self.bank,address-3)) if value==0x3F else None
+            if target is not None:
+                start=address-3-0x8000;assert bytes(self.banks[self.bank][start:start+len(target)])==target,'Record committed before full verification'
+                self.committed=True;self.record_commits.append((self.bank,address-3))
+        if self.bank in self.records and address == self.record_base+3 and value == 0x3F:
             target=self.records[self.bank]
-            assert bytes(self.banks[self.bank][:len(target)]) == target, 'Record committed before complete verification'
+            start=self.record_base-0x8000
+            assert bytes(self.banks[self.bank][start:start+len(target)]) == target, 'Record committed before complete verification'
             self.committed = True
             self.record_commits.append(self.bank)
         if self.require_maintenance_commit and self.bank == 3 and address >> 12 in (8, 9):
@@ -98,7 +106,15 @@ def main():
     maintenance = ({1:(args.root/'upgrade/expected-b1.bin').read_bytes()[:8192],2:(args.root/'upgrade/expected-b2.bin').read_bytes()[:8192]} if info.get('journal_update') else
                    (args.root/'upgrade/expected-b2.bin').read_bytes()[:4096] if info.get('clock_update')
                    else (kernel.fw.OUT/'str8n-maint-1.6-b1-8000-9fff.bin').read_bytes())
-    memory = Memory(banks, allowed, maintenance)
+    record_base=info.get('record_commit_address',0x8000)
+    if info.get('work_update'):maintenance={2:(args.root/'upgrade/expected-b2.bin').read_bytes()[0x3000:0x5000]}
+    commit_records=None
+    if info.get('storage_update'):
+        maintenance={};commit_records={}
+        for row in info['commit_records']:
+            b,a=row['bank'],row['address'];image=(args.root/f'upgrade/expected-b{b}.bin').read_bytes();i=a-0x8000
+            n=int.from_bytes(image[i+6:i+8],'little');commit_records[b,a]=image[i:i+24+n]
+    memory = Memory(banks, allowed, maintenance,record_base,commit_records)
     for a, value in cells.items():
         memory.ram[a] = value
     # Actual FNV opcodes on a 256-byte range before enabling loop acceleration.
@@ -131,7 +147,7 @@ def main():
     stale = [bytearray(b) for b in banks]
     first_bank = info['steps'][0]['bank']
     stale[first_bank][0x234] ^= 1
-    refused = Memory(stale, allowed, maintenance)
+    refused = Memory(stale, allowed, maintenance,record_base,commit_records)
     for a, value in cells.items():
         refused.ram[a] = value
     bad_cpu = CPU(memory=refused, pc=entry)
@@ -140,7 +156,7 @@ def main():
     run(bad_cpu, lambda: bad_cpu.pc == S['MIG_HALT'])
     assert b'REFUSED/FAILED' in refused.tx and not refused.events
     # First staged payload corruption must likewise cause no mutation.
-    refused = Memory(banks, allowed, maintenance)
+    refused = Memory(banks, allowed, maintenance,record_base,commit_records)
     for a, value in cells.items():
         refused.ram[a] = value
     bad_cpu = CPU(memory=refused, pc=entry)
@@ -161,6 +177,7 @@ def main():
         actual_hash_opcode_check=True, hash_range_loops_accelerated=True, physical_hardware_tested=False)
     report.update(stale_preimage_refused=True, corrupt_payload_refused=True)
     report['record_commits']=memory.record_commits
+    if commit_records is not None:assert set(memory.record_commits)==set(commit_records)
     (args.root / 'upgrade/model-check.json').write_text(json.dumps(report, indent=2) + '\n')
     print('PASS', info['board'], 'exact bank results, sector order, MAINT commit, pinned guards and RAM execution')
 

@@ -1,0 +1,42 @@
+; Trusted MAINT streaming hooks. Ordinary SRAM API/console uses zero hooks.
+        MODULE SRAM_STREAM
+        XDEF EXT_END
+        INCLUDE "store-data-eq.inc"
+        INCLUDE "stream-core-eq.inc"
+PTR EQU $D2
+BUF EQU $6400
+        CODE
+SOURCE_BYTE:
+        LDA RESTORE_TRANSFER_HOOK+1
+        BNE STAGED_BYTE
+        LDA SOURCE_BYTE_HOOK+1
+        BNE HOOK_BYTE
+        LDA (PTR),Y
+        RTS
+STAGED_BYTE:
+        LDA BUF,Y
+        RTS
+HOOK_BYTE:
+        JMP (SOURCE_BYTE_HOOK)
+SAVE_TRANSFER:
+        LDA SAVE_TRANSFER_HOOK+1
+        BNE HOOK_SAVE
+        LDA #2
+        JMP TRANSFER
+HOOK_SAVE:
+        JMP (SAVE_TRANSFER_HOOK)
+RESTORE_TRANSFER:
+        LDA RESTORE_TRANSFER_HOOK+1
+        BNE HOOK_RESTORE
+        LDA #1
+        JMP TRANSFER
+HOOK_RESTORE:
+        JMP (RESTORE_TRANSFER_HOOK)
+COPY_BEGIN:
+        LDA RESTORE_TRANSFER_HOOK+1
+        BNE COPY_RETURN
+        INC COPYING
+COPY_RETURN:
+        RTS
+EXT_END:
+        ENDMOD

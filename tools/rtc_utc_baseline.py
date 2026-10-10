@@ -15,7 +15,7 @@ import struct
 import time
 
 from beta4_migration import Link
-from install_v2_rtc_upgrade import SERIALS
+from rtc_boards import SERIALS
 from qualify_v2_rtc_board import load
 from serial.tools.list_ports import comports
 
@@ -99,7 +99,7 @@ def decoded(data):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--board', required=True, choices=('2205','2609'))
+    parser.add_argument('--board', required=True, choices=('2205','2609','2604','2512'))
     parser.add_argument('--port', required=True)
     parser.add_argument('--out', required=True, type=Path)
     parser.add_argument('--server', default='time.nist.gov')
@@ -135,7 +135,12 @@ def main():
             initial=link.command('',b'> ')
             if b'CLOCK>' in initial or b'BM>' in initial:link.command('Q')
             link.command('B3')
-            assert link.dump(0x7D04,0x7D0B)==b'SV\x01\x03\x00\x65\xFF\x64'
+            descriptor = link.dump(0x7D04,0x7D0B)
+            # Beta14/15 add SPI capabilities without changing RTC v1 entries
+            # or its RAM reservation. EDU OFF remains rejected before access.
+            assert descriptor in (b'SV\x01\x03\x00\x65\xFF\x64',
+                                  b'SV\x01\x0f\x00\x65\xFF\x64')
+            report['service_descriptor_hex'] = descriptor.hex()
             assert link.dump(0x7E60,0x7E63)==b'RA\x01\x0d'
             assert link.dump(0x6500,0x6503)==b'RG\x01\x04'
             client = ROOT / 'BUILD/v2-rtc-kernel/utc-client/rtc-sample-client.s19'
@@ -172,7 +177,8 @@ def main():
                 return item
 
             before = capture('before')
-            assert before['status']==0, 'READ unusable; inspect raw evidence before any SET'
+            assert before['status']==0 or (args.sync and before['status']==4), \
+                'READ transport failure or unusable clock outside an explicit SET'
             if args.sync:
                 # Staging is application RAM; SET copies it inside the protected allocation.
                 target = math.ceil(reference.now()+1.5)

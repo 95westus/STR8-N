@@ -7,6 +7,8 @@ status. `TASKS.md` remains the broader project backlog.
 | ID | Issue | Status | Resume condition |
 | --- | --- | --- | --- |
 | STR8N-001 | [W65C51N ACIA receive absent on boards 2205 and 2512](docs/issues/ACIA_RX_2512_2205.md) | Deferred | Meter, logic probe, or scope available for receive-path measurements |
+| STR8N-002 | [2609 RESET-button cold-path observation](docs/issues/RESET_2609_COLD_PATH.md) | Closed | Correct S2/RESB captured; latch cleared, saved image retained, old handle rejected |
+| STR8N-003 | [2609 disabled VIA CB flags block SPI after RESET](docs/issues/SPI_2609_DISABLED_CB_FLAGS.md) | Closed | Beta22: repeated physical/software cold starts and preservation passed; active-owner refusals retained |
 
 ## How to maintain this tracker
 

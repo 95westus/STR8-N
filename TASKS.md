@@ -8,7 +8,173 @@ out of published release artifacts.
 Defects and hardware investigations are indexed in the
 [repo issue tracker](ISSUES.md).
 
+## Idea recorded 2026-10-10
+
+- [ ] Deferred idea: extend the SPI SRAM allocation display with an MAINT
+  `M`-style grid showing saved images, free space, workspace allocations and
+  reserved metadata. This is a storage allocation view, not CPU address mapping.
+  Recorded only at the user's request; implementation is not authorized.
+
+## Release-candidate gates recorded 2026-10-09
+
+See [RC gates/reset messages](docs/STR8N_V2_RELEASE_CANDIDATE_PLAN_2026-10-09.md).
+Beta23/CLOCK 1.6 uploads and captured physical starts are verified on
+2512/2205/2609. Exact readback, A/B/J3, EDU reset notices and ABI/IRQ/NMI pass;
+broader qualification remains pending. [Hardware evidence](docs/STR8N_V2_BETA23_HARDWARE_2026-10-09.md).
+Board 2604 now joins the RC test matrix at the user's request; its exact-image,
+A/B/J3, EDU mode/notice, reclaimed RAM, ABI/IRQ and physical NMI checks pass.
+See [four-board storage qualification](docs/STR8N_V2_BETA23_FOUR_BOARD_STORAGE_2026-10-09.md).
+All four use EDU ON/TRIM 0 for the current drift campaign.
+Beta22 acceptance does not qualify beta23.
+
+- [x] Qualify beta22 on all three boards; close STR8N-003.
+- [x] Freeze final beta23 source/artifact/model receipts.
+- [x] Rehearse fresh backup-bound beta22-to-beta23 installers.
+  [Phase 1 evidence](docs/STR8N_V2_BETA23_PHASE1_2026-10-09.md): exact frozen
+  working snapshot, fresh repeated full flash backups and three eight-sector
+  emulator rehearsals; no beta23 hardware installation.
+- [x] Qualify both slots and all board/EDU profiles, reset notices/activation,
+  all-bank calls and interrupt behavior on that image.
+  [Beta23 core hardware checkpoint](docs/STR8N_V2_BETA23_HARDWARE_2026-10-09.md):
+  repeated physical starts, J3/A/B, both EDU mode directions, notices, reclaimed
+  RAM, ABI/IRQ/NMI, 2609 native BRK/NMI and all-bank RTC/SRAM reads pass.
+  Full original SRAM/EEPROM/identity/history/trim and exact flash data checks pass;
+  wider storage/recovery workflows, soak and release packaging remain below.
+- [x] Regress time/identity/offset, storage/workspace, preservation and recovery.
+  Native AUTO flash save/restore/run, verified MAINT flash/SRAM copies, J3
+  retention, delete and complete data restoration now pass on all four boards.
+  SRAM/WORK resize/claim/stale-handle and attached-EDU standalone OFF checks
+  pass on all four. Fractional/boundary OFFSET, cancellation and J3 persistence
+  pass with original offsets restored. Actual main-power retention passes full
+  flash/SRAM/UTC/control/EUI checks; expected outage-ring changes are archived.
+  frozen-image interruption/short-transfer/counter-exhaustion models pass.
+  Controlled SRAM corrupt/unpublished-state refusal and explicit repair pass;
+  cold J3 at those states and forced fixed-F S/W/A/B recovery pass on all four.
+  The 141-round per-board endurance run and repeated full preservation checks
+  pass. Ports were released by 21:49:19 with EDU ON/TRIM 0 and original offsets.
+  Physical interruption of every in-flight byte is not claimed; frozen write-cut
+  models and controlled retained-state hardware checks supply that scoped coverage.
+- [ ] Complete 48–72-hour hardware soak on 2604/2609 with unchanged fresh-NIST
+  drift baselines; 2512/2205 retain functional qualification without extended soak.
+  Bounded read-only exercise runs passed. The latest all-board drift snapshot
+  contains 21 retained checkpoints over about 24 hours; main power was confirmed
+  off at 18:13 CDT October 10 with backup batteries retained. Validation continues
+  through this retention segment and post-return checks; powered-on duration is
+  not claimed complete. [Current status](docs/STR8N_V2_BETA23_DRIFT_SOAK_2026-10-10.md).
+- [ ] Reproduce/verify RC package, operator docs and backup-exclusion audit.
+  Isolated frozen-source rebuild matches all 17 compared artifacts. Draft
+  artifact bundle allowlist/CRC/hashes pass. A clean private snapshot checkout
+  reproduces all 17 artifacts from 540 byte-exact frozen source files, clean
+  before/after. Reviewed public source/tag and final operator/installer package
+  verification remain pending.
+- [ ] Include and publish the beta23 user examples with the release package:
+  three annotated sources, shared include, tutorial, technical guide, checked
+  S19 files and build/test support. Use
+  [the required file mapping](examples/beta23/release-package.json), verify final
+  firmware compatibility and package hashes/readback, and preserve qualification labels.
+- [x] Consolidate essential beta23 boot/console/vector, RTC/I2C/SPI/SRAM and WORK
+  contracts in the [technical guide](docs/STR8N_V2_BETA23_TECHNICAL_GUIDE.md),
+  including private-interface boundaries, buffer ownership and failure effects.
+- [x] Add [runnable 65C02 examples](examples/beta23/README.md) for UTC, raw SRAM
+  READ and WORK claim/write/read/restore/release. Assemble and model-check normal,
+  unavailable, partial-write, uncertain-claim and cleanup-failure behavior.
+  Physical execution of these new example applications remains a separate check.
+
+## Optional EDU SPI SRAM plan recorded 2026-10-07
+
+See [the phased implementation plan](docs/STR8N_V2_SPI_SRAM_PHASED_PLAN_2026-10-07.md).
+W65C02S code size is the primary optimization target. Flash `R` programs remain
+supported on every board; EDU adds SPI SRAM storage and adjustable workspace.
+Crypto operations and native 816 support remain deferred. The beta13/CLOCK 1.5
+update is verified on all three boards. SPI Phases 1-5 are complete for design,
+RAM qualification, a matched resident candidate and modeled named storage.
+SPI, SRAM 1.1 and WORK 1.0 are now installed and functionally qualified on all
+three boards. The corrected 2609 S2/RESB physical reset capture closes the earlier
+wrong-button observation; full hardware acceptance now passes within the stated scope.
+
+- [x] Phase 1: measure placement and define proposed SPI/SRAM ABI, ownership and
+  storage selection. [Measured report and contract](docs/STR8N_V2_SPI_PHASE1_2026-10-07.md)
+  target compacted existing B3:9 code space, a 640-byte driver budget and the
+  current 512-byte RAM reservation. Isolated assemblies save 396 journal bytes;
+  Phase 2 qualified the RAM prototype and revised the helper placement;
+  Phase 3 now confirms the measured resident fit.
+- [x] Phase 2: qualify a RAM-loaded SPI/SRAM prototype on EDU and no-EDU boards.
+  [Acceptance and size report](docs/STR8N_V2_SPI_PHASE2_2026-10-08.md): 627-byte
+  main logic, 217-byte shared helpers, 13-byte modeled foreground stack.
+  All three boards passed; both complete EDU SRAM arrays were preserved.
+  Flash/RTC/EEPROM/EUI/trim were unchanged. 2609's disabled CB flags were
+  explicitly archived/acknowledged as setup; the driver itself refused them.
+  Same-sector placement is revised to split main logic/helpers; resident
+  gateway integration and complete fit are recorded in Phase 3. No SPI was flashed.
+- [x] Phase 3: integrate the optional resident service, gateway and memory guards.
+  [Matched beta14 candidate](docs/STR8N_V2_SPI_PHASE3_2026-10-08.md) retains
+  $6500-$66FF/$64FF, fixed F, existing RG/I2 and two service sectors.
+  Provider/banner/main fit at 2299/1262/3070 bytes; gateway code 319;
+  foreground stack max 15. Discovery/integrity/ownership, SPI/SRAM and all
+  legacy service regressions pass models. A runnable 155-byte SRAM example
+  and three six-sector exact-backup update rehearsals pass. No board access.
+- [x] Phase 4: add named SPI saved-program storage alongside the existing flash provider.
+  [Unflashed utility candidate](docs/STR8N_V2_SPI_PHASE4_2026-10-08.md): eight
+  metadata slots, 63,488 payload bytes, explicit SPI selection, verified payload
+  and commit-last headers, copy validation/partial failure, tombstones and bounded
+  reclaim. Linked models compare flash/SPI execution and exercise corrupt/full/
+  interrupted storage. Public WRITE defaults to denied after RESET. Physical
+  qualification and utility provisioning remain Phase 6.
+- [x] Phase 5: add adjustable region allocation and a small workspace client.
+  [Paired candidate](docs/STR8N_V2_SPI_PHASE5_2026-10-08.md): 16 KiB program
+  steps, four owner/epoch/ticket claims, bounded verified READ/WRITE, explicit
+  legacy upgrade/repair, HOLD preservation and actual RESET invalidation.
+  All 133 resize and 100 claim/session write-cut cases pass. A 293-byte client
+  uses a 16-byte RAM cache for a 64-byte workspace table; actual SPI models
+  measure transfer costs and preserve flash/RTC/EEPROM. No extra resident sector
+  or permanent RAM reservation; physical qualification remains Phase 6.
+- [x] Phase 6: qualify/install a matched candidate and regress all three boards.
+  [Installed beta14/utility qualification](docs/STR8N_V2_SPI_PHASE6_2026-10-08.md)
+  passes fresh-source backups/models, both monitor slots, exact four-bank
+  readbacks, storage/workspace, main-power retention, IRQ/ABI/RTC/I2C/guards and
+  original full SRAM restoration. 2205 physical RESET passes. 2609 main-power,
+  software RESET and corrected S2/RESB physical reset pass; wrong-button selection
+  explained the earlier retained latch. [STR8N-002](docs/issues/RESET_2609_COLD_PATH.md)
+  is closed after captured cold boot, saved-image retention and stale-handle refusal.
+  UTC/trim/EUI preserved; new
+  power-fail events logged, other outage slots retained; backups stay untracked.
+- [ ] Phase 7: publish measured limits, API/command documentation and qualified artifacts.
+
+- [x] Beta15 follow-up: saved reset-latched EDU mode with no new sector or
+  resident RAM; 2512 OFF/$66FF, 2205/2609 ON/$64FF. Install WORK 1.1's direct
+  KiB console and EDU 1.0 saved setting utility. Both slots/mode transitions,
+  full reclaimed-RAM pattern and S19/run, unavailable-client preservation,
+  RAM ABI/BRK/VIA1 IRQ, WORK resize, RTC/EEPROM and all four flash banks pass.
+  Both complete original EDU SRAM arrays match after test restoration.
+  [Mode and installation evidence](docs/STR8N_V2_EDU_MODE_2026-10-08.md).
+
+- [x] Unflashed beta16 status follow-up: separate RAM/EDU lines, RTCC UTC before
+  EUI, read-only SSRAM payload/workspace capacities and automatic EDU 1.1 status
+  with pending-mode display. Shared sealed formatter uses existing B2:C spare
+  space and temporary monitor staging; no new sector/permanent user RAM. Exact
+  output and buffer/epoch/outage preservation pass local models. No COM ports
+  opened or boards flashed. [Display contract](docs/STR8N_V2_STATUS_DISPLAY_2026-10-08.md).
+
+- [x] Unflashed beta17 storage follow-up: WORK 1.2 at $5000, supporting
+  programs from $0200; preserving named R SRAM loader; S bank AUTO erased
+  extent selection; flash-only MAINT 1.8 named flash/SRAM copies with source
+  retention and verified commit-last destinations. MAINT grows to three
+  sectors; resident RAM remains unchanged. Full $0200-$64FF preservation,
+  transfer/refusal/failure tests, all 651 WORK interrupted-write checkpoints,
+  matched service/status/utility models and final artifact/no-backup audit pass.
+  Subsequently installed on all boards with DEMO/DEMO2 omitted; exact flash,
+  both slots, preserving loader, ABI/IRQ, clock/EEPROM/EUI and full SRAM checks
+  pass. 2609 unattended SPI startup remains limited by disabled VIA CB flags
+  ([STR8N-003](docs/issues/SPI_2609_DISABLED_CB_FLAGS.md)). No commit/push.
+  [Storage command and placement contract](docs/STR8N_V2_STORAGE_TOOLS_2026-10-08.md).
+
 ## Optional EDU clock direction recorded 2026-10-06
+
+- [x] Enroll user-installed beta23/EDU board 2604 (COM5) in RTC drift analysis:
+  fresh NIST UTC SET, equal-donor fitted-rate initial TRIM -16, separate baseline,
+  and verified three-board automatic/manual reporting. Donor baselines/settings
+  unchanged. [RTC enrollment](docs/STR8N_V2_RTC_2604_2026-10-09.md);
+  firmware/RC qualification remains separate.
 
 See [the MCP79411 design direction](docs/STR8N_V2_RTC_DIRECTION.md) for the
 consolidated scope. The optional RAM prototype is followed by the integrated
@@ -178,17 +344,21 @@ and [phase 2 acceptance](docs/STR8N_V2_RTC_PHASE2_2026-10-06.md).
   Revisit only in a later explicitly authorized phase.
 - [ ] Deferred by owner direction (2026-10-07): MFP output configuration.
   No general-output, square-wave, frequency or polarity controls are added.
-- [ ] Physically qualify/install the normal-trim CLOCK candidate when requested.
-  Unflashed beta13/CLOCK 1.5 provides TRIM/status and confirmed signed steps
+- [x] Physically qualify/install beta13 and CLOCK 1.5 on all three boards.
+  Verified beta13/CLOCK 1.5 provides TRIM/status and confirmed signed steps
   -127..+127 (+ faster, - slower, 0 disabled). Each confirmed adjustment clears
   and verifies coarse OFF before a new trim value. No COARSE ON command.
-  Installed boards retain zero trim and coarse OFF; no hardware changed.
+  Installed boards retain zero trim and coarse OFF; UTC was not set.
   MFP/alarm controls are deferred; active alarm/SQW causes trim refusal.
   EEPROM protection remains discussion only; BP=00 is required by journaling.
   See [normal trim and EEPROM policy](docs/STR8N_V2_TRIM_EEPROM_POLICY_2026-10-07.md).
   Host checks cover all signed values, parser bounds, cancellation/exact YES,
   readback failures, partial updates, all caller banks, preserved calendar/PF/
   EEPROM/flash, identity-tail merge and existing service regressions.
+  Exact-backup installer models, physical restart, both slots, public RTC/I2C,
+  CLOCK/MAINT, guards and exact final four-bank readbacks passed on all boards.
+  2609 required a power cycle after reset-only silence; normal boot verified
+  one new outage record. See [the installation record](docs/STR8N_V2_TRIM_HARDWARE_2026-10-07.md).
 - MCP79411 SRAM remains deferred. Beta8 allocates all 128 ordinary EEPROM
   bytes to four 32-byte power-fail journal slots; the factory identity and
   protection register are preserved. No general EEPROM write API or other

@@ -2,10 +2,11 @@
 
 Owner direction: keep coarse mode OFF and use normal digital trim in CLOCK.
 Alarm 0/1 and MFP output configuration remain deferred. EEPROM protection is
-discussion only. Installed boards remain beta12/CLOCK 1.4 with OSCTRIM $00
-and coarse mode disabled; no board was flashed or calibrated for this candidate.
+discussion only. Beta13/CLOCK 1.5 is installed and verified on all three boards
+with OSCTRIM $00 and coarse mode disabled. No calibration was applied; see
+[the installation record](STR8N_V2_TRIM_HARDWARE_2026-10-07.md).
 
-The unflashed beta13 / CLOCK 1.5 candidate provides:
+Beta13 / CLOCK 1.5 provides:
 
 | Command | Behavior |
 | --- | --- |
@@ -91,6 +92,10 @@ Build with `python tools/build_v2_rtc_trim.py` and
 `python tools/test_v2_trim.py`. Outputs are isolated under
 `BUILD/v2-rtc-trim` / `BUILD/v2-clock-1.5`; beta12 artifacts remain intact.
 The public service ABI, $6500-$66FF reservation and existing flash placement
-are unchanged. With the software installed, user RAM ends at $64FF even without
-an EDU board. CLOCK still fits its two stored sectors. Upgrade preparation must
-preserve the identity tail. Physical qualification and installation are pending.
+are unchanged. With EDU mode ON and the software installed, user RAM ends at
+$64FF even without an EDU board. Beta15's explicit EDU OFF disables these
+services at RESET and permits RAM through $66FF; see
+[saved EDU mode](STR8N_V2_EDU_MODE_2026-10-08.md).
+CLOCK still fits its two stored sectors. Upgrade preparation must
+preserve the identity tail. Physical qualification and installation passed on
+2512, 2205 and 2609; the original zero-trim drift baselines are retained.
