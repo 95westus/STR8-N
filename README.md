@@ -15,6 +15,35 @@ migration paths and unchanged BANK MAINT 1.5. Both migrators install a saved
 MAINT record in B3:8/9; enter `R MAINT` to restore/run it after RESET.
 The package contains no stock monitor firmware or board backups.
 
+## F-only monitor/loader versus expanded recovery environment
+
+**a24c1 / beta1 is a self-contained F-only monitor/loader.** The complete
+4 KiB B3:F image (`$F000-$FFFF`) contains the boot monitor, hardware vectors,
+console/flash worker images and startup configuration. F alone is sufficient
+to boot and operate its USB console, memory inspection/editing, RAM load/run
+and guarded flash loader; no separate monitor slots or journals are required.
+Beta1 promotes the exact a24c1 firmware. BANK MAINT 1.0 is an optional utility
+uploaded separately into RAM. See the [a24c1 quick start](docs/STR8N_V2_A24C1_QUICK_START.md)
+and [beta1 release notes](docs/STR8N_V2_BETA1_RELEASE_NOTES.md).
+
+**beta23 / beta24 uses an expanded recovery environment spanning multiple
+flash sectors.** Fixed B3:F supplies reset and an independent recovery console;
+the normal monitor resides in validated A/B slots, with separate configuration/
+wear journals and storage/service software. This architecture began with
+beta3 and is present in the published beta4 release. Beta23 adds the RTC,
+SPI SRAM and workspace services described below; beta24 generation 33
+is an isolated board-name candidate, separate from the qualified beta23 image.
+
+**F-only recovery limitation (STR8N-005):** programming only the beta23/beta24
+F image into otherwise erased flash reaches `REC>`, but does not provide the
+normal monitor or a complete bootstrap. Without a valid configuration/wear
+journal, `W` reports `JOURNAL INVALID` and `U A` / `U B` cannot install a
+monitor slot. Normal commands such as `J`, `D`, `G` and `L` require a valid
+monitor slot. The exact erased-flash case was reproduced in the beta24 linked
+model; beta24 retains beta23's F bytes. Physical qualification of that case
+remains outstanding. See the open F-only bootstrap issue (STR8N-005)
+for evidence and the pending repair contract.
+
 ## Current development: beta23 generation 32
 
 The current development image is **beta23 / CLOCK 1.6**, with MAINT 1.8,
@@ -57,10 +86,10 @@ outside the RC matrix. See [RC gates](docs/STR8N_V2_RELEASE_CANDIDATE_PLAN_2026-
 
 The October 10 pre-shutdown snapshot at **18:11 CDT** passed on all four boards.
 Each has **21 retained checkpoints over approximately 24 hours**, plus its
-baseline in a 22-point free-intercept fit. Last verified settings were EDU ON,
+baseline in a 22-point free-intercept fit. Settings at that snapshot were EDU ON,
 normal **TRIM 0**, unchanged control registers/identities and fresh NIST reference
 checks. All rates below are estimated fast-clock drift; proposed corrections
-remain **unapplied**.
+were **unapplied at that snapshot**.
 
 | Board | Fitted rate, ppm | Compatible measurement bounds, ppm | Fitted seconds/day | Nominal proposed trim |
 |---|---:|---:|---:|---:|
@@ -74,14 +103,21 @@ and baseline uncertainty; they are not statistical confidence intervals.
 Short cumulative estimates share a baseline, so their sample SD is not clock
 jitter. Power-state/temperature effects have not been isolated.
 
-**Soak and retention validation continues for 2604/2609**, with completed
-read-only exercise runs and planned post-outage verification. All four boards
-were confirmed main-power-off at **18:13 CDT October 10**, with backup batteries
-connected; the current segment is a battery-backed retention interval. A
-powered-on 48–72-hour soak is not claimed complete. The finite drift schedule
-has ended, and the next measurement is due after power returns. 2512/2205 retain
-functional qualification without a claimed extended soak. 2604's foreign EEPROM
-history remains preserved with HISTORY error $90 and its power-fail latch.
+After battery-retention testing, all boards are powered again. On October 11,
+the user authorized trims **2205 −17, 2512 −12, 2604 −12 and 2609 −14**;
+UTC was unchanged and fresh immutable residual-drift baselines were captured.
+The new drift collection runs every three hours at :45.
+
+**The revised six-hour preserving soak on 2604/2609 completed October 11,
+16:09–22:09 CDT:** 17 complete passes per board plus nine units of a partial
+pass, **298 recorded units each / 596 total**, with no unexpected failures.
+RTC/external SRAM originals were verified restored; flash, EEPROM and retained
+RTC state checks passed. Destructive commands were excluded. See the
+owner-local soak results for coverage,
+exclusions and evidence. Independent drift collection remains active.
+The original 48–72-hour qualification is not claimed complete. 2512/2205 retain
+functional qualification without an extended soak claim. 2604's EEPROM history
+initialization and the APPS defect remain deferred.
 
 See the [drift/soak summary](docs/STR8N_V2_BETA23_DRIFT_SOAK_2026-10-10.md) for
 measurement limits, outage timing and acceptance status. Clean source rebuilds
