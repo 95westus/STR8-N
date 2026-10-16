@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "services": [
+    {"id": 1, "name": "SYSTEM", "version": 1, "sv_mask": 0, "kind": "call", "operations": [
+      {"id": 1, "name": "QUERY", "target": "ABI_SYSTEM_QUERY"},
+      {"id": 2, "name": "LEGACY_CAPS", "target": "0x7E85"},
+      {"id": 3, "name": "LEGACY_BOARD", "target": "0x7E88"}]},
+    {"id": 2, "name": "MONITOR", "version": 1, "sv_mask": 0, "kind": "call", "operations": [
+      {"id": 1, "name": "RESET", "target": "0x7E64"},
+      {"id": 2, "name": "HOLD", "target": "0x7E67"}]},
+    {"id": 3, "name": "CONSOLE", "version": 1, "sv_mask": 0, "kind": "call", "operations": [
+      {"id": 1, "name": "INIT", "target": "0x7E6A"},
+      {"id": 2, "name": "PUTC", "target": "0x7E6D"},
+      {"id": 3, "name": "GETC", "target": "0x7E70"},
+      {"id": 4, "name": "POLL", "target": "0x7E73"},
+      {"id": 5, "name": "CANCEL", "target": "0x7E76"},
+      {"id": 6, "name": "RX_RESET", "target": "0x7E79"},
+      {"id": 7, "name": "HEX", "target": "0x7E7C"},
+      {"id": 8, "name": "NEWLINE", "target": "0x7E7F"},
+      {"id": 9, "name": "NIBBLE", "target": "0x7E82"}]},
+    {"id": 4, "name": "VECTORS", "version": 1, "sv_mask": 0, "kind": "data", "operations": [
+      {"id": 1, "name": "EMULATION", "target": "0x7E00"},
+      {"id": 2, "name": "NATIVE", "target": "0x7E10"}]},
+    {"id": 5, "name": "RTC", "version": 1, "sv_mask": 1, "kind": "call", "signature": {"address": "0x6500", "hex": "52470104"}, "operations": [
+      {"id": 1, "name": "READ", "target": "0x6504"},
+      {"id": 2, "name": "STATUS", "target": "0x6507"},
+      {"id": 3, "name": "SET", "target": "0x650A"},
+      {"id": 4, "name": "ACK_POWER", "target": "0x650D"}]},
+    {"id": 6, "name": "I2C", "version": 1, "sv_mask": 2, "kind": "call", "signature": {"address": "0x6510", "hex": "49320101"}, "operations": [
+      {"id": 1, "name": "TRANSFER", "target": "0x6514"}]},
+    {"id": 7, "name": "SPI", "version": 1, "sv_mask": 4, "kind": "call", "signature": {"address": "0x6646", "hex": "53500101"}, "operations": [
+      {"id": 1, "name": "TRANSFER", "target": "0x664A"}]},
+    {"id": 8, "name": "SRAM", "version": 1, "sv_mask": 8, "kind": "call", "signature": {"address": "0x66A2", "hex": "534D0101"}, "operations": [
+      {"id": 1, "name": "TRANSFER", "target": "0x66A6"}]},
+    {"id": 9, "name": "WORK", "version": 1, "sv_mask": 8, "kind": "call", "signature": {"address": "0x5006", "hex": "574B0102"}, "operations": [
+      {"id": 1, "name": "REQUEST", "target": "0x5003"}]}
+  ]
+}
