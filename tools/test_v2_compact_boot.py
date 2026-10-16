@@ -20,9 +20,14 @@ def main():
         if offset==-300:
             (OUT/'compact-boot-preview.txt').write_bytes(out)
             time=cmd(cpu,m,b'TIME\r')
-            assert b'RTCC: UTC Fri 2026-10-09 20:11:04' in time
-            assert b'RTCC: Local Fri 2026-10-09 15:11:04 (-05:00)' in time
-            assert b'RTCC: Trim -18 steps:' in time and snapshot(m)==before
+            if meta.get('time_local_only'):
+                lines=[l for l in time.split(b'\r\n') if l and l not in (b'TIME',b'B3> ')]
+                assert lines==[b'Fri 2026-10-09 15:11:04 (-05:00)'],time
+            else:
+                assert b'RTCC: UTC Fri 2026-10-09 20:11:04' in time
+                assert b'RTCC: Local Fri 2026-10-09 15:11:04 (-05:00)' in time
+                assert b'RTCC: Trim -18 steps:' in time
+            assert snapshot(m)==before
             edu=(OUT/'edu/edu.bin').read_bytes();m.ram[0x2000:0x2000+len(edu)]=edu
             detail=cmd(cpu,m,b'G 2000\r')
             assert b'RTCC: EUI 54:10:EC:B6:64:AF' in detail and snapshot(m)==before
@@ -35,7 +40,7 @@ def main():
         checks.append(wanted.decode())
     cpu,m=fresh(off=True);before=snapshot(m);boot(cpu)
     assert b'RTCC:' not in m.tx and b'SSRAM:' not in m.tx and not m.bus.accesses and not m.spi.frames and snapshot(m)==before
-    checks.append('EDU OFF remains device-free; TIME/CLOCK/EUI detailed output retained')
+    checks.append('EDU OFF remains device-free; CLOCK/EUI detailed output retained; TIME matches selected format')
     report=dict(passed=True,checks=checks,artifacts=meta['artifacts'],status_asset_sha256=meta['status_asset_sha256'],local_asset_sha256=meta['local_asset_sha256'],clock_sha256=meta['clock_sha256'],board_access=False,boards_flashed=False)
     (OUT/'compact-boot-test-results.json').write_text(json.dumps(report,indent=2)+'\n');print('PASS compact local boot, date rollover, full queries/EUI and preserved hardware/storage')
 

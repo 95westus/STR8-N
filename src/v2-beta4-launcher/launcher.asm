@@ -226,9 +226,9 @@ AP_LIST_ROW:           LDA AP_ROW
                        STA V2_PTR
                        LDA AP_ROW+1
                        STA V2_PTR+1
-                       LDY #$00
-                       LDA (V2_PTR),Y
-                       BEQ AP_LIST_NEXT
+                       JSR AP_LIST_NAME_OK
+                       NOP
+                       BCC AP_LIST_NEXT
                        JSR STR8V2_RAM_NEWLINE
                        STZ AP_INDEX
 AP_LIST_NAME:          LDY AP_INDEX
@@ -239,10 +239,11 @@ AP_LIST_NAME:          LDY AP_INDEX
                        LDA AP_INDEX
                        CMP #$0C
                        BCC AP_LIST_NAME
-AP_LIST_STATE:         LDY #$1E
-                       LDA (V2_PTR),Y
-                       CMP #$3F
-                       BNE AP_LIST_MISSING
+AP_LIST_STATE:         JSR AP_LIST_INSTALLED
+                       BCC AP_LIST_MISSING
+                       NOP
+                       NOP
+                       NOP
                        LDX #<AP_INSTALLED_TEXT
                        LDY #>AP_INSTALLED_TEXT
                        JSR AP_PRINT
@@ -554,4 +555,5 @@ AP_UNINSTALLED_TEXT:   DB " not installed",0
 AP_MAP_EDIT:           PHX
                        LDX #$26           ; Extra private slot-header service #19.
                        JMP AP_SLOT_ROUTE  ; Existing F router; F bytes unchanged.
+                       INCLUDE "app-list-check.inc"
 AP_END:

@@ -91,6 +91,7 @@ def prepare(baseline):
     for p in BASE_SOURCE.iterdir():
         if p.is_file():
             shutil.copyfile(p, stage / p.name)
+    shutil.copyfile(ROOT / 'src/v2-beta4-launcher/app-list-check.inc', stage / 'app-list-check.inc')
     help_text=json.loads((SOURCE/'help.json').read_text())
     messages=json.loads((stage/'str8n-v2-text.json').read_text())
     next(m for m in messages if m['name']=='V2_HELP')['text']=help_text['monitor']

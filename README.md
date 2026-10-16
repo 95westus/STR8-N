@@ -34,25 +34,59 @@ beta3 and is present in the published beta4 release. Beta23 adds the RTC,
 SPI SRAM and workspace services described below; beta24 generation 33
 is an isolated board-name candidate, separate from the qualified beta23 image.
 
-**F-only recovery limitation (STR8N-005):** programming only the beta23/beta24
+**Historical F-only recovery limitation (STR8N-005):** programming only the beta23/beta24
 F image into otherwise erased flash reaches `REC>`, but does not provide the
 normal monitor or a complete bootstrap. Without a valid configuration/wear
 journal, `W` reports `JOURNAL INVALID` and `U A` / `U B` cannot install a
 monitor slot. Normal commands such as `J`, `D`, `G` and `L` require a valid
 monitor slot. The exact erased-flash case was reproduced in the beta24 linked
-model; beta24 retains beta23's F bytes. Physical qualification of that case
-remains outstanding. See the open F-only bootstrap issue (STR8N-005)
-for evidence and the pending repair contract.
+model; beta24 retains beta23's F bytes. Beta25's guarded bootstrap repair was
+physically qualified on 2604, including A/B installation, interrupted upload,
+explicit journal provisioning and restoration. STR8N-005 is closed;
+see [the issue and qualification scope](docs/issues/F_ONLY_RECOVERY_BOOTSTRAP.md).
 
-## Current development: beta23 generation 32
+## Current development: beta32 on 2512
 
-The current development image is **beta23 / CLOCK 1.6**, with MAINT 1.8,
-EDU 1.2, SRAM 1.2 and WORK 1.2. It has passed independent functional,
+Board **2512** has hardware-verified **beta32**, default monitor B generation
+44 (`0000002C`), with beta28 retained in A. Its saved SRAM CLOCK/CLK is **1.9**.
+MAINT **2.4**, SRAM **1.4**, WORK **1.4** and EDU **1.4** run mostly from B2
+flash and launch by bare name or compatible `R name` syntax. B1 is free on
+this board. This acceptance applies to 2512; it does not upgrade the other
+boards' qualification. The published downloadable release remains **beta4**.
+
+```text
+MAINT
+BATCH MAINT;Q;SRAM;Q;WORK;Q;EDU;Q
+BATCH SRAM;G CLK;STATUS;Q
+```
+
+`R` retains its saved-RAM-program restore/run meaning; no `CMD` prefix is
+needed for native utilities. BATCH accepts up to 34 characters after its
+prefix, stops on errors and lets Esc cancel remaining commands. A final `Q`
+returns from the current utility to the monitor. Confirmation prompts require
+real input. On 2512, enter `SRAM`, then `G CLK`, to run the saved CLOCK.
+
+Boot prints the FLASH wear status, decimal highest tracked erase count and
+bank/sector. The verified 2512 peak is **B2:8, 581**. Warning/high thresholds
+are 50,000/80,000 per sector; prior/direct wear remains unknown. Battery
+reminders use an explicitly recorded age and configurable thresholds rather
+than measured voltage. Unknown battery age asks for a backup.
+
+See [beta32's installed checkpoint](docs/STR8N_V2_BETA32_2512_2026-10-16.md),
+[usage and model evidence](docs/STR8N_V2_BETA32_CANDIDATE_2026-10-16.md), and
+[the enhanced 2512 soak](docs/STR8N_V2_BETA32_SOAK_2512_2026-10-16.md).
+The enhanced soak runs until stopped and does not establish a completed
+duration or a new release package. Beta30–32 installers return to the monitor
+on success so `J3` can restart 2512 without a physical RESET.
+
+## Historical beta23 four-board baseline
+
+Beta23 / CLOCK 1.6, MAINT 1.8, EDU 1.2, SRAM 1.2 and WORK 1.2 passed functional,
 interrupt, data-preservation and controlled-recovery qualification on
-**2512, 2205, 2604 and 2609**. The published downloadable release remains
-**beta4**; the extended soak and final RC ZIP are still outstanding.
+2512, 2205, 2604 and 2609. The table and drift snapshot below describe that
+baseline, rather than the later beta32 installation.
 
-### Features added since the published beta4 release
+### Beta23 features added since the published beta4 release
 
 | Feature | Current behavior |
 |---|---|

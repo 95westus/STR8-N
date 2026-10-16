@@ -8,6 +8,23 @@ out of published release artifacts.
 Defects and hardware investigations are indexed in the
 [repo issue tracker](ISSUES.md).
 
+## Current beta32 checkpoint, 2512 — 2026-10-16
+
+- [x] Qualify beta32 B generation 44 on 2512, retaining beta28 A; verify J3,
+  complete flash, saved CLOCK/CLK 1.9, entire SRAM, EEPROM and RTC settings.
+  Bare flash utility aliases and BATCH completion/error/Esc checks pass.
+  Boot reports B2:8, maximum 581 tracked erases; thresholds remain 50k/80k.
+  [Installed report](docs/STR8N_V2_BETA32_2512_2026-10-16.md).
+- [x] Document current aliases, BATCH semantics, flash/RAM usage and qualified
+  J3 installer return; retain earlier multi-board results as history.
+- [ ] Run enhanced preserving soak on 2512 until the user stops it; record
+  actual completed cycles/duration and any failures before claiming acceptance.
+  Four-bank flash, full SRAM, repeated EEPROM, RTC/history/identity, native
+  utilities, BATCH error/Esc, RAM patterns and J3 startup are covered.
+  [Procedure](docs/STR8N_V2_BETA32_SOAK_2512_2026-10-16.md).
+
+This checkpoint supersedes older current-version statements for 2512 only.
+
 ## Idea recorded 2026-10-10
 
 - [ ] Deferred idea: extend the SPI SRAM allocation display with an MAINT
