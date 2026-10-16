@@ -97,6 +97,21 @@ from the already implemented offline discovery foundation.
   delete and verified commit. Use handles, define partial-write/power-loss
   behavior, and keep internal directory layouts private. Rename and in-place
   update depend on a defined commit/recovery strategy.
+- Add a storage GEOMETRY query. Describe capacity/address bounds, minimum read
+  and program units, hardware page boundary/wrap behavior, erase unit, preferred
+  transfer and maximum request size, allocation unit, and commit/publication
+  rules separately. Include persistence/backup, ownership and write-policy
+  flags; distinguish unknown, unsupported and not applicable. Transfer size,
+  allocation size and commit size must not be aliases. A commit unit describes
+  the service's verified publication protocol, not an unsupported guarantee
+  of atomic multi-byte hardware writes. Ordinary byte-range requests remain
+  valid where supported; drivers split them at hardware boundaries and expose
+  partial completion/failure. Do not hardcode all devices to a 32-byte page.
+  Current examples: MCP79411 EEPROM writes split at eight-byte pages; its
+  64-byte SRAM is byte/sequential; 23LCV1024 has 32-byte page mode but the
+  current driver uses sequential transfers capped at 64 payload bytes; managed
+  allocation uses 256-byte pages; SST erase is 4096 bytes. These sizes do not
+  grant access to RTC registers, reserved history or protected identity bytes.
 - CRC and/or FNV-1a for the named-object store are options to discuss, not an
   algorithm selection. Distinguish payload/metadata corruption detection from
   name lookup/indexing. Hash-based lookup still compares exact names; folded
