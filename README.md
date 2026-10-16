@@ -45,14 +45,18 @@ physically qualified on 2604, including A/B installation, interrupted upload,
 explicit journal provisioning and restoration. STR8N-005 is closed;
 see [the issue and qualification scope](docs/issues/F_ONLY_RECOVERY_BOOTSTRAP.md).
 
-## Current development: beta32 on 2512
+## Current development: beta32 on 2512 and 2609
 
 Board **2512** has hardware-verified **beta32**, default monitor B generation
 44 (`0000002C`), with beta28 retained in A. Its saved SRAM CLOCK/CLK is **1.9**.
 MAINT **2.4**, SRAM **1.4**, WORK **1.4** and EDU **1.4** run mostly from B2
 flash and launch by bare name or compatible `R name` syntax. B1 is free on
-this board. This acceptance applies to 2512; it does not upgrade the other
-boards' qualification. The published downloadable release remains **beta4**.
+this board. Board **2609** is also hardware-verified with the same STR8-N
+code images: beta32 B, beta28 A, recovery/services, utilities and saved
+CLOCK 1.9. Its settings and retained data remain its own; banks 0 and 1
+were preserved. See the [2609 alignment record](docs/STR8N_V2_BETA32_COMMON_CODE_2609_2026-10-16.md).
+This does not upgrade 2205 or 2604's qualification. The published downloadable
+release remains **beta4**.
 
 ```text
 MAINT
@@ -75,8 +79,12 @@ than measured voltage. Unknown battery age asks for a backup.
 See [beta32's installed checkpoint](docs/STR8N_V2_BETA32_2512_2026-10-16.md),
 [usage and model evidence](docs/STR8N_V2_BETA32_CANDIDATE_2026-10-16.md), and
 [the enhanced 2512 soak](docs/STR8N_V2_BETA32_SOAK_2512_2026-10-16.md).
-The enhanced soak runs until stopped and does not establish a completed
-duration or a new release package. Beta30–32 installers return to the monitor
+The enhanced soak is stopped: 69 complete cycles and 1,888 passed units before
+a Windows serial-access failure at 9 hours 52 minutes. Its pending CPU RAM
+backup was restored and verified after reconnection; it was not restarted.
+See the [stop/restoration record](docs/STR8N_V2_BETA32_SOAK_STOP_2026-10-16.md).
+This does not establish a completed 24-hour duration or a new release package.
+Beta30–32 installers return to the monitor
 on success so `J3` can restart 2512 without a physical RESET.
 
 ## Historical beta23 four-board baseline

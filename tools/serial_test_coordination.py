@@ -31,7 +31,7 @@ def release_marker(marker):
         warnings.warn(f'Released serial marker retained after sharing conflict: {marker}',RuntimeWarning)
 
 @contextlib.contextmanager
-def serial_lease(kind,timeout=180):
+def serial_lease(kind,timeout=180,*,priority=False):
     # Analyzer subprocesses share their parent's already-held drift lease.
     inherited=os.environ.get('STR8_DRIFT_LEASE_PID')
     if kind=='drift' and inherited:
@@ -41,19 +41,19 @@ def serial_lease(kind,timeout=180):
             yield
             return
     ROOT.mkdir(parents=True,exist_ok=True);marker=None
-    if kind=='drift':
+    if kind=='drift' or priority:
         marker=ROOT/('drift-'+uuid.uuid4().hex+'.json')
-        marker.write_text(json.dumps(dict(pid=os.getpid(),created=time.time())))
+        marker.write_text(json.dumps(dict(pid=os.getpid(),kind=kind,created=time.time())))
     handle=(ROOT/'lease.lock').open('a+b');locked=False;start=time.monotonic();previous=os.environ.get('STR8_DRIFT_LEASE_PID')
     try:
         if handle.seek(0,2)==0:handle.write(b'0');handle.flush()
         while time.monotonic()-start<timeout:
-            if kind!='drift' and drift_pending():time.sleep(.2);continue
+            if kind!='drift' and not priority and drift_pending():time.sleep(.2);continue
             try:
                 handle.seek(0);msvcrt.locking(handle.fileno(),msvcrt.LK_NBLCK,1);locked=True;break
             except OSError:time.sleep(.2)
         if not locked:raise TimeoutError('Serial lease unavailable; no board port opened')
-        if kind!='drift' and drift_pending():raise TimeoutError('Drift request has priority; retry soak later')
+        if kind!='drift' and not priority and drift_pending():raise TimeoutError('Drift request has priority; retry soak later')
         (ROOT/'owner.json').write_text(json.dumps(dict(kind=kind,pid=os.getpid(),since=time.time())))
         if kind=='drift':os.environ['STR8_DRIFT_LEASE_PID']=str(os.getpid())
         yield

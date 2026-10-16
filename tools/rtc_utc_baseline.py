@@ -129,12 +129,8 @@ def main():
     with (args.out / 'serial.jsonl').open('x') as log:
         link = Link(args.port, log)
         try:
-            end = time.monotonic()+.3
-            while time.monotonic()<end:
-                link.read(max(1,link.serial.in_waiting))
-            initial=link.command('',b'> ')
-            if b'CLOCK>' in initial or b'BM>' in initial:link.command('Q')
-            link.command('B3')
+            from rtc_prompt_sync import establish_b3
+            report['prompt_sync']=establish_b3(link)
             descriptor = link.dump(0x7D04,0x7D0B)
             # Beta14/15 add SPI capabilities without changing RTC v1 entries
             # or its RAM reservation. EDU OFF remains rejected before access.
@@ -249,4 +245,5 @@ def main():
 
 
 if __name__=='__main__':
-    main()
+    from serial_test_coordination import serial_lease
+    with serial_lease('drift'):main()

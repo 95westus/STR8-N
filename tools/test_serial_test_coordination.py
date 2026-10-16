@@ -5,6 +5,14 @@ from unittest.mock import patch
 import serial_test_coordination as coordination
 
 class CleanupTests(unittest.TestCase):
+    def test_priority_firmware_request_preserves_owner_kind_and_yields_soak(self):
+        before=os.environ.get('STR8_DRIFT_LEASE_PID')
+        with coordination.serial_lease('firmware-update',priority=True):
+            self.assertTrue(coordination.drift_pending())
+            self.assertEqual(json.loads((self.root/'owner.json').read_text())['kind'],'firmware-update')
+            self.assertEqual(os.environ.get('STR8_DRIFT_LEASE_PID'),before)
+        self.assertFalse(coordination.drift_pending())
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[1]/'output/qualification');self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name)

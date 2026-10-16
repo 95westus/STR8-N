@@ -25,6 +25,51 @@ Defects and hardware investigations are indexed in the
 
 This checkpoint supersedes older current-version statements for 2512 only.
 
+## Optional EDU component detection recorded 2026-10-14
+
+- [ ] Complete optional ATECC608A/B detection/status. Offline implementation
+  and 2604 RAM qualification were authorized on 2026-10-14. The current engine
+  is 778 bytes; the full adapter is 1,811 bytes. Twelve engine, 15 adapter and
+  two harness regression tests pass. 2604 reports an ATECC608B at $60; three
+  physical calls returned stable serial/lock status with clean Sleep and RTC
+  coexistence. Probe RAM was restored and all four flash banks are unchanged.
+  An initial host-loader restoration incident required user RESET; subsequent
+  recovery verified RAM and all flash, and load-only restoration is now tested.
+  October 15: a 992-byte RAM console client passes five display tests and ran
+  twice on 2604. It is deliberately left loaded at G 2800, with prior RAM
+  archived and COM5 released. Resident placement, saved-program packaging,
+  broader qualification and any installation remain pending.
+  [Detection/status plan](docs/STR8N_V2_CRYPTO_DETECTION_STATUS_PLAN_2026-10-14.md).
+  [Offline checkpoint](docs/STR8N_V2_CRYPTO_STATUS_OFFLINE_2026-10-14.md).
+  [Adapter checkpoint](docs/STR8N_V2_CRYPTO_ADAPTER_OFFLINE_2026-10-14.md).
+  [2604 qualification](docs/STR8N_V2_CRYPTO_2604_2026-10-14.md).
+  [RAM display](docs/STR8N_V2_CRYPTO_DISPLAY_2604_2026-10-15.md).
+
+- [ ] Add bounded detection and availability reporting for the optional crypto
+  IC. The RTCC is always fitted on an EDU board; SPI SRAM and crypto are
+  optional. The owner's boards currently have SPI SRAM and crypto installed;
+  do not assume those components are fitted on other users' boards. Report
+  crypto availability independently. Missing or unresponsive crypto must not
+  hang boot, stop the monitor or prevent available RTCC, flash storage or other
+  services from working; dependent operations must return a clear
+  unavailable/error result. Preserve existing missing-SRAM handling and EDU
+  ON/OFF behavior. Use device-appropriate probes that preserve retained data,
+  crypto keys/provisioning and RTCC state. Qualify present, absent and
+  unresponsive cases, including mixed component combinations, with bounded
+  failure tests. ADC detection is excluded from this work.
+  Offline implementation is authorized; physical qualification and installation
+  wait until boards are available.
+
+## Pending changes/fixes recorded 2026-10-11
+
+- [x] STR8N-005: qualified beta25's guarded F-only bootstrap on 2604.
+  Separate physical A/B paths, interrupted-upload RESET, explicit journal
+  provisioning/retry, normal update and restoration passed. Fixed F, unrelated
+  flash, full SRAM and repaired clock history were preserved; all 23 erases are
+  accounted. Linked models cover 123 journal and 11 slot program interruptions;
+  no physical mid-program electrical power cut is claimed.
+  [Issue details](docs/issues/F_ONLY_RECOVERY_BOOTSTRAP.md).
+
 ## Idea recorded 2026-10-10
 
 - [ ] Deferred idea: extend the SPI SRAM allocation display with an MAINT
@@ -33,6 +78,12 @@ This checkpoint supersedes older current-version statements for 2512 only.
   Recorded only at the user's request; implementation is not authorized.
 
 ## Release-candidate gates recorded 2026-10-09
+
+- [ ] STR8N-004 resumed October 14: qualify the separate BUILD/v2-fix004
+  APPS repair, retaining the local-only TIME candidate. Empty rows and malformed
+  names are handled safely; installed status uses the native-app validator.
+  Affected-board retest remains pending; no boards flashed for this work.
+  [Issue details](docs/issues/APPS_BETA23_NAMES.md).
 
 See [RC gates/reset messages](docs/STR8N_V2_RELEASE_CANDIDATE_PLAN_2026-10-09.md).
 Beta23/CLOCK 1.6 uploads and captured physical starts are verified on
@@ -71,13 +122,20 @@ Beta22 acceptance does not qualify beta23.
   pass. Ports were released by 21:49:19 with EDU ON/TRIM 0 and original offsets.
   Physical interruption of every in-flight byte is not claimed; frozen write-cut
   models and controlled retained-state hardware checks supply that scoped coverage.
-- [ ] Complete 48–72-hour hardware soak on 2604/2609 with unchanged fresh-NIST
-  drift baselines; 2512/2205 retain functional qualification without extended soak.
-  Bounded read-only exercise runs passed. The latest all-board drift snapshot
-  contains 21 retained checkpoints over about 24 hours; main power was confirmed
-  off at 18:13 CDT October 10 with backup batteries retained. Validation continues
-  through this retention segment and post-return checks; powered-on duration is
-  not claimed complete. [Current status](docs/STR8N_V2_BETA23_DRIFT_SOAK_2026-10-10.md).
+- [x] Complete the user-approved six-hour hardware exercise on 2604/2609:
+  October 11 16:09–22:09 CDT, 17 complete passes per board plus nine partial-pass
+  units; 298 recorded units each, 596 total. No unexpected failures; every SRAM
+  restoration verified, flash/EEPROM and retained RTC checks passed. Drift
+  collection remains active. [Results](docs/STR8N_BETA23_PRESERVING_SOAK_2026-10-11.md).
+- [ ] Original 48–72-hour elapsed-time soak qualification remains unfulfilled;
+  the user-shortened six-hour run does not establish that duration. 2512/2205
+  retain functional qualification without an extended soak claim.
+- [ ] After the current battery-drift comparison is complete, archive and verify
+  2604's existing EEPROM contents, then explicitly initialize only the ordinary
+  outage-history allocation for normal logging. The user agreed to this deferred
+  operation. Preserve factory EUI/protection, UTC and trim; retain the original
+  layout archive because initialization replaces it. Leave EEPROM/history and
+  the power-fail evidence untouched during the current comparison.
 - [ ] Reproduce/verify RC package, operator docs and backup-exclusion audit.
   Isolated frozen-source rebuild matches all 17 compared artifacts. Draft
   artifact bundle allowlist/CRC/hashes pass. A clean private snapshot checkout
@@ -702,3 +760,42 @@ transcript, and cold-boot proof.
 Task 1 is complete only when the external clone, Bank-0 WDCMONv2, clean
 Bank-3 STR8 system, Bank-1 example, and final full-device readback have all
 passed independently.
+
+## Beta25 installation recorded 2026-10-14
+
+- 2609: shared beta25 changes and only inactive MON B installed and qualified;
+  MON A remains byte-identical beta24 fallback. Eight model suites, exact
+  installer rehearsal, physical RESET, both monitor versions, four-bank flash
+  readback and complete retained-memory/device comparisons pass. 2604 untouched.
+  [Report](docs/STR8N_V2_BETA25_2026-10-14.md). STR8N-004 remains pending on
+  2604; STR8N-005 destructive F-only physical acceptance remains pending.
+
+## Clock repair, STR8N-005 and b4 upgrade completed 2026-10-14
+
+- [x] Repair 2604's foreign EEPROM history through explicit guarded clear/save;
+  preserve the latched outage, factory bytes, trim/control and retained SRAM.
+- [x] Physically qualify separate F-only A/B bootstrap and interrupted upload,
+  provision the journal explicitly, and restore original firmware and data.
+  STR8N-005 is closed; all 23 recovery/restoration erases are accounted.
+- [x] Add the published b4 source/layout to the unified beta25 launcher; qualify
+  both active-slot choices, collision/configuration refusals and commit order.
+  Physical b4 A -> beta25 B passed on 2604, followed by original beta24 A /
+  beta25 B restoration and final flash/SRAM/EEPROM/settings verification.
+  All 19 additional fixture/upgrade/restoration erases are accounted.
+  [Report](docs/STR8N_V2_B4_TO_BETA25_2026-10-14.md).
+- [ ] Qualify the separate legacy b1 conversion through the unified launcher;
+  this remains distinct from inactive-slot A/B updates.
+
+These results supersede earlier pending 004/005 and 2604 clock-history notes;
+original run transcripts and qualification receipts remain historical.
+
+## SDEMO removal completed 2026-10-14
+
+- [x] SDEMO is absent from all four boards. Removed the 30-byte B2:AF80 record
+  from 2205 and 2609 with one accounted B2:A erase each; 2512 and 2604 were
+  already clear and received no writes. Full repeated backups, exact MAINT
+  rehearsals, buffered-sector verification and complete post-write flash checks
+  preserve all other programs, both monitor slots and shared firmware. Clock
+  history/trim/EUI and external SRAM tables are unchanged. No reset required.
+  Evidence/current affected-board flash hashes:
+  output/qualification/remove-sdemo-2026-10-14/report.json.

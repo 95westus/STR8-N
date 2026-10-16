@@ -6,13 +6,47 @@ import re
 import time
 
 from beta4_migration import Link
+from rtc_prompt_sync import establish_b3
 from rtc_boards import SERIALS
 from serial.tools.list_ports import comports
+from qualify_v2_spi_install import load_image
+
+CLOCK18_SHA256 = 'd8be17416a7ac243873122dc4922833c7ca48c523f368e5c9d52ce27f926e02a'
+
+
+def launch_clock(link):
+    start = link.command('R CLOCK', b'> ')
+    if start.endswith(b'CLOCK> '):
+        return start
+    assert start.endswith(b'B3> ') and b'SR error 05' in start, 'Unexpected CLOCK launch failure'
+    # A saved flash CLOCK is optional. Stage the reviewed CLOCK 1.8 into
+    # ordinary CPU RAM only; validate its exact readback before execution.
+    image = Path(__file__).resolve().parents[1] / 'BUILD/v2-beta27/clock/clock.s19'
+    assert load_image(link, image) == CLOCK18_SHA256, 'Unrecognized diagnostic CLOCK image'
+    start += link.command('G 2000', b'CLOCK> ')
+    assert b'CLOCK 1.8' in start
+    return start
+
+
+def valid_time_display(output):
+    weekday = rb'(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)'
+    stamp = rb'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+    utc = rb'RTCC: UTC (?:' + weekday + rb' )?' + stamp
+    local = weekday + rb' ' + stamp + rb' \([+-]\d{2}:\d{2}\)'
+    return re.search(rb'(?m)^(?:' + utc + rb'|' + local + rb')\r?$', output) is not None
+
+
+def identity_fields(output):
+    match = re.search(rb'(?m)^(?:RTCC: )?EUI:? ([0-9A-F:]{17})(?:[ ,\r\n]|$)', output)
+    assert match, 'Factory EUI missing from CLOCK response'
+    assert b', changed' not in output and b'(changed' not in output, 'RTC identity changed'
+    return match[1].decode(), not (b', unbound' in output or b'(not remembered)' in output)
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root', required=True, type=Path)
+    p.add_argument('--board', action='append')
     p.add_argument('--baseline-index', type=Path, help='Verify current trim against this calibrated baseline index')
     args = p.parse_args()
     baseline_index = json.loads(args.baseline_index.read_text()) if args.baseline_index else {}
@@ -28,19 +62,15 @@ def main():
             excluded_from_campaign=True,hardware_checked=False,reason='User excluded: no fitted EDU/RTC',
             clock_set=False,trim_changed=False),indent=2)+'\n')
     for board in dict.fromkeys((() if '2512' in excluded else ('2512',)) + tuple(expected_steps)):
+        if args.board and board not in args.board: continue
         port = ports[SERIALS[board]]
         out = args.root / board
         out.mkdir(parents=True, exist_ok=True)
         with (out / 'status-serial.jsonl').open('a') as log:
             link = Link(port, log)
             try:
-                end = time.monotonic() + .3
-                while time.monotonic() < end:
-                    link.read(max(1, link.serial.in_waiting))
-                initial = link.command('', b'> ')
-                if b'CLOCK>' in initial or b'BM>' in initial:
-                    link.command('Q')
-                link.command('B3')
+                prompt_sync=establish_b3(link)
+                (out/'prompt-sync.json').write_text(json.dumps(prompt_sync,indent=2)+'\n')
                 if board in expected_steps:
                     descriptor=link.dump(0x7D04,0x7D0B)
                     active=link.dump(0x7D27,0x7D27)[0]
@@ -66,8 +96,8 @@ def main():
                     report['service_descriptor_hex'] = descriptor.hex()
                 else:
                     report.update(edu_mode='ON',active_edu_latch=active,service_descriptor_hex=descriptor.hex())
-                    assert re.search(rb'RTCC: UTC (?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) )?\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', output)
-                    start = link.command('R CLOCK', b'CLOCK> ')
+                    assert valid_time_display(output), 'Unrecognized TIME display; raw RTC check not yet performed'
+                    start = launch_clock(link)
                     (out / 'clock-start.txt').write_bytes(start)
                     status = link.command('STATUS', b'CLOCK> ')
                     (out / 'clock-status.txt').write_bytes(status)
@@ -82,8 +112,7 @@ def main():
                     control = baseline_boards.get(board, {}).get('control_register', 0x80)
                     assert not control & 0x7F, 'Coarse/alarm/output owner is outside normal drift analysis'
                     assert raw[7:9] == bytes([control, expected_raw]), 'Control/trim differs from baseline; inspect before plotting'
-                    eui = re.search(rb'EUI ([0-9A-F:]{17})', identity)[1].decode()
-                    bound = b', unbound' not in identity
+                    eui, bound = identity_fields(identity)
                     expected = baseline_boards.get(board, {})
                     assert b', changed' not in identity
                     assert bound == expected.get('identity_bound', True), 'Identity binding state differs from baseline'
@@ -99,4 +128,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    from serial_test_coordination import serial_lease
+    with serial_lease('drift'):main()
