@@ -73,6 +73,50 @@ Retain the ROM compatibility table, especially current RESET/HOLD paths, unless
 a measured alternative justifies its small saving and callers are audited.
 Prefer a stable public gateway over direct calls to private recovery validators.
 
+## Additional ABI direction recorded 2026-10-16
+
+Record these as design goals for 2.1; they do not expand beta32's stable-release
+scope or authorize flashing. Discussion of these operations remains separate
+from the already implemented offline discovery foundation.
+
+- Public operations for independent, opaque machine-code images: expose
+  deliberate service contracts, not every private helper. Explore build-time
+  service inclusion, runtime operation permissions and permitted address ranges.
+  Discovery should report permitted operations; each operation must also enforce
+  its policy. These software checks are cooperative safeguards, not a sandbox
+  against unrestricted machine code on the current CPUs. ATECC/signature-based
+  authentication remains deferred and would not provide memory isolation.
+- Byte and bounded block access, including convenient 16/32-byte transfers;
+  caller-selected lengths rather than mandatory block-sized operations. If
+  16/32 refers to bit widths, little-endian helpers are possible but not atomic
+  on the current CPUs. Flash erase remains physically 4096-byte sectors;
+  programming and erase/rewrite UPDATE must be distinct, explicit operations,
+  with authorized ranges, preservation, wear accounting and verification.
+- Initially a small named-object store built on saved-program storage, not a
+  general filesystem. Consider list/stat, open/close, read/seek, create/write,
+  delete and verified commit. Use handles, define partial-write/power-loss
+  behavior, and keep internal directory layouts private. Rename and in-place
+  update depend on a defined commit/recovery strategy.
+- CRC and/or FNV-1a for the named-object store are options to discuss, not an
+  algorithm selection. Distinguish payload/metadata corruption detection from
+  name lookup/indexing. Hash-based lookup still compares exact names; folded
+  indexes do not establish object identity. Neither CRC nor FNV authenticates an
+  image. Do not silently change existing on-storage formats or checksums.
+- Interrupt service operations to query/install/restore handlers; distinguish
+  IRQ, NMI and BRK, preserve register/frame/acknowledgement contracts and pointer
+  publication safety. Queue work for foreground services; do not make storage,
+  console or bus services IRQ-safe merely by listing them. Handlers needed while
+  flash is busy must execute from RAM.
+- A separately enabled debug service: controlled memory inspection/modification,
+  register snapshots, breakpoints, continue and possibly stepping. Avoid
+  side-effecting I/O reads, route flash changes through guarded services, and
+  permit optional symbols for opaque images. Debug grants broad control and
+  requires explicit owner enablement.
+
+The hourly reminder requested by the owner concerns resuming beta32 stable 2.0
+release preparation, not accepting the object-store/hash design. Hold release
+work while the owner discusses this idea. Keep the soak stopped and do not flash.
+
 ## Starting evidence and preservation
 
 The current hardware checkpoint has 2512 and 2609 on matching beta32 B, beta28 A,
