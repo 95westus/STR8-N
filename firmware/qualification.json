@@ -1,0 +1,78 @@
+{
+  "passed": true,
+  "cases": 11,
+  "checks": [
+    {
+      "name": "full 128 KiB image deterministic; 19 pinned components admitted, MON A/B and clean defaults included",
+      "passed": true
+    },
+    {
+      "name": "independent logical map, bank order and erased unowned/identity/history ranges",
+      "passed": true
+    },
+    {
+      "name": "overlapping payload range refused",
+      "passed": true
+    },
+    {
+      "name": "altered component pin refused",
+      "passed": true
+    },
+    {
+      "name": "MON-A-default",
+      "passed": true,
+      "selected_page": 160,
+      "model_processor": "W65C02",
+      "retained_devices_unchanged": true
+    },
+    {
+      "name": "MON-A-default utility/CLOCK BATCH on complete clean image",
+      "passed": true,
+      "retained_devices_unchanged": true
+    },
+    {
+      "name": "MON-B-operator-selection",
+      "passed": true,
+      "selected_page": 176,
+      "model_processor": "W65C02",
+      "retained_devices_unchanged": true
+    },
+    {
+      "name": "MON-B-operator-selection utility/CLOCK BATCH on complete clean image",
+      "passed": true,
+      "retained_devices_unchanged": true
+    },
+    {
+      "name": "MON-A-corrupt-fallback-B",
+      "passed": true,
+      "selected_page": 176,
+      "model_processor": "W65C02",
+      "retained_devices_unchanged": true
+    },
+    {
+      "name": "MON-B-corrupt-retain-A",
+      "passed": true,
+      "selected_page": 160,
+      "model_processor": "W65C02",
+      "retained_devices_unchanged": true
+    },
+    {
+      "name": "both-monitors-corrupt-recovery",
+      "passed": true,
+      "selected_page": null,
+      "model_processor": "W65C02",
+      "retained_devices_unchanged": true
+    }
+  ],
+  "image_sha256": "3583598b5252684f6098b499e57264bf5c83f4c156d99b10717adcd5ba3c4369",
+  "manifest_sha256": "15f75c6ffedc1c42fc73261712b6bb87561179af9e7b620d0cd2811367413d1e",
+  "composer_sha256": "7ed3c476a3527763c90b2f726a457c8f34275657e9d8af416baaf9cc4a916fc0",
+  "test_sha256": "f87068ac175d0546b5c9722da226de56beaf1e91a78ca508e0e2dc1c1218d954",
+  "model_processor": "W65C02",
+  "shared_CPU_hardware_receipt_sha256": "83c5ae9ec029c9fe0b70269c2fc8fc19b0f5aa5d8a7c2b3ff2519d5e94d5786f",
+  "CPU_compatibility": "Exact unchanged components previously checked on 65C02 and 65C816 E=1 hardware; new clean-layout CPU execution is W65C02 model only",
+  "new_full_image_hardware_installation": false,
+  "native_816_execution_tested": false,
+  "board_access": false,
+  "finished_utc": "2026-10-17T22:07:39.759298+00:00"
+}

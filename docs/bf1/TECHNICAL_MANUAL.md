@@ -151,3 +151,6 @@ The same firmware supports 65C02 and 65C816 emulation-mode runtime. Native
 816 applications/testing, ACIA and crypto remain deferred. The existing startup
 CPU detector briefly enters native mode before restoring emulation; this
 startup exception was explicitly accepted by the owner.
+
+
+Complete programmer image, bank layout and MON A/MON B naming: [full firmware image](../STR8N_BF1_FULL_FIRMWARE_IMAGE.md).

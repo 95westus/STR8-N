@@ -81,6 +81,25 @@
       "bytes": 22528
     }
   },
+  "distribution": "pilot prerelease; publication conditional on six-hour 2609 gate",
+  "full_release_qualified": false,
+  "generic_installation_permitted": false,
+  "RTC_target_ppm": 5,
+  "RTC_maximum_halfwidth_ppm": 2,
+  "RTC_minimum_segment_hours": 168,
+  "deferred": [
+    "native 816",
+    "ACIA",
+    "crypto"
+  ],
+  "derived_complete_image": {
+    "filename": "firmware/str8n-2.0bf1-firmware.bin",
+    "bytes": 131072,
+    "sha256": "3583598b5252684f6098b499e57264bf5c83f4c156d99b10717adcd5ba3c4369",
+    "shared_CPU_image": true,
+    "fresh_provisioning_only": true
+  },
+  "full_image_offline_cases": 11,
   "files": {
     "docs/bf1/ASM_GUIDE.md": {
       "bytes": 5397,
@@ -91,12 +110,12 @@
       "sha256": "1a6b4cc269fd8e9ae5a52ffbd047b32bc4752a6f6a86981d33cdf197bf951f58"
     },
     "docs/bf1/README.md": {
-      "bytes": 1847,
-      "sha256": "f27da370af326e0222bae0f79634bcefde36e57c1a1bd3e733429e722c8124ef"
+      "bytes": 1975,
+      "sha256": "90c1e1217e59dc051a5b0c15df99b478c75ff4d3fb088bace1769a875b6cb3ae"
     },
     "docs/bf1/TECHNICAL_MANUAL.md": {
-      "bytes": 9665,
-      "sha256": "0d2296e67d6abc73898b3ae115750f79e8b54ac3d0a029703479506c6e83cdd1"
+      "bytes": 9793,
+      "sha256": "10907cc26309416b0a1c18a5959a72dc8eadf29610bfba67636e271559bf8a0e"
     },
     "docs/bf1/USER_GUIDE.md": {
       "bytes": 6621,
@@ -114,21 +133,49 @@
       "bytes": 4238,
       "sha256": "ba55abd6086d5a9d31cacbdfca6dab64c16d7de07603506e1bf540e66855d48f"
     },
+    "docs/STR8N_BF1_FULL_FIRMWARE_IMAGE.md": {
+      "bytes": 3529,
+      "sha256": "68524f9dfb994b7a3e6b6ed37ff0d1e5e318635cd64589a9ae6d681b7bd118a9"
+    },
     "docs/STR8N_V2_BATCHFIX_R1.md": {
       "bytes": 1669,
       "sha256": "429b4743671e03ef0f8f5f20c5817d6f244450a47817871753c6759f45016b6a"
+    },
+    "firmware/firmware-layout.json": {
+      "bytes": 5434,
+      "sha256": "15f75c6ffedc1c42fc73261712b6bb87561179af9e7b620d0cd2811367413d1e"
+    },
+    "firmware/full-image-reference.json": {
+      "bytes": 2900,
+      "sha256": "d0f3fa414bab2adff3a9fab472b1a1d1d7676a20f885ec7bded5e090c573fa2d"
+    },
+    "firmware/qualification.json": {
+      "bytes": 2606,
+      "sha256": "48ee4a681e76a78c366e56bf281360dbe8d8bbe60cc4ce74f7c223e75beb26bd"
+    },
+    "firmware/str8n-2.0bf1-firmware.bin": {
+      "bytes": 131072,
+      "sha256": "3583598b5252684f6098b499e57264bf5c83f4c156d99b10717adcd5ba3c4369"
+    },
+    "firmware/str8n-2.0bf1-firmware.sha256": {
+      "bytes": 93,
+      "sha256": "29656d1ea232b0d4093b78d2300bcb2955593484a149ebd9feecc07d4680cba5"
     },
     "LICENSE": {
       "bytes": 1095,
       "sha256": "f36167e1783bfec310980f0000b92037655145833a26c6a325f6712dcebc73f2"
     },
     "README.md": {
-      "bytes": 1834,
-      "sha256": "171157baf79797bee0aaa3b5fd44137d26ddfd61ba83df9dc9dce4325dfc5ac2"
+      "bytes": 2943,
+      "sha256": "9661b0bb7c594efe66a7a79a16d9373b012d960103ac7c07aaa167ad0ec96fdb"
     },
     "reference-build.json": {
       "bytes": 13302,
       "sha256": "04bc75959e8e767965209801a662606b7cd9408ee47ac83c7e19298d80445b9e"
+    },
+    "release/bf1-prerelease/build_full_image.py": {
+      "bytes": 5250,
+      "sha256": "7ed3c476a3527763c90b2f726a457c8f34275657e9d8af416baaf9cc4a916fc0"
     },
     "release/candidates/batchfix-r1/build.py": {
       "bytes": 16676,
@@ -614,16 +661,5 @@
       "bytes": 21414,
       "sha256": "d1d39b64f6ebc708ed679b248959723451ddd9d2ae4d7df110dc308c0a850572"
     }
-  },
-  "distribution": "pilot prerelease; publication conditional on six-hour 2609 gate",
-  "full_release_qualified": false,
-  "generic_installation_permitted": false,
-  "RTC_target_ppm": 5,
-  "RTC_maximum_halfwidth_ppm": 2,
-  "RTC_minimum_segment_hours": 168,
-  "deferred": [
-    "native 816",
-    "ACIA",
-    "crypto"
-  ]
+  }
 }

@@ -26,3 +26,6 @@ coverage and final candidate acceptance remain open. These drafts do not authori
 measurements; 2609 now has an owner-authorized six-hour preserving soak, then returns to RTC-only collection. Snapshots
 cover all three powered boards against the immutable baseline. 2205 remains off. Clocks and trims remain unchanged; persistent monitor/wear changes belong only to the documented installation/recovery transactions. Examples run
 offline; do not compete for campaign RAM or serial ports.
+
+
+Complete programmer image, bank layout and MON A/MON B naming: [full firmware image](../STR8N_BF1_FULL_FIRMWARE_IMAGE.md).

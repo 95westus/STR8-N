@@ -1,0 +1,184 @@
+{
+  "version": "2.0bf1",
+  "generation": 48,
+  "filename": "str8n-2.0bf1-firmware.bin",
+  "bytes": 131072,
+  "sha256": "3583598b5252684f6098b499e57264bf5c83f4c156d99b10717adcd5ba3c4369",
+  "bank_order": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "bytes_per_bank": 32768,
+  "CPU_window": "8000-FFFF",
+  "offset_formula": "bank*32768 + CPU_address - 0x8000",
+  "processor_scope": "65C02 and 65C816 emulation runtime",
+  "startup_detector_exception": "Unchanged F30D CPU detection briefly enters native mode then restores E=1",
+  "default_monitor": "MON A",
+  "alternate_monitor": "MON B",
+  "MON_A": {
+    "bank": 3,
+    "address": 40960,
+    "file_offset": 106496
+  },
+  "MON_B": {
+    "bank": 3,
+    "address": 45056,
+    "file_offset": 110592
+  },
+  "configuration": "fresh deterministic defaults, MON A generation 48",
+  "wear_history": "fresh provisioning baseline, not existing-device lifetime counts",
+  "erased_fill": 255,
+  "no_board_capture_inputs": true,
+  "no_device_identity_in_image": true,
+  "no_EEPROM_SRAM_or_RTC_image": true,
+  "ranges": [
+    {
+      "bank": 1,
+      "address": 45056,
+      "offset": 45056,
+      "bytes": 12288,
+      "source": "clock/storage.bin",
+      "source_offset": 0,
+      "sha256": "038d938981a79cae336432e7729b0d82fe1b9c95f0bdb0fac22d2c73c3864ceb"
+    },
+    {
+      "bank": 1,
+      "address": 57344,
+      "offset": 57344,
+      "bytes": 4096,
+      "source": "assembler/asm-e000.bin",
+      "source_offset": 0,
+      "sha256": "4d6bf286f9204e63c298ea9797a3e8fe76dc87c18cec5f59343d7bccc2184acb"
+    },
+    {
+      "bank": 1,
+      "address": 61440,
+      "offset": 61440,
+      "bytes": 4096,
+      "source": "assembler/vectors-f000.bin",
+      "source_offset": 0,
+      "sha256": "9b8a59d055cfb85d99d6edf9b954c5c275f8aeaeb0d37e95305a63d141e250f4"
+    },
+    {
+      "bank": 2,
+      "address": 32768,
+      "offset": 65536,
+      "bytes": 22528,
+      "source": "xip/utilities.bin",
+      "source_offset": 0,
+      "sha256": "cd228bf8aa0a8ebeb434ab42853418b4ea71d75381f04e9d2cf1ad31dcf5deea"
+    },
+    {
+      "bank": 2,
+      "address": 55296,
+      "offset": 88064,
+      "bytes": 2560,
+      "source": "boot-status/asset.bin",
+      "source_offset": 0,
+      "sha256": "3c1bdc224fd00a2c2b95dafe0615ae128c7525b3156770fcb0f8d7450bf0427b"
+    },
+    {
+      "bank": 2,
+      "address": 57856,
+      "offset": 90624,
+      "bytes": 2560,
+      "source": "battery/asset.bin",
+      "source_offset": 0,
+      "sha256": "6c7933aefd37b263cedbef05c5aa145bb428de76b8ad891b6307aab22b040b9d"
+    },
+    {
+      "bank": 2,
+      "address": 61440,
+      "offset": 94208,
+      "bytes": 1792,
+      "source": "local-display/asset.bin",
+      "source_offset": 0,
+      "sha256": "462fa9096c41a9c0efdf9c823406012cd99b2ba949770d53aa4e7438aa3336d8"
+    },
+    {
+      "bank": 2,
+      "address": 63488,
+      "offset": 96256,
+      "bytes": 2048,
+      "source": "version/asset.bin",
+      "source_offset": 0,
+      "sha256": "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa"
+    },
+    {
+      "bank": 3,
+      "address": 32768,
+      "offset": 98304,
+      "bytes": 4096,
+      "source": "str8n-rtc-component-8000-8fff.bin",
+      "source_offset": 0,
+      "sha256": "bfc9000f84890666f256828b5207643bb3f285db6bdd25e753c516ee15509811"
+    },
+    {
+      "bank": 3,
+      "address": 36864,
+      "offset": 102400,
+      "bytes": 4096,
+      "source": "str8n-journal-9000-9fff.bin",
+      "source_offset": 0,
+      "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5"
+    },
+    {
+      "bank": 3,
+      "address": 40960,
+      "offset": 106496,
+      "bytes": 4096,
+      "source": "str8n-v2-recovery-slot-a0.bin",
+      "source_offset": 0,
+      "sha256": "2a5b758544afde7ccfd7069b27eda052fe3c35668e5a81fded98f0a5527be9ae"
+    },
+    {
+      "bank": 3,
+      "address": 45056,
+      "offset": 110592,
+      "bytes": 4096,
+      "source": "str8n-v2-recovery-slot-b0.bin",
+      "source_offset": 0,
+      "sha256": "02296e92d43e696eacfb98747b27eecbdf89afac9a26dc103c02b7df31fb611f"
+    },
+    {
+      "bank": 3,
+      "address": 57344,
+      "offset": 122880,
+      "bytes": 4096,
+      "source": "str8n-v2-recovery-e000-efff.bin",
+      "source_offset": 0,
+      "sha256": "32c9daf3eb43d5d2c12e85785ab4fe50cf3d31ff059982855d24c773e9c14661"
+    },
+    {
+      "bank": 3,
+      "address": 61440,
+      "offset": 126976,
+      "bytes": 4096,
+      "source": "str8n-v2-recovery-f000-ffff.bin",
+      "source_offset": 0,
+      "sha256": "aff5874806721137ec7677beb2e80c0db7c3f563f8027967db4b898554a34028"
+    },
+    {
+      "bank": 3,
+      "address": 49152,
+      "offset": 114688,
+      "bytes": 128,
+      "source": "fresh deterministic configuration/wear record",
+      "sha256": "6f4404d1d8ccb4c1aba7e0f0441a7cd203094207a3d268484b07197d4131c49f"
+    }
+  ],
+  "reference_sha256": "7ea506dc849c63bf1448dff8e2665ca91acc81b1b6a36c588905675f1ece71ed",
+  "composer_sha256": "7ed3c476a3527763c90b2f726a457c8f34275657e9d8af416baaf9cc4a916fc0",
+  "fresh_provisioning_only": true,
+  "preserving_upgrade": false,
+  "full_release_qualified": false,
+  "hardware_flash_performed": false,
+  "board_access": false,
+  "deferred": [
+    "native 816 applications/tests",
+    "ACIA",
+    "crypto"
+  ]
+}
