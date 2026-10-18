@@ -1,0 +1,158 @@
+; Explicit RAM utility for otherwise-unprovisioned C/D. No erase operations.
+; Restart after a power cut by L-loading this same S19 and confirming again.
+ MODULE BOOTSTRAP_JOURNAL
+ XDEF APP_END
+ INCLUDE "str8n-v2-eq.inc"
+ INCLUDE "str8n-v2-public.inc"
+ CODE
+ENTRY:
+ SEI
+ CLD
+ LDX #3
+CORE_CHECK:
+ LDA BOOT_COMPAT,X
+ CMP EXPECTED_CORE,X
+                        BEQ BM_LONG_14
+                        JMP REFUSED
+BM_LONG_14:
+ DEX
+                        BPL CORE_CHECK
+ LDA #3
+ JSR V2W_SELECT
+ JSR PREFLIGHT
+                        BCC REFUSED
+ LDX #<CONFIRM
+ LDY #>CONFIRM
+ JSR PRINT
+ JSR STR8V2_RAM_GETC
+ CMP #'Y'
+                        BNE CANCELED
+ JSR STR8V2_RAM_GETC
+ CMP #13
+                        BNE CANCELED
+ ; Recheck after confirmation, before the first mutation.
+ JSR PREFLIGHT
+                        BCC REFUSED
+ LDA #1
+ STA V2_NMI_HOLD
+ STZ V2_FLASH_PTR
+ LDA #$C0
+ STA V2_FLASH_PTR+1
+ STZ INDEX
+WRITE_NEXT:
+ LDX INDEX
+ LDA INITIAL_RECORD,X
+ LDY #0
+ CMP (V2_FLASH_PTR),Y
+                        BEQ WRITE_SKIP
+ STA V2_FLASH_DATA
+ JSR V2W_BYTE
+                        BCC WRITE_FAILED
+WRITE_SKIP:
+ INC V2_FLASH_PTR
+ INC INDEX
+ LDA INDEX
+ CMP #$7F
+                        BNE WRITE_NEXT
+ ; Verify every body/reserved byte before publishing the commit.
+ LDX #0
+VERIFY_BODY:
+ LDA $C000,X
+ CMP INITIAL_RECORD,X
+                        BNE WRITE_FAILED
+ INX
+ CPX #$7F
+                        BNE VERIFY_BODY
+ LDA $C07F
+                        BEQ COMMITTED
+ STZ V2_FLASH_DATA
+ JSR V2W_BYTE
+                        BCC WRITE_FAILED
+COMMITTED:
+ STZ V2_NMI_HOLD
+ JSR PREFLIGHT
+                        BCC REFUSED
+ LDA $C07F
+                        BNE REFUSED
+ LDX #<DONE
+ LDY #>DONE
+                        JMP REPORT
+WRITE_FAILED:
+ STZ V2_NMI_HOLD
+REFUSED:
+ LDX #<FAIL
+ LDY #>FAIL
+                        JMP REPORT
+CANCELED:
+ LDX #<CANCEL_TEXT
+ LDY #>CANCEL_TEXT
+REPORT:
+ JSR PRINT
+ JMP STR8V2_RAM_HOLD
+
+; First record must be an exact prefix of our byte-programming sequence;
+; FF-valued template bytes remain FF. Everything after that record is blank.
+PREFLIGHT:
+ STZ GAP
+ LDX #0
+CHECK_RECORD:
+ LDA $C000,X
+ CMP INITIAL_RECORD,X
+                        BEQ CHECK_EQUAL
+ CMP #$FF
+                        BNE BAD
+ INC GAP
+                        BRA CHECK_NEXT
+CHECK_EQUAL:
+ CMP #$FF
+                        BEQ CHECK_NEXT
+ LDA GAP
+                        BNE BAD
+CHECK_NEXT:
+ INX
+                        BPL CHECK_RECORD
+ LDA #$80
+ STA V2_PTR
+ LDA #$C0
+ STA V2_PTR+1
+ LDY #0
+CHECK_TAIL:
+ LDA (V2_PTR),Y
+ CMP #$FF
+                        BNE BAD
+ INC V2_PTR
+                        BNE CHECK_TAIL
+ INC V2_PTR+1
+ LDA V2_PTR+1
+ CMP #$E0
+                        BNE CHECK_TAIL
+ SEC
+ RTS
+BAD:
+ CLC
+ RTS
+PRINT:
+ STX V2_BUF_PTR
+ STY V2_BUF_PTR+1
+ LDY #0
+PRINT_NEXT:
+ LDA (V2_BUF_PTR),Y
+                        BEQ PRINT_DONE
+ PHY
+ JSR STR8V2_RAM_PUTC
+ PLY
+ INY
+                        BRA PRINT_NEXT
+PRINT_DONE:
+ RTS
+INDEX: DB 0
+GAP: DB 0
+CONFIRM: DB 13,10,"INIT blank journal? Y then Enter> ",0
+DONE: DB 13,10,"Journal initialized; W checks counts, J3 restarts.",13,10,0
+FAIL: DB 13,10,"REFUSED: core/journal mismatch or write failure.",13,10,0
+CANCEL_TEXT: DB 13,10,"Canceled.",13,10,0
+ INCLUDE "bootstrap-symbols.inc"
+ INCLUDE "initial-record.inc"
+APP_END:
+ ENDMOD
+ END

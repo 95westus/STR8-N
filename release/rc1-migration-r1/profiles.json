@@ -1,0 +1,24 @@
+{
+  "wdcmonv2": {
+    "identity_hex": "535842322c010000c8000000",
+    "source_sha256": "2f0000c74eceec809a814e31f822702977d7bfed5ee6f3bc4869627864ca59a8",
+    "outside_journal_sha256": "63cf1abe9bfb9380cad845789705047c99728bbc30e01dfef71172e9413b9d76",
+    "scope": "Exact SXB2 HW3.00 MON2.00 diagnostic/monitor image; other vendor images refused",
+    "cpu": "65C02"
+  },
+  "beta4": {
+    "version": "2.0b4",
+    "generation": 13,
+    "archive_sha256": "4c25bc576cbc32efd04aeea4fe80c68544a50b80685d12bfcf1e44122bacbc14",
+    "maintenance_sha256": "6f9771a691f5f5ef64ae7bc63fa583d61839e6f0f2b96b6625de9dc55eac94d3",
+    "monitor_A_sha256": "d05e0cba42b13d5fcaf097e0f6c9182931a0f5693844dc3c10242c501c1ac465",
+    "monitor_B_sha256": "8196325cd869bec9653dd1971f0d4aed62a9c9317cb70848f7961e733fe9ea12",
+    "E_sha256": "b290082a3a4b633be718b2f3f474d07e4559b9005265e16b5a656cff8c699d33",
+    "F_sha256": "be0c53e1700eb7f35daa556cd07a52f1ee037ff43bfd940d36c6e3a19bbe9962"
+  },
+  "wdcmonv2_65c816": {
+    "cpu": "65C816",
+    "source_sha256": "1398d9551f7072ff36203307f55b7e41204f2579ce667515920a2703845eef94",
+    "scope": "Exact owner-local original 65C816 WDCMONV2 plus SPI/EDU image; no vendor bytes included"
+  }
+}

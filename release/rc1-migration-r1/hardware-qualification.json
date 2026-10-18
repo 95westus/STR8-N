@@ -1,0 +1,62 @@
+{
+  "schema": 2,
+  "version": "2.0rc1",
+  "generation": 49,
+  "prior_engine_hardware_passed": true,
+  "prior_hardware_version": "2.0bf1",
+  "rc1_hardware_tested": false,
+  "target_model_passed": true,
+  "portable_transport_tests_passed": true,
+  "live_WDC_debugger_identities": [
+    "SXB6"
+  ],
+  "evidence_sha256": {
+    "2609-WDC-to-full-bf1": "43d36c227d4bf4f5a00fa57c4e2d9add2449ba0187287ff6bd13f2f6faff7d76",
+    "2604-beta4-to-full-bf1": "870238c22a6fb1d882c6fb3c5d6e8e3b84b8116fbe33d0e128a5ab7671cd1323",
+    "2609-full-bf1-checks-r3": "a8f53de0f221a7cf57c7bd1e0f6dc169cf1deae79942c1f5fd796377035aea4f",
+    "2604-full-bf1-checks": "618c402583f9002c63ea3d5e10120d31e97a972948d4d501907ae53605c907e6",
+    "bf1-live-transport-tests-2026-10-18-r1": "fc28e733726a57271edfcdbede5b773578f333aa84799d5f1739cd8ae9671276",
+    "bf1-public-empty-bank-models-2026-10-18-r1": "e10c36ceee7c8ca9f5b3795f5c2a7015143733832408ab15a043fef3027410a3",
+    "bf1-public-beta4-recovery-models-2026-10-18-r1": "f4e4ea9810a603337026991ca4967a5e5247b4ad854091dd06501220d575549a"
+  },
+  "scope": "Exact SXB6 original WDC or published beta4 in B3; erased B0/B1/B2; version-only rc1 target",
+  "limitations": [
+    "rc1 target offline model qualification; inherited bf1 engine hardware evidence",
+    "Linux physical serial migration not performed",
+    "RTC issue deferred",
+    "Occupied-bank upgrades not admitted",
+    "Early WDC cuts require an external programmer"
+  ],
+  "required_files": {
+    "applications/uchess-record.bin": "cfa9b1d37bed71f909fb6f750e91eff65aaf100029c0eb440438fb8de67d81eb",
+    "factory-template/bootstrap-template.s19": "62f7054f207e240677305df0cc97fd814ad31a542778ae3b66489a8a14f9dd18",
+    "factory-template/manifest.json": "f7462c2fa93116e6be39e02860b0f2d31b476c66069e65b42ca490c4442b7460",
+    "factory_recover.py": "409f6dac74fe2525129656d25a9c32a1f085cb42092859202f87cac8c9c120a8",
+    "factory_wdc.py": "1e162e10fb3a4147605aced42bb295e88bc11d0a05fe8b5180956243787e9c0c",
+    "install_transport.py": "02266442973c12b1faf288826162e80dcc725cb881c85550cef8576b1986085a",
+    "layout.json": "748d86bbce6e8ae25ebeef8fad60605b72dcc4428a80c624884b50c47078aa66",
+    "legacy_transport.py": "ed09adaa8bc64fb9e03747d8a758424cd06bf505890e808da7f2b3b4dee6029d",
+    "migrate.py": "01041325945176d3e157926c684016117e9e958405032f8138fad8fa8d9c67cc",
+    "payload/assembler/asm-e000.bin": "18b0236b659b18697b34060b3adb4d4f99d60b1c1408ae2a58a6516bf74ce270",
+    "payload/assembler/vectors-f000.bin": "9b8a59d055cfb85d99d6edf9b954c5c275f8aeaeb0d37e95305a63d141e250f4",
+    "payload/battery/asset.bin": "6c7933aefd37b263cedbef05c5aa145bb428de76b8ad891b6307aab22b040b9d",
+    "payload/boot-status/asset.bin": "3c1bdc224fd00a2c2b95dafe0615ae128c7525b3156770fcb0f8d7450bf0427b",
+    "payload/clock/storage.bin": "038d938981a79cae336432e7729b0d82fe1b9c95f0bdb0fac22d2c73c3864ceb",
+    "payload/local-display/asset.bin": "462fa9096c41a9c0efdf9c823406012cd99b2ba949770d53aa4e7438aa3336d8",
+    "payload/str8n-journal-9000-9fff.bin": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5",
+    "payload/str8n-rtc-component-8000-8fff.bin": "bfc9000f84890666f256828b5207643bb3f285db6bdd25e753c516ee15509811",
+    "payload/str8n-v2-recovery-e000-efff.bin": "32c9daf3eb43d5d2c12e85785ab4fe50cf3d31ff059982855d24c773e9c14661",
+    "payload/str8n-v2-recovery-f000-ffff.bin": "aff5874806721137ec7677beb2e80c0db7c3f563f8027967db4b898554a34028",
+    "payload/str8n-v2-recovery-slot-a0.bin": "56324dca2c12bce3e58a73c64c8178d782e81d08a78a6473d3467bf1c8cf1791",
+    "payload/str8n-v2-recovery-slot-b0.bin": "49644b3f7e475b9d90b1956e11ea141375df8de62093c505b0ca81e28f59d23d",
+    "payload/version/asset.bin": "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa",
+    "payload/xip/utilities.bin": "cd228bf8aa0a8ebeb434ab42853418b4ea71d75381f04e9d2cf1ad31dcf5deea",
+    "profiles.json": "213e505ea3a35606e8720970e57611328e2c01a088beeef63dc44431941c1588",
+    "recover.py": "4bad3fbfbe0ddba00343d8be284d5e615295eafafb874cbf4a3b3b2806b66fc2",
+    "runtime.py": "3b08a2fcbc55110dbcbd201327a4437d26a8a0011c773b424c253055c3028e42",
+    "template/integrated-template.s19": "13e73e67b0305c238f23fca4d0cd1e07579a4f989acca9f61f3376549934ba7e",
+    "template/manifest.json": "adc0cb03639d9e0076d100364bcc59bf77f3c684b8cbcc9baa6b1f61aa12ae16",
+    "user_cli.py": "65729f4b643a5909ac7ea7a1a474a5b908958511cc79f359db206f691d68c8c4",
+    "workflow.py": "e01496898f984ec604d9d740bdc16218ada8f4fd5d2542f76223d1b626a18562"
+  }
+}

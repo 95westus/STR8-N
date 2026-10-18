@@ -1,0 +1,12 @@
+{
+  "parent": "v2.0bf1",
+  "parent_candidate": "batchfix-r1",
+  "version": "2.0rc1",
+  "generation": 49,
+  "source_code_unchanged": true,
+  "changes": [
+    "monitor banner version",
+    "monitor descriptor generation and dependent CRCs"
+  ],
+  "board_access": false
+}

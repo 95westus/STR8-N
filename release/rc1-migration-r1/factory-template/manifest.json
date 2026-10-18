@@ -1,0 +1,15 @@
+{
+  "count": 9191,
+  "commit_after": 9192,
+  "banks": 9475,
+  "commits": 9451,
+  "commit_addresses": 9248,
+  "commit_values": 9224,
+  "table": 9499,
+  "passed": true,
+  "integrated_sha256": "62f7054f207e240677305df0cc97fd814ad31a542778ae3b66489a8a14f9dd18",
+  "entry_65C02": 8192,
+  "entry_65C816": 14080,
+  "native_entry_bytes": "38fb78d8a2ff9af400002b4bab4c0720",
+  "kind": "factory-no-journal-bootstrap"
+}
