@@ -1,0 +1,392 @@
+{
+  "source/core/str8n-v2-worker.asm": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-worker.asm",
+    "sha256": "8890fb9d97414b330a0c5cd6fb2f74acb7913ad3297d0bb0d2f89fd573108307"
+  },
+  "source/core/str8n-v2-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-eq.inc",
+    "sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467"
+  },
+  "source/core/service-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/service-eq.inc",
+    "sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a"
+  },
+  "source/core/str8n-v2-flash-worker.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-flash-worker.inc",
+    "sha256": "663cb35e8c96e94df4774be5f7608b398131828e5b978e372cc13a8e59d1f7f6"
+  },
+  "source/core/str8n-v2-ram-console.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-ram-console.inc",
+    "sha256": "e38a42fd17016f07d40973665adbc2a01c9079d61e661e5f31f7e56ba3d2f752"
+  },
+  "source/core/str8n-v2-vectors.asm": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-vectors.asm",
+    "sha256": "a5baf0ee08d4edc976a7aa9f6ce16aa89e7d17831ef28b4c3e0d30542e5dfaf7"
+  },
+  "source/core/str8n-v2-public.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-public.inc",
+    "sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5"
+  },
+  "source/core/worker-public-symbols.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/worker-public-symbols.inc",
+    "sha256": "8c09932ee35acff370ddbaa04df3004efb8f4b58850af944f3cf2f0cd0dfd5f7"
+  },
+  "source/core/str8n-v2-boot.asm": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-boot.asm",
+    "sha256": "974f699124271068e39b7add4448f870f293cd64811d35d5a83fd8e290fae098",
+    "from_sha256": "a88ef4907c7b33e0b2e8d54a940100328b72389f8ac72bf35840030152737cdc",
+    "transformation": "Explicit F30D selector profile from build_v2_beta25_profile.py"
+  },
+  "source/core/vectors-symbols.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/vectors-symbols.inc",
+    "sha256": "5bc6913eb9afdc034a1170559b621dc932d401f6418b1069208642d0e8ad7816"
+  },
+  "source/core/sr-stubs.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/sr-stubs.inc",
+    "sha256": "d090510b6f54eb09a870c941dbdfe9691422d691b07f7078172ebcff8ee6b5a4"
+  },
+  "source/core/worker-copy.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/worker-copy.inc",
+    "sha256": "018493e3f0ce60fbf6c93df3a5836e55a5e78459e7606aeba53ed32b232ef8a9"
+  },
+  "source/core/str8n-v2-journal.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-journal.inc",
+    "sha256": "6f36c93774a2a7dbb9fa1eb8667189994e20a21aad026079b6730ee0cbc0b3fc"
+  },
+  "source/core/str8n-v2-sr.asm": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-sr.asm",
+    "sha256": "9728c05b1749bb1072c75fd73069e5aeb5682baed1333b91f22f35da32c819fa"
+  },
+  "source/core/sr-monitor-symbols.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/sr-monitor-symbols.inc",
+    "sha256": "fa5d0ef21572287c02fd436f3c5e74fd3d1fb2c094092e89881b8952f38441c1"
+  },
+  "source/core/monitor-b0.asm": {
+    "from": "BUILD/v2-beta35-candidate/asm/monitor-b0.asm",
+    "sha256": "f54da9cd04502379fb52a5143ca874a95a7f5221acb1e3bcbd1c5ed892194cb3"
+  },
+  "source/core/text-ids.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/text-ids.inc",
+    "sha256": "6432b7ba652c5bf2d1ec16baabc757aa95b791109924d3b16b49e87dd860689c"
+  },
+  "source/core/boot-symbols.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/boot-symbols.inc",
+    "sha256": "f9be3f6f5f44c0b9923aa23d537bb2b0788b014daf27717da21636028a197d8f"
+  },
+  "source/core/app-fixed-symbols.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/app-fixed-symbols.inc",
+    "sha256": "95f154ed92569321e4e1a9232f38405227a980b2da6d3335e98e12a6801238cb"
+  },
+  "source/core/str8n-v2-monitor.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-monitor.inc",
+    "sha256": "8d283bb0c3207a882bd4be6dc5ca2d51bb581e297d4ecdb6a7fc275153f3eb9f"
+  },
+  "source/core/str8n-v2-load.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-load.inc",
+    "sha256": "f2bb91abe4e17df65b2c00038589ced5a0cd3a4fa85f7a90509c9c85bd547170"
+  },
+  "source/core/str8n-v2-flash.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-flash.inc",
+    "sha256": "257e79f85279ff377a94b1a9e9ce1b01d69dacecd749df90993bc73e0fab84c0"
+  },
+  "source/core/str8n-v2-config.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-config.inc",
+    "sha256": "8c879d38cebc3728b6847f3891758a15b817109526beb57e191c1175af7ab195"
+  },
+  "source/core/launcher.asm": {
+    "from": "BUILD/v2-beta35-candidate/asm/launcher.asm",
+    "sha256": "4378b58ccbdd44acc0a4bdc02a8a15d94700441273d7ac123a04bebf45e23e07"
+  },
+  "source/core/app-text-ids.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/app-text-ids.inc",
+    "sha256": "280d040df2dc63d1276e3893ff14bb640af825fb4bf8df4da9a9539a143dec1b"
+  },
+  "source/core/app-legacy-dispatch.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/app-legacy-dispatch.inc",
+    "sha256": "f18cb015254ac6e55600e3889de642403187f59487dec7493cc67793e26fd511"
+  },
+  "source/core/service-kernel.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/service-kernel.inc",
+    "sha256": "df6fe69be35a193b5ca2b5bf7e64d1bb1a8b3e2295cd9ba0fcd32e9630c3f1f7"
+  },
+  "source/core/app-list-check.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/app-list-check.inc",
+    "sha256": "4d4193a5bfbc8c70828101ebe7ba29607a888755b9b7ef02eaf301673ba49e35"
+  },
+  "source/provider/rtc-provider.asm": {
+    "from": "BUILD/v2-beta35-candidate/resident-provider/asm/rtc-provider.asm",
+    "sha256": "13a01514f98f81ab0deb2feb331bab341724fb56ef9c509c14e7adb6dcc6fde6"
+  },
+  "source/provider/rtc-api.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-provider/source/rtc-api.inc",
+    "sha256": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332"
+  },
+  "source/provider/i2c-api.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-provider/source/i2c-api.inc",
+    "sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c"
+  },
+  "source/provider/i2c-transport.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-provider/source/i2c-transport.inc",
+    "sha256": "4df7bd2d9a994f5b3c36d44eec165edd087e9399977b564e7ef2bdc8d376582c"
+  },
+  "source/provider/eeprom-transfer.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-provider/source/eeprom-transfer.inc",
+    "sha256": "37a4dd3799e8120c3c43083b9c4868b7c49180610d58d1d48035e96c6685020a"
+  },
+  "source/provider/spi-links.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-provider/source/spi-links.inc",
+    "sha256": "a5a7981a21cbd226e3d568264458335ddbc552cf35ed0da37e1f1a3727cf7c77"
+  },
+  "source/gateway/rtc-gateway.asm": {
+    "from": "BUILD/v2-beta35-candidate/resident-gateway/asm/rtc-gateway.asm",
+    "sha256": "87009287721a4b22e721bb4036c1c2d9c0a70da58cf6afec0eb81c5a214d43da"
+  },
+  "source/gateway/rtc-api.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-gateway/source/rtc-api.inc",
+    "sha256": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332"
+  },
+  "source/gateway/i2c-api.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-gateway/source/i2c-api.inc",
+    "sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c"
+  },
+  "source/gateway/split-defs.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-gateway/source/split-defs.inc",
+    "sha256": "c0fc257a75e18a67df38913154a4f2a1e8adde72dfce9cbdd8cd8bebfbf85647"
+  },
+  "source/journal/journal.asm": {
+    "from": "BUILD/v2-beta35-candidate/resident-journal/asm/journal.asm",
+    "sha256": "744eed5c024b976f9fa65a5222db41178ff3b415697d2e80373cd92cb326af8c"
+  },
+  "source/journal/kernel-rtc-api.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-journal/source/kernel-rtc-api.inc",
+    "sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e"
+  },
+  "source/journal/journal-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-journal/source/journal-eq.inc",
+    "sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285"
+  },
+  "source/journal/journal-transport.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-journal/source/journal-transport.inc",
+    "sha256": "35a28d730304cc5832d9cfa272eca2b0ebfd822b09c32e5fd61fbd4dba375672"
+  },
+  "source/journal/binding.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-journal/source/binding.inc",
+    "sha256": "3b449d91c9a4b4df36615fd7d0c2521b0c482b14a5b53e55aa47f47caa28476f"
+  },
+  "source/journal/spi-links.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-journal/source/spi-links.inc",
+    "sha256": "8fb58fbb43d9325814b15e4bb1f86855eca6320ccf3fd9a35eee579355e0834b"
+  },
+  "source/banner/rtc-banner.asm": {
+    "from": "BUILD/v2-beta35-candidate/resident-banner/asm/rtc-banner.asm",
+    "sha256": "ba680d2d90874be1cd3156ef609fe5ddf6daa557ba35a7c15122f5919a68dac1"
+  },
+  "source/banner/kernel-rtc-api.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-banner/source/kernel-rtc-api.inc",
+    "sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e"
+  },
+  "source/banner/journal-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-banner/source/journal-eq.inc",
+    "sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285"
+  },
+  "source/banner/kernel-private.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-banner/source/kernel-private.inc",
+    "sha256": "ea5a9bef462d0986aa0e8131bd65d3e0db76cd26a2835a9e20ba9166e8a3911c"
+  },
+  "source/banner/outage-format.inc": {
+    "from": "BUILD/v2-beta35-candidate/resident-banner/source/outage-format.inc",
+    "sha256": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a"
+  },
+  "source/status/storage-status.asm": {
+    "from": "BUILD/v2-beta35-candidate/storage-status/asm/storage-status.asm",
+    "sha256": "ca9cd09ff488f839ab7fa03f4acbf1fef4f971b67f6c98254eaae1597ccc86ad"
+  },
+  "source/status/status-links.inc": {
+    "from": "BUILD/v2-beta35-candidate/storage-status/source/status-links.inc",
+    "sha256": "153dd93ef4ce2798c26cb34d066ee4ef789de3c41e66c826a3091955959945ed"
+  },
+  "source/status/local-loader.inc": {
+    "from": "BUILD/v2-beta35-candidate/storage-status/source/local-loader.inc",
+    "sha256": "76e6002f45ff30d8f2a283b3d39e30d7f9799e96d932adfe292629c23f387573"
+  },
+  "source/status/storage-services.inc": {
+    "from": "BUILD/v2-beta35-candidate/storage-status/source/storage-services.inc",
+    "sha256": "8cd3b82aa7077cfb4d8e94173ce2761786148f97b7c57096eb077a225cae0594"
+  },
+  "source/mode/status-mode-init.asm": {
+    "from": "BUILD/v2-beta35-candidate/status-mode-init/asm/status-mode-init.asm",
+    "sha256": "519edf9c9b703ab985505131f12c1548f3bfc752a33686298c370868b750cf49"
+  },
+  "source/mode/str8n-v2-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/status-mode-init/source/str8n-v2-eq.inc",
+    "sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467"
+  },
+  "source/mode/service-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/status-mode-init/source/service-eq.inc",
+    "sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a"
+  },
+  "source/mode/status-links.inc": {
+    "from": "BUILD/v2-beta35-candidate/status-mode-init/source/status-links.inc",
+    "sha256": "b0de09eb2f22052cdd3b3e68058fc55c6b8cbea798caf4ae9ed72c8304025d30"
+  },
+  "source/loader/version-loader.asm": {
+    "from": "BUILD/v2-beta35-candidate/loader/asm/version-loader.asm",
+    "sha256": "091350538134acca2e43ae4b2cce7c325d8b4a1fa9655700384cc3cc92fe7ea2"
+  },
+  "source/loader/str8n-v2-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/loader/source/str8n-v2-eq.inc",
+    "sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467"
+  },
+  "source/loader/service-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/loader/source/service-eq.inc",
+    "sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a"
+  },
+  "source/loader/status-links.inc": {
+    "from": "BUILD/v2-beta35-candidate/loader/source/status-links.inc",
+    "sha256": "03d957f8c2121954813cb75b3006845932ec18b41f72a808721d8be4359ad277"
+  },
+  "source/local/local-display.asm": {
+    "from": "BUILD/v2-beta35-candidate/local-display/asm/local-display.asm",
+    "sha256": "d78384393941aa02128cf08b88b474f60134db786235914ac6ccb8ef78c5d670"
+  },
+  "source/battery/battery.asm": {
+    "from": "BUILD/v2-beta35-candidate/battery/asm/battery.asm",
+    "sha256": "ee145b6a391f4675675a1f047a37148b6cbfd28869a374b969a816b31a2ef867"
+  },
+  "source/version/version.asm": {
+    "from": "BUILD/v2-beta35-candidate/version/asm/version.asm",
+    "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999"
+  },
+  "source/version/version-links.inc": {
+    "from": "BUILD/v2-beta35-candidate/version/source/version-links.inc",
+    "sha256": "a852a229ebd7969f81c6fa8d289c0d228c769ddb425a11199dde6852f426a6c4"
+  },
+  "source/version/version-board.inc": {
+    "from": "BUILD/v2-beta35-candidate/version/source/version-board.inc",
+    "sha256": "14e07f7a951921e5f05227a0c9ed3baaa4250795beb868290da3158e4fdbdaae"
+  },
+  "source/pf/pf.asm": {
+    "from": "BUILD/v2-beta35-candidate/pf-worker/asm/pf.asm",
+    "sha256": "6ef939940693a2260f46345a8082eca706da55e003b2383556818c131a98a9f7"
+  },
+  "source/pf/kernel-rtc-api.inc": {
+    "from": "BUILD/v2-beta35-candidate/pf-worker/source/kernel-rtc-api.inc",
+    "sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e"
+  },
+  "source/pf/outage-duration.inc": {
+    "from": "BUILD/v2-beta35-candidate/pf-worker/source/outage-duration.inc",
+    "sha256": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f"
+  },
+  "source/clock/clock.asm": {
+    "from": "BUILD/v2-beta35-candidate/clock/asm/clock.asm",
+    "sha256": "c75c136086511b5cd181820a946c8b78a7ad0cf87ec54a9962a5f07129e98391"
+  },
+  "source/clock/kernel-rtc-api.inc": {
+    "from": "BUILD/v2-beta35-candidate/clock/source/kernel-rtc-api.inc",
+    "sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e"
+  },
+  "source/clock/journal-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/clock/source/journal-eq.inc",
+    "sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285"
+  },
+  "source/clock/outage-format.inc": {
+    "from": "BUILD/v2-beta35-candidate/clock/source/outage-format.inc",
+    "sha256": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a"
+  },
+  "source/clock/outage-duration.inc": {
+    "from": "BUILD/v2-beta35-candidate/clock/source/outage-duration.inc",
+    "sha256": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f"
+  },
+  "source/xip/utilities.asm": {
+    "from": "BUILD/v2-beta35-candidate/xip/asm/utilities.asm",
+    "sha256": "7a5d5a1373e56553a51217642b98da373dd72c9ba18e4d8732c7072d6658f8e3"
+  },
+  "source/xip/kernel.inc": {
+    "from": "BUILD/v2-beta35-candidate/xip/source/kernel.inc",
+    "sha256": "363c8571603e2fedc589f41aa6a514e8f9bb50770585fd61595cb9af31ddcdb0"
+  },
+  "source/xip/system.inc": {
+    "from": "BUILD/v2-beta35-candidate/xip/source/system.inc",
+    "sha256": "8a38b7fb884b571077475cb1ae0555fad07fbf7f558101723f976111fe3659ea"
+  },
+  "source/xip/gate.asm": {
+    "from": "BUILD/v2-beta35-candidate/xip/asm/gate.asm",
+    "sha256": "efeaaccd50e395c733ca461d0f370800af25992a2ef87e701f68f80df6fb395d"
+  },
+  "source/xip/work-stub.asm": {
+    "from": "BUILD/v2-beta35-candidate/xip/asm/work-stub.asm",
+    "sha256": "95b603e0ea9fe2082ee6bfb0591816e11f63ef9aa6e8862ad9faf6270bb88e07"
+  },
+  "source/batch/batch-gate.asm": {
+    "from": "BUILD/v2-beta35-candidate/batch/asm/batch-gate.asm",
+    "sha256": "243ed39f367b3ee364bbcb8f1edee41ae2047d0aaf7b32b7ab93e6e1cdb3657e"
+  },
+  "source/assembler/asm-app.asm": {
+    "from": "BUILD/v2-beta35-candidate/assembler/asm/asm-app.asm",
+    "sha256": "00641e15f197e00ab2a3eaa5f2b68f6e7095d08625a4c6ad97bba095059d5c06"
+  },
+  "source/assembler/str8n-v2-public.inc": {
+    "from": "BUILD/v2-beta35-candidate/asm/str8n-v2-public.inc",
+    "sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5"
+  },
+  "source/assembler/layout.inc": {
+    "from": "tmp/b34/src/asm/layout.inc",
+    "sha256": "f3aa85f02c2d0e7d98c5d0cd2b1798ef842ab8ee255a8860c9faf38966f0504d"
+  },
+  "source/bootstrap/bootstrap-journal.asm": {
+    "from": "BUILD/v2-beta35-candidate/bootstrap/asm/bootstrap-journal.asm",
+    "sha256": "b18ebcf8acea4fcc9806dcca6cc296ef95f67eecda0fa7fa449e5948566a8c97"
+  },
+  "source/bootstrap/str8n-v2-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/bootstrap/source/str8n-v2-eq.inc",
+    "sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467"
+  },
+  "source/bootstrap/service-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/bootstrap/source/service-eq.inc",
+    "sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a"
+  },
+  "source/bootstrap/str8n-v2-public.inc": {
+    "from": "BUILD/v2-beta35-candidate/bootstrap/source/str8n-v2-public.inc",
+    "sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5"
+  },
+  "source/bootstrap/bootstrap-symbols.inc": {
+    "from": "BUILD/v2-beta35-candidate/bootstrap/source/bootstrap-symbols.inc",
+    "sha256": "8eb6f806bc8f83313478d13c1485b8f8e3308b2789e54be5d9cb14df0fd18754"
+  },
+  "source/migration/rtc-migrator.asm": {
+    "from": "BUILD/v2-beta35-candidate/migrator/asm/rtc-migrator.asm",
+    "sha256": "ce8a65e947db69ce4d9b48273e0dbe04f2c9ce776800351d803cd0a5e23d59e1"
+  },
+  "source/migration/str8n-v2-eq.inc": {
+    "from": "BUILD/v2-beta35-candidate/migrator/asm/str8n-v2-eq.inc",
+    "sha256": "365fbcce2925f661a819023e10c6a0f4c4f3258196e47c2bf2a77deec2dc71a8"
+  },
+  "source/migration/migration-symbols.inc": {
+    "from": "BUILD/v2-beta35-candidate/migrator/asm/migration-symbols.inc",
+    "sha256": "dde127950bafd316455ed93b95c631c6eb041e1f40b177fc366d0ba350747380"
+  },
+  "source/migration/migration-copy.inc": {
+    "from": "BUILD/v2-beta35-candidate/migrator/asm/migration-copy.inc",
+    "sha256": "d1488572dd37bef0aee5b90745b05352004b53b75c1ce863f355267c6b5b73df"
+  },
+  "source/migration/migration-worker.asm": {
+    "from": "BUILD/v2-beta35-candidate/migrator/asm/migration-worker.asm",
+    "sha256": "8890fb9d97414b330a0c5cd6fb2f74acb7913ad3297d0bb0d2f89fd573108307"
+  },
+  "source/migration/str8n-v2-flash-worker.inc": {
+    "from": "BUILD/v2-beta35-candidate/migrator/asm/str8n-v2-flash-worker.inc",
+    "sha256": "992f5a5274384f084abc9165ed826c6176a533dbe21e8cdbbb844ca4f9f6a6f1"
+  },
+  "source/migration/str8n-v2-ram-console.inc": {
+    "from": "BUILD/v2-beta35-candidate/migrator/asm/str8n-v2-ram-console.inc",
+    "sha256": "e38a42fd17016f07d40973665adbc2a01c9079d61e661e5f31f7e56ba3d2f752"
+  },
+  "source/core/text.json": {
+    "from": "BUILD/v2-beta35-candidate/source/str8n-v2-text.json",
+    "sha256": "cab61a983a1c78bbd77e1ae0a20ca7d0c630d7b591d40937479d218209e43c03"
+  },
+  "source/assembler/opcodes.json": {
+    "from": "tmp/b34/src/asm/opcodes.json",
+    "sha256": "8d709592fd943945e6a11cc1d9036881512a79c0a4bf36b4a23319bb2854168f"
+  }
+}

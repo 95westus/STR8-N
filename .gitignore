@@ -39,3 +39,8 @@ __pycache__/
 **/expected-b[0-3].bin
 **/*-readback.s19
 **/*-backup.s19
+
+# Qualification helper assembly is source, not captured qualification data.
+!/tools/qualification/
+/tools/qualification/*
+!/tools/qualification/*.asm

@@ -8,6 +8,27 @@ out of published release artifacts.
 Defects and hardware investigations are indexed in the
 [repo issue tracker](ISSUES.md).
 
+## Current release checkpoint — October 17, 2026 (CDT)
+
+- [x] Preserve the beta35 generation-47 clean source build, planners, model tests
+  and historical documentation in Git; keep its immutable evidence owner-local.
+- [x] Publish v2.0rc1 generation 49 with the complete Windows/Linux release ZIP,
+  all apps/BINs, manuals/quick starts and credited uChess source.
+- [x] Install the published rc1 on 2604/2609; both MON A/B and CLOCK, ASM,
+  MAINT/SRAM/WORK/EDU and UCHESS passed hardware checks. 2609 ran in E=1.
+- [x] Restore each board's original monitor preference and load its saved RAM
+  archive; loader acknowledgment only, with extra host readbacks disabled.
+- [ ] RTC qualification/known continuity issue, full endurance qualification,
+  native 816 apps/tests, ACIA and crypto remain deferred. No pass is inferred.
+
+2604/2609 remain powered on and idle; 2205/2512 remain off. Both soaks and RTC
+sampling are owner-stopped and must not restart automatically. Clocks/trims
+were unchanged by rc1 installation. Historical work plans below and in the
+beta35/bf1 docs are records, not current campaign instructions.
+
+Source/tool checkpoint: [release history](docs/RELEASE_SOURCE_CHECKPOINT.md).
+Current user docs: [rc1 manuals](docs/rc1/README.md).
+
 ## Idea recorded 2026-10-10
 
 - [ ] Deferred idea: extend the SPI SRAM allocation display with an MAINT

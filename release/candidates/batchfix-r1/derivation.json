@@ -1,0 +1,37 @@
+{
+  "candidate_id": "batchfix-r1",
+  "display_version": "2.0bf1",
+  "generation": 48,
+  "baseline": "Frozen beta35 generation 47",
+  "changed_source": {
+    "source/core/monitor-b0.asm": {
+      "baseline": "f54da9cd04502379fb52a5143ca874a95a7f5221acb1e3bcbd1c5ed892194cb3",
+      "candidate": "a46fb34777dd757c3b26320bdfed35a039919ce2197aedd4354edc64b5ab30c6"
+    },
+    "source/clock/clock.asm": {
+      "baseline": "c75c136086511b5cd181820a946c8b78a7ad0cf87ec54a9962a5f07129e98391",
+      "candidate": "1ef4231650457cfc5d36406d7087a217d4ff812f06bf46e5fbf42a027e622e96"
+    },
+    "source/xip/utilities.asm": {
+      "baseline": "7a5d5a1373e56553a51217642b98da373dd72c9ba18e4d8732c7072d6658f8e3",
+      "candidate": "b2d0f71f2b9f2d03b684a7447a6861825ac0df1d5f7dd9d71cafa6ac6bcf3535"
+    },
+    "source/batch/batch-gate.asm": {
+      "baseline": "243ed39f367b3ee364bbcb8f1edee41ae2047d0aaf7b32b7ab93e6e1cdb3657e",
+      "candidate": "48ea32c16b2e6b13124b4836b8b6c2cacdc4a2d97ad13aaea3ab237ee45570e8"
+    },
+    "source/status/storage-services.inc": {
+      "baseline": "8cd3b82aa7077cfb4d8e94173ce2761786148f97b7c57096eb077a225cae0594",
+      "candidate": "c9cf05015cace87a58299c7b1d50de9444d99085f6adcfc29ae4a275c5c70bb1"
+    }
+  },
+  "source_only": true,
+  "binary_inputs": [],
+  "beta35_modified": false,
+  "board_access": false,
+  "installation_permitted": false,
+  "release_qualified": false,
+  "profile_consumer_correction": "Storage/status XIP admission must recognize UX/2/43 as well as monitor provider admission; prior model failures retained",
+  "clock_admission": "Original engine refused CLOCK launch entirely. Added exact R CLOCK / R 1 CLOCK forms, retaining BT/1/1 application admission and rejecting arbitrary names/arguments.",
+  "profile": "UX/3/42: new profile/version, unchanged public entry cardinality"
+}

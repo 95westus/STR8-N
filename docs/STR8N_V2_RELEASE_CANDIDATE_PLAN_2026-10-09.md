@@ -1,4 +1,14 @@
+> Historical prerequisite for the beta35/bf1/rc1 source checkpoint.
+> Current soaks/RTC sampling are stopped; 2205/2512 remain off.
+
 # Release-candidate gates and reset notices
+
+Current development checkpoint, October 16: 2512 has qualified beta32 B
+generation 44, retaining beta28 A and saved SRAM CLOCK/CLK 1.9. Its enhanced
+preserving soak is configured to run until stopped. See [the installed
+report](STR8N_V2_BETA32_2512_2026-10-16.md) and [soak procedure](STR8N_V2_BETA32_SOAK_2512_2026-10-16.md).
+The beta23 matrix below is historical; newer one-board acceptance does not
+qualify all boards or complete the RC package gates.
 
 The published release remains beta4. Boards 2512, 2205 and 2609 have verified
 beta23 generation-32 uploads and captured physical starts. Exact readback and
@@ -15,7 +25,8 @@ records continued exercises and the current battery-backed power-off segment.
 
 | Operation | Requirement | Visible message/behavior |
 |---|---|---|
-| Verified firmware upload | Physical main-board RESET; installer is halted | `MIGRATION VERIFIED; PRESS PHYSICAL RESET` |
+| Legacy verified firmware upload | Physical main-board RESET; installer is halted | `MIGRATION VERIFIED; PRESS PHYSICAL RESET` |
+| Successful beta30–32 installer on 2512 | Returns to monitor, then use J3 | `MIGRATION VERIFIED; READY FOR J3` |
 | Confirmed saved EDU ON/OFF change | Cold restart to activate the saved mode | `Saved; RESET required.` |
 | R EDU status with active/saved modes different | Requirement remains until cold restart | Beta23 shows active `EDU ON`/`OFF`, then `RESET required: OFF`/`ON` |
 | Canceled, failed or unchanged EDU save | No new requirement | No success/reset notice; an existing pending setting stays pending |
@@ -24,8 +35,10 @@ records continued exercises and the current battery-backed power-off segment.
 
 For saved EDU mode, physical RESET or the monitor's cold `J3` restart activates
 the new state. `Q`, HOLD and ordinary monitor return do not. Do not type a
-nonexistent `RESET` command. After an upload the halted installer cannot accept
-J3: press the main physical RESET. On 2609 use S2/RESB, not S1/NMIB or an EDU
+nonexistent `RESET` command. A legacy halted installer cannot accept J3; press
+the main physical RESET in that case. The qualified beta30–32 success path
+on 2512 returns to the monitor and accepts J3; refused/failed installations
+retain their halt behavior. On 2609 use S2/RESB, not S1/NMIB or an EDU
 control. The pending notice clears once the active and saved settings agree.
 
 ## Remaining gates, in order
@@ -35,8 +48,9 @@ See [freeze and rehearsal evidence](STR8N_V2_BETA23_PHASE1_2026-10-09.md).
 All three beta23 uploads, captured physical starts, full readbacks and core
 startup/mode/interrupt checks pass. The expanded four-board checks now close
 gates 3–4 within the documented scope, including controlled recovery and actual
-power retention. Gate 5's 48–72-hour soak and final gate 6 packaging remain
-pending. See [hardware status](STR8N_V2_BETA23_HARDWARE_2026-10-09.md) and the
+power retention. Gate 5's revised six-hour exercise is complete on 2604/2609 (17 complete
+passes per board, 596 recorded units total, verified restoration). The original
+48–72-hour duration is not established; final gate 6 packaging remains pending. See [hardware status](STR8N_V2_BETA23_HARDWARE_2026-10-09.md) and the
 [four-board closeout](STR8N_V2_BETA23_FOUR_BOARD_STORAGE_2026-10-09.md).
 
 1. **Freeze beta23.** Pass the bound candidate audit and reset-notice models;
@@ -58,7 +72,9 @@ pending. See [hardware status](STR8N_V2_BETA23_HARDWARE_2026-10-09.md) and the
    flash/SRAM save/restore/run/table/delete; workspace resize/claims
    and stale-handle refusal. Use backed-up test records, restore test data and
    retain exact full flash/SRAM/EEPROM and RTC-control/identity comparisons.
-5. **Exercise recovery and complete a 48–72-hour soak.** Retain model write-cut,
+5. **Exercise recovery and record the completed six-hour run.** See
+   [six-hour results](STR8N_BETA23_PRESERVING_SOAK_2026-10-11.md); the original
+   48–72-hour elapsed-time qualification remains unfulfilled. Retain model write-cut,
    corrupt/full record and bus-failure coverage. Qualify supported recovery and
    retention with controlled cold/power cycles and ordinary hardware use.
    Preserve outage evidence: real power failures may append new valid events
@@ -94,6 +110,14 @@ defect in advertised paths and complete evidence for the supported matrix.
 Historical acceptance does not substitute for new-image/package qualification.
 
 ## Exclusions and known limitation
+
+The October 11 preserving soak procedure for 2604/2609 is recorded in
+[the soak guide](STR8N_BETA23_PRESERVING_SOAK_2026-10-11.md). It uses the new
+post-trim drift baselines, preserves RTC/external SRAM after each write test,
+and excludes destructive commands. The newly observed APPS listing issue
+[STR8N-004](issues/APPS_BETA23_NAMES.md) was deferred during that soak. The
+later beta25 fix was qualified on 2604/2609 under the retained A and new B
+monitors, with exact flash and retained-data checks. The issue is closed.
 
 - Board 2604 now participates in the expanded firmware/RC test matrix;
   acceptance requires its own current receipts rather than inherited results.

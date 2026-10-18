@@ -1,0 +1,188 @@
+{
+  "schema": 1,
+  "target_version": "2.0b35",
+  "target_generation": 47,
+  "profile": "FT245-F30D",
+  "source_scope": "Only registered AB monitors with the unchanged target E/F core; assets may be exact beta34, beta35, or erased",
+  "planning_only": true,
+  "installation_permitted": false,
+  "execution_permitted": false,
+  "target_metadata_sha256": "0d4c48ba4581005071eff1da6ea315232d1bfc1ab47e6ec93bc361b44d84f8e1",
+  "target_layout_sha256": "403901dfe0f2ab4f92974c03232d295176dd905b266583ae9a9c5036e59ddca1",
+  "source_metadata_sha256": "2381688f48a5aa2f0da4c8b8f8fd21cdb2087d521861db813ad0d61c936938b1",
+  "ranges": [
+    {
+      "bank": 1,
+      "address": 45056,
+      "bytes": 12288,
+      "file": "clock/storage.bin",
+      "accepted_sha256": [
+        "0fb5cc24e9a4a69ef83837f7a594a9a773f501abeee2a75df7d737d0cea1f0e1",
+        "c1a47f90859965dab1768ab567e3f3a75ed65be0a83d13e91d0b072e015d6232"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 1,
+      "address": 57344,
+      "bytes": 4096,
+      "file": "assembler/asm-e000.bin",
+      "accepted_sha256": [
+        "4d6bf286f9204e63c298ea9797a3e8fe76dc87c18cec5f59343d7bccc2184acb"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 1,
+      "address": 61440,
+      "bytes": 4096,
+      "file": "assembler/vectors-f000.bin",
+      "accepted_sha256": [
+        "9b8a59d055cfb85d99d6edf9b954c5c275f8aeaeb0d37e95305a63d141e250f4"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 2,
+      "address": 32768,
+      "bytes": 22528,
+      "file": "xip/utilities.bin",
+      "accepted_sha256": [
+        "99895cd080194325d9a01f6864ebfb854d61ea4edce63f9b8b614602fef32eaa"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 2,
+      "address": 55296,
+      "bytes": 2560,
+      "file": "boot-status/asset.bin",
+      "accepted_sha256": [
+        "7fc2acd20a6b26fac92117cd3b84d3f071c5fb01aba012b701ba3a43007cdab5"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 2,
+      "address": 57856,
+      "bytes": 2560,
+      "file": "battery/asset.bin",
+      "accepted_sha256": [
+        "6c7933aefd37b263cedbef05c5aa145bb428de76b8ad891b6307aab22b040b9d"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 2,
+      "address": 61440,
+      "bytes": 1792,
+      "file": "local-display/asset.bin",
+      "accepted_sha256": [
+        "462fa9096c41a9c0efdf9c823406012cd99b2ba949770d53aa4e7438aa3336d8"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 2,
+      "address": 63488,
+      "bytes": 2048,
+      "file": "version/asset.bin",
+      "accepted_sha256": [
+        "21f347e6b2c2745983766ac52f40e8ea7d36f5d7d1191ed49e84a64eaad07431",
+        "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 3,
+      "address": 32768,
+      "bytes": 4096,
+      "file": "str8n-rtc-component-8000-8fff.bin",
+      "accepted_sha256": [
+        "bd8db1df7102105bf8da178a1736cf5bda045327ba371ab833c4186aa46b7244",
+        "bfc9000f84890666f256828b5207643bb3f285db6bdd25e753c516ee15509811"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 3,
+      "address": 36864,
+      "bytes": 3072,
+      "file": "str8n-journal-9000-9fff.bin",
+      "accepted_sha256": [
+        "157c483f70014ee608b8bb61180b1de4b55d526c0cb21aed0a49cd43fbc1dc67"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 3,
+      "address": 45056,
+      "bytes": 4096,
+      "file": "str8n-v2-recovery-slot-b0.bin",
+      "accepted_sha256": [
+        "7e961ddc34f58c39e9cc31c432364169856cc6d77eb7a970541261233d327830",
+        "ad8859eae933c063c10646af7f3407f652d4c2afe6e33aba5152782435d3be37"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 3,
+      "address": 57344,
+      "bytes": 4096,
+      "file": "str8n-v2-recovery-e000-efff.bin",
+      "accepted_sha256": [
+        "32c9daf3eb43d5d2c12e85785ab4fe50cf3d31ff059982855d24c773e9c14661"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    },
+    {
+      "bank": 3,
+      "address": 61440,
+      "bytes": 4096,
+      "file": "str8n-v2-recovery-f000-ffff.bin",
+      "accepted_sha256": [
+        "aff5874806721137ec7677beb2e80c0db7c3f563f8027967db4b898554a34028"
+      ],
+      "meanings": [
+        "Pinned beta34 source range",
+        "Frozen beta35 target range"
+      ]
+    }
+  ]
+}

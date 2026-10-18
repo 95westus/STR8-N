@@ -145,7 +145,8 @@ SR_END:''')
     launcher = replace_once(launcher, '                       LDA AP_LIMIT+1\n                       CMP #$A0',
         '                       LDA AP_DESC+15\n                       CMP #$90\n'
         '                       BCC AP_VALIDATE_BAD\n                       LDA AP_LIMIT+1\n                       CMP #$A0')
-    launcher = replace_once(launcher, 'AP_END:', '                       INCLUDE "service-kernel.inc"\nAP_END:')
+    launcher = replace_once(launcher, '                       INCLUDE "app-list-check.inc"\n', '')
+    launcher = replace_once(launcher, 'AP_END:', '                       INCLUDE "service-kernel.inc"\n                       INCLUDE "app-list-check.inc"\nAP_END:')
     if LAUNCHER_EXTRA:launcher=LAUNCHER_EXTRA(launcher)
     path = OUT / 'launcher.asm'
     path.write_text(long_branches(launcher).replace('BM_LONG_', 'AP_LONG_'))
@@ -159,6 +160,8 @@ SR_END:''')
     e[:len(code)] = code
     e[0x6E0:0x6E8] = b'MP\x01\x08\x11\xe0\x90\x7d'
     e[0x6F0:0x6F4] = b'AT\x01\x08'
+    # An empty native-app table has zero rows, not erased ($FF) names.
+    e[0x6F4:0x7F4] = bytes(8 * 32)
     e[0x7FE:0x800] = fw.crc(e[:0x7FE]).to_bytes(2, 'big')
     tail = help_text['extension'].encode() + b'\0'
     e[0xF00:0xF00+len(tail)] = tail

@@ -1,0 +1,45 @@
+{
+  "candidate_id": "batchfix-r1",
+  "display_version": "2.0bf1",
+  "generation": 48,
+  "clock_version": "1.11",
+  "scope_source": "Owner-authorized shared firmware, initial B/A checks and bounded 2609 original-restoration/power-cut recovery cases",
+  "processor_execution_scope": "65C02 and 65C816 emulation-mode runtime",
+  "console_profile": "FT245/F30D",
+  "migration_scope": "Exact captured 2604 and 2609 lineages, each with separately pinned bf1 B-first/A-second route; no generic stock, legacy, core or private-ABI conversion claim",
+  "deferred": [
+    "native 816",
+    "ACIA",
+    "crypto"
+  ],
+  "next_offline_gate": null,
+  "remaining_gates": [
+    "Owner acceptance of bounded 2609 physical coverage or separately planned extension; mid-erase/program, arbitrary timing and 2604 electrical behavior remain unqualified",
+    "Long-term preserving bf1 soak and RTC accumulation; duration and thresholds require owner decision",
+    "Explicit scoped candidate acceptance and separate release/publication decision"
+  ],
+  "campaign": {
+    "soak_board": "2604",
+    "rtc_snapshot_boards": [
+      "2512",
+      "2604",
+      "2609"
+    ],
+    "powered_off_boards": [
+      "2205"
+    ],
+    "clock_trim_changes_permitted": false,
+    "baseline_replacement_permitted": false
+  },
+  "release_qualified": false,
+  "installation_permitted": false,
+  "publication_permitted": false,
+  "completed_gates": [
+    "Version-correct bf1 drafts and fresh W65C02 manual/ABI/example regression",
+    "Candidate-specific local review package/integrity audit (prior r2)",
+    "Owner-authorized 2609 B/A emulation hardware checks using same bf1 payloads as 2604",
+    "2609 original A40/B35 payload restoration with conservative wear history",
+    "2609 two verified-transfer-boundary power cuts, fallback boots and exact recoveries; emulation runtime and pre-interruption RAM restored"
+  ],
+  "startup_detection_exception": "Unchanged F30D detection briefly enters native mode then restores emulation; owner explicitly accepted"
+}

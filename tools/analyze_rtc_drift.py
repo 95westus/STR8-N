@@ -10,6 +10,7 @@ import sys
 from serial.tools.list_ports import comports
 from rtc_boards import SERIALS
 from rtc_history_policy import excluded_reports
+from serial_test_coordination import serial_lease
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INDEX = ROOT/'output/qualification/rtc-2604-onboarding-2026-10-09/baseline-index.json'
@@ -59,6 +60,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--baseline-index', type=Path, default=active_index())
     p.add_argument('--root', type=Path)
+    p.add_argument('--board', action='append', choices=tuple(SERIALS))
     p.add_argument('--server', default='132.163.96.6')
     a = p.parse_args(); index = json.loads(a.baseline_index.read_text()); assert index['passed']
     for b in index['boards']:
@@ -74,9 +76,11 @@ def main():
             raise RuntimeError(f'{script} failed; evidence retained at {run}:\n{result.stderr[-1500:]}')
         return result
     # Control/trim/identity checks precede the NTP measurements.
-    execute('capture_rtc_drift_status.py', '--root', run/'preflight', '--baseline-index', a.baseline_index)
+    selection=[v for b in (a.board or []) for v in ('--board',b)]
+    execute('capture_rtc_drift_status.py', '--root', run/'preflight', '--baseline-index', a.baseline_index,*selection)
     ports = {p.serial_number: p.device for p in comports()}
     for b in index['boards']:
+        if a.board and b['board'] not in a.board: continue
         board = b['board']; output = run/board
         # Status acquisition already created the board directory; measurement needs a new directory.
         measurement = output/'measurement'
@@ -86,11 +90,11 @@ def main():
         # Retain raw acquisition in measurement/, place the plotting report at its standard location.
         (output/'report.json').write_bytes((measurement/'report.json').read_bytes())
     # Recheck every enrolled board after sampling; preflight evidence stays separate.
-    execute('capture_rtc_drift_status.py', '--root', run, '--baseline-index', a.baseline_index)
+    execute('capture_rtc_drift_status.py', '--root', run, '--baseline-index', a.baseline_index,*selection)
     histories = compatible_histories(index, run, a.baseline_index)
     (run/'history-index.json').write_text(json.dumps(
         [dict(path=str(path), sha256=sha(path)) for path in histories], indent=2)+'\n')
-    args = ['--root', run, '--baseline-index', a.baseline_index]
+    args = ['--root', run, '--baseline-index', a.baseline_index,*selection]
     for path in histories: args.extend(['--history', path])
     execute('plot_rtc_drift.py', *args)
     summary = json.loads((run/'summary.json').read_text()); assert summary['passed']
@@ -100,4 +104,5 @@ def main():
               'current TRIM', b['current_trim_steps'], 'checks', b['statistics']['sample_count'])
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    with serial_lease('drift'):main()

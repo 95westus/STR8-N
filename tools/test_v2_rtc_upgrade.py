@@ -100,7 +100,8 @@ def main():
     info = json.loads((args.root / 'upgrade/plan.json').read_text())
     installer = args.root / 'upgrade/installer.s19'
     assert hashlib.sha256(installer.read_bytes()).hexdigest() == info['installer_sha256']
-    banks = [(args.root / f'prior/b{i}.bin').read_bytes() for i in range(4)]
+    prior_directory = info.get('prior_directory', 'prior')
+    banks = [(args.root / prior_directory / f'b{i}.bin').read_bytes() for i in range(4)]
     cells, entry = migration.read_s19(installer)
     allowed = {(x['bank'], x['sector']) for x in info['steps']}
     maintenance = ({1:(args.root/'upgrade/expected-b1.bin').read_bytes()[:8192],2:(args.root/'upgrade/expected-b2.bin').read_bytes()[:8192]} if info.get('journal_update') else
@@ -136,7 +137,7 @@ def main():
         assert b'MIGRATION REFUSED/FAILED' not in memory.tx
         memory.tx.clear()
         memory.rx.extend((args.root / f'upgrade/transfer-{i:02d}.bin').read_bytes())
-    run(cpu, lambda: cpu.pc == S['MIG_HALT'])
+    run(cpu, lambda: cpu.pc == info.get('success_checkpoint', S['MIG_HALT']))
     assert b'MIGRATION VERIFIED' in memory.tx, bytes(memory.tx[-200:])
     for b in range(4):
         expected = (args.root / f'upgrade/expected-b{b}.bin').read_bytes()

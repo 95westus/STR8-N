@@ -42,12 +42,20 @@ TZ_PREFIX_READY:
         JSR TZ_PRINT
 ''',1)
         local+='\nTZ_BOOT_TEXT DB "RTCC: ",0\n'
+    if status.BOARD_NAME:
+        # Power-fail status can end without CRLF. Bound the named cold-boot
+        # label explicitly, while unnamed boots and ordinary returns stay quiet.
+        header=header.replace('        STA KIND\n','        STA KIND\n        BNE BN_BOOT_DONE\n        JSR BN_READ\n        LDA BN_LENGTH\n        BEQ BN_BOOT_DONE\n        JSR $7E7F\n        JSR BN_SHOW\nBN_BOOT_DONE:\n        LDA $7D27\n        CMP #2\n        BEQ BN_LOCAL_DONE\n',1)
+        header=header.replace('PRINT:  JMP TZ_PRINT','BN_LOCAL_DONE:\n        RTS\nPRINT:  JMP TZ_PRINT',1)
+        local+='\n'+(root/'tools/v2-rtc/board-name.inc').read_text()
     text=header+local+'\n'+(root/'tools/v2-spi/trim-display.inc').read_text()+'\nAPP_END:\n        ENDMOD\n'
     from build_bank_maint_v2 import long_branches
     (source/'local-display.asm').write_text(long_branches(text).replace('BM_LONG_','LT_LONG_'))
-    body,s,_=status.spi.assemble(source,'local-display',0x6800,'APP_END',0x6807)
-    assert len(body)<=1534,('local helper',len(body))
-    asset=body+b'\xff'*(1534-len(body));asset+=status.crc(asset).to_bytes(2,'big');assert status.crc(asset)==0
+    origin=0x6700 if status.BOARD_NAME else 0x6800
+    capacity=1790 if status.BOARD_NAME else 1534
+    body,s,_=status.spi.assemble(source,'local-display',origin,'APP_END',origin+7)
+    assert len(body)<=capacity,('local helper',len(body))
+    asset=body+b'\xff'*(capacity-len(body));asset+=status.crc(asset).to_bytes(2,'big');assert status.crc(asset)==0
     (out/'local-display/asset.bin').write_bytes(asset)
     meta=json.loads((out/'build.json').read_text());meta.update(local_symbols=s,local_code_bytes=len(body),local_asset_sha256=hashlib.sha256(asset).hexdigest())
     (out/'build.json').write_text(json.dumps(meta,indent=2)+'\n')

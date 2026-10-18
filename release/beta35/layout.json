@@ -1,0 +1,24 @@
+{
+  "version": "2.0b35",
+  "generation": 47,
+  "installation_permitted": false,
+  "meaning": "Logical owned payload ranges, not erase units or a write plan",
+  "segments": [
+    {"bank": 1, "address": 45056, "file": "clock/storage.bin", "offset": 0, "bytes": 12288},
+    {"bank": 1, "address": 57344, "file": "assembler/asm-e000.bin", "offset": 0, "bytes": 4096},
+    {"bank": 1, "address": 61440, "file": "assembler/vectors-f000.bin", "offset": 0, "bytes": 4096},
+    {"bank": 2, "address": 32768, "file": "xip/utilities.bin", "offset": 0, "bytes": 22528},
+    {"bank": 2, "address": 55296, "file": "boot-status/asset.bin", "offset": 0, "bytes": 2560},
+    {"bank": 2, "address": 57856, "file": "battery/asset.bin", "offset": 0, "bytes": 2560},
+    {"bank": 2, "address": 61440, "file": "local-display/asset.bin", "offset": 0, "bytes": 1792},
+    {"bank": 2, "address": 63488, "file": "version/asset.bin", "offset": 0, "bytes": 2048},
+    {"bank": 3, "address": 32768, "file": "str8n-rtc-component-8000-8fff.bin", "offset": 0, "bytes": 4096},
+    {"bank": 3, "address": 36864, "file": "str8n-journal-9000-9fff.bin", "offset": 0, "bytes": 3072, "preserve_tail_bytes": 1024},
+    {"bank": 3, "address": 45056, "file": "str8n-v2-recovery-slot-b0.bin", "offset": 0, "bytes": 4096},
+    {"bank": 3, "address": 57344, "file": "str8n-v2-recovery-e000-efff.bin", "offset": 0, "bytes": 4096},
+    {"bank": 3, "address": 61440, "file": "str8n-v2-recovery-f000-ffff.bin", "offset": 0, "bytes": 4096}
+  ],
+  "excluded_write_ranges": ["all B0", "B1:8000-AFFF", "B2:EC00-EFFF", "B2:F700-F7FF", "B3:9C00-9FFF mutable records", "B3:A000-AFFF fallback A", "B3:C000-DFFF configuration/wear journal"],
+  "qualification_templates_only": ["bootstrap/bootstrap-journal.bin", "migrator/rtc-migrator-2000.s19"],
+  "deferred": ["ACIA", "crypto"]
+}

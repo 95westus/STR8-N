@@ -13,6 +13,7 @@ WEEKDAY_DISPLAY=False
 LOCAL_TIME=False
 SPI_STARTUP_ACK=False
 COMPACT_BOOT_LOCAL=False
+BOARD_NAME=False
 def profile(source):
     edu.profile(source)
     # The banner's existing CR/LF separates it from the recovery selector.
@@ -90,6 +91,11 @@ def stage(name,links,base,end,minimum):
             text=text.replace('        INCLUDE "trim-display.inc"\n','        INCLUDE "local-loader.inc"\n')
             loader=(ROOT/'tools/v2-spi/local-loader.inc').read_text()
             if COMPACT_BOOT_LOCAL:loader=loader.replace('Local display unavailable','Local time unavailable')
+            if BOARD_NAME:
+                loader=loader.replace('#$68','#$67').replace('$6800','$6700').replace('$6804','$6704')
+                loader=loader.replace('Local time unavailable','Local invalid')
+                text=text.replace('        BEQ RETURN\n        JSR CLOCK\n', '        BNE BN_EDU_ON\n        JSR LOCAL_DISPLAY\n        BRA RETURN\nBN_EDU_ON:\n        JSR CLOCK\n',1)
+                text=text.replace('CLOCK_ABSENT:\n','CLOCK_ABSENT:\n        JSR LOCAL_DISPLAY\n',1)
             (source/'local-loader.inc').write_text(long_branches(loader).replace('BM_LONG_','LL_LONG_'))
         if COMPACT_BOOT_LOCAL:
             marker='        JSR CLOCK\n        LDA $7D2A\n'
@@ -185,6 +191,7 @@ def main():
     if TRIM_DISPLAY:meta.update(trim_display=True,status_ram='6E00-77FF temporary monitor staging; journal/binding scratch retained',status_ram_base=status_base,trim_display_coarse='Explicit ON label; numerical correction unavailable')
     if WEEKDAY_DISPLAY:meta.update(weekday_display=True,weekday_entry=0x6E07)
     if LOCAL_TIME:meta.update(local_time=True,local_asset_bank=2,local_asset_address=0xE000,local_asset_bytes=1536,local_ram='6800-6DFF borrowed; 6B00-6BFF backed up/restored')
+    if BOARD_NAME:meta.update(board_name=True,board_name_limit=8,local_asset_bytes=1792,local_ram='6700-6DFF borrowed; 6B00-6BFF backed up/restored')
     if SPI_STARTUP_ACK:meta.update(spi_startup_disabled_cb_ack=True,spi_startup_ack_scope='cold boot only; active owners refused; resident SPI API unchanged')
     if COMPACT_BOOT_LOCAL:meta.update(compact_boot_local=True,compact_boot_format='RTCC: Ddd YYYY-MM-DD HH:MM:SS (+/-HH:MM)',boot_eui=False,boot_trim=False,detailed_time_unchanged=True)
     meta['artifacts']['str8n-v2-recovery-e000-efff.bin']=hashlib.sha256(e).hexdigest()

@@ -31,13 +31,21 @@ class Memory(model.Memory):
             if REPORT.get('local_time'):
                 offset=REPORT['local_asset_address']-0x8000
                 self.banks[2][offset:offset+REPORT['local_asset_bytes']]=(fw.OUT/'local-display/asset.bin').read_bytes()
+            if REPORT.get('version_command'):
+                offset=REPORT['version_asset_address']-0x8000
+                self.banks[2][offset:offset+REPORT['version_asset_bytes']]=(fw.OUT/'version/asset.bin').read_bytes()
+            if REPORT.get('battery_age'):
+                offset=REPORT['battery_asset_address']-0x8000
+                self.banks[2][offset:offset+REPORT['battery_asset_bytes']]=(fw.OUT/'battery/asset.bin').read_bytes()
             if REPORT.get('storage_services'):
                 store=json.loads((fw.OUT/'store/build.json').read_text());body=(fw.OUT/'store/sram.bin').read_bytes()
                 head=b'SR\x01\x3F'+store['entry'].to_bytes(2,'little')+len(body).to_bytes(2,'little')+b'SRAM'.ljust(16,b'\0')
-                self.banks[2][0x2000:0x2000+len(head+body)]=head+body
+                offset=REPORT.get('sram_record_address',0xA000)-0x8000
+                self.banks[2][offset:offset+len(head+body)]=head+body
             maintenance = fw.OUT / REPORT.get('maintenance_storage_file','str8n-maint-'+REPORT.get('maintenance_version','1.6')+'-b1-8000-9fff.bin')
             if maintenance.exists():
-                body=maintenance.read_bytes();self.banks[1][:len(body)] = body
+                body=maintenance.read_bytes();offset=REPORT.get('maintenance_address',0x8000)-0x8000
+                self.banks[REPORT.get('maintenance_bank',1)][offset:offset+len(body)] = body
         self.bus = Devices()
         self.bus.ram = self.ram
 
