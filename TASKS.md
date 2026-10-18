@@ -8,7 +8,7 @@ out of published release artifacts.
 Defects and hardware investigations are indexed in the
 [repo issue tracker](ISSUES.md).
 
-## Current release checkpoint — October 17, 2026 (CDT)
+## Current release checkpoint â€” October 17, 2026 (CDT)
 
 - [x] Preserve the beta35 generation-47 clean source build, planners, model tests
   and historical documentation in Git; keep its immutable evidence owner-local.
@@ -18,6 +18,9 @@ Defects and hardware investigations are indexed in the
   MAINT/SRAM/WORK/EDU and UCHESS passed hardware checks. 2609 ran in E=1.
 - [x] Restore each board's original monitor preference and load its saved RAM
   archive; loader acknowledgment only, with extra host readbacks disabled.
+- [x] Install and device-verify the rc1 UTC-label correction on 2609/2604,
+  preserving settings/binding metadata and actual wear history; restore saved
+  RAM archives by loader acknowledgment. [Hardware note](docs/STR8N_RC1_UTC_BOARD_UPDATE_2026-10-18.md).
 - [ ] RTC qualification/known continuity issue, full endurance qualification,
   native 816 apps/tests, ACIA and crypto remain deferred. No pass is inferred.
 
@@ -32,8 +35,8 @@ Current user docs: [rc1 manuals](docs/rc1/README.md).
 ## Future v2.1: ABI and metadata organization
 
 v2.0rc1 remains the current release and installed version on 2604/2609.
-The rc1 package-revision-2 UTC label fix is published and verified offline;
-that revised image has not been flashed to either board. The source checkpoint
+The rc1 package-revision-2 UTC label fix is published, verified offline and
+installed on both boards; their clocks, trims and settings are unchanged. The source checkpoint
 and existing local beta32 history are merged into main without changing the
 release tag or ZIP. The separate v2.1 work and stash remain preserved.
 
@@ -99,7 +102,7 @@ Beta22 acceptance does not qualify beta23.
   pass. Ports were released by 21:49:19 with EDU ON/TRIM 0 and original offsets.
   Physical interruption of every in-flight byte is not claimed; frozen write-cut
   models and controlled retained-state hardware checks supply that scoped coverage.
-- [ ] Complete 48–72-hour hardware soak on 2604/2609 with unchanged fresh-NIST
+- [ ] Complete 48â€“72-hour hardware soak on 2604/2609 with unchanged fresh-NIST
   drift baselines; 2512/2205 retain functional qualification without extended soak.
   Bounded read-only exercise runs passed. The latest all-board drift snapshot
   contains 21 retained checkpoints over about 24 hours; main power was confirmed

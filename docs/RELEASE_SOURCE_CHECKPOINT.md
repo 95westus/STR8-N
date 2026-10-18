@@ -32,8 +32,9 @@ results are accepted as recorded, not a full endurance pass.
 
 The checkpoint is now merged into main, preserving the later rc1 UTC label fix
 and the existing local beta32 commit history. The current ZIP is rc1 package
-revision 2; the original release tag is retained. The UTC correction has not
-been flashed to the boards, which remain on the previously checked rc1 load.
+revision 2; the original release tag is retained. The UTC correction is now installed and device-verified on both boards, with
+monitor preferences, settings, clocks and trims preserved. See the
+[October 18 hardware update](STR8N_RC1_UTC_BOARD_UPDATE_2026-10-18.md).
 
 The v2.1 branch and saved working files are preserved separately. v2.1 concerns
 ABI/metadata organization, including future LED and dual-VIA timer contracts;
