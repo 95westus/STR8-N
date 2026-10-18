@@ -329,7 +329,7 @@ def main():
     (out/'symbols.json').write_text(json.dumps(symbols,indent=2)+'\n')
     if not passed:
         raise ValueError('Payload comparison failed: '+', '.join(n for n,r in comparison.items() if not r['match']))
-    print(f'PASS: {len(compiled)} fresh links, {len(actual)} candidate artifacts; unmodified outputs match bf1; monitor identity is rc1 generation 49. No board access.',flush=True)
+    print(f'PASS: {len(compiled)} fresh links, {len(actual)} candidate artifacts; pinned rc1 payload comparison passed, generation 49. No board access.',flush=True)
 
 
 if __name__ == '__main__':

@@ -3,10 +3,11 @@
   "parent_candidate": "batchfix-r1",
   "version": "2.0rc1",
   "generation": 49,
-  "source_code_unchanged": true,
+  "source_code_unchanged": false,
   "changes": [
     "monitor banner version",
-    "monitor descriptor generation and dependent CRCs"
+    "monitor descriptor generation and dependent CRCs",
+    "Package revision 2: power-fail UTC heading and compensating shorter failure text; control flow and executable helper addresses unchanged; references follow shifted data labels"
   ],
   "board_access": false
 }

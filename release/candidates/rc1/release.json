@@ -82,7 +82,7 @@
       "bytes": 4096
     },
     "str8n-rtc-component-8000-8fff.bin": {
-      "sha256": "bfc9000f84890666f256828b5207643bb3f285db6bdd25e753c516ee15509811",
+      "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3",
       "bytes": 4096
     },
     "str8n-v2-recovery-e000-efff.bin": {
@@ -109,5 +109,6 @@
   "expected_changed": [
     "str8n-v2-recovery-slot-b0.bin"
   ],
-  "baseline_candidate_build_sha256": "7ea506dc849c63bf1448dff8e2665ca91acc81b1b6a36c588905675f1ece71ed"
+  "baseline_candidate_build_sha256": "7ea506dc849c63bf1448dff8e2665ca91acc81b1b6a36c588905675f1ece71ed",
+  "package_revision": 2
 }

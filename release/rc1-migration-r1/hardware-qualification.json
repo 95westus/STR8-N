@@ -19,7 +19,7 @@
     "bf1-public-empty-bank-models-2026-10-18-r1": "e10c36ceee7c8ca9f5b3795f5c2a7015143733832408ab15a043fef3027410a3",
     "bf1-public-beta4-recovery-models-2026-10-18-r1": "f4e4ea9810a603337026991ca4967a5e5247b4ad854091dd06501220d575549a"
   },
-  "scope": "Exact SXB6 original WDC or published beta4 in B3; erased B0/B1/B2; version-only rc1 target",
+  "scope": "Exact SXB6 original WDC or published beta4 in B3; erased B0/B1/B2; rc1 target with UTC-label correction",
   "limitations": [
     "rc1 target offline model qualification; inherited bf1 engine hardware evidence",
     "Linux physical serial migration not performed",
@@ -44,7 +44,7 @@
     "payload/clock/storage.bin": "038d938981a79cae336432e7729b0d82fe1b9c95f0bdb0fac22d2c73c3864ceb",
     "payload/local-display/asset.bin": "462fa9096c41a9c0efdf9c823406012cd99b2ba949770d53aa4e7438aa3336d8",
     "payload/str8n-journal-9000-9fff.bin": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5",
-    "payload/str8n-rtc-component-8000-8fff.bin": "bfc9000f84890666f256828b5207643bb3f285db6bdd25e753c516ee15509811",
+    "payload/str8n-rtc-component-8000-8fff.bin": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3",
     "payload/str8n-v2-recovery-e000-efff.bin": "32c9daf3eb43d5d2c12e85785ab4fe50cf3d31ff059982855d24c773e9c14661",
     "payload/str8n-v2-recovery-f000-ffff.bin": "aff5874806721137ec7677beb2e80c0db7c3f563f8027967db4b898554a34028",
     "payload/str8n-v2-recovery-slot-a0.bin": "56324dca2c12bce3e58a73c64c8178d782e81d08a78a6473d3467bf1c8cf1791",
@@ -58,5 +58,7 @@
     "template/manifest.json": "adc0cb03639d9e0076d100364bcc59bf77f3c684b8cbcc9baa6b1f61aa12ae16",
     "user_cli.py": "65729f4b643a5909ac7ea7a1a474a5b908958511cc79f359db206f691d68c8c4",
     "workflow.py": "e01496898f984ec604d9d740bdc16218ada8f4fd5d2542f76223d1b626a18562"
-  }
+  },
+  "package_revision": 2,
+  "revision_note": "UTC banner text only; offline regression execution; no revised hardware installation claimed"
 }

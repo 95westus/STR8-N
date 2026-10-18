@@ -223,8 +223,9 @@
   },
   "source/banner/rtc-banner.asm": {
     "from": "BUILD/v2-beta35-candidate/resident-banner/asm/rtc-banner.asm",
-    "sha256": "ba680d2d90874be1cd3156ef609fe5ddf6daa557ba35a7c15122f5919a68dac1",
-    "bytes": 10168
+    "sha256": "a6d7ddc3142ead2b623f3c831e96872df4e0c55f10894b12a0c140c34f9996f2",
+    "bytes": 10168,
+    "correction": "Package revision 2: restore UTC heading; equal-length combined string pool"
   },
   "source/banner/kernel-rtc-api.inc": {
     "from": "BUILD/v2-beta35-candidate/resident-banner/source/kernel-rtc-api.inc",

@@ -63,3 +63,13 @@ retained. No fresh rc1 hardware installation is claimed. RTC qualification,
 native 816 applications/tests, ACIA and crypto are deferred. Soaks and RTC
 sampling remain stopped; recorded soak results are accepted as recorded,
 not a full endurance pass.
+
+
+## Package revision 2: power-fail timezone label
+
+The startup heading is `[power-fail UTC]`. Power-down/up timestamps are raw
+UTC with minute precision; the separate RTCC line uses the configured display
+offset. For example, October 18 04:35 UTC is October 17 23:35 at -05:00.
+Only banner text, its data references and the sector checksum changed. Clock/trim values, event
+handling, apps and migration/recovery algorithms are unchanged. The corrected
+revision was verified offline; it has not been flashed to the campaign boards.

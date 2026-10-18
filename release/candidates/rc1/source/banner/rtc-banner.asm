@@ -283,13 +283,13 @@ TIME_COMMAND DB "TIME",0
 STOPPED_TEXT DB "RTCC: stopped",0
 INVALID_TEXT DB "RTCC: invalid",0
 UNAVAILABLE_TEXT DB "RTCC: Time unavailable",0
-POWERFAIL_TEXT DB " [power-fail]",0
+POWERFAIL_TEXT DB " [power-fail UTC]",0
 DOWN_TEXT DB "Power down: ",0
 UP_TEXT DB "Power up:   ",0
 J_MAGIC DB "PJ",6,1
 J_DISCOVERY DB "PJ",1,1,4,$90,0,$6B
 J_SAVED_TEXT DB "RTCC: PF logged, ACK",0
-J_FAILED_TEXT DB "RTCC: PF logging failed.",0
+J_FAILED_TEXT DB "RTCC: PF log failed.",0
 J_UNVERIFIED_TEXT DB "RTCC: PF logged, unverified ACK",0
         INCLUDE "outage-format.inc"
 SHOW_EUI:

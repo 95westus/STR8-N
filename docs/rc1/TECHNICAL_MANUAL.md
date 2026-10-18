@@ -200,3 +200,13 @@ license/credits accompany the image. Empty-bank RAM migrations install the same
 applications; prior bf1 physical WDC/65C816 and beta4/65C02 checks passed; rc1 is model-tested. Unused image
 padding is not permission to overwrite user storage. Public live routes require
 erased B0/B1/B2 and refuse unknown sources; see the migration guides.
+
+
+## Package revision 2: power-fail timezone label
+
+The startup heading is `[power-fail UTC]`. Power-down/up timestamps are raw
+UTC with minute precision; the separate RTCC line uses the configured display
+offset. For example, October 18 04:35 UTC is October 17 23:35 at -05:00.
+Only banner text, its data references and the sector checksum changed. Clock/trim values, event
+handling, apps and migration/recovery algorithms are unchanged. The corrected
+revision was verified offline; it has not been flashed to the campaign boards.

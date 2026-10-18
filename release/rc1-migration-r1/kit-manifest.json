@@ -24,8 +24,8 @@
       "sha256": "1e162e10fb3a4147605aced42bb295e88bc11d0a05fe8b5180956243787e9c0c"
     },
     "hardware-qualification.json": {
-      "bytes": 4576,
-      "sha256": "e53dd7486d4ffa665ded8900bdd8a7c508311030fa5385b4d4962e6d61b5b288"
+      "bytes": 4667,
+      "sha256": "a2e85242d01f1cb1300b2ee4744fe399edecbdf9ded0cdb82c97533070b290a2"
     },
     "install_transport.py": {
       "bytes": 2723,
@@ -73,7 +73,7 @@
     },
     "payload/str8n-rtc-component-8000-8fff.bin": {
       "bytes": 4096,
-      "sha256": "bfc9000f84890666f256828b5207643bb3f285db6bdd25e753c516ee15509811"
+      "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3"
     },
     "payload/str8n-v2-recovery-e000-efff.bin": {
       "bytes": 4096,
@@ -130,5 +130,6 @@
   },
   "live_installation_enabled": true,
   "distribution_qualified": false,
-  "requires_qualification": true
+  "requires_qualification": true,
+  "package_revision": 2
 }

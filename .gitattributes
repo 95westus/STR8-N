@@ -5,6 +5,9 @@
 # Firmware/programmer images must remain byte-for-byte exact.
 *.bin binary
 *.BIN binary
+
+# Release manifests bind exact source and package bytes across checkouts.
+release/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
 docs/evidence/board-2609-a24/* -text -diff
 
 # Serial prompts and memory-dump ASCII columns retain received trailing spaces.
