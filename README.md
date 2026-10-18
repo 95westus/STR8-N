@@ -21,3 +21,7 @@ rc1 is source-built and verified offline, retaining bf1 hardware-engine evidence
 RTC qualification/known continuity issue, native 816 apps/tests, ACIA and crypto
 are deferred. Soaks and RTC sampling remain stopped; recorded soak results are
 accepted as recorded, without claiming full endurance qualification.
+
+Current release and installed 2604/2609 firmware: **v2.0rc1**. Future **v2.1**
+organizes ABIs/metadata; [planned LED and dual-VIA timer ABIs](docs/STR8N_V2_1_ABI_METADATA_ROADMAP.md)
+remain development work.

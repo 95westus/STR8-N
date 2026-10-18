@@ -29,6 +29,27 @@ beta35/bf1 docs are records, not current campaign instructions.
 Source/tool checkpoint: [release history](docs/RELEASE_SOURCE_CHECKPOINT.md).
 Current user docs: [rc1 manuals](docs/rc1/README.md).
 
+## Future v2.1: ABI and metadata organization
+
+v2.0rc1 remains the current release and installed version on 2604/2609.
+The rc1 package-revision-2 UTC label fix is published and verified offline;
+that revised image has not been flashed to either board. The source checkpoint
+and existing local beta32 history are merged into main without changing the
+release tag or ZIP. The separate v2.1 work and stash remain preserved.
+
+- [ ] Organize public ABI discovery, calling conventions and service metadata
+  for v2.1 while documenting rc1 compatibility.
+- [ ] Design an ABI for all eight LEDs, including logical bit masks, masked
+  updates, ownership and coexistence with monitor/console status use.
+- [ ] Design timer ABIs for both VIA chips: discovery and ownership of each
+  chip's T1/T2, configuration, start/stop, counter/status reads and interrupt
+  handling without disturbing unrelated VIA functions.
+- [ ] Specify capabilities, unsupported/busy errors, CPU/mode scope and resource
+  metadata before assigning stable service IDs, addresses or calling contracts.
+
+These are future design requirements, not implemented rc1 services or authority
+to flash boards or restart campaigns. See the [v2.1 roadmap](docs/STR8N_V2_1_ABI_METADATA_ROADMAP.md).
+
 ## Idea recorded 2026-10-10
 
 - [ ] Deferred idea: extend the SPI SRAM allocation display with an MAINT

@@ -30,7 +30,14 @@ acknowledgment, no additional host readback). Clocks/trims were unchanged.
 native 816 apps/tests, ACIA and crypto remain deferred. Recorded stopped soak
 results are accepted as recorded, not a full endurance pass.
 
-The unrelated v2.1 branch and working files are preserved separately. No v2.1
-source is added to this checkpoint. See [current manuals](rc1/README.md),
+The checkpoint is now merged into main, preserving the later rc1 UTC label fix
+and the existing local beta32 commit history. The current ZIP is rc1 package
+revision 2; the original release tag is retained. The UTC correction has not
+been flashed to the boards, which remain on the previously checked rc1 load.
+
+The v2.1 branch and saved working files are preserved separately. v2.1 concerns
+ABI/metadata organization, including future LED and dual-VIA timer contracts;
+its implementation is not merged into this release. See the [v2.1 roadmap](STR8N_V2_1_ABI_METADATA_ROADMAP.md),
+[current manuals](rc1/README.md),
 [beta35 scope](STR8N_V2_BETA35_SCOPED_ACCEPTANCE.md), and
 [historical bf1 notes](STR8N_V2_BATCHFIX_R1.md).
