@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "target_version": "2.0b35",
+  "target_generation": 47,
+  "execution_permitted": false,
+  "source_inspection_only": true,
+  "cores": [
+    {
+      "sha256": "be0c53e1700eb7f35daa556cd07a52f1ee037ff43bfd940d36c6e3a19bbe9962",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta4"
+      ]
+    },
+    {
+      "sha256": "28126eeec7c8e4cb7571638d1aebd97a86daf8b30a816d8393fcc13c9c17020b",
+      "abi_token": 1372705998,
+      "validator_address": 62235,
+      "source_builds": [
+        "v2-beta28"
+      ]
+    },
+    {
+      "sha256": "aff5874806721137ec7677beb2e80c0db7c3f563f8027967db4b898554a34028",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta28-b23",
+        "v2-beta34-candidate",
+        "v2-beta35-candidate"
+      ]
+    }
+  ],
+  "monitors": [
+    {
+      "sha256": "d05e0cba42b13d5fcaf097e0f6c9182931a0f5693844dc3c10242c501c1ac465",
+      "page": 160,
+      "generation": 13,
+      "version": "2.0b4",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta4"
+      ]
+    },
+    {
+      "sha256": "8196325cd869bec9653dd1971f0d4aed62a9c9317cb70848f7961e733fe9ea12",
+      "page": 176,
+      "generation": 13,
+      "version": "2.0b4",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta4"
+      ]
+    },
+    {
+      "sha256": "f8409807d49fad7a2bf5c16f946a450e263067d21ce617b5c91532ba0681a0b9",
+      "page": 160,
+      "generation": 40,
+      "version": "2.0b28",
+      "abi_token": 1372705998,
+      "validator_address": 62235,
+      "source_builds": [
+        "v2-beta28"
+      ]
+    },
+    {
+      "sha256": "3213ce7d3831768567021d7b077946226662cd7f0fbce476455da445af496d35",
+      "page": 176,
+      "generation": 40,
+      "version": "2.0b28",
+      "abi_token": 1372705998,
+      "validator_address": 62235,
+      "source_builds": [
+        "v2-beta28"
+      ]
+    },
+    {
+      "sha256": "5554fb561036e5a9dea0e58c3a712d1ee83e8acd93ab3342a1167a97928456a3",
+      "page": 160,
+      "generation": 40,
+      "version": "2.0b28",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta28-b23"
+      ]
+    },
+    {
+      "sha256": "dda9cd93fdd430a14c61cfe5a151c257c001bef6093043d529780760d521f235",
+      "page": 176,
+      "generation": 40,
+      "version": "2.0b28",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta28-b23"
+      ]
+    },
+    {
+      "sha256": "cf8d1e07a5f9f98144213a9cbc861abce4f356afbe025cf39fde4d12664459d0",
+      "page": 160,
+      "generation": 46,
+      "version": "2.0b34",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta34-candidate",
+        "v2-beta35-candidate"
+      ]
+    },
+    {
+      "sha256": "ad8859eae933c063c10646af7f3407f652d4c2afe6e33aba5152782435d3be37",
+      "page": 176,
+      "generation": 46,
+      "version": "2.0b34",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta34-candidate"
+      ]
+    },
+    {
+      "sha256": "7e961ddc34f58c39e9cc31c432364169856cc6d77eb7a970541261233d327830",
+      "page": 176,
+      "generation": 47,
+      "version": "2.0b35",
+      "abi_token": 3966175489,
+      "validator_address": 62221,
+      "source_builds": [
+        "v2-beta35-candidate"
+      ]
+    }
+  ],
+  "legacy": [
+    {
+      "version": "beta1/a24c1",
+      "normalized_core_sha256": "231fbec1b0e6a1e80f4a956009aa74f6259e4f0dfcf761f09f16755832aece36",
+      "normalized_offset": 4048,
+      "normalized_bytes": 16
+    }
+  ],
+  "provenance": [
+    {
+      "build": "v2-beta4",
+      "metadata_sha256": "6a354c04e78692099fc52412592bfcb9959d28c18eec76d24919acec60942394"
+    },
+    {
+      "build": "v2-beta28",
+      "metadata_sha256": "7c9c79459a9daab221110550df74171ea59a98ad1f9bc48b62b25a81cbd66427"
+    },
+    {
+      "build": "v2-beta28-b23",
+      "metadata_sha256": "a331536993a63beb57b78fbf0f762a5db4651bdb69cba31fc4e2a434aabd2d65"
+    },
+    {
+      "build": "v2-beta34-candidate",
+      "metadata_sha256": "2381688f48a5aa2f0da4c8b8f8fd21cdb2087d521861db813ad0d61c936938b1"
+    },
+    {
+      "build": "v2-beta35-candidate",
+      "metadata_sha256": "2f5319ab1d7bc751d61bc4b00af225466d83b983bc7e5806a33417940be68365"
+    },
+    {
+      "build": "v2-a24c1",
+      "core_sha256": "231fbec1b0e6a1e80f4a956009aa74f6259e4f0dfcf761f09f16755832aece36"
+    }
+  ],
+  "published_b4_zip_sha256": "4c25bc576cbc32efd04aeea4fe80c68544a50b80685d12bfcf1e44122bacbc14"
+}

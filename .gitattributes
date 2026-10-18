@@ -10,3 +10,6 @@ docs/evidence/board-2609-a24/* -text -diff
 # Serial prompts and memory-dump ASCII columns retain received trailing spaces.
 docs/STR8N_V1_34_BOARD_TRANSCRIPT_2026-09-15.txt whitespace=-blank-at-eol
 docs/STR8N_V1_34_FOLLOWUP_BOARD_TRANSCRIPT_2026-09-15.txt whitespace=-blank-at-eol
+
+# Release manifests bind exact source, template and payload bytes on every OS.
+release/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof

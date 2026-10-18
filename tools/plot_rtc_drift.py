@@ -38,15 +38,18 @@ def digest(path):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root', required=True, type=Path)
+    p.add_argument('--board', action='append')
     p.add_argument('--history', action='append', default=[], type=Path)
     p.add_argument('--baseline-index', type=Path, help='Calibrated baseline index; defaults to original zero-trim baselines')
     a = p.parse_args()
     baseline_index = a.baseline_index or ROOT / 'output/qualification/rtc-utc-sync-2026-10-06/baseline-index.json'
     baseline = read(baseline_index)
+    baseline['boards'] = sorted(baseline['boards'], key=lambda b: b['board'])
     excluded=excluded_reports(baseline_index)
     assert baseline['passed']
     boards, histories, rate_samples = [], {}, {}
     for b in baseline['boards']:
+        if a.board and b['board'] not in a.board: continue
         for key in ('sync', 'baseline'):
             assert digest(ROOT / b[key + '_report']) == b[key + '_sha256']
         path = a.root / b['board'] / 'report.json'
@@ -111,6 +114,7 @@ def main():
         history = read(path)
         assert history['passed'] and history['original_baselines_preserved']
         for b in history['boards']:
+            if b['board'] not in histories: continue
             report = Path(b['report']) if 'report' in b else path.parent / b['board'] / 'report.json'
             if b['report_sha256'] in excluded:continue
             assert digest(report) == b['report_sha256']
@@ -168,7 +172,7 @@ def main():
                 else f"Retain current TRIM {b['current_trim_steps']:+d}; " +
                      ('slope bounds include zero' if not supported else 'fit exceeds hardware trim range'))
     unavailable=[]
-    if not any(b['board']=='2512' for b in boards):
+    if not a.board and not any(b['board']=='2512' for b in boards):
         absent = read(a.root / '2512/status-check.json')
         assert absent['passed'] and absent['rtc_available'] is False
         unavailable=[dict(board='2512',reason='No EDU/RTC or excluded from this campaign')]

@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "version": "2.0b35",
+  "generation": 47,
+  "owner_scope_approved": true,
+  "scope": "Bounded B-target maintenance routes only",
+  "target_monitor_page": 176,
+  "profile": "FT245/F30D with exact target-identical E/F",
+  "candidate_build_sha256": "2f5319ab1d7bc751d61bc4b00af225466d83b983bc7e5806a33417940be68365",
+  "admission_requirements": [
+    "Explicit registered source fingerprint, validated source/profile/monitor CRCs and generations",
+    "Exact current four-bank preimages and verified private full backup before any proposed transaction",
+    "Accepted package-owned destinations; preserve all unowned bytes, startup/EDU settings and retained storage",
+    "Validated retained A fallback and explicit B-target staged preference/count-reservation transaction",
+    "Journal space, sequences, count limits and every refusal gate pass",
+    "Physical acceptance and separate installation permission before any live execution"
+  ],
+  "model_evidence_scope": [
+    "Four archived B34 fixtures with retained B28 A and B35 target in B",
+    "Explicit derived reversed C/D, activation-only and exact no-op states",
+    "Pinned saved transaction/restoration lineage and bounded polling/readback faults"
+  ],
+  "fallback_contract": "Retain validated A while replacing B; the archived route retains B28 A and replaces B34 B. It does not preserve the previously active B34 as an inactive-slot-only upgrade.",
+  "excluded_routes": [
+    "A35 target and active-B inactive-slot upgrade requiring A35",
+    "Stock WDC conversion",
+    "beta1/a24c1 legacy layout conversion",
+    "Published beta4 recovery-core conversion",
+    "F31B or other incompatible private-ABI/core conversion",
+    "Unknown/corrupt sources, occupied unowned destinations, arbitrary damaged-source recovery"
+  ],
+  "broader_upgrades": "Deferred to a separately identified candidate; no beta35 firmware correction or silent payload replacement",
+  "batch_issue": "STR8N-007 remains open as an excluded A35 defect; not fixed or a demonstrated B-target failure",
+  "migration_tooling": "Reservation-enabled composed installer/restoration remains model-only pending hardware acceptance. Frozen legacy template is not promoted to the new installer.",
+  "scope_approval_is_installation_permission": false,
+  "hardware_qualified": false,
+  "release_qualified": false,
+  "installation_permitted": false,
+  "deferred": ["ACIA", "crypto"]
+}

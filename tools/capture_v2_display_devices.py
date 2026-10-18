@@ -7,8 +7,14 @@ from rtc_boards import SERIALS
 from serial.tools.list_ports import comports
 ROOT=Path(__file__).resolve().parents[1]
 
+def clock19_equivalent(name,data):
+    """Normalize only the known CLOCK 1.6 -> 1.9 display wording changes."""
+    if name=='history.txt':
+        return re.sub(rb'(?m)^UTC slot ([0-9]+ seq )',rb'Slot \1',data)
+    return re.sub(rb'(?m)^EUI: ((?:[0-9A-F]{2}:){5}[0-9A-F]{2}) \(not remembered\)\r?$',rb'RTCC: EUI \1, unbound\r',data)
+
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--board',choices=tuple(SERIALS),required=True);p.add_argument('--port',required=True);p.add_argument('--stage',choices=('before','after'),required=True);p.add_argument('--baseline-index',type=Path);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--board',choices=tuple(SERIALS),required=True);p.add_argument('--port',required=True);p.add_argument('--stage',choices=('before','after'),required=True);p.add_argument('--baseline-index',type=Path);p.add_argument('--clock-source',choices=('flash','sram'),default='flash');p.add_argument('--clock-name',default='CLK');p.add_argument('--clock19-display-transition',action='store_true');a=p.parse_args()
     expected_boards={b['board']:b for b in json.loads(a.baseline_index.read_text())['boards']} if a.baseline_index else {}
     assert next(x for x in comports() if x.device.upper()==a.port.upper()).serial_number==SERIALS[a.board]
     out=a.root/('devices-'+a.stage);out.mkdir(exist_ok=False)
@@ -29,7 +35,11 @@ def main():
                 report.update(edu_mode='OFF',rtc_available=False)
             else:
                 assert descriptor==b'SV\x01\x0f\0\x65\xff\x64'
-                start=link.command('R CLOCK',b'CLOCK> ');(out/'clock-start.txt').write_bytes(start)
+                if a.clock_source=='sram':
+                    start=link.command('R SRAM',b'SRAM> ')
+                    start+=link.command('G '+a.clock_name,b'CLOCK> ')
+                else:start=link.command('R CLOCK',b'CLOCK> ')
+                (out/'clock-start.txt').write_bytes(start)
                 for command in ('STATUS','HISTORY','EUI','TRIM'):
                     text=link.command(command,b'CLOCK> ');(out/(command.lower()+'.txt')).write_bytes(text)
                 status=(out/'status.txt').read_bytes()
@@ -38,7 +48,9 @@ def main():
                 expected=abs(steps)|(0x80 if steps>0 else 0);control=setting.get('control_register',0x80)
                 assert raw[7:9]==bytes([control,expected]),'Current normal trim differs from calibrated expectation'
                 assert b'Running: yes' in status and b'Backup enabled: yes' in status
-                identity=(out/'eui.txt').read_bytes();assert b', changed' not in identity and (b', unbound' not in identity)==setting.get('identity_bound',True)
+                identity=(out/'eui.txt').read_bytes()
+                if a.clock19_display_transition:identity=clock19_equivalent('eui.txt',identity)
+                assert b', changed' not in identity and (b', unbound' not in identity)==setting.get('identity_bound',True)
                 if 'eui' in setting: assert setting['eui'].encode() in identity
                 link.command('Q')
                 probe=ROOT/'BUILD/v2-eeprom-inventory/probe.s19';images=[]
@@ -51,7 +63,10 @@ def main():
                 report.update(edu_mode='ON',rtc_available=True,trim_steps=steps,control_register=raw[7],trim_register=raw[8],eeprom_sha256=hashlib.sha256(images[0]).hexdigest())
                 if a.stage=='after':
                     before=a.root/'devices-before'
-                    for name in ('history.txt','eui.txt'):assert (out/name).read_bytes()==(before/name).read_bytes(),name+' changed'
+                    for name in ('history.txt','eui.txt'):
+                        normalize=clock19_equivalent if a.clock19_display_transition else lambda name,data:data
+                        assert normalize(name,(out/name).read_bytes())==normalize(name,(before/name).read_bytes()),name+' changed'
+                    report['clock_display_wording_normalized']=a.clock19_display_transition
                     assert images[0]==(before/'eeprom-0.bin').read_bytes()[:0x89],'EEPROM changed'
                     old=json.loads((before/'report.json').read_text());assert old['trim_steps']==report['trim_steps']
                     report.update(history_preserved=True,identity_preserved=True,eeprom_preserved=True)

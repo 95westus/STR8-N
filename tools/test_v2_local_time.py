@@ -32,7 +32,9 @@ def extra():
         m.ram[0x66C0]=0;m.ram[0x66C1]=4;m.ram[0x66D3]=raw;m.ram[0x66D2]=0x84 if coarse else 0x80
         m.ram[META['status_symbols']['KIND']]=2;start=len(m.tx);prior=snapshot(m)
         invoke(cpu,META['status_symbols']['LOCAL_DISPLAY']);out=bytes(m.tx[start:])
-        assert text in out and b'RTCC: Local' in out,out
+        if META.get('time_local_only'):
+            assert b'Trim' not in out and b'RTCC:' not in out and b'(+00:00)' in out,out
+        else:assert text in out and b'RTCC: Local' in out,out
         assert snapshot(m)==prior
     cpu,m=fresh(primary=layout());boot(cpu);launch(cpu,m)
     prior=[bytes(b) for b in m.banks]
@@ -68,7 +70,7 @@ def main():
         prior=snapshot(m);scratch=bytes(m.ram[0x6B00:0x6C00]);utc=bytes(m.ram[0x66C2:0x66CA]);start=len(m.tx)
         invoke(cpu,META['status_symbols']['LOCAL_DISPLAY']);out=bytes(m.tx[start:])
         local=dt+timedelta(minutes=offset);sign='-' if offset<0 else '+';minutes=abs(offset)
-        expected=f'RTCC: Local {local:%a %Y-%m-%d %H:%M:%S} ({sign}{minutes//60:02d}:{minutes%60:02d})'.encode()
+        expected=(('' if META.get('time_local_only') else 'RTCC: Local ')+f'{local:%a %Y-%m-%d %H:%M:%S} ({sign}{minutes//60:02d}:{minutes%60:02d})').encode()
         assert expected in out,(dt,offset,out,expected)
         assert snapshot(m)==prior and bytes(m.ram[0x6B00:0x6C00])==scratch and bytes(m.ram[0x66C2:0x66CA])==utc
     passed('21 fractional/boundary offsets, weekday/month/year rollover, leap years, 1999/2100 edges; UTC and journal scratch preserved')
@@ -98,7 +100,7 @@ def main():
     saved=[bytes(b) for b in m.banks];events=len(m.events)
     cmd(cpu,m,b'OFFSET -05:00\r');assert len(m.events)==events and [bytes(b) for b in m.banks]==saved
     out=cmd(cpu,m,b'R\r');assert b'RTCC: Local Thu 2026-10-08 14:53:15 (-05:00)' in out,out
-    out=cmd(cpu,m,b'Q\rTIME\r');assert b'RTCC: Local Thu 2026-10-08 14:53:15 (-05:00)' in out,out
+    out=cmd(cpu,m,b'Q\rTIME\r');assert (b'Thu 2026-10-08 14:53:15 (-05:00)' if META.get('time_local_only') else b'RTCC: Local Thu 2026-10-08 14:53:15 (-05:00)') in out,out
     # Reboot the same emulated board, preserving its flash settings.
     cpu.pc=0xF004;boot(cpu);assert b'(-05:00)' in m.tx[-600:]
     assert [bytes(b) for b in m.banks]==saved
@@ -143,7 +145,7 @@ def main():
     assert [bytes(b) for b in m.banks]==before[0]
     passed('successful initial UTC SET asks for local offset; Enter retains +00:00 without a settings write')
     cpu,m=fresh(primary=layout());offset=META['local_asset_address']-0x8000;m.banks[2][offset+40]^=1;boot(cpu)
-    helper_error=b'Local time unavailable' if META.get('compact_boot_local') else b'Local display unavailable'
+    helper_error=b'Local invalid' if META.get('board_name') else (b'Local time unavailable' if META.get('compact_boot_local') else b'Local display unavailable')
     assert helper_error in m.tx and b'B3> ' in m.tx
     cpu,m=fresh(off=True);boot(cpu);assert b'RTCC: Local' not in m.tx and not m.bus.accesses and not m.spi.frames
     passed('corrupt helper asset refused; EDU OFF omits device/local blocks and performs no bus I/O')

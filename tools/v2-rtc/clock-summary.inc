@@ -1,0 +1,122 @@
+; CLOCK opening summary. All device and record operations here are read-only.
+UI_SUMMARY:
+        JSR BN_READ
+        LDA BN_LENGTH
+        BEQ UI_UNNAMED
+        JSR BN_SHOW
+        BRA UI_BOARD_DONE
+UI_UNNAMED:
+        LDX #<UI_UNNAMED_TEXT
+        LDY #>UI_UNNAMED_TEXT
+        JSR PRINT
+UI_BOARD_DONE:
+        JSR NL
+        JSR READ_CLOCK
+        JSR UI_OFFSET
+        JSR NL
+        JSR RTC_STATUS
+        BCC UI_STATUS_ERROR
+        JSR UI_FLAGS
+        JSR UI_POWERFAIL
+        BRA UI_IDENTITY
+UI_STATUS_ERROR:
+        JSR ERROR
+UI_IDENTITY:
+        JSR EUI_SHOW
+        JSR NL
+        LDX #<UI_COMMANDS
+        LDY #>UI_COMMANDS
+        JSR PRINT
+        JMP MENU
+UI_OFFSET:
+        JSR TZ_READ
+        LDX #<UI_OFFSET_TEXT
+        LDY #>UI_OFFSET_TEXT
+        JSR PRINT
+        JSR TZ_OFFSET_TEXT
+        LDX #<UI_FIXED_TEXT
+        LDY #>UI_FIXED_TEXT
+        JMP PRINT
+UI_WEEKDAY:
+        LDA DISPLAY+4
+        DEC A
+        ASL A
+        ASL A
+        TAY
+        LDX #4
+UI_WEEKDAY_NEXT:
+        LDA TZ_WEEKDAYS,Y
+        JSR PUTC
+        INY
+        DEX
+        BNE UI_WEEKDAY_NEXT
+        RTS
+UI_FLAGS:
+        LDX #<UI_RTCC_TEXT
+        LDY #>UI_RTCC_TEXT
+        JSR PRINT
+        LDA RTC_FLAGS
+        AND #RTC_F_RUNNING
+        BEQ UI_STOPPED
+        LDX #<UI_RUNNING_TEXT
+        LDY #>UI_RUNNING_TEXT
+        BRA UI_RUNNING_READY
+UI_STOPPED:
+        LDX #<UI_STOPPED_TEXT
+        LDY #>UI_STOPPED_TEXT
+UI_RUNNING_READY:
+        JSR PRINT
+        LDA RTC_FLAGS
+        AND #RTC_F_CALENDAR
+        BEQ UI_INVALID
+        LDX #<UI_VALID_TEXT
+        LDY #>UI_VALID_TEXT
+        BRA UI_VALID_READY
+UI_INVALID:
+        LDX #<UI_INVALID_TEXT
+        LDY #>UI_INVALID_TEXT
+UI_VALID_READY:
+        JSR PRINT
+        LDA RTC_FLAGS
+        AND #RTC_F_BACKUP_ENABLED
+        BEQ UI_NO_BACKUP
+        LDX #<UI_BACKUP_TEXT
+        LDY #>UI_BACKUP_TEXT
+        JMP PRINT
+UI_NO_BACKUP:
+        LDX #<UI_NO_BACKUP_TEXT
+        LDY #>UI_NO_BACKUP_TEXT
+        JMP PRINT
+UI_POWERFAIL:
+        LDA RTC_FLAGS
+        AND #RTC_F_POWERFAIL
+        BNE UI_LATCHED
+        LDX #<UI_NO_EVENT_TEXT
+        LDY #>UI_NO_EVENT_TEXT
+        JMP PRINT
+UI_LATCHED:
+        LDX #<UI_EVENT_TEXT
+        LDY #>UI_EVENT_TEXT
+        JSR PRINT
+        LDA #<RTC_OUTAGE
+        STA OF_PTR
+        LDA #>RTC_OUTAGE
+        STA OF_PTR+1
+        JSR OUTAGE_PRETTY
+        LDX #<UI_EVENT_HINT
+        LDY #>UI_EVENT_HINT
+        JMP PRINT
+UI_UNNAMED_TEXT DB "Board: unnamed",13,10,0
+UI_OFFSET_TEXT DB "Offset: ",0
+UI_FIXED_TEXT DB " fixed (manual DST)",13,10,0
+UI_RTCC_TEXT DB "RTCC: ",0
+UI_RUNNING_TEXT DB "Running",0
+UI_STOPPED_TEXT DB "STOPPED",0
+UI_VALID_TEXT DB " | Calendar valid",0
+UI_INVALID_TEXT DB " | Calendar INVALID",0
+UI_BACKUP_TEXT DB " | Backup enabled",13,10,0
+UI_NO_BACKUP_TEXT DB " | Backup DISABLED",13,10,0
+UI_NO_EVENT_TEXT DB "Power-fail: None latched",13,10,0
+UI_EVENT_TEXT DB "Power-fail: LATCHED (UTC)",13,10,0
+UI_EVENT_HINT DB "Use ACK to save and acknowledge this event.",13,10,0
+UI_COMMANDS DB "TIME  STATUS  HISTORY  HELP  Q",13,10,0
