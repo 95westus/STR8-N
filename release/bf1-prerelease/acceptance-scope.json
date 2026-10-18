@@ -1,0 +1,41 @@
+{
+  "candidate_id": "batchfix-r1",
+  "display_version": "2.0bf1",
+  "generation": 48,
+  "clock_version": "1.11",
+  "scope_source": "Owner explicitly deferred native 816 and requested the next gate on 2026-10-17",
+  "processor_execution_scope": "W65C02",
+  "console_profile": "FT245/F30D",
+  "migration_scope": "Exact captured 2604 lineage and separately pinned bf1 B-first/A-second route; no generic stock, legacy, core or private-ABI conversion claim",
+  "deferred": [
+    "native 816",
+    "ACIA",
+    "crypto"
+  ],
+  "next_offline_gate": "Candidate-specific local review package and integrity audit",
+  "remaining_gates": [
+    "Candidate-specific local review package and integrity audit",
+    "Physical electrical interruption and original-payload restoration acceptance",
+    "Long-term preserving bf1 soak and RTC accumulation",
+    "Explicit scoped release acceptance"
+  ],
+  "campaign": {
+    "soak_board": "2604",
+    "rtc_snapshot_boards": [
+      "2512",
+      "2604"
+    ],
+    "powered_off_boards": [
+      "2205",
+      "2609"
+    ],
+    "clock_trim_changes_permitted": false,
+    "baseline_replacement_permitted": false
+  },
+  "release_qualified": false,
+  "installation_permitted": false,
+  "publication_permitted": false,
+  "completed_gates": [
+    "Version-correct bf1 drafts and fresh W65C02 manual/ABI/example regression"
+  ]
+}

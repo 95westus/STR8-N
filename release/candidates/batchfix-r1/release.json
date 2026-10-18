@@ -1,0 +1,116 @@
+{
+  "version": "2.0bf1",
+  "generation": 48,
+  "clock_version": "1.11",
+  "boot_compatibility": 3966175489,
+  "generated_includes": {
+    "core": [
+      "text-image.inc",
+      "vectors-image.inc",
+      "worker-image.inc",
+      "batch-gate.inc"
+    ],
+    "xip": [
+      "gate-image.inc",
+      "work-stub.inc"
+    ],
+    "migration": [
+      "migration-worker-image.inc",
+      "migration-table.inc"
+    ],
+    "bootstrap": [
+      "initial-record.inc"
+    ]
+  },
+  "profile": "FT245; W65C02 / W65C816 emulation",
+  "deferred": [
+    "ACIA",
+    "crypto"
+  ],
+  "installation_permitted": false,
+  "candidate_id": "batchfix-r1",
+  "release_qualified": false,
+  "baseline_expected": {
+    "str8n-rtc-component-8000-8fff.bin": {
+      "sha256": "bfc9000f84890666f256828b5207643bb3f285db6bdd25e753c516ee15509811",
+      "bytes": 4096
+    },
+    "str8n-journal-9000-9fff.bin": {
+      "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5",
+      "bytes": 4096
+    },
+    "str8n-v2-recovery-e000-efff.bin": {
+      "sha256": "32c9daf3eb43d5d2c12e85785ab4fe50cf3d31ff059982855d24c773e9c14661",
+      "bytes": 4096
+    },
+    "str8n-v2-recovery-f000-ffff.bin": {
+      "sha256": "aff5874806721137ec7677beb2e80c0db7c3f563f8027967db4b898554a34028",
+      "bytes": 4096
+    },
+    "str8n-v2-recovery-slot-b0.bin": {
+      "sha256": "7e961ddc34f58c39e9cc31c432364169856cc6d77eb7a970541261233d327830",
+      "bytes": 4096
+    },
+    "xip/utilities.bin": {
+      "sha256": "99895cd080194325d9a01f6864ebfb854d61ea4edce63f9b8b614602fef32eaa",
+      "bytes": 22528
+    },
+    "clock/clock.bin": {
+      "sha256": "67454617dee45f9f40436f663375ea0dea2625816ecd7852ba8949b8e5a13972",
+      "bytes": 12231
+    },
+    "clock/clock.s19": {
+      "sha256": "d65172aa9455b3257f60bbd50d3f6101dc54b305112b75e6238b4a7e0c7264cc",
+      "bytes": 28767
+    },
+    "clock/storage.bin": {
+      "sha256": "0fb5cc24e9a4a69ef83837f7a594a9a773f501abeee2a75df7d737d0cea1f0e1",
+      "bytes": 12288
+    },
+    "boot-status/asset.bin": {
+      "sha256": "7fc2acd20a6b26fac92117cd3b84d3f071c5fb01aba012b701ba3a43007cdab5",
+      "bytes": 2560
+    },
+    "version/asset.bin": {
+      "sha256": "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa",
+      "bytes": 2048
+    },
+    "battery/asset.bin": {
+      "sha256": "6c7933aefd37b263cedbef05c5aa145bb428de76b8ad891b6307aab22b040b9d",
+      "bytes": 2560
+    },
+    "assembler/asm-e000.bin": {
+      "sha256": "18b0236b659b18697b34060b3adb4d4f99d60b1c1408ae2a58a6516bf74ce270",
+      "bytes": 6508
+    },
+    "assembler/vectors-f000.bin": {
+      "sha256": "9b8a59d055cfb85d99d6edf9b954c5c275f8aeaeb0d37e95305a63d141e250f4",
+      "bytes": 4096
+    },
+    "local-display/asset.bin": {
+      "sha256": "462fa9096c41a9c0efdf9c823406012cd99b2ba949770d53aa4e7438aa3336d8",
+      "bytes": 1792
+    },
+    "pf-worker/asset.bin": {
+      "sha256": "3422b1845f7c1cf6c8860aa55ab1a2b27875f4321a922d7b56454122d3477f89",
+      "bytes": 768
+    },
+    "bootstrap/bootstrap-journal.bin": {
+      "sha256": "36517d863e1aaa48b41cf6095b3c022069852d36b6c30a90857c246b391ad839",
+      "bytes": 541
+    },
+    "migrator/rtc-migrator-2000.s19": {
+      "sha256": "714ac8d0da1a7104b6a0e296ad92e33438a39beca3a03308e878ed1ab1d75eb2",
+      "bytes": 5176
+    }
+  },
+  "expected_changed": [
+    "str8n-v2-recovery-slot-b0.bin",
+    "xip/utilities.bin",
+    "clock/clock.bin",
+    "clock/clock.s19",
+    "clock/storage.bin",
+    "boot-status/asset.bin"
+  ],
+  "baseline_candidate_build_sha256": "2f5319ab1d7bc751d61bc4b00af225466d83b983bc7e5806a33417940be68365"
+}

@@ -9,6 +9,11 @@ status. `TASKS.md` remains the broader project backlog.
 | STR8N-001 | [W65C51N ACIA receive absent on boards 2205 and 2512](docs/issues/ACIA_RX_2512_2205.md) | Deferred | Meter, logic probe, or scope available for receive-path measurements |
 | STR8N-002 | [2609 RESET-button cold-path observation](docs/issues/RESET_2609_COLD_PATH.md) | Closed | Correct S2/RESB captured; latch cleared, saved image retained, old handle rejected |
 | STR8N-003 | [2609 disabled VIA CB flags block SPI after RESET](docs/issues/SPI_2609_DISABLED_CB_FLAGS.md) | Closed | Beta22: repeated physical/software cold starts and preservation passed; active-owner refusals retained |
+| STR8N-004 | [Beta23 APPS displays corrupt names](docs/issues/APPS_BETA23_NAMES.md) | Closed | Beta25 APPS qualified on 2604/2609 under retained A and new B; exact flash and retained-data checks passed |
+| STR8N-005 | [F-only recovery cannot bootstrap monitor A/B without a wear journal](docs/issues/F_ONLY_RECOVERY_BOOTSTRAP.md) | Closed | Physical F-only A/B bootstrap, interrupted upload, journal provisioning and restoration passed on 2604; 23 erases accounted |
+| STR8N-006 | [Beta24 board name joins the power-fail status line](docs/issues/BETA24_BOARD_NAME_POWER_FAIL_LINE.md) | Closed | Fixed sealed helper flashed and power-on/retention retested on 2604 and 2609 |
+| STR8N-007 | [Beta35 A-slot experiment cannot hand BATCH input to native utilities](docs/issues/BETA35_A_SLOT_BATCH.md) | Closed in bf1/rc1; frozen beta35 excluded | Both monitor slots passed shared-CPU hardware checks; beta35 artifacts remain sealed |
+| STR8N-008 | [Beta35 preserving migration needs durable pre-erase reservation](docs/issues/BETA35_JOURNAL_RESERVATION.md) | Implemented in scoped route | Durable reservation/model recovery and bounded hardware interruption tests passed; arbitrary electrical cuts remain unqualified |
 
 ## How to maintain this tracker
 

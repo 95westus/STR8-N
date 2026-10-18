@@ -1,0 +1,831 @@
+{
+  "schema": 1,
+  "checkpoint": "beta35-through-rc1",
+  "prior_published_commit": "9bf894e6fdf8479794a89dc10ba7e677b0607404",
+  "published_tags_unchanged": [
+    "v2.0b4",
+    "v2.0bf1",
+    "v2.0rc1"
+  ],
+  "firmware_changed": false,
+  "owner_evidence_excluded": true,
+  "source_helper": "tools/qualification/bf1_cpu_mode_probe.asm",
+  "public_copy_transformations": [
+    {
+      "path": "docs/beta35/ASM_GUIDE.md",
+      "source_sha256": "9d34a88f88e1b636b22978899651a29943ab02c69f4c5a2406d3e924ce3b7458",
+      "public_sha256": "628cfcf5b746bc6144cce2bb1709df3d0761aa2fdf224a0126ea54ff80077cd5",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/beta35/COMMAND_REFERENCE.md",
+      "source_sha256": "ca90a74b80b493966e08961fbbcd5336662b81bb1e128e229a4cfe7d90fa9166",
+      "public_sha256": "c7944abe795d2c276931c03aa11daaf61ec63d14c8d380d17f41fa5268e7cb4a",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/beta35/README.md",
+      "source_sha256": "fad3b2cd7d2d33e2feba1a8c1604eefcf0985128b2f0f7c268af4bd0c933c5b3",
+      "public_sha256": "3de70a5c1cbf73557b91822e5c55b57ad13c6d11701388be7bd97684c0b35fb9",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/beta35/TECHNICAL_MANUAL.md",
+      "source_sha256": "fb5e38ba93aa75c10ce0324da3a2d9deaa7fa191ed5ccfbb7646bc0f8feba417",
+      "public_sha256": "2c4b6a5d8fe0a4588597ea28f54b5c1cf6abc5d8b0e8447c171b0f1330b42e0b",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/beta35/USER_GUIDE.md",
+      "source_sha256": "fbd0d19918b78e43c40a9ffdb881f2a61889d86d68f8f1feda4b6d5d30633b0e",
+      "public_sha256": "96c98717e73bb0414998c79cd44e0c50504c9da2f840251024ece54952266bf3",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/ABI_REFERENCE.md",
+      "source_sha256": "0284ab2e705f744e7bf05c0d39e7227fb15a04d8949cee52f9349640aeabbc1d",
+      "public_sha256": "e399cf75e1cda72534c060bb1ec1ddeda99579bfbb8e8b066fd61b33dacf93b9",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/ASM_GUIDE.md",
+      "source_sha256": "8199e0437a332c01b96ca999580d6b8c9b0810eaf0a45d6a846623117816ff3c",
+      "public_sha256": "72b98146a1d288b7e0aa629e663390b64dc51fe57409f242fa22719e6a4b1358",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/COMMAND_REFERENCE.md",
+      "source_sha256": "16293bfd38b0a78d9e91ce1515d412598b2ffa526d0dabe09365aca343b13999",
+      "public_sha256": "e1e6ad167d89e511eb085499fd8f7e29e2eb6a33c2b593335cd89f2ff1e5ea80",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/FIRMWARE_CONTENTS.md",
+      "source_sha256": "25ec00b1baf02dd775c1f7d40416f9744856eea8173c958bc24113f485540340",
+      "public_sha256": "750cdef59acc970382921b3765ec286ccefec7f3d45d6e741f04c621599f4253",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/MIGRATION_RECOVERY.md",
+      "source_sha256": "a7c99adf1aad7cf6d0456f72cf0e62aebd72ba97cf085c99e14abbe207af3bc1",
+      "public_sha256": "500a2e88bb8bb2400e739dbcf800e96c775a2ad2bda066b46c896523c3bdd9df",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/OPERATOR_GUIDE.md",
+      "source_sha256": "5cbdad945a757dc1285653569464c6e640be2de6374737f08989604f71fabe9a",
+      "public_sha256": "d6d252ec8a473938238707a742f8d33d9fcb1b025756c7c560e2e91a610cf493",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/QUICK_START.md",
+      "source_sha256": "b67db32c6f74c85b9ccafe0b9fa3d8553aef46d2b8cf573f65a636dc73b6c9ab",
+      "public_sha256": "605f74a0579511190365e742e28c91c0eddbf0ab1a56c4ec1bff9f8cfdaaea95",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/QUICK_START_LINUX.md",
+      "source_sha256": "9376b78fc91a294340cf98754e4817acb29507798172c3b272b3f7b5ef1c142e",
+      "public_sha256": "828a93d26b71a23d733c31e9b76ea038a998f45aa3f0973e53e271306b278bf3",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/QUICK_START_MIGRATION.md",
+      "source_sha256": "9b82e236f469a983c4140b498b229525e90a5fcfb299b34c7c01395fbc025e37",
+      "public_sha256": "5f12b134153657715390448ff3e92b21984f72483ec37f79f2909d8e17b97ba8",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/QUICK_START_WINDOWS.md",
+      "source_sha256": "d7950c3cfcb6d656781d3a1a91a5f7c2939ef190b1b24986fd1ac3095c1f5279",
+      "public_sha256": "9d90e98d1cd3ad85c571d72c9c915c56a516ebb09687fbfc0a8542be284f22d4",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/README.md",
+      "source_sha256": "23faefc39582dc6f5fd888dfe046adb40a5c085339f2e8326fb910f3c7abe856",
+      "public_sha256": "4773092ca28f13f92aa32507b5621882088644b142a319674d42031a8dc83fd1",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/TECHNICAL_MANUAL.md",
+      "source_sha256": "adee46d6967bc11375ba1f9ec7edd04fab8952d5fdede415103b5c7c6f2f7a04",
+      "public_sha256": "07186964373c865d3894215391f104c81094bed8ae9174077b8b63672f3fd44f",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/THIRD_PARTY_NOTICES.md",
+      "source_sha256": "12063983af578e5dfb3e524715ce26a4cd088f33d68d647409a2c5284c193c9e",
+      "public_sha256": "f4466249c2fb31ce17c5805aeb5ade8f2dbfd356b4b5fd8a4eb5f7aaddcdf89a",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/UCHESS_ASM_SESSION.md",
+      "source_sha256": "31c4be7572a0575f149d3dcbf4ec532007effe2bc380e5c5dbbdae7a8edeaf14",
+      "public_sha256": "4ec8ff651aea390c17cc09e117a2f0c37ed7f66d99af2114d05f79178cd4fe32",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/bf1/USER_GUIDE.md",
+      "source_sha256": "506276e4e7f8abacec87ddf54076d2870598453150e47c71cd2744e3c0da7238",
+      "public_sha256": "458e9219d1a117483b18bb1ac1068d5b19b0b19bf01ae39f7092e2615148d35c",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/issues/BETA35_A_SLOT_BATCH.md",
+      "source_sha256": "f37c886d9dc6b6e3dcf1db035d786428ec907b44231da1c384d8f1e3eca512f2",
+      "public_sha256": "cad6607788f2487d0724c0e37bfe18debf666dcee48bb967510304326fb5ee81",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/issues/BETA35_JOURNAL_RESERVATION.md",
+      "source_sha256": "0830d9d3fbb5d4165d93da556c695f454c29c23c322dcb2ab8c412d3b94e634a",
+      "public_sha256": "64ba7111d4e11e7c374b18041e338444d14e46c2c01d7814e7e0c99b7b5d60c9",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BETA32_DISCUSSION_AND_ABI_2026-10-16.md",
+      "source_sha256": "ada7def2c7761605503e927711f144a5d1af12ef26561dcde67f19b6b7c9692d",
+      "public_sha256": "1321ac52765d0e190030adc007519100b40b1405e38c5cc6c3301a325a45e53a",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BF1_2512_MIGRATION_QUALIFICATION.md",
+      "source_sha256": "da1660fe516899471cbf8c83c6bff2341e51513c91a908e176709eba8539bf7b",
+      "public_sha256": "59dd9dac48cb92f881bdcb30f4ae31d7446d94d53904201528e29e5a6447b67a",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BF1_2604_INSTALL_RECOVERY.md",
+      "source_sha256": "e152339eaf1875b76712b3099a2771cb13a0f538650f80cc7d97e58e3643ee97",
+      "public_sha256": "1b2923715c51aea656d50da51216fdca3ebc9613bacf566c7b4e0ee035dba03c",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BF1_2609_INSTALL_RECOVERY.md",
+      "source_sha256": "2fccfccc6071a7669baae2defc04b84ea3a228f4912e21b493ef813dbeb69803",
+      "public_sha256": "2516dc0ff6fd6e99e375eddafe7cc62bbfb27b4c02374beb520dbb9a602688d4",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BF1_ACCEPTANCE_AND_PRERELEASE.md",
+      "source_sha256": "f5bc756e16f61cd8b45d9f2587c9c6f5b805c21c2ea27b6e7e9ab342e87f1f69",
+      "public_sha256": "2879baaa3ec9cf633f5e41f324e1dab6a2c7a2f0f78100e8def6ced22c08e114",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BF1_DISTRIBUTION_WORK.md",
+      "source_sha256": "4d7d846fc24ab5bbe0a4f633866393d4d21d8178638c64976b697a099451e9e5",
+      "public_sha256": "6a1da8842b45e2bcfc43b069d132cb2d7b0f42c2c2aa5a3b4d621148928cd8b0",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BF1_FULL_FIRMWARE_IMAGE.md",
+      "source_sha256": "68524f9dfb994b7a3e6b6ed37ff0d1e5e318635cd64589a9ae6d681b7bd118a9",
+      "public_sha256": "0b8f4b9e53d811946f43609a50bbf16222c711419ccb5008656998269c32be68",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BF1_RELEASE_PATHS.md",
+      "source_sha256": "5a52993c3390257c9a833511e6038448fe5381a112db7878d35155e768756d85",
+      "public_sha256": "39362a5e1219917cb2e9229a62ea0202d0374e326a05e0304ced2c6fc6b2c9fa",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_V2_BATCHFIX_R1.md",
+      "source_sha256": "4c4186c645f3902d6c90a08e25ac0fcf81177f2bb1b40a16ca242cb31143bb3b",
+      "public_sha256": "0ee9434383443216c3b937ad19a2fef61bbf936d37e1d96a61bb47754d0400ca",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA32_2205_2026-10-16.md",
+      "source_sha256": "705c237bb9b10d64fd4e71b42ad59a599d65c4b42738c46c64f348d870b48609",
+      "public_sha256": "d50de19e7b1fde3de5ceb3f09faadcb7721a8a0e55da158c571dcf29b32313d2",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA35_MIGRATION_MATRIX.md",
+      "source_sha256": "84d3ae0e97c8bdade3d43322de2d6525beb420e4ce8d5e5e9bdeab556aaaac53",
+      "public_sha256": "79b795ea97ff5885768877ac540422b0ed7ed6ee0b0a964318b6852ca75aa151",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA35_PRERELEASE_WORK.md",
+      "source_sha256": "0ec4d22a75b83691d674bc3b4c939f286da0891531d646f467da310284e29f56",
+      "public_sha256": "e2372f728d5c9d757f80cea9bf63563467aca7fa0fc631b773afcceeb656dce0",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA35_RELEASE_QUALIFICATION_2026-10-16.md",
+      "source_sha256": "162a6a9d909f0ac51e25805944900133c14ad7022d083ad711e1bbf788ce6728",
+      "public_sha256": "2dda2dd674aec573a730244ff521c1e12ccd9b7363df3accdbb5d1fb4ee30995",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA35_SCOPED_ACCEPTANCE.md",
+      "source_sha256": "8fe4618d92e2eeb3e7fcaacf3471a8eedec13bd6b87fbacde997b8f41ac10a01",
+      "public_sha256": "c16a1e27908c5bd31578718632c40b4eb1ef9284c322ae746c5c49139b4fe7eb",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "tools/checkpoint_bf1_2604_route.py",
+      "source_sha256": "9e8f5656f36d5e8c00ff86ef48c3abeab2a4248d126875baf6aa37245b7be753",
+      "public_sha256": "92325c22df44e5024e6eb556dbcc04a4cbfde6488cb20552f7ab2a53bf90f8fa",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "tools/checkpoint_bf1_2609_route.py",
+      "source_sha256": "c623a115d9f1003ca67a6cf3b63c9cf99d1a408e126f4c10cb5aa2efa7184812",
+      "public_sha256": "69da3fb42882ce257dfc34657332f671a76bbf53745283cd4dff3b90e2ab09bf",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "tools/close_bf1_offline_qualification.py",
+      "source_sha256": "550a4ed4a99512b8c9adb9a5c1d4cb9d61be3898eaabf242e468737e784da658",
+      "public_sha256": "072e411a46d9f458a078727741cdc8c7b4d6738c540ab68cfeac71a801f300f1",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "tools/close_bf1_physical_review.py",
+      "source_sha256": "82475993693ed3808f76f8489ae965ce2ad6bed73527a5922a8ba4123f39a1e2",
+      "public_sha256": "4f6710c95fde9ea08bea011cf1ea89dc47f9ad16d881cd844ffb4dff6b8fb073",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "tools/close_bf1_review_gate.py",
+      "source_sha256": "ed460d7622052f4d808712ef8e778be6b748c430989b53e9a180cb225edf787b",
+      "public_sha256": "409ac927dfd62eb21a0ffd7bc0f4d04ada226694183ee6fa792e09f18f933b3b",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "tools/close_bf1_shared_review.py",
+      "source_sha256": "6204068c9a2a7d24a0aeedb7cc594a9da430af47ee5cb3b0df898b45ed682c4d",
+      "public_sha256": "b5bc1d8bb0443f8778d60f7d840d3b876c1288914ac8d1d8c778798a1b4fc7ce",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "tools/close_bf1_soak_handoff.py",
+      "source_sha256": "cce362206e95d7eb6f7babaa2e0bdd2ca9f2586d0e4acf3a43d49c9eff4f18c0",
+      "public_sha256": "ccccc8be8dab751a27cbf89d436f4588b5088710489fe4babf4ef2cce84b68d1",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "tools/render_bf1_manual_mermaid.cjs",
+      "source_sha256": "ead5e5c3af646d8d774d85f78f5a5d451bc0524e437a341a1b4ddb776616fc09",
+      "public_sha256": "d0e3e968294c07797c64b4008ded8e33f57ba5f99c2e2bae54ec51f1110f7f7e",
+      "change": "Historical-state annotation, personal runtime path removal, or unresolved owner-evidence link rendered as text"
+    },
+    {
+      "path": "docs/STR8N_BETA23_PRESERVING_SOAK_2026-10-11.md",
+      "original_sha256": "7f2033373117468a057a451d15b712f3b0fc7d05916ae3ec9dc84c9538205c6b",
+      "public_sha256": "a43e28cdd286d1ade01e2ff505afbbbd75e0025d601c45a7ca7ec9fa62576af8",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_BETA23_SOAK_CONTINUATION_2026-10-13.md",
+      "original_sha256": "e4b560bc470dfb39c1983b3f4b0d35b8c20d5d5419b4796836a7513d1358d91d",
+      "public_sha256": "c88b76a835d35ebeab202622cede2499328af18b2525f03fcce2356384753480",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_BETA32_FOUR_BOARD_MIGRATION_PLAN.md",
+      "original_sha256": "dbff664a29591c703ab3442ff963ab8fcbdbc68d0caaba8cdccacd92ae145e96",
+      "public_sha256": "0bf9ebfc716d0a371f220e942810704705f1e39e475b7858aad62c4daaf22359",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_CLOCK_SUMMARY_2026-10-15.md",
+      "original_sha256": "32eaa54a7e2b3ae7613453ca7fb261ded2305d686ab4aeac48310f0717c24141",
+      "public_sha256": "18e844a4f5e77aeb5e26b264218489718a237e1b542afc2bbc7cffea6b81b947",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_MAP_FIRMWARE_ASSETS_2026-10-15.md",
+      "original_sha256": "f264e0405de4e6844ec58e3f31201d3c02a01886da0821e5554d93b7d38c851b",
+      "public_sha256": "350780211af409e0d6ddcbcb6d8d99714e0dce7d7b258f59076fbacc173ad717",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_UNIFIED_MIGRATION.md",
+      "original_sha256": "a215cf542d7dcc78ca8cfb4186481abe56d688ef184220f64fc3127dde5e866f",
+      "public_sha256": "21daee88fc237ddb6605357c8ab06b7ccd1e469f6c227461e522112e463d336f",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_B4_TO_BETA25_2026-10-14.md",
+      "original_sha256": "b257c982a70ea180ace9979d9f7a1c0a18613854f1cc2ebf98a2d754b408f47c",
+      "public_sha256": "bbbd356467349ac2e6ea981fb380eafc4e83b51e0fb3124c8519a90aea03c5c6",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BATTERY_2026-10-15.md",
+      "original_sha256": "73c32d0b409cdedc63d98323130341ab062c768775f86b00c2cc68c70793b1d0",
+      "public_sha256": "a640830101c925a67ca4d56a634fe31f6e7e8c26044127e77363d2a9b17f80cb",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA24_INSTALL_2026-10-14.md",
+      "original_sha256": "eecb93bb2a67a9e6fe0848a8fbd1530fc73ddc05184c4d9cc4d70e5aa88083fa",
+      "public_sha256": "c5cc4c5d5d46298179e9914240d1a2b93d0193eaea65801e5f91a471ad028fbb",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA24_QUALIFICATION_2026-10-14.md",
+      "original_sha256": "4d3eab268ff1f8d3eb7975f39771be5377135e51556040a10ba4f0312b67a6ed",
+      "public_sha256": "341770af2bca8021442bfd0e2455bcbdc9a15f7cb63d57d38dcf3e767e488b90",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA25_2026-10-14.md",
+      "original_sha256": "6b42924ddfc8ccf8212e6742baf678641c0f7a67a66eae6a47a04774d041e706",
+      "public_sha256": "8d4b76f0f0b330ae6078aeafead75cf9bab1bfa54718cf328ece1b9872a0f3b4",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA25_2205_2026-10-14.md",
+      "original_sha256": "45bbb044238f8e3239bc54e3e615ffd87fa47f3df8cdb89661b395e531f6d8b6",
+      "public_sha256": "5e43780a2f5e7d585f55d06611138816343d1a51ce8eedf2e0d2f3c74b1e5caa",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA25_FLEET_2026-10-14.md",
+      "original_sha256": "30aeaf647892a0e13a58480865dd79450ef671e308eec5f56781d707fbadb380",
+      "public_sha256": "24c6426ded0ef81dd7b12a5d409d153441399d1f2ffa8baa199310dad698ad7a",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA25_RST_SOAK_2026-10-14.md",
+      "original_sha256": "00ad35046872e6b1f89445fea7bc39c3a8c9a7f55ce6149fc782838c682e8aca",
+      "public_sha256": "d16a85ac96e4ea2030dbf6ff75cd5934612d23f48073e3f2990fc87df75988c9",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA26_2026-10-15.md",
+      "original_sha256": "dc8317b804d7e56396cc981658053d893de33fba31d337fcfdd0624245bdba39",
+      "public_sha256": "124f6ca584a4b6b3e415a12895aa7a6ce856ed091bbf02aa713d00b1e2fbb015",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA27_2026-10-15.md",
+      "original_sha256": "395c34653eca1169f2b2b9215c11df6a73149e9de1932852850e8ad75e551002",
+      "public_sha256": "c67dbfe233cf15af7c166dcf4f4c7256179cddee2cd58a765c46f472d22a5fc5",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA28_2512_2026-10-15.md",
+      "original_sha256": "f50f85559a84f46ea02d5f6c9af137868715aeb427814325837eee6cb9bace8d",
+      "public_sha256": "7a4b79aafd559013ed282aa78235762d78de8fef17667e93309689e68630b6fd",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA28_CANDIDATE_2026-10-15.md",
+      "original_sha256": "ec2edc93d3dadc41d6d0c6c320fc2d7136d05793e21b3999f0ba10abc967b0e0",
+      "public_sha256": "4517c00635ed4f0d6e4f304d970b12046101fe90b1e8236513819f9359b45762",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA29_2512_2026-10-15.md",
+      "original_sha256": "15569ce180f2ab8aec9d740861300ba4792d4ece3ac4b48ea8574daa0af9cf6a",
+      "public_sha256": "072113f4dd9a57185cec659a25ea7b526b155ec6eb9b1f5e5c1791f228ff4950",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA29_CANDIDATE_2026-10-15.md",
+      "original_sha256": "a298cc61d157e4c5ab59b6015e3245309ca812d8fcd529ff644acc1d39beed85",
+      "public_sha256": "905c314eb36763b63e1ac61859ef285e13eb4a2edae9ec20a7dd6f9af0c3b989",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA30_2512_2026-10-16.md",
+      "original_sha256": "0cc901ae9d756542991c0cf1c82f99e9ac016d74c280930ad64b459cea980d2c",
+      "public_sha256": "d40441086c55ebd465455d1a8c9c7273d04624bf3ca1710acad0202b2639273d",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA30_CANDIDATE_2026-10-16.md",
+      "original_sha256": "14716d90689e712fd8fb72cfed50e35fe5eb30fca078cefe6f73f3e7f2df125b",
+      "public_sha256": "1a284470c13f73341fa25242a9707487b2d7cc2683e966e12ef5518f37c1935c",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA31_2512_2026-10-16.md",
+      "original_sha256": "87212524c5d72cde23da8ece80f9f8b9c45ca5daa9e98e476a685e72d561f70f",
+      "public_sha256": "14178efc7c78a928210408b59c54c3fba796334fbf833f1c7632f35d6afbb267",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA31_CANDIDATE_2026-10-16.md",
+      "original_sha256": "2126269291e23aaffad92e15a85c36bc84ad2340ec3e6598e42e5c9c363dfe5b",
+      "public_sha256": "262bb959a69c6ba0f4b3a9079cb2b120566bd508525ee935374237b3311526ce",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA32_2512_2026-10-16.md",
+      "original_sha256": "01b93c87c62a7e88feade971a5477a96324be00c676615448257cbce8769cebe",
+      "public_sha256": "d2c2a5b2b1f584abbecc5cd4538389faac68726abc7ab7616e71a105a6e7c64b",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA32_2609_2026-10-16.md",
+      "original_sha256": "98cb9c9bdb8a4384719f9a8d971bca7009581f48b08bad74a02c43dc84790616",
+      "public_sha256": "cc310fcb949eded9f13247998efbe4d66599fd901b9f0ce56dbc691a0458073e",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA32_CANDIDATE_2026-10-16.md",
+      "original_sha256": "dc520e95248805b20e289dccd167104d83b2795ee1b6e5111e8d73f4fdc8611b",
+      "public_sha256": "1daf82cfbd5bfd5237ea524ce595ad77b3f0e1b12c94e28dad23cef65007d22b",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA32_COMMON_CODE_2609_2026-10-16.md",
+      "original_sha256": "e036fdd4df5d46a4e42dc9e4cff76ebe7697682d11e8e69ac4374bf5e6c242ef",
+      "public_sha256": "ce1bf7504a4c23f603c295be6998bebdca6bccd07d9a738714b97c9a90f9582c",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA32_SOAK_2512_2026-10-16.md",
+      "original_sha256": "e8f6e87a9497e2ff7cf9c4b9222fbeafe9198dba0be414974d1bfd076ed91fa5",
+      "public_sha256": "16e3bf193bf291c77382cf13791810ec4edcae040b03ce98327d56e74d22f291",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BETA32_SOAK_STOP_2026-10-16.md",
+      "original_sha256": "218f60b2d566d1bba3aeb1d3bab06c50c4bff8819d4f0eeeb9a6d08c4ccc82cb",
+      "public_sha256": "9ff392b52733f3c85a2d5fd50ac75c10900363b7f226a9fc89559c9f8bee2eb6",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BOARD_NAME_2026-10-11.md",
+      "original_sha256": "5a5233b00e58a162a960ad39da8c0907da6c40c68de35148a8e1009ac3554c09",
+      "public_sha256": "acb2121f00ba074546a996b6f4d8e9db97a6a3517ac1931757e65aec4fc90228",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_BOOT_DIALOG_2026-10-15.md",
+      "original_sha256": "49cca3bf7a3e4b944a8741d08313974046942b29ffd5943beccf919bafc06055",
+      "public_sha256": "4c645826fa216e58688c72b7ae5763cb84e12dcaefdc397a46912f77b1f886b4",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_CRYPTO_2604_2026-10-14.md",
+      "original_sha256": "1538755a7f5cf557619ec51a85691e687f11604a1e37cbf6484c030592ef308f",
+      "public_sha256": "43589931444c4e5c59ea4d0cd78c7eded77d475d2c86c47b5133b5dece022e72",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_CRYPTO_ADAPTER_OFFLINE_2026-10-14.md",
+      "original_sha256": "09a482853db168bbb53f36e9c618d00e5e23ae5d53928049052ca725cfba269b",
+      "public_sha256": "0a8fa82b448ea02a109de7b29e57b56d62aa6e1864839291695e8b7f612db7a7",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_CRYPTO_DETECTION_STATUS_PLAN_2026-10-14.md",
+      "original_sha256": "545c1e47ea88d4f80a7e43f9b14f179c7f5923af7a397f820a990f8d3f582b3a",
+      "public_sha256": "201d1b4a7e57d84a8f5071bd5600f9145b45531c805b7af76b830518b0439d57",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_CRYPTO_DISPLAY_2604_2026-10-15.md",
+      "original_sha256": "bec1e1d7702fb3909e32fa3e633d308a09815e932cb01b0adfab3fbdada824e5",
+      "public_sha256": "2a23d5436a29791bada126a173c5451a792c2aef4396d98e39626c79714a1ca3",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_CRYPTO_STATUS_OFFLINE_2026-10-14.md",
+      "original_sha256": "82941c51628a7faf6fbfbca455b82cb8e2d224ca3119b17232222bc0f29a41cf",
+      "public_sha256": "3831c1f90d325274dd46f2418e233a5d4afd3b834d2135fef8ef07d41ed78b4b",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_FIX004_2026-10-14.md",
+      "original_sha256": "8545284c7cb92dfba3b0dc82b565d8afdfaf456cec40d3167d5f8fe981eee50b",
+      "public_sha256": "1b4f278e043e1561c7963210c881f542e21741e35ce5f8ad50b62c33c87ccc64",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_FIX005_2026-10-14.md",
+      "original_sha256": "3e48d5551beeb6a83b84aaaa84bc563ca2b134616e1a5c668aeb2c8d6614bfc1",
+      "public_sha256": "9f853886a848661388fadc184fd6c4cb3496fa726be1afaee404146f95e4da5b",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_FIX006_RETEST_2026-10-14.md",
+      "original_sha256": "6b7dbfa62dcdfcd185111e7f9606bf9505aedcfb4f11d040c3b0f2c45be91af1",
+      "public_sha256": "cd6418012e1c5cf8c1e05e8bffd3768021c17dca248ee70896d95b1c578fd213",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_FLASH_WEAR_2026-10-15.md",
+      "original_sha256": "7feb896b0f0f7d8b476d3d30f50e438a2421805bc56011ae43af347469b8fe90",
+      "public_sha256": "69a2319c7bf87185e4e3c4020856ece5aab35afb4a557a16dd8aa66ed3a47de6",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_RECOVERY_ACCEPTANCE_2026-10-14.md",
+      "original_sha256": "e6971558d23542c4e40e86d55acd56d8538b0fca4bc7911bf2215b1f6f693840",
+      "public_sha256": "b449fa288a6ccf890936aff089696406c74d73b76805e218711ada121988b3fe",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_RELEASE_CANDIDATE_PLAN_2026-10-09.md",
+      "original_sha256": "43823616a05471880f6ee437b03fcad6207c431cbb3e8558f9678cbbf1622ebb",
+      "public_sha256": "26a7b485f11310561284a6f61f64cc5143c30de177fa362de00da0fd17143d6e",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_STARTUP_FIFO_2026-10-14.md",
+      "original_sha256": "bee163febf5e79426f4c98c460372b870dc4b99786f0c476023902797e7a4e22",
+      "public_sha256": "bcb929bb48e4e3cd5658792d09b0ff615d54acc40288a960926db0c1a2f32b8f",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_STARTUP_KEYS_2026-10-14.md",
+      "original_sha256": "9cd9394b4ceaa9016bbc6b96bccfb08839e613a4b2e5765a0315fc8a078b4929",
+      "public_sha256": "cabace3178c8da981f32fdf3d1c29c8833618f70fa4f5566a30e127643fcb87b",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_V2_TIME_LOCAL_2026-10-14.md",
+      "original_sha256": "5d3ad57dddfd4af48a29e7ef5865831859af8b28069b972f2fe0fa3a6533b520",
+      "public_sha256": "7a0d38773a97b819564b24c00436836e355e41c44ad1a486d3d269055439c574",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/STR8N_VERSION_COMMAND_2026-10-15.md",
+      "original_sha256": "544c8196eba8e304ea75956aee5cbb4b24c9ca4368b80555dec5490498358599",
+      "public_sha256": "ce658a80c72a51554dd334dfa6f4b2da30e382f74714a49cc6b9d4a7083f0006",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/issues/APPS_BETA23_NAMES.md",
+      "original_sha256": "49ced14df9a11a61c3e9f055c10a8718324c422e3763a1f5d5b047ed414a3349",
+      "public_sha256": "be01119895112900a8d1dab27f4e7947080fafb6b06e5117a90d899fad931f68",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/issues/BETA24_BOARD_NAME_POWER_FAIL_LINE.md",
+      "original_sha256": "53de75ef78f429105dbfaea65137d187c3b192e03616fee77daddd8e7148ef16",
+      "public_sha256": "5f1c0c0ee265e2dfec3be8a43f9c6dc05b18cd828cccf2a0b84c4fcf63daf5ba",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    },
+    {
+      "path": "docs/issues/F_ONLY_RECOVERY_BOOTSTRAP.md",
+      "original_sha256": "c7ac87e6ac29d2d58db352d68a021348cd146c7a30d843c6f780eb67c7a694b0",
+      "public_sha256": "93ee1e72e1ccdfe1585fc7d55825c5e52826ad8dbb03eadfb2d6bbd5a6ed17fa",
+      "change": "Historical-state annotation and UTF-8 encoding; board EUI removed if present"
+    }
+  ],
+  "excluded_files": [
+    {
+      "path": "release/candidates/batchfix-r1/candidate-state.json",
+      "reason": "Owner-local absolute evidence pointer; not a builder input"
+    },
+    {
+      "path": "tools/checkpoint_release_git_work.py",
+      "reason": "Owner-local export orchestrator with personal-path sanitization examples"
+    }
+  ],
+  "tracked_prerequisites": [
+    "docs/STR8N_BETA23_PRESERVING_SOAK_2026-10-11.md",
+    "docs/STR8N_BETA23_SOAK_CONTINUATION_2026-10-13.md",
+    "docs/STR8N_BETA32_FOUR_BOARD_MIGRATION_PLAN.md",
+    "docs/STR8N_CLOCK_SUMMARY_2026-10-15.md",
+    "docs/STR8N_MAP_FIRMWARE_ASSETS_2026-10-15.md",
+    "docs/STR8N_UNIFIED_MIGRATION.md",
+    "docs/STR8N_V2_B4_TO_BETA25_2026-10-14.md",
+    "docs/STR8N_V2_BATTERY_2026-10-15.md",
+    "docs/STR8N_V2_BETA24_INSTALL_2026-10-14.md",
+    "docs/STR8N_V2_BETA24_QUALIFICATION_2026-10-14.md",
+    "docs/STR8N_V2_BETA25_2026-10-14.md",
+    "docs/STR8N_V2_BETA25_2205_2026-10-14.md",
+    "docs/STR8N_V2_BETA25_FLEET_2026-10-14.md",
+    "docs/STR8N_V2_BETA25_RST_SOAK_2026-10-14.md",
+    "docs/STR8N_V2_BETA26_2026-10-15.md",
+    "docs/STR8N_V2_BETA27_2026-10-15.md",
+    "docs/STR8N_V2_BETA28_2512_2026-10-15.md",
+    "docs/STR8N_V2_BETA28_CANDIDATE_2026-10-15.md",
+    "docs/STR8N_V2_BETA29_2512_2026-10-15.md",
+    "docs/STR8N_V2_BETA29_CANDIDATE_2026-10-15.md",
+    "docs/STR8N_V2_BETA30_2512_2026-10-16.md",
+    "docs/STR8N_V2_BETA30_CANDIDATE_2026-10-16.md",
+    "docs/STR8N_V2_BETA31_2512_2026-10-16.md",
+    "docs/STR8N_V2_BETA31_CANDIDATE_2026-10-16.md",
+    "docs/STR8N_V2_BETA32_2512_2026-10-16.md",
+    "docs/STR8N_V2_BETA32_2609_2026-10-16.md",
+    "docs/STR8N_V2_BETA32_CANDIDATE_2026-10-16.md",
+    "docs/STR8N_V2_BETA32_COMMON_CODE_2609_2026-10-16.md",
+    "docs/STR8N_V2_BETA32_SOAK_2512_2026-10-16.md",
+    "docs/STR8N_V2_BETA32_SOAK_STOP_2026-10-16.md",
+    "docs/STR8N_V2_BOARD_NAME_2026-10-11.md",
+    "docs/STR8N_V2_BOOT_DIALOG_2026-10-15.md",
+    "docs/STR8N_V2_CRYPTO_2604_2026-10-14.md",
+    "docs/STR8N_V2_CRYPTO_ADAPTER_OFFLINE_2026-10-14.md",
+    "docs/STR8N_V2_CRYPTO_DETECTION_STATUS_PLAN_2026-10-14.md",
+    "docs/STR8N_V2_CRYPTO_DISPLAY_2604_2026-10-15.md",
+    "docs/STR8N_V2_CRYPTO_STATUS_OFFLINE_2026-10-14.md",
+    "docs/STR8N_V2_FIX004_2026-10-14.md",
+    "docs/STR8N_V2_FIX005_2026-10-14.md",
+    "docs/STR8N_V2_FIX006_RETEST_2026-10-14.md",
+    "docs/STR8N_V2_FLASH_WEAR_2026-10-15.md",
+    "docs/STR8N_V2_RECOVERY_ACCEPTANCE_2026-10-14.md",
+    "docs/STR8N_V2_RELEASE_CANDIDATE_PLAN_2026-10-09.md",
+    "docs/STR8N_V2_STARTUP_FIFO_2026-10-14.md",
+    "docs/STR8N_V2_STARTUP_KEYS_2026-10-14.md",
+    "docs/STR8N_V2_TIME_LOCAL_2026-10-14.md",
+    "docs/STR8N_VERSION_COMMAND_2026-10-15.md",
+    "docs/issues/APPS_BETA23_NAMES.md",
+    "docs/issues/BETA24_BOARD_NAME_POWER_FAIL_LINE.md",
+    "docs/issues/F_ONLY_RECOVERY_BOOTSTRAP.md",
+    "tools/analyze_rtc_drift.py",
+    "tools/apply_recommended_rtc_trim.py",
+    "tools/atomic_json.py",
+    "tools/build_v2_battery.py",
+    "tools/build_v2_beta25.py",
+    "tools/build_v2_beta25_profile.py",
+    "tools/build_v2_beta26.py",
+    "tools/build_v2_beta27.py",
+    "tools/build_v2_beta28.py",
+    "tools/build_v2_beta28_profile.py",
+    "tools/build_v2_beta29.py",
+    "tools/build_v2_beta30.py",
+    "tools/build_v2_beta31.py",
+    "tools/build_v2_beta32.py",
+    "tools/build_v2_beta32_2609.py",
+    "tools/build_v2_beta4_launcher.py",
+    "tools/build_v2_beta4_upgrade.py",
+    "tools/build_v2_board_name.py",
+    "tools/build_v2_boot_dialog.py",
+    "tools/build_v2_clock_summary.py",
+    "tools/build_v2_crypto_adapter.py",
+    "tools/build_v2_crypto_display.py",
+    "tools/build_v2_crypto_status.py",
+    "tools/build_v2_fix004.py",
+    "tools/build_v2_fix005.py",
+    "tools/build_v2_fix006.py",
+    "tools/build_v2_local_time.py",
+    "tools/build_v2_map_assets.py",
+    "tools/build_v2_rtc_kernel.py",
+    "tools/build_v2_soak_probes.py",
+    "tools/build_v2_startup_fifo.py",
+    "tools/build_v2_startup_keys.py",
+    "tools/build_v2_status.py",
+    "tools/build_v2_time_local.py",
+    "tools/build_v2_version.py",
+    "tools/capture_beta29_2512.py",
+    "tools/capture_beta30_2512.py",
+    "tools/capture_beta31_2512.py",
+    "tools/capture_beta32_2512.py",
+    "tools/capture_beta32_2609.py",
+    "tools/capture_rtc_drift_status.py",
+    "tools/capture_v2_display_devices.py",
+    "tools/compare_rtc_battery_interval.py",
+    "tools/compare_rtc_matched_power.py",
+    "tools/compare_rtc_power_segments.py",
+    "tools/deploy_v2_beta25.py",
+    "tools/deploy_v2_beta26.py",
+    "tools/deploy_v2_beta27.py",
+    "tools/deploy_v2_beta28_2512.py",
+    "tools/deploy_v2_beta29_2512.py",
+    "tools/deploy_v2_beta30_2512.py",
+    "tools/deploy_v2_beta31_2512.py",
+    "tools/deploy_v2_beta32_2512.py",
+    "tools/deploy_v2_beta32_2609.py",
+    "tools/deploy_v2_boot_dialog.py",
+    "tools/deploy_v2_clock_summary.py",
+    "tools/deploy_v2_fix006.py",
+    "tools/deploy_v2_map_assets.py",
+    "tools/deploy_v2_startup_fifo.py",
+    "tools/deploy_v2_startup_keys.py",
+    "tools/deploy_v2_version.py",
+    "tools/finish_v2_fleet.py",
+    "tools/measure_v2_message_compression.py",
+    "tools/measure_v2_messages.py",
+    "tools/migrate_v2.py",
+    "tools/migrate_v2_beta4.py",
+    "tools/normalize_beta32_2609.py",
+    "tools/plot_rtc_drift.py",
+    "tools/plot_rtc_interval_rates.py",
+    "tools/plot_rtc_trim_comparison.py",
+    "tools/prepare_v2_battery.py",
+    "tools/prepare_v2_recovery_fixture.py",
+    "tools/prepare_v2_recovery_restore.py",
+    "tools/qualify_v2_beta24.py",
+    "tools/qualify_v2_beta24_power.py",
+    "tools/qualify_v2_beta4_upgrade.py",
+    "tools/qualify_v2_crypto_board.py",
+    "tools/qualify_v2_f_only.py",
+    "tools/rebuild_v2_beta29.py",
+    "tools/rebuild_v2_beta30.py",
+    "tools/rebuild_v2_beta31.py",
+    "tools/rebuild_v2_beta32.py",
+    "tools/recheck_beta29_2512_version.py",
+    "tools/remove_v2_sdemo.py",
+    "tools/repair_v2_clock_history.py",
+    "tools/report_v2_beta28.py",
+    "tools/report_v2_beta29.py",
+    "tools/report_v2_beta30.py",
+    "tools/report_v2_beta31.py",
+    "tools/report_v2_beta32.py",
+    "tools/retest_v2_beta25.py",
+    "tools/retest_v2_beta25_2205.py",
+    "tools/retest_v2_fix006.py",
+    "tools/retest_v2_migration.py",
+    "tools/retest_v2_startup_fifo.py",
+    "tools/retest_v2_startup_keys.py",
+    "tools/rtc_prompt_sync.py",
+    "tools/rtc_utc_baseline.py",
+    "tools/run_beta23_soak.py",
+    "tools/run_v2_beta32_soak.py",
+    "tools/run_v2_rst_drift.py",
+    "tools/run_v2_rst_soak.py",
+    "tools/serial_test_coordination.py",
+    "tools/show_v2_crypto_board.py",
+    "tools/stop_beta23_soak_usage.py",
+    "tools/test_atomic_json.py",
+    "tools/test_rtc_drift_display.py",
+    "tools/test_serial_test_coordination.py",
+    "tools/test_v2_battery.py",
+    "tools/test_v2_battery_update.py",
+    "tools/test_v2_beta25.py",
+    "tools/test_v2_beta25_identity.py",
+    "tools/test_v2_beta25_migration.py",
+    "tools/test_v2_beta26.py",
+    "tools/test_v2_beta27.py",
+    "tools/test_v2_beta27_migration.py",
+    "tools/test_v2_beta28_board.py",
+    "tools/test_v2_beta28_candidate.py",
+    "tools/test_v2_beta28_vectors.py",
+    "tools/test_v2_beta28_workers.py",
+    "tools/test_v2_beta29.py",
+    "tools/test_v2_beta29_board.py",
+    "tools/test_v2_beta29_programs.py",
+    "tools/test_v2_beta30.py",
+    "tools/test_v2_beta30_aliases.py",
+    "tools/test_v2_beta30_board.py",
+    "tools/test_v2_beta30_programs.py",
+    "tools/test_v2_beta31_board.py",
+    "tools/test_v2_beta31_wear.py",
+    "tools/test_v2_beta32_2609.py",
+    "tools/test_v2_beta32_board.py",
+    "tools/test_v2_beta32_soak.py",
+    "tools/test_v2_beta32_soak_model.py",
+    "tools/test_v2_beta32_wear.py",
+    "tools/test_v2_beta4_unified.py",
+    "tools/test_v2_board_name.py",
+    "tools/test_v2_board_name_power_fail.py",
+    "tools/test_v2_boot_dialog.py",
+    "tools/test_v2_clock_history_repair.py",
+    "tools/test_v2_clock_summary.py",
+    "tools/test_v2_compact_boot.py",
+    "tools/test_v2_crypto_adapter.py",
+    "tools/test_v2_crypto_display.py",
+    "tools/test_v2_crypto_qualification.py",
+    "tools/test_v2_crypto_status.py",
+    "tools/test_v2_f_only_recovery.py",
+    "tools/test_v2_fix004.py",
+    "tools/test_v2_fix005.py",
+    "tools/test_v2_fix005_faults.py",
+    "tools/test_v2_flash_wear.py",
+    "tools/test_v2_local_time.py",
+    "tools/test_v2_map_assets.py",
+    "tools/test_v2_migration_mixed.py",
+    "tools/test_v2_migration_refusals.py",
+    "tools/test_v2_migration_sources.py",
+    "tools/test_v2_mixed_migration.py",
+    "tools/test_v2_package.py",
+    "tools/test_v2_recovery_fixture.py",
+    "tools/test_v2_rst_soak.py",
+    "tools/test_v2_rtc_kernel.py",
+    "tools/test_v2_rtc_upgrade.py",
+    "tools/test_v2_soak_probes.py",
+    "tools/test_v2_soak_sector_read.py",
+    "tools/test_v2_startup_fifo.py",
+    "tools/test_v2_startup_keys.py",
+    "tools/test_v2_time_local.py",
+    "tools/test_v2_unified_migration.py",
+    "tools/test_v2_version.py",
+    "tools/update_clk19_2609.py",
+    "tools/update_v2_beta24.py",
+    "tools/upgrade_v2_fleet.py",
+    "tools/v2-rtc/battery-core.inc",
+    "tools/v2-rtc/board-name.inc",
+    "tools/v2-rtc/bootstrap-journal.asm",
+    "tools/v2-rtc/clock-battery.inc",
+    "tools/v2-rtc/clock-summary.inc",
+    "tools/v2-rtc/crypto-adapter.inc",
+    "tools/v2-rtc/crypto-display.asm",
+    "tools/v2-rtc/crypto-status.asm",
+    "tools/v2-rtc/flash-wear.inc",
+    "tools/v2-rtc/i2c-bus-clear.asm",
+    "tools/v2-rtc/maint-board-name.inc",
+    "tools/v2-rtc/soak-sector-read.asm",
+    "tools/v2-rtc/wear-decimal32.inc",
+    "tools/v2-spi/batch29.asm",
+    "tools/v2-spi/map-firmware.inc",
+    "tools/v2-spi/utility-alias30.asm",
+    "tools/v2-spi/version-loader.asm",
+    "tools/v2-spi/version.asm",
+    "tools/verify_v2_recovery_restore.py"
+  ]
+}
