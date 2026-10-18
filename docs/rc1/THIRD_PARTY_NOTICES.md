@@ -19,7 +19,7 @@ complete `LICENSE.txt`, and its credited README. The compact source is intended
 for onboard ASM; the readable source is also provided. Its existing ASM 0.4
 example needs a current rc1/ASM 0.5 qualification before final release claims.
 
-Repository audit copies: [license](../uchess-source/LICENSE.txt)
-and [source/port notes](../uchess-source/README.md). The release
+Repository audit copies: [license](../../release/rc1-uchess/LICENSE.txt)
+and [source/port notes](../../release/rc1-uchess/README.md). The release
 must copy the complete notice into the package; a repository link alone does
 not satisfy the binary redistribution condition.

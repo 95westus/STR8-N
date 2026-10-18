@@ -1,8 +1,8 @@
 # uChess: an ASM 0.5 source session and S/T/R example
 
 Use the full rc1 system with ASM 0.5 installed. The paste-ready source is
-[`uchess.a`](../uchess-source/uchess.a); it is byte-identical to the qualified
-compact `microchess.asm`. Keep [the full license](../uchess-source/LICENSE.txt)
+[`uchess.a`](../../release/rc1-uchess/uchess.a); it is byte-identical to the qualified
+compact `microchess.asm`. Keep [the full license](../../release/rc1-uchess/LICENSE.txt)
 with it. Microchess is Copyright 1976–2005 Peter Jennings; Daryl Rictor added
 the serial chessboard interface and Bill Forster corrected OCR errors.
 

@@ -14,7 +14,7 @@ inside the board's limited source buffer. The assembled executable is 1,439
 bytes at $0200–$079E; entry $0200. The game uses public PUTC/GETC/HOLD calls;
 normal 65C816 runtime is emulation mode.
 
-Follow [the complete ASM session and S/T/R walkthrough](../docs/UCHESS_ASM_SESSION.md).
+Follow [the complete ASM session and S/T/R walkthrough](../../docs/rc1/UCHESS_ASM_SESSION.md).
 It demonstrates source PASTE/assembly and stores the compiled game as UCHDEMO,
 preserving the supplied UCHESS. Source assembly and Store/Table/Restore were
 executed with the actual rc1 MON A and MON B instructions in the W65C02 model;
