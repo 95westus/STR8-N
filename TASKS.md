@@ -39,6 +39,9 @@ release tag or ZIP. The separate v2.1 work and stash remain preserved.
 
 - [ ] Organize public ABI discovery, calling conventions and service metadata
   for v2.1 while documenting rc1 compatibility.
+- [ ] Find and validate the ABI base at runtime through a documented bootstrap
+  discovery mechanism, then resolve service entries from its directory. Define
+  explicit absent/incompatible results and avoid private linked addresses.
 - [ ] Design an ABI for all eight LEDs, including logical bit masks, masked
   updates, ownership and coexistence with monitor/console status use.
 - [ ] Design timer ABIs for both VIA chips: discovery and ownership of each

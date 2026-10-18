@@ -11,6 +11,13 @@ released ABI or authorization to install a new firmware image.
 
 ## Common contract and metadata work
 
+- Locate the ABI base at runtime through a defined bootstrap discovery
+  mechanism. Validate its signature, format/version, length and address bounds
+  before using the directory; return an explicit unavailable/incompatible
+  result when discovery fails. Programs obtain service entry points from that
+  validated base instead of embedding private implementation addresses.
+  The bootstrap locator itself still needs a documented contract; its exact
+  anchor or bounded search scheme remains a design decision.
 - Provide versioned discovery of public service groups and operations, with
   explicit calling conventions, ownership, buffer bounds and error returns.
 - Separate compiled support, current availability and resource ownership.
@@ -58,7 +65,8 @@ examples. A query must not arm, reload, stop or acknowledge a timer.
 ## Acceptance work before implementation is released
 
 Audit actual resource ownership and memory costs; specify the contracts and
-metadata; then verify both CPU profiles, LED mask isolation, timer ownership,
+metadata; then verify ABI-base discovery and invalid/absent-directory refusals,
+both CPU profiles, LED mask isolation, timer ownership,
 counter boundaries, interrupt coexistence and error paths. Hardware testing
 will require a separate authorized session. No such tests or implementations
 are claimed by this planning checkpoint.
