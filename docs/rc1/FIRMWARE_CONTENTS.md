@@ -3,10 +3,14 @@
 One STR8-N-only firmware set serves 65C02 and 65C816 emulation-mode runtime.
 It excludes B0 and WDCMONV2 binaries. Native applications, ACIA and crypto
 remain deferred; startup CPU detection retains its accepted exception.
+Published generation 49 has no DBG1 debugger. The matching local generation-50
+extension adds the row marked below; see [DBG1](DEBUGGER_GUIDE.md) and its
+[board results](DEBUGGER_BOARD_RESULTS.md).
 
 | Application or facility | Image location / access |
 | --- | --- |
 | UCHESS / Microchess | B1:`$8000`, stored record; `T 1`, `R 1 UCHESS` |
+| DBG1 RAM debugger (generation 50 only) | B1:`$A000-$AFFF`; automatic RAM BRK entry, both MON A/B |
 | CLOCK 1.11 | B1:`$B000–$DFFF`; `R CLOCK` |
 | ASM 0.5 | B1:`$E000` plus matching vectors; `ASM` |
 | MAINT, SRAM, WORK, EDU | B2 utilities/provider area; named utility commands |
@@ -21,6 +25,14 @@ different application-directory/stored-record views. UCHESS contains 1,439
 executable bytes plus its 24-byte stored-record header; RAM origin/entry is
 `$0200`, final executable address `$079E`. Its source and complete license
 must accompany the executable.
+
+DBG1 changes seven firmware sectors: B1:A/E/F and B3:A/B/E/F, with two
+wear-accounted C/D journal erases in its nine-transfer preserving install.
+It includes matching ASM/vector/monitor/core changes; adding only B1:A is
+insufficient. B1:9, B0/B2 and other data were preserved in both board trials.
+No application RAM is reserved for the debugger. The published raw images
+listed here remain generation 49; use the separate experimental candidate
+procedure for DBG1, not a default-filled raw BIN over existing board data.
 
 ## File offsets
 

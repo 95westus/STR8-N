@@ -1,6 +1,10 @@
 # STR8-N 2.0rc1 candidate manuals
 
 Target: **2.0rc1 generation 49, CLOCK 1.11, ASM 0.5, FT245/F30D**.
+The published release remains generation 49. These manuals also cover the
+**local DBG1 generation-50 extension**, now tested on 2604/2609 in both monitor
+slots. Debugger sections require the matching DBG1 firmware and assembler;
+neither the `2.0rc1` nor `ASM 0.5` title alone distinguishes it.
 One firmware set serves 65C02 and 65C816 emulation runtime. The accepted startup
 CPU detector briefly enters native mode; applications run with E=1. Native 816
 applications/tests, ACIA and crypto remain deferred.
@@ -13,6 +17,9 @@ applications/tests, ACIA and crypto remain deferred.
 - [User guide](USER_GUIDE.md)
 - [Operator guide](OPERATOR_GUIDE.md)
 - [ASM 0.5 manual](ASM_GUIDE.md)
+- [DBG1 RAM debugger: C/S/N and eight persistent breakpoints](DEBUGGER_GUIDE.md)
+- [DBG1 BRK services and system/user registrations](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
+- [DBG1 board results and qualification limits](DEBUGGER_BOARD_RESULTS.md)
 - [Program and command reference](COMMAND_REFERENCE.md)
 - [Technical manual and Mermaid diagrams](TECHNICAL_MANUAL.md)
 - [Public ABI reference](ABI_REFERENCE.md)
@@ -57,9 +64,14 @@ beta4 image is distributed. Retain the exact kit and all private recovery files.
 
 ## rc1 qualification
 
-Firmware identity is 2.0rc1, generation 49. rc1 was built from source and
-qualified offline; prior bf1 transport and shared-CPU hardware evidence is
-retained. No fresh rc1 hardware installation is claimed. RTC qualification,
+Published firmware identity is 2.0rc1, generation 49. Source-build and offline
+qualification retain prior bf1 transport/shared-CPU evidence. Subsequent rc1
+board installation and the package-revision-2 UTC correction passed on both
+boards; see the [UTC hardware update](../STR8N_RC1_UTC_BOARD_UPDATE_2026-10-18.md).
+The later [DBG1 generation-50 trial](DEBUGGER_BOARD_RESULTS.md) passed on 2604
+(65C02) and 2609 (65C816 E=1), both MON A/B. Original RAM was host-verified
+after restoration and original preferences were restored. These are bounded
+installation/smoke results; they do not publish or promote DBG1. RTC qualification,
 native 816 applications/tests, ACIA and crypto are deferred. Soaks and RTC
 sampling remain stopped; recorded soak results are accepted as recorded,
 not a full endurance pass.
@@ -72,4 +84,5 @@ UTC with minute precision; the separate RTCC line uses the configured display
 offset. For example, October 18 04:35 UTC is October 17 23:35 at -05:00.
 Only banner text, its data references and the sector checksum changed. Clock/trim values, event
 handling, apps and migration/recovery algorithms are unchanged. The corrected
-revision was verified offline; it has not been flashed to the campaign boards.
+revision was verified offline and subsequently installed/device-verified on
+both boards. DBG1 retains that correction.

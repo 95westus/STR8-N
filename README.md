@@ -23,6 +23,13 @@ RTC qualification/known continuity issue, native 816 apps/tests, ACIA and crypto
 are deferred. Soaks and RTC sampling remain stopped; recorded soak results are
 accepted as recorded, without claiming full endurance qualification.
 
-Current release and installed 2604/2609 firmware: **v2.0rc1**. Future **v2.1**
+Published release: **v2.0rc1 generation 49**. The local **DBG1 generation-50
+candidate** is installed/tested on 2604 (65C02) and 2609 (65C816 E=1), both
+MON A/B, with original RAM and preferences restored. Start with the
+[RAM debugger guide](docs/rc1/DEBUGGER_GUIDE.md),
+[ASM examples](docs/rc1/ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
+[BRK registration ABI](docs/rc1/ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
+and [board results](docs/rc1/DEBUGGER_BOARD_RESULTS.md). The published release
+ZIP/tag remains unchanged; native debugging is outside scope. Future **v2.1**
 organizes ABIs/metadata; [planned LED and dual-VIA timer ABIs](docs/STR8N_V2_1_ABI_METADATA_ROADMAP.md)
 remain development work.

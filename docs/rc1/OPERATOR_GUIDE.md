@@ -11,6 +11,7 @@ This guide covers console operation and preserving test campaigns.
 | `B0>` through `B3>` | Monitor, selected bank shown | `?` |
 | `CLOCK>` | RTC/calendar/history | `HELP`, `Q` |
 | `ASM>` | Assembler/editor | `?`, `QUIT` |
+| `DBG>` | DBG1 RAM debugger, generation 50 | `?`, C/S/N; `X` abort |
 | `BM>` | MAINT utility | Utility help, `Q` |
 | `SRAM>` | External SRAM manager | Utility help, `Q` |
 | `WORK>` | Workspace manager | `HELP`, `Q` |
@@ -19,6 +20,23 @@ This guide covers console operation and preserving test campaigns.
 Check the prompt after every return or canceled batch. A command letter can
 have a different meaning at another prompt. Monitor `S` stores a program;
 CLOCK `S` queries status. Monitor `F` patches flash after confirmation.
+Debugger S steps, C continues, U disassembles and F lists BRK functions.
+
+## Operate the DBG1 debugger
+
+Confirm matching generation-50 MON A/B, core and ASM; published rc1 generation
+49 lacks DBG1. A RAM application's stopping `BRK xx` opens `DBG>` automatically.
+Use C/S/N, shared D/M and U, and up to eight persistent `B address` entries.
+`BC address` / `BC *` clear them. A ninth distinct entry refuses without
+discarding the first eight. HOLD, X and reset clear breakpoints and all dynamic
+registrations. Save application RAM/source before loading an example.
+
+The current trials passed on 2604 (65C02) and 2609 (65C816 E=1), both slots;
+original preferences and RAM were restored. Native applications/debugging are
+outside scope. See [operator details](DEBUGGER_GUIDE.md), [ASM examples](ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
+[registration ABI](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations) and
+[board results](DEBUGGER_BOARD_RESULTS.md). These documentation examples do not
+restart stopped campaigns or perform another installation.
 
 ## Record a normal inspection
 

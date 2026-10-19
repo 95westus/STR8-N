@@ -3,6 +3,7 @@
 Release scope and limitations: [rc1 qualification](README.md#rc1-qualification).
 
 Target: **STR8-N 2.0rc1 generation 49 / FT245**, CLOCK 1.11, ASM 0.5.
+The DBG1 context below requires the matching **generation-50** extension.
 This reference records audited syntax from the separate candidate
 source; it is not an instruction to exercise write commands during the RTC
 campaign. ACIA and crypto remain deferred. Hexadecimal addresses are CPU
@@ -27,7 +28,7 @@ bank-zero addresses unless an external address is explicitly named.
 | `I start end` | Installer operation; writes flash and requires its own validation |
 | `W` | Wear information |
 | `U A\|B` | Monitor-slot update operation; installation gate applies |
-| `S bank AUTO|flash start end [name]` | Store RAM program in flash; persistent write |
+| `S bank AUTO\|flash start end [name]` | Store RAM program in flash; persistent write |
 | `R [bank] name [L]` | Find/load/run a named stored program |
 | `R bank flash [L]` | Addressed stored-program operation; inspect its exact header/range |
 | `T [bank\|first-last]` | Stored-program table |
@@ -39,8 +40,34 @@ bank-zero addresses unless an external address is explicitly named.
 
 The same letter can have several parser forms. Consult `?` and the relevant
 source before automating a form. This guide does not expand ambiguous write
-forms into recipes. The ongoing soak uses its own allowlisted preserving
-operations and is not permission to run the entire command table live.
+forms into recipes. Owner-stopped soaks/sampling remain stopped; an authorized
+test uses its own preserving operations.
+
+## DBG1 debugger context
+
+`DBG>` appears automatically when a permitted RAM program executes a stopping
+BRK signature under DBG1. All numeric fields are hexadecimal.
+
+| Command | Purpose |
+| --- | --- |
+| `C` | Continue and rearm persistent breakpoints |
+| `S` | Step one supported instruction, entering RAM JSR |
+| `N` | Step one instruction, over JSR to matching return depth; user breakpoints take precedence |
+| `B` / `B address` | List / set up to eight persistent RAM breakpoints; ninth distinct request refused |
+| `BC address` / `BC *` | Clear one / all breakpoints |
+| `R` | Display saved PC/A/X/Y/P/SP (`S=` is the displayed stack pointer) |
+| `R A=12`, `R X=34`, `R Y=56`, `R P=24`, `R SP=FF`, `R PC=0200` | Edit one saved register |
+| `D start [end]` | Shared monitor dump; paused patches restored |
+| `M address byte ...` | Shared monitor atomic RAM edit |
+| `U [address] [count]` | RAM disassembly; defaults saved PC/eight instructions |
+| `F` | List built-in and registered BRK function IDs |
+| `?` / `X` | Help / abort to monitor with cleanup |
+
+Breakpoints and dynamic registrations clear on HOLD/X/reset. Explicit BRK
+stops display the next PC; patched hits display the original instruction's PC.
+For bounds, low-page saved images, unsupported instructions and C/S/N examples,
+see the [debugger guide](DEBUGGER_GUIDE.md) and [ASM walkthrough](ASM_GUIDE.md#debugging-ram-programs-with-dbg1).
+This context supports 65C02 and 65C816 E=1 only; native debugging is outside scope.
 
 ## CLOCK context
 
@@ -77,6 +104,10 @@ every status entry path as universally free of persistent effects.
 `LIST`, `ASM`, `DUMP`, `S19`, `QUIT`, and `?` operate on the current source and
 output. See the [ASM guide](ASM_GUIDE.md) for buffer/origin rules. ASM owns much
 of application RAM while loaded. An assembly success does not execute code.
+DBG1 adds `BRK $xx` / `BRK #$xx`; bare BRK supplies zero. Each emits opcode
+`00` and one signature byte. [Implemented functions and registration](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
+use `$80-$84`, four system entries (`$A0-$BF`) and sixteen user entries
+(`$C0-$FE`); other unrecognized signatures stop. Later ABI proposals are not implemented.
 
 ## Native utility contexts
 

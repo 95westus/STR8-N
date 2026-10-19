@@ -2,11 +2,13 @@
 
 Release scope and limitations: [rc1 qualification](README.md#rc1-qualification).
 
-Target: **2.0rc1 generation 49**, pinned **FT245/F30D** candidate payloads. This guide
-records a source, ABI, example and command-context audit. Qualification uses a W65C02 instruction model;
-native 816 is deferred outside this candidate’s acceptance scope; electrical
-interruptions and general route acceptance are separate gates. ACIA and crypto remain deferred. The primary checkout's
-v2.1 work is outside this document.
+Target: published **2.0rc1 generation 49**, plus the explicitly marked
+**DBG1 generation-50 extension**, FT245/F30D. DBG1 has separate 65C02 and
+65C816 E=1 model evidence and bounded hardware smoke in both slots on
+2604/2609. [Results and limits](DEBUGGER_BOARD_RESULTS.md) distinguish these
+from historical migration proofs. Native applications/debugging, electrical
+interruption qualification and general route acceptance are outside the DBG1
+checkpoint. ACIA, crypto and v2.1 work remain outside this document.
 
 ## CPU, banking and memory ownership
 
@@ -47,10 +49,48 @@ PBR=0. These are emulation-mode, non-reentrant calls.
 
 Emulation interrupt pointers begin at `$7E00`, native pointers at `$7E10`.
 Native vector support does not advertise native monitor-service calls. Native
-handlers own widths, direct/data bank setup, interrupt source, stack frame and
-RTI. These native-interrupt details are descriptive and unqualified; native
-816 is deferred. The architectural contract says to publish a native NMI pointer under the `$00F4` gate as documented; do not
-overwrite live vectors while a campaign runner owns the machine.
+handlers, native calls and native debugging are outside this manual's current
+qualification scope. Do not overwrite live vectors while another program owns
+the machine.
+
+## DBG1 RAM debugging and workspace
+
+DBG1 uses B1:`$A000-$AFFF` (3,967 code bytes plus two CRC bytes, 127 free).
+B1:`$9000-$9FFF` is unchanged. Matching MON A/B header code automatically
+installs the BRK pointer and HOLD cleanup; matching ASM accepts the explicit
+signature byte. A complete coherent generation-50 set is required. The
+published generation-49 source and release ZIP are unchanged.
+
+| Reserved RAM | DBG1 use |
+| --- | --- |
+| `$7000-$73FF` | Shared monitor workspace: saved context, scratch, breakpoint records, stack/zero-page images and return trampolines |
+| `$7040-$705F` | Eight four-byte user breakpoint records |
+| `$7060-$7067` | Two internal stepping records |
+| `$7B81-$7B8F` | Automatic BRK entry stub |
+| `$7BFC-$7BFF` | Lifecycle state |
+| `$7C30-$7C3F` | Four system registrations, 16 bytes |
+| `$7C40-$7C7F` | Sixteen user registrations, 64 bytes |
+
+These are existing reserved ranges: application RAM and every ASM buffer
+remain unchanged. Entry needs nine free stack bytes. Active debugger sessions
+own the shared staging area; private loaders are not application APIs. S/R/T
+staging refuses active sessions, and resident flash paths protect B1:A before
+mutation without borrowing the sector buffer.
+
+An explicit two-byte `BRK xx` captures application context. Stop signatures
+open `DBG>`; `$80-$84` and registered callbacks dispatch against saved context.
+PC after an explicit BRK names the following instruction; a patched breakpoint
+rewinds PC to the original unexecuted instruction. All patches are removed
+while paused. C/S/N rearm persistent records; HOLD/X/reset clean up records
+and dynamic registrations. Ordinary instructions execute with a temporary
+successor breakpoint; control transfers are emulated against saved state.
+N uses return address and stack depth for JSR step-over; user hits interrupt it.
+IRQ/NMI timing is not virtualized. The 816 uses only the supported common
+instruction subset and preserves hidden accumulator B; native mode is outside scope.
+
+See the [debugger guide](DEBUGGER_GUIDE.md),
+[BRK callback ABI](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations) and
+[ASM examples](ASM_GUIDE.md#debugging-ram-programs-with-dbg1).
 
 ## Persistent layout and configuration
 
@@ -118,7 +158,10 @@ not justify a trim change. Powered-off rate requires post-return evidence.
 
 rc1 is a scoped release candidate with source-build, CPU/flash model,
 manual/ABI and extracted-platform software verification. Prior bf1 hardware
-proofs are retained by version; no new rc1 hardware installation is claimed.
+proofs are retained by version. Subsequent rc1 and DBG1 hardware checks are
+recorded separately: [UTC update](../STR8N_RC1_UTC_BOARD_UPDATE_2026-10-18.md)
+and [DBG1 results](DEBUGGER_BOARD_RESULTS.md). The debugger trial does not
+qualify additional migration routes.
 Live migration admits only the exact supported SXB6 WDC source or published
 beta4 with erased B0/B1/B2. Native 816 applications/tests, ACIA and crypto are
 deferred. RTC qualification and the known continuity issue are deferred.
@@ -209,4 +252,5 @@ UTC with minute precision; the separate RTCC line uses the configured display
 offset. For example, October 18 04:35 UTC is October 17 23:35 at -05:00.
 Only banner text, its data references and the sector checksum changed. Clock/trim values, event
 handling, apps and migration/recovery algorithms are unchanged. The corrected
-revision was verified offline; it has not been flashed to the campaign boards.
+revision was verified offline and subsequently installed/device-verified on
+both boards. DBG1 retains that correction.

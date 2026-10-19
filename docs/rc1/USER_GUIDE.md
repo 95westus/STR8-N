@@ -3,6 +3,8 @@
 Release scope and limitations: [rc1 qualification](README.md#rc1-qualification).
 
 Target: **2.0rc1 generation 49**, CLOCK **1.11**, ASM **0.5**, FT245 console.
+The [DBG1 RAM debugger](DEBUGGER_GUIDE.md) sections require generation 50;
+published generation 49 does not contain it.
 This candidate guide passed the bounded offline example/manual audit. General installation and
 full recovery qualification remain open; ACIA and crypto are deferred.
 
@@ -66,6 +68,29 @@ flash, C/D configuration/wear journals and retained user data have distinct
 roles. A backup must include identity, hashes and the exact relevant contents;
 a file named “backup” alone is not sufficient evidence of compatibility.
 
+## Debug a RAM program with DBG1
+
+With matching generation-50 firmware installed, an application's `BRK $01`
+automatically opens `DBG>`. Use C to continue, S for one instruction including
+entry into a RAM subroutine, and N to step over JSR. Existing user breakpoints
+inside a call still interrupt N. This is RAM debugging on 65C02 or 65C816 E=1;
+native applications/debugging are outside scope.
+
+At `DBG>`, `B address` sets one of eight persistent breakpoints, `B` lists them,
+`BC address` clears one, and `BC *` clears all. They rearm through C/S/N and
+clear at HOLD/X/reset. A ninth is refused. `R` displays registers; shared D/M
+inspect/edit RAM, and U disassembles. Paused code shows original instructions.
+X aborts and returns to the monitor with breakpoint cleanup.
+
+Check the prompt: debugger S steps while monitor S stores in flash; debugger
+C continues while monitor C configures. Debugger F lists BRK functions.
+ASM's explicit `BRK xx` is two bytes. Low signatures stop; implemented
+services `$80-$84` and registered callbacks can return without opening a prompt.
+Sixteen user entries and four independent system entries use existing reserved
+RAM and clear on program exit. See the [walkthrough](ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
+[BRK contracts](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations) and
+[verified board results](DEBUGGER_BOARD_RESULTS.md).
+
 ## Use BATCH with the correct expectations
 
 `BATCH cmd;cmd` feeds a bounded list through supported monitor/utility readers.
@@ -97,8 +122,9 @@ retry; a failure message does not establish that the previous version remains
 selected. Wear-aware restoration writes new count-preserving journal records,
 rather than replaying old backup counters.
 
-The current baseline is immutable. Periodic 2604/2609 samples compare RTC against
-NIST with timing uncertainty; 2205/2512 remain powered off. Historical 2512
+The current baseline is immutable. Periodic sampling remains owner-stopped;
+authorized one-shot 2604/2609 samples compare RTC against NIST with timing
+uncertainty. 2205/2512 remain powered off. Historical 2512
 observations are retained, not current samples. A single
 offset is not a drift rate, and an interval spanning zero is not evidence for a
 trim correction. Power-off drift requires another capture after an owner

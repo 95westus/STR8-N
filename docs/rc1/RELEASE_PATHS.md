@@ -4,6 +4,12 @@ One generation-49 STR8-N firmware set serves 65C02 and 65C816 emulation runtime.
 The accepted startup CPU detector briefly enters native mode; native 816
 applications/tests, ACIA and crypto remain deferred.
 
+These downloads are the published generation-49 release. The separate local
+[DBG1 generation-50 candidate](DEBUGGER_GUIDE.md) is now board-tested on
+2604/2609, both slots; it is not included in those ZIP/BIN downloads. Its
+[experimental preserving procedure](../../release/candidates/rc1-debugger/BOARD_TEST.md)
+requires fresh exact-source captures and matching ASM/MON/core components.
+
 ## Choose a path
 
 | Path | Download | Contents and use |

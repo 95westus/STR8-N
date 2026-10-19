@@ -5,6 +5,12 @@ set serves 65C02 and 65C816 emulation-mode runtime. The existing startup CPU
 detector is the accepted exception; native applications, ACIA and crypto are
 deferred. This rc1 guide covers the scoped release candidate; full endurance/RTC qualification is deferred.
 
+For the local **generation-50 DBG1 extension**, see the
+[RAM debugger quick guide](DEBUGGER_GUIDE.md) and
+[ASM C/S/N example](ASM_GUIDE.md#c-s-and-n-example). Published generation 49
+does not include it. `VERSION` distinguishes the generations; the ASM title
+remains 0.5. Native applications/debugging are outside scope.
+
 ## Start with an installed board
 
 Use the FT245 console and the board's established terminal configuration.
