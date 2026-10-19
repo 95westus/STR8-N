@@ -1,4 +1,4 @@
-# STR8-N rc1 DBG1 tested candidate — distribution r1
+# STR8-N rc1 DBG1 tested candidate — distribution r2
 
 This package contains the **tested generation-50 DBG1 candidate** and its
 matching install/rollback tools, updated rc1/ASM manuals and board results.
@@ -27,6 +27,7 @@ detector is unchanged. No debugger workspace is taken from application RAM.
 | `install/` | Exact original hash-bound board-test kit: seven target/baseline sectors, standalone RAM transaction engine, planner, explicit-port transport and smoke programs |
 | `docs/rc1/` | Updated rc1 and ASM manuals, debugger guide, BRK registration ABI and board result summary |
 | `qualification/boards/` | Public result summaries for 2604 and 2609, including both slots and hashes of the original local receipts |
+| `qualification/soak/` | Eight-hour board summaries and final drift offsets, uncertainty and source hashes |
 | `qualification/offline/` | Original model reports plus the later manual-example checks |
 | `qualification/summary.json` | Combined qualification scope and evidence identities |
 | `diagnostics/emulation/` | Exact RAM-only CPU/ABI observer used on 2609; no native-mode entry |
@@ -69,3 +70,17 @@ Base rc1 migration/provisioning guides retain their generation-49 scope.
 Repository build/model commands in the manuals require the source checkout
 and its dependencies. The archive-relative candidate upgrade procedure is
 [INSTALL_ROLLBACK.md](INSTALL_ROLLBACK.md).
+
+## Eight-hour soak and drift results
+
+Both boards passed 431 cycles and 6,896 breakpoint hits each over
+8h 00m 23.703s, without failures (2604 MON B; 2609 MON A, E=1).
+Original application RAM was restored and verified again after the snapshot;
+all four flash banks, settings, wear history and RTC trims were unchanged.
+Final RTC offsets versus NIST were +0.950532s (2604) and +0.545367s (2609).
+These are current offsets, not eight-hour drift increments. See
+[measurement bounds and comparison segments](docs/rc1/DEBUGGER_BOARD_RESULTS.md#eight-hour-rc1asmdbg1-soak-and-final-rtc-snapshot),
+[portable soak evidence](qualification/soak/summary.json) and
+[drift evidence](qualification/soak/drift.json). The original baseline and
+2609 recovery segment are retained. This bounded soak does not qualify native
+mode, hardware callback registrations, full RTC accuracy or endurance.

@@ -37,7 +37,22 @@ def verify(root=ROOT):
         proof=json.loads((root/f'qualification/boards/{board}.json').read_text(encoding='utf-8'))
         if not proof['passed'] or not proof['both_monitor_slots_passed'] or proof['breakpoint_hits_total']!=32 or not proof['RAM_restored_host_verified']:
             raise ValueError('Incomplete board summary: '+board)
-    return dict(passed=True,generation=50,files_verified=len(expected)+1,board_access=False,native_debugging=False)
+    if manifest.get('distribution_revision')!=2:raise ValueError('Wrong distribution revision')
+    soak=json.loads((root/'qualification/soak/summary.json').read_text(encoding='utf-8'))
+    drift=json.loads((root/'qualification/soak/drift.json').read_text(encoding='utf-8'))
+    if not soak['passed'] or soak['native_debugging'] or soak['native_applications_tested'] or not 28800<=soak['duration_seconds']<28920 or soak['failures']:
+        raise ValueError('Incomplete soak qualification')
+    if not drift['passed'] or drift['clock_set'] or drift['trim_changed'] or drift['original_baseline_index_sha256']!=soak['original_baseline_index_sha256']:
+        raise ValueError('Invalid drift scope/baseline')
+    if {b['board'] for b in drift['boards']}!={'2604','2609'}:raise ValueError('Missing drift board')
+    for board,slot in (('2604','B'),('2609','A')):
+        b=soak['boards'][board]
+        if not b['passed'] or b['slot']!=slot or b['passed_cycles']!=431 or b['breakpoint_hits']!=6896 or len(b['cycle_receipt_sha256'])!=431 or not b['RAM_verified_after_snapshot'] or not b['all_four_flash_banks_unchanged']:
+            raise ValueError('Invalid soak board: '+board)
+    recovery=next(b for b in drift['boards'] if b['board']=='2609')
+    if recovery['measurement_segment']!='2609-post-RTC-recovery-2026-10-18-r1' or recovery['original_baseline_replaced']:
+        raise ValueError('Recovery comparison segment changed')
+    return dict(passed=True,generation=50,distribution_revision=2,files_verified=len(expected)+1,soak_passed=True,final_drift_passed=True,board_access=False,native_debugging=False)
 
 if __name__=='__main__':
     try:print(json.dumps(verify(),indent=2))

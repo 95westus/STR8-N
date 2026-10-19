@@ -1,0 +1,14 @@
+{
+  "distribution_revision": 2,
+  "archive": "str8n-v2.0rc1-dbg1-candidate-r2.zip",
+  "archive_bytes": 317771,
+  "archive_sha256": "a642d5ee58ecceb0bf182a7d2b42961782785f009904747a31902aacf88b64ff",
+  "package_manifest_sha256": "488c680ab651280c6a8524a94a65242335ef53ffb514fd4e24c09d38c0410ad8",
+  "soak_summary_sha256": "182953fd018b48f2827ebad244552b2a79e65f5ef23e1a09232f1f74e4fd4c63",
+  "drift_summary_sha256": "d288c6f3a3951ca94b980b47b8320385ee64ddd985d74fa6eb00cdec8fce93ba",
+  "public_soak_results_sha256": "40070197ceb514639fd9e2dc38c32cbb6b25b399c704358608a27c494e9897f2",
+  "firmware_sha256": "e3c7ae6247f23e579a2ffc31ea72986eb62611d22fc862da321371139ae6727a",
+  "tested_kit_manifest_sha256": "3287d719b703b1ae87300c05ffba9fe803594995e4a9156781c03c86d4fb0e9c",
+  "native_debugging": false,
+  "native_applications_tested": false
+}

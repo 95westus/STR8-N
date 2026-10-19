@@ -1,0 +1,100 @@
+{
+  "soak": {
+    "passed": true,
+    "authorized_hours": 8,
+    "duration_seconds": 28823.70299999998,
+    "started_utc": "2026-10-19T03:52:18.337035+00:00",
+    "finished_utc": "2026-10-19T11:56:18.065200+00:00",
+    "generation": 50,
+    "package_manifest_sha256": "3287d719b703b1ae87300c05ffba9fe803594995e4a9156781c03c86d4fb0e9c",
+    "boards": {
+      "2604": {
+        "passed": true,
+        "slot": "B",
+        "runtime": "65C02",
+        "passed_cycles": 431,
+        "breakpoint_hits": 6896,
+        "hourly_flash_checks": 7,
+        "original_RAM_bytes": 25344,
+        "RAM_restored_host_verified": true,
+        "RAM_verified_after_snapshot": true,
+        "all_four_flash_banks_unchanged": true,
+        "settings_and_wear_history_unchanged": true,
+        "RTC_control": 0,
+        "trim_steps": -12,
+        "source_final_sha256": "a3662e5da9aede24d3026a0bd68ce800ff0a9fe1b8634444eb64d97f0e30f571"
+      },
+      "2609": {
+        "passed": true,
+        "slot": "A",
+        "runtime": "65C816 E=1",
+        "passed_cycles": 431,
+        "breakpoint_hits": 6896,
+        "hourly_flash_checks": 7,
+        "original_RAM_bytes": 25344,
+        "RAM_restored_host_verified": true,
+        "RAM_verified_after_snapshot": true,
+        "all_four_flash_banks_unchanged": true,
+        "settings_and_wear_history_unchanged": true,
+        "RTC_control": 128,
+        "trim_steps": -14,
+        "source_final_sha256": "5b78094f02e56705df4b6063a4846d0cb34cc432ac49796a04f44443ad928f4f"
+      }
+    },
+    "failures": [],
+    "source_report_sha256": "e5ad2ccc9392e451a527446fadf53bb76232cc7753d94c03804265cb72f524a2",
+    "source_authorization_sha256": "7c4880b354653a400bf47a19becabf2ebabe91863393aacd211a1fd2706c24e5",
+    "original_baseline_index_sha256": "5db3f89e0bcdd1ec1bd9d1958c6abbc8530977783a2f1bb195bc80220af4913e",
+    "native_debugging": false,
+    "native_applications_tested": false
+  },
+  "drift": {
+    "passed": true,
+    "source_summary_sha256": "f3e71ac5d068eb1031cfeb2fd1078564f2afd8429b9fd8bb39456f8826f4c932",
+    "sequential_not_simultaneous": true,
+    "clock_set": false,
+    "trim_changed": false,
+    "original_baseline_index_sha256": "5db3f89e0bcdd1ec1bd9d1958c6abbc8530977783a2f1bb195bc80220af4913e",
+    "offset_meaning": "RTC minus NIST reference; not an eight-hour drift increment",
+    "boards": [
+      {
+        "board": "2604",
+        "reference_utc": "2026-10-19T11:55:14.620468Z",
+        "offset_seconds": 0.950532078742981,
+        "offset_bounds_seconds": [
+          0.6121207427978516,
+          1.2889434146881102
+        ],
+        "trim_steps": -12,
+        "control_register": 0,
+        "report_sha256": "ff636b36d4cb1ef54e6592c57a618c7a5b6e382443faad5fa44a7ec99b927d75",
+        "application_ram_restored": true,
+        "elapsed_seconds": 203691.8202331066,
+        "drift_seconds_interval": [
+          -0.3039985990524292,
+          1.195532212257385
+        ]
+      },
+      {
+        "board": "2609",
+        "reference_utc": "2026-10-19T11:55:52.415133Z",
+        "offset_seconds": 0.5453670024871826,
+        "offset_bounds_seconds": [
+          0.08761369705200195,
+          1.0031203079223632
+        ],
+        "trim_steps": -14,
+        "control_register": 128,
+        "report_sha256": "ab84cec07edd67adf39e03340989983fcb437b3b7d6a536b6227660e4f59bf47",
+        "application_ram_restored": true,
+        "elapsed_seconds": 119524.37687206268,
+        "drift_seconds_interval": [
+          -0.5643228387832642,
+          0.824578890800476
+        ],
+        "measurement_segment": "2609-post-RTC-recovery-2026-10-18-r1",
+        "original_baseline_replaced": false
+      }
+    ]
+  }
+}

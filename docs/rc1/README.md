@@ -70,8 +70,10 @@ board installation and the package-revision-2 UTC correction passed on both
 boards; see the [UTC hardware update](../STR8N_RC1_UTC_BOARD_UPDATE_2026-10-18.md).
 The later [DBG1 generation-50 trial](DEBUGGER_BOARD_RESULTS.md) passed on 2604
 (65C02) and 2609 (65C816 E=1), both MON A/B. Original RAM was host-verified
-after restoration and original preferences were restored. These are bounded
-installation/smoke results; they do not publish or promote DBG1. RTC qualification,
+after restoration and original preferences were restored. Both boards also passed the eight-hour rc1/ASM/DBG1 soak with 431 cycles and
+6,896 breakpoint hits each; the final drift snapshot passed. See the same
+result summary for slots, offsets and uncertainty. These are bounded
+installation/smoke/soak results; they do not publish or promote DBG1. RTC qualification,
 native 816 applications/tests, ACIA and crypto are deferred. Soaks and RTC
 sampling remain stopped; recorded soak results are accepted as recorded,
 not a full endurance pass.

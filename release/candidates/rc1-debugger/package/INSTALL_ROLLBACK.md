@@ -171,3 +171,12 @@ If the board cannot reach B3, this software rollback route is unavailable.
 Preserve all original backups, current readable flash and receipts for an
 independent-programmer recovery assessment. Do not treat the development BIN
 or a single F byte edit as a preserving DBG1 installer or rollback.
+
+## Subsequent eight-hour qualification
+
+The same generation-50 firmware passed 431 rc1/ASM/DBG1 soak cycles and
+6,896 persistent-breakpoint hits per board over 8h 00m 24s, without failures.
+2604 used MON B; 2609 used MON A in E=1. Earlier trials covered both slots.
+Full original application RAM restoration, unchanged flash/settings, and final
+NIST drift collection passed. Native applications/debugging remain excluded.
+Install and rollback still require fresh captures and newly derived plans.

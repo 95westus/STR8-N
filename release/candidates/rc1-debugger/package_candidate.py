@@ -1,6 +1,7 @@
 """Bundle the exact tested DBG1 kit, current manuals and public results. No ports."""
 import argparse
 import binascii
+from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -71,6 +72,71 @@ def public_board(board,path,kit_hash):
         native_debugging=False,native_applications_tested=False,
         scope='Bounded installation and both-slot debugger smoke; callback registration covered offline; no interrupted-write recovery')
 
+def public_soak():
+    """Validate all local receipts; export only portable public evidence."""
+    run=Q/'rc1-asm-dbg1-soak-2026-10-19-034545Z'
+    proof=READ(run/'report.json');auth=READ(run/'owner-authorization.json')
+    require(proof==READ(run/'status.json') and proof['passed'] and proof['state']=='completed' and
+        proof['completed_authorized_duration'] and 28800<=proof['monitored_seconds']<28920,'Incomplete eight-hour soak')
+    require(auth['owner_authorized'] and auth['hours']==8 and auth['boards']==['2604','2609'] and
+        auth['final_drift_snapshot_authorized'],'Wrong soak authorization')
+    require(proof['generation']==50 and proof['package_manifest_sha256']==KIT_SHA,'Wrong soak candidate')
+    for key in ('native_debugging','native_applications_tested','clock_set','trim_changed','settings_changed','flash_written'):
+        require(proof[key] is False,'Soak scope violation: '+key)
+    require(SHA(auth['baseline_index'])==auth['baseline_index_sha256']==proof['baseline_index_sha256'],'Baseline changed')
+    require(SHA(run/'runner.py')==proof['runner_sha256'],'Soak runner changed')
+    receipt=READ(run/'final-drift-snapshot.json');drift_path=Path(receipt['summary'])
+    require(receipt['passed'] and receipt['returncode']==0 and SHA(drift_path)==receipt['summary_sha256'],'Invalid final snapshot')
+    drift=READ(drift_path);require(drift['passed'] and {b['board'] for b in drift['boards']}=={'2604','2609'},'Missing final drift board')
+    boards={}
+    for board,slot in (('2604','B'),('2609','A')):
+        entry=proof['boards'][board];final=READ(run/f'{board}-final.json');archive=run/f'{board}-before'
+        require(entry['passed_cycles']==431 and entry['breakpoint_hits']==6896 and entry['slot']==slot,'Wrong soak counts/slot')
+        require(final==proof['final'][board] and final['passed'] and final['RAM_restored_host_verified'] and
+            final['RAM_verified_after_snapshot'] and not final['errors'],'Soak RAM/final checks failed')
+        hashes=[SHA(archive/f'b{i}.bin') for i in range(4)]
+        require(final['flash']['passed'] and final['flash']['all_four_bank_sha256']==hashes,'Final flash changed')
+        require(final['RTC']['passed'],'Final RTC controls failed')
+        inventory=READ(archive/'capture.json');require(inventory['repeat_verified'],'Backup was not repeated')
+        for name,meta in inventory['files'].items():require(SHA(archive/name)==meta['sha256'],'Backup changed')
+        rows=sorted((run/board).glob('*/report.json'));require(len(rows)==431,'Extra/incomplete cycle')
+        flash_count=0;cycle_hashes={}
+        for index,path in enumerate(rows):
+            r=READ(path);d=r['debugger']
+            require(r['passed'] and r['board']==board and r['slot']==slot and r['ASM']['passed'] and d['passed'] and
+                d['breakpoint_hits']==16 and d['program_bytes_restored'] and d['all_eight_hit_twice'],'Failed cycle')
+            if board=='2609':
+                for mode in ('mode_before','mode_after'):
+                    require(r[mode]['E_before_probe'] and not r[mode]['probe_enters_native'] and
+                        r[mode]['DBR']==r[mode]['PBR']==r[mode]['direct_page']==0,'Wrong E=1 state')
+            if 'flash' in r:
+                require(r['flash']['passed'] and r['flash']['all_four_bank_sha256']==hashes,'Hourly flash changed');flash_count+=1
+            if 'RTC' in r:require(r['RTC']['passed'],'RTC check failed')
+            cycle_hashes[f'{index:06d}']=SHA(path)
+        restore=READ(run/f'{board}-restore-needed.json')
+        require(not restore['needed'] and restore['host_verified'] and restore['RAM_sha256']==SHA(archive/'application-ram.bin'),'RAM restoration unresolved')
+        boards[board]=dict(passed=True,slot=slot,runtime='65C02' if board=='2604' else '65C816 E=1',passed_cycles=431,
+            breakpoint_hits=6896,hourly_flash_checks=flash_count,original_RAM_bytes=25344,RAM_restored_host_verified=True,
+            RAM_verified_after_snapshot=True,all_four_flash_banks_unchanged=True,settings_and_wear_history_unchanged=True,
+            RTC_control=final['RTC']['control'],trim_steps=final['RTC']['trim_steps'],source_final_sha256=SHA(run/f'{board}-final.json'),
+            cycle_receipt_sha256=cycle_hashes)
+    public_drift=[]
+    for b in drift['boards']:
+        require(b['application_ram_restored'] and SHA(b['report'])==b['report_sha256'] and READ(b['report'])['passed'],'Failed drift measurement')
+        sample=datetime.fromisoformat(b['reference_utc'].replace('Z','+00:00')).timestamp()
+        require(sample>=proof['started_unix']+proof['monitored_seconds'],'Snapshot predates soak end')
+        if b['board']=='2609':require(b['measurement_segment']=='2609-post-RTC-recovery-2026-10-18-r1' and b['original_baseline_replaced'] is False,'Recovery segment changed')
+        public_drift.append({key:b[key] for key in ('board','reference_utc','offset_seconds','offset_bounds_seconds','trim_steps',
+            'control_register','report_sha256','application_ram_restored','elapsed_seconds','drift_seconds_interval',
+            'measurement_segment','original_baseline_replaced') if key in b})
+    return dict(passed=True,authorized_hours=8,duration_seconds=proof['monitored_seconds'],started_utc=proof['started_utc'],
+        finished_utc=proof['finished_utc'],generation=50,package_manifest_sha256=KIT_SHA,boards=boards,
+        failures=[],source_report_sha256=SHA(run/'report.json'),source_authorization_sha256=SHA(run/'owner-authorization.json'),
+        original_baseline_index_sha256=auth['baseline_index_sha256'],native_debugging=False,native_applications_tested=False),dict(
+        passed=True,source_summary_sha256=SHA(drift_path),sequential_not_simultaneous=True,clock_set=False,trim_changed=False,
+        original_baseline_index_sha256=auth['baseline_index_sha256'],offset_meaning='RTC minus NIST reference; not an eight-hour drift increment',boards=public_drift)
+
+
 def links_resolve(root):
     checked=0
     for path in root.rglob('*.md'):
@@ -108,7 +174,10 @@ def main():
             for doc,digest in proof['manual_sources_sha256'].items():require(SHA(ROOT/'docs/rc1'/doc)==digest,'Changed example')
     model=READ(ROOT/'BUILD/rc1-debugger-boardtest-model-r1/report.json')
     require(model['passed'] and model['package_manifest_sha256']==KIT_SHA and len(model['checks'])==21 and all(c['passed'] for c in model['checks']),'Installer model proof incomplete')
+    soak,drift=public_soak()
     out.mkdir(parents=True)
+    save(out/'qualification/soak/summary.json',soak)
+    save(out/'qualification/soak/drift.json',drift)
     for name in manifest['files']:copy(safe(KIT,name),safe(out/'install',name))
     copy(KIT/'board-test-manifest.json',out/'install/board-test-manifest.json')
     for path in (ROOT/'docs/rc1').rglob('*'):
@@ -138,7 +207,8 @@ def main():
     require(pin['passed'] and not pin['enters_native_mode'],'Invalid mode observer');copy(observer/'report.json',out/'diagnostics/emulation/report.json')
     save(out/'qualification/summary.json',dict(passed=True,candidate='rc1-debugger-v1',generation=50,
         tested_board_kit_manifest_sha256=KIT_SHA,firmware_sha256=IMAGE_SHA,hardware_boards=['2604','2609'],monitor_slots=['A','B'],
-        runtime=['65C02','65C816 E=1'],breakpoint_hits_total=64,original_application_RAM_host_verified=True,
+        runtime=['65C02','65C816 E=1'],breakpoint_hits_total=64,soak_passed=True,soak_cycles_per_board=431,soak_breakpoint_hits_total=13792,
+        soak_duration_seconds=soak['duration_seconds'],final_drift_snapshot_passed=True,original_application_RAM_host_verified=True,
         original_preferences_restored=True,RTC_controls_trims_preserved=True,offline_groups=dict(original_65c02=21,original_65c816_e=24,manuals_65c02=22,manuals_65c816_e=25,installer_package_model=21),
         manual_example_executions=16,system_user_registration_hardware_tested=False,rollback_hardware_executed=False,
         native_debugging=False,native_applications_tested=False,unchanged_reset_CPU_detection=True,
@@ -151,7 +221,7 @@ def main():
         path=out/name
         if path.suffix in ('.py','.md','.json','.txt'):
             require(not re.search(r'[A-Za-z]:[\\/](?:SRC|Users)[\\/]|/Users/|/home/',path.read_text(encoding='utf-8')),'Host path leaked: '+name)
-    save(out/'package-manifest.json',dict(schema=1,candidate='rc1-debugger-v1',version='2.0rc1 DBG1',generation=50,distribution_revision=1,
+    save(out/'package-manifest.json',dict(schema=1,candidate='rc1-debugger-v1',version='2.0rc1 DBG1',generation=50,distribution_revision=2,
         runtime=['65C02','65C816 E=1'],native_debugging=False,native_applications_tested=False,application_RAM_reserved_bytes=0,
         debugger_code_bytes=3967,debugger_CRC_bytes=2,debugger_sector_free_bytes=127,tested_board_kit_manifest_sha256=KIT_SHA,
         firmware_sha256=IMAGE_SHA,install_method='Fresh exact-source standalone RAM plan; seven firmware sectors; nine 4K transfers',

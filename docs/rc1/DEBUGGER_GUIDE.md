@@ -111,6 +111,12 @@ workspace with the debugger; do not call them from an active session. S/R/T
 staging and resident flash mutation protect the debugger sector. These limits
 do not grant flash debugging or native-mode support.
 
+The eight-hour hardware soak passed 431 cycles on each board (2604 MON B,
+2609 MON A in E=1), with all eight breakpoints hit twice per cycle. Original
+application RAM restoration, unchanged flash/settings, and the final drift
+snapshot passed. See [results and measurement limits](DEBUGGER_BOARD_RESULTS.md).
+Native mode remains outside scope.
+
 Use the [ASM examples](ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
 [BRK ABI and registrations](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
 and [hardware/offline results](DEBUGGER_BOARD_RESULTS.md) for the next step.

@@ -1,9 +1,9 @@
 # DBG1 board and offline test results
 
 The local **rc1 DBG1 generation-50 candidate** passed the bounded tests below
-on October 18, 2026 (America/Chicago; receipt directory timestamps are UTC).
+on October 18–19, 2026 (America/Chicago; receipt timestamps are UTC).
 The published generation-49 rc1 tag, ZIP and source tree remain unchanged.
-This is debugger installation/smoke evidence for **65C02 and 65C816 E=1**;
+This is debugger installation/smoke and bounded soak evidence for **65C02 and 65C816 E=1**;
 native applications and native debugging are outside scope.
 
 ## Hardware results
@@ -48,6 +48,62 @@ was issued. Soaks and periodic RTC sampling remain stopped.
 Rollback plans were derived from each final fresh capture and verified
 offline. They were not executed on hardware. If the board changes, capture
 again and rederive a plan; old C/D journal images must not reset wear history.
+
+## Eight-hour rc1/ASM/DBG1 soak and final RTC snapshot
+
+The owner-authorized soak ran October 18, 22:52:18 through October 19,
+06:52:42 CDT (03:52:18–11:52:42 UTC), **8h 00m 23.703s**, with no failures.
+The common eight-hour deadline allowed the current safe unit to finish.
+One worker alternated the boards; the soak used the preferred slot shown
+below. The earlier smoke separately established both-slot coverage.
+
+| Board | Runtime / soak slot | Passed cycles | Persistent breakpoint hits |
+| --- | --- | --- | --- |
+| 2604 | 65C02 / MON B | 431 | 6,896 |
+| 2609 | 65C816 E=1 / MON A | 431 | 6,896 |
+
+Every cycle exercised read-only rc1 commands and BATCH, real onboard ASM
+with output checked against the tested RAM image before execution, BRK entry,
+shared D/M/U, C/S/N, all eight persistent breakpoints twice, ninth refusal,
+individual/all clear, X/HOLD cleanup, and BRK 80 query. E=1 and the supported
+ABI state were observed before and after each 2609 cycle. Native applications
+and native debugging were excluded; the startup CPU detector was unchanged.
+Callback registrations remain offline-tested, not hardware-qualified.
+
+Fresh repeated full-flash and application-RAM backups preceded the soak.
+Seven hourly four-bank flash comparisons per board and final four-bank
+hash comparisons passed: firmware, settings and wear history were unchanged.
+All **25,344 original application RAM bytes per board** were restored and
+verified, then verified again after the drift snapshot. Application RAM
+capacity and monitor preferences were unchanged. No flash, RTC clock, trim,
+offset or persistent-setting write was issued.
+
+The final NIST-referenced snapshot passed at 06:55 CDT October 19. Positive
+offset means the board RTC was ahead of the reference; these are current
+offsets, not eight-hour drift increments. Boards were sampled sequentially.
+
+| Board | Reference UTC | Offset (seconds) | Offset bounds (seconds) | Trim |
+| --- | --- | --- | --- | --- |
+| 2604 | 2026-10-19 11:55:14.620468 | +0.950532 | +0.612121 to +1.288943 | -12 |
+| 2609 | 2026-10-19 11:55:52.415133 | +0.545367 | +0.087614 to +1.003120 | -14 |
+
+The original baseline index is unchanged. Against its original anchor, 2604's
+accumulated drift interval is -0.303999 to +1.195532 seconds over 203,691.820s.
+2609 uses its separate `2609-post-RTC-recovery-2026-10-18-r1` segment:
+-0.564323 to +0.824579 seconds over 119,524.377s. This comparison does not
+bridge the recovery clock setting or replace the original baseline. Both
+intervals include zero; these measurements do not establish full RTC accuracy
+or endurance qualification. Controls remained 0 on 2604 and 128 on 2609.
+
+The workload ended and its follow-up monitor was paused after verification;
+older soaks and periodic RTC sampling were not restarted. Local evidence:
+
+- `output/qualification/rc1-asm-dbg1-soak-2026-10-19-034545Z/report.json`
+- `output/qualification/rc1-asm-dbg1-soak-2026-10-19-034545Z/completion-audit.json`
+- `output/qualification/rtc-campaign-snapshot-2026-10-19-115447Z/summary.json`
+
+Distribution revision 2 includes portable public soak and drift summaries
+with source-receipt hashes. Private RAM/flash captures and serial logs stay local.
 
 ## Offline scope and limits
 

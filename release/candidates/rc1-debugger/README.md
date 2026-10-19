@@ -242,3 +242,12 @@ controls/trim were preserved. Rollback was prepared and verified offline but
 not executed; capture again if the board changes. 2604 was not accessed during
 this trial, and periodic sampling and soaks remain stopped. Interrupted-write
 recovery is outside this checkpoint.
+
+## Subsequent eight-hour qualification
+
+The same generation-50 firmware passed 431 rc1/ASM/DBG1 soak cycles and
+6,896 persistent-breakpoint hits per board over 8h 00m 24s, without failures.
+2604 used MON B; 2609 used MON A in E=1. Earlier trials covered both slots.
+Full original application RAM restoration, unchanged flash/settings, and final
+NIST drift collection passed. Native applications/debugging remain excluded.
+Install and rollback still require fresh captures and newly derived plans.
