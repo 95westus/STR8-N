@@ -3,33 +3,55 @@
 STR8-N is a monitor, assembler and utility system for WDC SXB boards, using
 one firmware set for **65C02 and 65C816 emulation-mode runtime**.
 
-**[Download v2.0rc1 â€” one complete release ZIP](https://github.com/95westus/STR8-N/releases/download/v2.0rc1/str8n-v2.0rc1-release.zip)**
+**[Download rc1 v1g r8 (DBG1 generation 50)](https://github.com/95westus/STR8-N/releases/download/v2.0rc1-v1g-r8/str8n-v2.0rc1-dbg1-v1g-r8.zip)**
+([SHA-256 checksum](https://github.com/95westus/STR8-N/releases/download/v2.0rc1-v1g-r8/str8n-v2.0rc1-dbg1-v1g-r8.zip.sha256))
 
-Includes the full-system BIN, B3 boot/core BIN, MON A/B/F components, all apps
-and S/R/T, Windows/Linux migration and recovery tools, manuals/quick starts,
-public ABIs/diagrams, and credited uChess source with an ASM/S/T/R example.
+## What is in rc1 v1g r8?
 
-- [Quick start](docs/rc1/QUICK_START.md) Â· [Migration/recovery](docs/rc1/QUICK_START_MIGRATION.md) Â· [All manuals](docs/rc1/README.md)
-- [Firmware layouts](docs/rc1/RELEASE_PATHS.md) Â· [Reproducible rc1 source build](release/candidates/rc1/README.md)
-- [Published beta4 archive and instructions](https://github.com/95westus/STR8-N/releases/tag/v2.0b4) Â· [Previous bf1](https://github.com/95westus/STR8-N/releases/tag/v2.0bf1)
+- Exact generation-50 reference firmware and DBG1 debugger BINs, with the
+  MAINT compatibility correction and BRK `$82`/`$84` edge fixes.
+- The tested, source-bound installer/rollback kit: nine firmware sectors and
+  eleven transfers per transaction.
+- RC1 manuals and quick starts, RAM debugger/ASM/BRK ABI documentation,
+  credited uChess source, and ASM, registration and ten-pattern LED diagnostics.
+- Matching debugger and qualification source, machine-readable offline,
+  hardware, soak and register-edit evidence, and a board-free package verifier.
+- A complete file manifest and `SHA256SUMS.txt`, plus the adjacent ZIP checksum.
 
-Scripted migration admits the exact supported WDCMONV2 or published beta4
-source in B3 with erased B0/B1/B2; read the guide before installing. No vendor
-firmware or private board data is distributed. Raw BINs are provisioning images.
+Both boards (2604 and 2609) passed MON A/B R-register qualification: **5,752
+parser checks, 220 resume cases and 132 expected unsafe-PC refusals**, with
+zero hardware failures, original RAM restored and unchanged flash/settings.
+The package passed full/extracted verification of 249 files, 179 documentation
+links and 24 scope/tamper checks. See the
+[distribution identity and hashes](release/candidates/rc1-debugger-brkfix-r1/distribution-r8.json).
 
-rc1 is source-built and installed/checked on 2604/2609, including the
-[power-fail UTC label correction](docs/STR8N_RC1_UTC_BOARD_UPDATE_2026-10-18.md).
-RTC qualification/known continuity issue, native 816 apps/tests, ACIA and crypto
-are deferred. Soaks and RTC sampling remain stopped; recorded soak results are
-accepted as recorded, without claiming full endurance qualification.
+**Native applications/debugging are excluded. RTC drift is outside release
+qualification and is not a promotion gate.** Historical RTC records remain
+integrity-protected evidence; they do not supply release-acceptance criteria.
+The firmware still displays `2.0rc1` and `ASM 0.5`; `VERSION` generation
+`00000032` identifies the DBG1 generation-50 build.
 
-Published release: **v2.0rc1 generation 49**. The local **DBG1 generation-50
-candidate** is installed/tested on 2604 (65C02) and 2609 (65C816 E=1), both
-MON A/B, with original RAM and preferences restored. Start with the
-[RAM debugger guide](docs/rc1/DEBUGGER_GUIDE.md),
-[ASM examples](docs/rc1/ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
-[BRK registration ABI](docs/rc1/ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
-and [board results](docs/rc1/DEBUGGER_BOARD_RESULTS.md). The published release
-ZIP/tag remains unchanged; native debugging is outside scope. Future **v2.1**
-organizes ABIs/metadata; [planned LED and dual-VIA timer ABIs](docs/STR8N_V2_1_ABI_METADATA_ROADMAP.md)
-remain development work.
+## Verify and install
+
+Check the adjacent ZIP SHA-256, extract into a new directory, then run
+`python -B verify_package.py`. Verification opens no board ports. The archive
+contains `INSTALL_ROLLBACK.md` with the exact supported source and workflow.
+
+The r8 kit admits exact generation-49 sources; it cannot directly update an
+already-installed generation-50 candidate. The reference BIN is not a
+preserving updater. For the original WDCMONV2/beta4 migration route, retain the
+[previous complete generation-49 release](https://github.com/95westus/STR8-N/releases/tag/v2.0rc1)
+and its matching migration/recovery tools. R8 does not replace that tag or ZIP.
+Private board backups, original RAM/flash captures, serial logs and secrets
+are excluded from the download.
+
+- [RAM debugger guide](docs/rc1/DEBUGGER_GUIDE.md) / [Board results](docs/rc1/DEBUGGER_BOARD_RESULTS.md)
+- [ASM examples](docs/rc1/ASM_GUIDE.md#debugging-ram-programs-with-dbg1) / [BRK registration ABI](docs/rc1/ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
+- [Quick start](docs/rc1/QUICK_START.md) / [Migration/recovery](docs/rc1/QUICK_START_MIGRATION.md) / [All manuals](docs/rc1/README.md)
+- [Current scope](release/candidates/rc1-debugger-brkfix-r1/release-policy.json) / [Firmware layouts](docs/rc1/RELEASE_PATHS.md)
+- [Previous beta4](https://github.com/95westus/STR8-N/releases/tag/v2.0b4) / [Previous bf1](https://github.com/95westus/STR8-N/releases/tag/v2.0bf1)
+
+Soaks and RTC sampling remain stopped; recorded workload durations are not
+relabeled as fixed-duration endurance passes. Future **v2.1** ABI/metadata,
+[LED and dual-VIA timer ABI plans](docs/STR8N_V2_1_ABI_METADATA_ROADMAP.md),
+ACIA and crypto remain separate development work.
