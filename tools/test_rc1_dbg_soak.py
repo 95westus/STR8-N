@@ -2,7 +2,7 @@
 from pathlib import Path
 import json,sys,tempfile,unittest
 from unittest.mock import patch
-ROOT=Path(__file__).resolve().parents[1];KIT=ROOT/'BUILD/rc1-debugger-boardtest-r1'
+ROOT=Path(__file__).resolve().parents[1];KIT=ROOT/'BUILD/rc1-debugger-boardtest-r2'
 sys.path.insert(0,str(KIT))
 import board_link as transport
 import run_rc1_dbg_soak as soak
@@ -42,10 +42,18 @@ class Replay:
 
 def events(cpu,slot):
     suffix='-65c816-e' if cpu=='816' else ''
-    rows=json.loads((ROOT/f'BUILD/rc1-debugger-v1e/debugger-transcripts{suffix}.json').read_text())
+    rows=json.loads((ROOT/f'BUILD/rc1-debugger-v1f/debugger-transcripts{suffix}.json').read_text())
     return [x for x in rows if x.get('smoke') and x.get('slot')==slot]
 
 class Checks(unittest.TestCase):
+    def test_only_authorized_corrected_candidate_six_hour_scope(self):
+        auth=dict(owner_authorized=True,hours=6,boards=['2604','2609'],final_drift_snapshot_authorized=True,
+                  promotion_held=True,native_debugging=False,native_applications=False,package_manifest_sha256=soak.KIT_SHA)
+        self.assertEqual(soak.duration_seconds(auth),21600)
+        for field,value in [('hours',8),('hours',0),('owner_authorized',False),('boards',['2604']),
+                            ('final_drift_snapshot_authorized',False),('promotion_held',False),('native_debugging',True),
+                            ('native_applications',True),('package_manifest_sha256','old candidate')]:
+            with self.subTest(field=field,value=value),self.assertRaises(AssertionError):soak.duration_seconds(dict(auth,**{field:value}))
     def test_exact_smoke_replay_both_CPUs_slots(self):
         for cpu in ('02','816'):
             for slot in ('A','B'):

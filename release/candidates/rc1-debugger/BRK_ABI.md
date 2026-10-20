@@ -3,7 +3,7 @@
 The present candidate implements only `$80-$84`: debugger query, user register,
 user unregister, register trace and bounded text output. The table below is a
 proposal for a later ABI revision, not implemented or allocated by this board
-test package. Keep this first hardware trial on the already tested firmware.
+test package. They are not added by corrected-candidate release staging.
 
 | Proposed ID | Existing RAM ABI | Proposed BRK contract |
 | --- | --- | --- |

@@ -1,13 +1,59 @@
-# rc1 DBG1 candidate
+# rc1 DBG1 parent candidate and historical qualification
 
-Generation 50 is a local development candidate based on the frozen generation
-49 rc1 sources. It installs automatic RAM BRK debugging in MON A and MON B.
+This directory retains the parent `v1f` builder/source and earlier candidate
+package evidence. The current separately built candidate is
+[`v1g`](../rc1-debugger-brkfix-r1/README.md), whose offline and hardware
+qualification passed on 2604 and 2609, including both monitor slots and
+rollback/reinstall. R3 and R4 closed cleanly with original RAM, flash/settings
+and final drift verified. R5 also closed safely with its original-phase checkpoint
+and final drift passed. The ten-pattern LED R6 continuation passed 93 new offline
+checks, actual CPU qualification and both-board hardware preflight with restoration
+and drift verified. R6 then closed cleanly at owner STOP after 12,803.703
+monitored/active seconds, with 61/60 cycles and 976/960 hits on 2604/2609.
+Both original full RAM images were restored/reread after final drift;
+flash/settings matched and actual worker exit was verified. The ten-pattern
+630-frame scope and prior runs remain separate evidence. Promotion stays held;
+native applications/debugging remain excluded. See the
+[current candidate status](../../../docs/rc1/DBG1_CANDIDATE_STATUS.md) for
+closeout evidence and the immutable distribution r7 package/checksum review.
+
+The parent source includes the MAINT compatibility correction (`v1f`). Its
+guard compares all four bytes against the same DBG1 marker used by the boot
+image. The prior `v1e` board candidate failed MAINT entry; its scoped debugger
+and soak results do not qualify `v1f` or `v1g`. Fresh offline and
+hardware requalification passed on 2604 and 2609, including both-slot MAINT,
+registration/debugger/app checks and corrected-package rollback/reinstall.
+The planned six-hour `v1f` soak was subsequently stopped by the owner; it is
+not a completed six-hour qualification. Offline review found `$82` invalid-ID
+and `$84` RAM-end boundary issues in `v1f`; the separate `v1g` candidate fixes
+those paths. No new eight-hour soak is claimed for `v1f`. The MAINT correction
+changes four comparison
+bytes and the utility CRC, requiring B2:8000 and B2:D000 in the preserving
+install/rollback plan. The frozen generation-49 release is unchanged.
+
+Historical `v1f` requalification evidence is in
+`output/qualification/rc1-dbg1-maint-requalification-2026-10-19-1718Z`:
+72 hardware registration cases, 128 verified breakpoint hits and 84
+device-verified transfers. Both original application RAM archives, monitor
+preferences and RTC settings were preserved. See the
+[board results](../../../docs/rc1/DEBUGGER_BOARD_RESULTS.md#maint-correction-and-requalification).
+
+The parent generation-50 candidate is based on the frozen generation-49 rc1
+sources. It installs automatic RAM BRK debugging in MON A and MON B.
 The published rc1 tree is unchanged. The candidate passed scoped board trials
 on 2604 (65C02) and 2609 (65C816 E=1), in both monitor slots on each board.
 Offline qualification also covers separate 65C02 and 65C816 emulation models.
 Native applications and native debugging are outside this candidate.
 
-## Build and test
+## Reproduce the parent build and tests
+
+Historical `v1f` package staging uses `stage_corrected_candidate.py` with a
+fresh `--out` directory and an offline review receipt. It copies the exact
+tested `v1f` image and board kit, retaining preparation-time pending
+soak/drift results and findings. These are historical status fields, not
+current `v1g` acceptance. It does not promote the release. `package_candidate.py`
+and the templates under `package/` describe the historical `v1e` distribution
+r2; their eight-hour receipts must not be reused as `v1f` qualification.
 
 Requires Python 3.10+, WDC02AS and WDCLN on PATH, and py65 for the tests.
 Use a new, short output path each time:
@@ -169,32 +215,33 @@ with architectural checks based on the
 The model and FT245/bank fixtures do not qualify device timing, electrical
 interrupts, or flash installation. The offline suites do not access a board.
 
-Latest local result: `BUILD/rc1-debugger-v1e`, 3967 bytes of code plus a two-byte
+Prior local result (before the MAINT correction): `BUILD/rc1-debugger-v1e`, 3967 bytes of code plus a two-byte
 CRC, leaving 127 bytes in B1:`$A000-$AFFF`. Application RAM remains intact.
 All 21 65C02 groups and all 24 816 emulation groups pass, including both full
 monitor boots and 512 decoder cases per CPU. A second fresh build produces
 identical firmware and debugger bytes. Frozen rc1's 97 source hashes also pass.
 
-## Experimental board package
+## Historical experimental board package
 
 [Board-test instructions](BOARD_TEST.md) cover exact-source installation,
 fresh-capture rollback, original application RAM restoration, both monitors,
 and the BRK/C/S/N/eight-breakpoint smoke test. [BRK ABI proposals](BRK_ABI.md)
 describe possible future common services; firmware remains at functions 80-84.
 
-The local package is `BUILD/rc1-debugger-boardtest-r1`. Preparation reads only
+The parent `v1f` local package is `BUILD/rc1-debugger-boardtest-r2`. Preparation reads only
 local files; serial access exists only in separately invoked `board_link.py`
 operations. No board-specific plan is authorized by a historical capture.
 Install and rollback require repeated fresh captures and explicit board/USB IDs.
-The rollback planner advances wear records and restores the seven original
+The rollback planner advances wear records and restores the nine original
 firmware sectors while preserving current settings and other flash data.
 
-The exact packaged smoke adds a test group to each CPU suite (21 on 65C02,
-24 on 816 E=1). Four programs/scenarios run through both monitor choices on
+The corrected suites include MAINT marker acceptance/refusal and the exact
+packaged smoke (22 groups on 65C02, 25 on 816 E=1). Four programs/scenarios
+run through both monitor choices on
 each CPU, including all eight breakpoints hit twice, ninth-slot refusal,
 individual/all clear, X cleanup, shared D/M/U and the BRK query service.
 
-## 2604 hardware checkpoint
+## Historical 2604 hardware checkpoint
 
 On 2026-10-19 UTC, the owner-authorized trial installed package
 `BUILD/rc1-debugger-boardtest-r1` on 2604 (65C02, USB A10MQGVHA).
@@ -216,7 +263,7 @@ During that trial, both boards received one-shot drift collection and 2609
 firmware was not written. This checkpoint covers the 2604 installation and debugger smoke paths;
 816 hardware, native debugging and interrupted-write recovery are outside it.
 
-## 2609 emulation-mode hardware checkpoint
+## Historical 2609 emulation-mode hardware checkpoint
 
 The same package subsequently passed the owner-authorized 2609 trial
 (65C816, USB A10MPQXCA). All nine installation transfers were device-verified,
@@ -240,14 +287,17 @@ were restored. The final audit verified the seven firmware sectors, preserved
 other flash data and settings, and accounted for exactly nine erases. RTC
 controls/trim were preserved. Rollback was prepared and verified offline but
 not executed; capture again if the board changes. 2604 was not accessed during
-this trial, and periodic sampling and soaks remain stopped. Interrupted-write
+this trial. Periodic sampling and soaks were stopped at that checkpoint;
+the later `v1g` continuation has separate authorization and evidence. Interrupted-write
 recovery is outside this checkpoint.
 
-## Subsequent eight-hour qualification
+## Historical subsequent eight-hour qualification
 
-The same generation-50 firmware passed 431 rc1/ASM/DBG1 soak cycles and
+The earlier `v1e` generation-50 firmware passed 431 rc1/ASM/DBG1 soak cycles and
 6,896 persistent-breakpoint hits per board over 8h 00m 24s, without failures.
 2604 used MON B; 2609 used MON A in E=1. Earlier trials covered both slots.
 Full original application RAM restoration, unchanged flash/settings, and final
 NIST drift collection passed. Native applications/debugging remain excluded.
-Install and rollback still require fresh captures and newly derived plans.
+These results do not qualify the later `v1f` or `v1g` images. Install and
+rollback still require fresh captures and newly derived plans.
+

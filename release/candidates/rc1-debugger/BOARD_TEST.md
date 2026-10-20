@@ -13,18 +13,19 @@ outside scope. The existing reset CPU detector remains as in rc1.
 | B1:E000-FFFF | ASM with explicit BRK signature support and matching shared opcode table |
 | B3:A000-BFFF | MON A/B headers with automatic BRK entry and HOLD cleanup |
 | B3:E000-FFFF | Resident S/R/T guards, bootstrap and copied RAM worker |
+| B2:8000-8FFF, D000-DFFF | MAINT compatibility comparisons and matching utility CRC |
 | B3:C000-DFFF | Wear-accounted reservation/staging/activation of the existing journal |
 
-Seven firmware sectors change. Nine 4096-byte transfers accompany one small
+Nine firmware sectors change. Eleven 4096-byte transfers accompany one small
 reservation-record write. The standalone RAM installer is the existing rc1
 transaction engine; it does not call the candidate's protected flash API.
-B0, B2, B1:9000, applications, RTC banner, bindings and all other flash bytes
+B0, B1:9000, applications, RTC banner, bindings and all other flash bytes
 are preserved from the capture. Settings, EDU mode and the preferred monitor
 are retained, with the preferred generation changed to 50. Wear counts advance.
 The default-filled 96 KiB development `firmware.bin` is not a preserving updater;
 do not program it over a working board.
 
-The source must match rc1 generation 49 in all six replaced existing firmware
+The source must match rc1 generation 49 in all eight replaced existing firmware
 sectors, with B1:A erased. The planner refuses an occupied debugger destination,
 assumed-erased captures, bad/torn journals, identity mismatches and changed data.
 It also needs an erased record in the current journal sector. A refusal requires
@@ -33,10 +34,10 @@ inspection and a fresh plan; do not force it or use a beta4/WDC conversion route
 ## Preparation
 
 Run from the repository root with Python 3.10+, WDC tools and the test dependencies.
-The prepared local package is `BUILD/rc1-debugger-boardtest-r1`.
+The prepared local package is `BUILD/rc1-debugger-boardtest-r2`.
 
 ```text
-python release/candidates/rc1-debugger/prepare_board_test.py --build BUILD/rc1-debugger-v1e --out BUILD/new-debugger-boardtest
+python release/candidates/rc1-debugger/prepare_board_test.py --build BUILD/rc1-debugger-v1f --out BUILD/new-debugger-boardtest
 ```
 
 Stop other serial users, close terminal sessions and keep any RTC/soak jobs
@@ -51,7 +52,7 @@ a working recovery monitor.
 Use fresh private directories for every capture, plan and receipt. In PowerShell:
 
 ```powershell
-$pkg = 'BUILD/rc1-debugger-boardtest-r1'
+$pkg = 'BUILD/rc1-debugger-boardtest-r2'
 $port = 'COM_REPLACE_ME'
 $usb = 'USB_SERIAL_REPLACE_ME'
 $board = '2604' # Replace with the selected board's actual identity.
@@ -75,7 +76,7 @@ not execute them. Leave the board powered and do not reset during a transaction.
 python "$pkg/board_link.py" execute --experimental --plan BUILD/dbg-install --port $port --usb-serial $usb --board $board --out BUILD/dbg-install-receipt
 ```
 
-Require `MIGRATION VERIFIED; PRESS PHYSICAL RESET`, nine transfers and a passed
+Require `MIGRATION VERIFIED; PRESS PHYSICAL RESET`, eleven transfers and a passed
 receipt. The device checks all source banks with FNV32 before the first write
 (the host binds captures/files with SHA256), validates
 each transfer and compares programmed bytes. If it refuses, times out or reports
@@ -167,7 +168,7 @@ python "$pkg/board_link.py" verify-flash --plan BUILD/dbg-rollback --port $port 
 python "$pkg/board_link.py" restore-ram --archive BUILD/dbg-before --port $port --usb-serial $usb --board $board --expected-generation 49 --out BUILD/dbg-rollback-ram
 ```
 
-Rollback restores the seven original firmware sectors, including the originally
+Rollback restores the nine original firmware sectors, including the originally
 erased B1:A sector. Current settings and current data outside those sectors are
 preserved; the original monitor preference is restored at generation 49. The
 journal sequence and erase counts advance again. Both monitors must report
@@ -178,3 +179,4 @@ Preserve the original four `source-bN.bin` files, current readable flash and all
 receipts for programmer recovery. The original C/D files are forensic backups,
 not an instruction to reset wear history. Interrupted-write and programmer
 recovery for this new candidate are not claimed as qualified by this package.
+

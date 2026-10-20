@@ -20,6 +20,7 @@ applications/tests, ACIA and crypto remain deferred.
 - [DBG1 RAM debugger: C/S/N and eight persistent breakpoints](DEBUGGER_GUIDE.md)
 - [DBG1 BRK services and system/user registrations](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
 - [DBG1 board results and qualification limits](DEBUGGER_BOARD_RESULTS.md)
+- [DBG1 v1g current status and continuing-soak evidence](DBG1_CANDIDATE_STATUS.md)
 - [Program and command reference](COMMAND_REFERENCE.md)
 - [Technical manual and Mermaid diagrams](TECHNICAL_MANUAL.md)
 - [Public ABI reference](ABI_REFERENCE.md)
@@ -68,15 +69,27 @@ Published firmware identity is 2.0rc1, generation 49. Source-build and offline
 qualification retain prior bf1 transport/shared-CPU evidence. Subsequent rc1
 board installation and the package-revision-2 UTC correction passed on both
 boards; see the [UTC hardware update](../STR8N_RC1_UTC_BOARD_UPDATE_2026-10-18.md).
-The later [DBG1 generation-50 trial](DEBUGGER_BOARD_RESULTS.md) passed on 2604
+The historical [DBG1 v1e generation-50 trial](DEBUGGER_BOARD_RESULTS.md) passed on 2604
 (65C02) and 2609 (65C816 E=1), both MON A/B. Original RAM was host-verified
 after restoration and original preferences were restored. Both boards also passed the eight-hour rc1/ASM/DBG1 soak with 431 cycles and
 6,896 breakpoint hits each; the final drift snapshot passed. See the same
 result summary for slots, offsets and uncertainty. These are bounded
 installation/smoke/soak results; they do not publish or promote DBG1. RTC qualification,
-native 816 applications/tests, ACIA and crypto are deferred. Soaks and RTC
-sampling remain stopped; recorded soak results are accepted as recorded,
-not a full endurance pass.
+native 816 applications/tests, ACIA and crypto are deferred. Those recorded
+results are accepted in their original scope, not as v1g endurance acceptance.
+
+Current v1g offline and both-board/both-slot hardware requalification passed,
+including MAINT, BRK `$82/$84`, registrations and rollback/reinstall. R3 and
+R4 closed cleanly with original RAM, flash/settings and final drift verified.
+R5 also closed safely with its original-phase checkpoint and final drift passed.
+The ten-pattern LED R6 continuation passed 93 new offline checks, actual CPU
+qualification and both-board hardware preflight, then closed cleanly at owner
+STOP after 12,803.703 monitored/active seconds. 2604/2609 passed 61/60 cycles
+and 976/960 breakpoint hits; both original full RAM images, flash/settings and
+final preserving drift were verified, and actual worker exit was confirmed.
+R6 had zero periodic checkpoints and one final checkpoint. Immutable
+distribution r7 packages the reviewed closeout and checksums for the authorized
+selective commit; full/extracted verification passed. Promotion remains held. See [current candidate status](DBG1_CANDIDATE_STATUS.md).
 
 
 ## Package revision 2: power-fail timezone label

@@ -1,4 +1,4 @@
-# rc1 operator guide — candidate
+# rc1 operator guide - candidate
 
 Use the [quick start](QUICK_START.md) for an installed board and the
 [migration quick start](QUICK_START_MIGRATION.md) for host installation routes.
@@ -31,9 +31,17 @@ Use C/S/N, shared D/M and U, and up to eight persistent `B address` entries.
 discarding the first eight. HOLD, X and reset clear breakpoints and all dynamic
 registrations. Save application RAM/source before loading an example.
 
-The current trials passed on 2604 (65C02) and 2609 (65C816 E=1), both slots;
-original preferences and RAM were restored. Native applications/debugging are
-outside scope. See [operator details](DEBUGGER_GUIDE.md), [ASM examples](ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
+V1g hardware requalification passed on 2604 (65C02) and 2609 (65C816 E=1),
+both slots; original preferences and RAM were restored at hardware closeout.
+R3, R4 and R5 closed safely in their separate scopes. The expanded R6 workload
+also closed cleanly at owner STOP: 12,803.703 monitored/active seconds, 61/60
+cycles and 976/960 breakpoint hits on 2604/2609. Both original full application
+RAM images were restored/reread after final drift; flash/settings matched and
+the worker exited. Its 630-frame ten-pattern programs restored entry LED state
+before BRK without CRA/DDRA writes. No workload or RTC sampler was restarted.
+Immutable distribution r7 packages the reviewed closeout. Promotion remains
+held; see [current candidate status](DBG1_CANDIDATE_STATUS.md).
+Native applications/debugging remain outside scope. See [operator details](DEBUGGER_GUIDE.md), [ASM examples](ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
 [registration ABI](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations) and
 [board results](DEBUGGER_BOARD_RESULTS.md). These documentation examples do not
 restart stopped campaigns or perform another installation.
@@ -52,8 +60,9 @@ firmware file does not contain another user's retained data or clock state.
 
 ## Run a preserving campaign
 
-The current owner-stopped soaks and RTC sampling remain stopped. The following
-is a procedure for a separately authorized future campaign, not a restart instruction.
+The owner-stopped DBG1 continuation has exited with restoration and drift
+verified. The following procedure requires separate authorization; it does not
+restart a worker or RTC sampler.
 
 Use one coordinated port owner and the shared lease for soak and RTC capture.
 A snapshot temporarily borrows RAM, verifies its restoration and allows an
@@ -68,9 +77,10 @@ Never restart a completed or owner-stopped worker automatically. Keep a
 powered-off board's last sample as a historical observation; it is not a fresh
 measurement.
 
-RTC collection on powered boards is every three hours, with attention after
-four hours without a successful sample. Acceptance requires at least 168 hours
-in an uninterrupted powered segment, a complete rate interval within ±5 ppm
+The closed continuation used its authorized four-hour campaign phase and
+completed only its final checkpoint during owner-stop closure. Separate RTC
+endurance acceptance requires at least 168 hours
+in an uninterrupted powered segment, a complete rate interval within +/-5 ppm
 and uncertainty halfwidth at most 2 ppm. Pending/inconclusive stays pending;
 an out-of-target stable clock rate calls for clock-performance review.
 

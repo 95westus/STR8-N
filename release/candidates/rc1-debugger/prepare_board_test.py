@@ -83,11 +83,21 @@ def main():
         shutil.copyfile(build/name,out/'qualification'/name)
     rows=[(1,0xA000,'debugger-a000.bin'),(1,0xE000,'assembler/asm-e000.bin'),(1,0xF000,'assembler/vectors-f000.bin'),
           (3,0xA000,'str8n-v2-recovery-slot-a0.bin'),(3,0xB000,'str8n-v2-recovery-slot-b0.bin'),
-          (3,0xE000,'str8n-v2-recovery-e000-efff.bin'),(3,0xF000,'str8n-v2-recovery-f000-ffff.bin')]
+          (3,0xE000,'str8n-v2-recovery-e000-efff.bin'),(3,0xF000,'str8n-v2-recovery-f000-ffff.bin'),
+          (2,0x8000,'xip/utilities.bin'),(2,0xD000,'xip/utilities.bin')]
     sectors=[]
     for bank,address,name in rows:
-        filename=f'b{bank}-{address:04x}.bin';target=(build/'payload'/name).read_bytes()[:4096]
-        before=(KIT/'payload'/name).read_bytes()[:4096] if address!=0xA000 or bank!=1 else b'\xff'*4096
+        filename=f'b{bank}-{address:04x}.bin';offset=address-0x8000 if bank==2 else 0
+        if bank==2:
+            # Utilities end at D7FF; the rest of D000 contains unchanged XIP
+            # data. Bind the complete sector, including that preserved tail.
+            first=(bank-1)*32768+address-0x8000
+            target=image[first:first+4096]
+            legacy=(KIT/'payload'/name).read_bytes()[offset:offset+4096]
+            before=legacy+target[len(legacy):]
+        else:
+            target=(build/'payload'/name).read_bytes()[:4096]
+            before=(KIT/'payload'/name).read_bytes()[:4096] if address!=0xA000 or bank!=1 else b'\xff'*4096
         assert len(target)==len(before)==4096
         offset=(bank-1)*32768+address-0x8000;assert image[offset:offset+4096]==target
         (out/'sectors'/filename).write_bytes(target);(out/'baseline'/filename).write_bytes(before)
@@ -113,7 +123,7 @@ def main():
     save(out/'board-test-manifest.json',dict(schema=1,candidate='rc1-debugger-v1',generation=50,
          board_access=False,hardware_qualified=False,native_debugging=False,firmware_sha256=sha(image),
          debugger_code_bytes=report['debugger_code_bytes'],remaining_sector_bytes=report['remaining_bytes'],
-         install_method='exact-source standalone RAM transaction; seven firmware sectors; nine 4K transfers',
+         install_method='exact-source standalone RAM transaction; nine firmware sectors; eleven 4K transfers',
          sectors=sectors,files=files))
     print('PASS prepared experimental board package:',out,'; no ports opened')
 

@@ -1,10 +1,11 @@
-"""Owner-authorized eight-hour rc1/ASM/DBG1 soak; preserves RAM, no flash writes."""
+"""Owner-authorized six-hour corrected rc1/ASM/DBG1 soak; preserves RAM, no flash writes."""
 import argparse,contextlib,ctypes,hashlib,json,os,re,subprocess,sys,time,traceback
 from datetime import datetime,timezone
 from pathlib import Path
 
 BOARDS={'2604':('COM5','A10MQGVHA','B',2),'2609':('COM8','A10MPQXCA','A',0x16)}
-KIT_SHA='3287d719b703b1ae87300c05ffba9fe803594995e4a9156781c03c86d4fb0e9c'
+KIT_SHA='87f5b610ed309f0be7ab8bd63e7f630bbc9c2e9885ecd048022227502934bb7d'
+AUTHORIZED_HOURS=6
 ASM_LINES=['10 ORG $0200','20 SEI','30 CLD','40 LDX #$FF','50 TXS','60 BRK $80','70 BRK #$03','80 JMP $7E67','90 END']
 SHA=lambda path:hashlib.sha256(Path(path).read_bytes()).hexdigest()
 READ=lambda path:json.loads(Path(path).read_text(encoding='utf-8'))
@@ -12,6 +13,13 @@ NOW=lambda:datetime.now(timezone.utc).isoformat()
 
 def due(deadline,stop,now=None):
     return Path(stop).exists() or (time.monotonic() if now is None else now)>=deadline
+
+def duration_seconds(auth):
+    assert auth['owner_authorized'] and auth['hours']==AUTHORIZED_HOURS
+    assert auth['boards']==list(BOARDS) and auth['final_drift_snapshot_authorized']
+    assert auth['promotion_held'] and not auth['native_debugging'] and not auth['native_applications']
+    assert auth['package_manifest_sha256']==KIT_SHA
+    return AUTHORIZED_HOURS*3600
 
 def restore_all(boards,restore):
     results={}
@@ -59,7 +67,7 @@ def debugger_unit(link,transport,kit):
 
 class Runner:
     def __init__(self,workspace,run):
-        self.root=workspace.resolve();self.run=run.resolve();self.q=self.root/'output/qualification';self.kit=self.root/'BUILD/rc1-debugger-boardtest-r1'
+        self.root=workspace.resolve();self.run=run.resolve();self.q=self.root/'output/qualification';self.kit=self.root/'BUILD/rc1-debugger-boardtest-r2'
         sys.path.insert(0,str(self.root/'tools'));sys.path.insert(0,str(self.kit))
         import board_link as transport
         from atomic_json import publish
@@ -67,8 +75,9 @@ class Runner:
         import serial_test_coordination as coordination
         self.transport=transport;self.publish=publish;self.establish=establish_b3;self.drain=drain;self.coordination=coordination
         self.coordination.ROOT=self.q/'serial-coordination';self.original={};self.flash_hashes={};self.last_flash={};self.last_clock={}
-        auth=READ(self.run/'owner-authorization.json');assert auth['owner_authorized'] and auth['hours']==8 and auth['boards']==list(BOARDS) and auth['final_drift_snapshot_authorized']
+        auth=READ(self.run/'owner-authorization.json');self.duration_seconds=duration_seconds(auth)
         self.auth=auth;assert SHA(self.kit/'board-test-manifest.json')==KIT_SHA;transport.plans.package(self.kit)
+        assert READ(self.q/'rc1-dbg1-promotion-hold.json')['held']
         assert SHA(auth['baseline_index'])==auth['baseline_index_sha256']
         active=READ(self.q/'active-rtc-campaign.json');assert set(active['powered_off_boards'])=={'2205','2512'}
         self.campaign_path=Path(active['campaign_state']);self.baselines={x['board']:x for x in READ(auth['baseline_index'])['boards']}
@@ -77,7 +86,7 @@ class Runner:
         self.observer_sha256=pin['s19_sha256']
         self.source_pins={str(path):SHA(path) for path in [self.root/'tools'/name for name in
             ('snapshot_rtc_campaign.py','rtc_utc_baseline.py','rtc_campaign_segments.py','beta4_migration.py','rtc_prompt_sync.py','serial_test_coordination.py')]+[self.root/'BUILD/v2-rtc-kernel/utc-client/rtc-sample-client.s19']}
-        self.state=dict(state='initializing',pid=os.getpid(),candidate='rc1-debugger-v1',generation=50,authorized_hours=8,boards={b:dict(passed_cycles=0,breakpoint_hits=0,slot=info[2]) for b,info in BOARDS.items()},
+        self.state=dict(state='initializing',pid=os.getpid(),candidate='rc1-debugger-v1f-MAINT-corrected',generation=50,authorized_hours=AUTHORIZED_HOURS,promotion_held=True,boards={b:dict(passed_cycles=0,breakpoint_hits=0,slot=info[2]) for b,info in BOARDS.items()},
             clock_set=False,trim_changed=False,settings_changed=False,flash_written=False,native_debugging=False,native_applications_tested=False,
             runner_sha256=SHA(__file__),package_manifest_sha256=KIT_SHA,owner_authorization_sha256=SHA(self.run/'owner-authorization.json'),baseline_index_sha256=auth['baseline_index_sha256'],final_snapshot_source_sha256=self.source_pins)
     def status(self,phase,**extra):
@@ -85,7 +94,7 @@ class Runner:
     def marker(self,board,phase,blocked=True,**extra):
         path=self.q/'device-operations'/f'{board}.json';value=READ(path);value.update(state=phase,run=str(self.run),block_snapshot=blocked,soak_owner_stopped=False,**extra);self.publish(path,value)
     def campaign(self,active):
-        value=READ(self.campaign_path);value.update(soak_active=active,soak_state=self.state['state'],debugger_soak_current=dict(run=str(self.run),state=self.state['state'],pid=os.getpid(),boards=list(BOARDS),hours=8,deadline_unix=self.state.get('deadline_unix')),automatic_workload_restart_permitted=False)
+        value=READ(self.campaign_path);value.update(soak_active=active,soak_state=self.state['state'],debugger_soak_current=dict(run=str(self.run),state=self.state['state'],pid=os.getpid(),boards=list(BOARDS),hours=AUTHORIZED_HOURS,deadline_unix=self.state.get('deadline_unix')),automatic_workload_restart_permitted=False)
         self.publish(self.campaign_path,value)
     @contextlib.contextmanager
     def connection(self,board,log_path):
@@ -193,8 +202,8 @@ class Runner:
                 self.flash_hashes[board]=[hashlib.sha256(b).hexdigest() for b in banks];self.last_flash[board]=time.monotonic()
                 for sector in READ(self.kit/'board-test-manifest.json')['sectors']:
                     offset=sector['address']-0x8000;assert banks[sector['bank']][offset:offset+4096]==(self.kit/sector['target']).read_bytes()
-            started=time.monotonic();deadline=started+8*3600
-            self.status('running',started_utc=NOW(),started_unix=time.time(),deadline_unix=time.time()+8*3600,monitored_seconds=0)
+            started=time.monotonic();deadline=started+self.duration_seconds;started_unix=time.time()
+            self.status('running',started_utc=NOW(),started_unix=started_unix,deadline_unix=started_unix+self.duration_seconds,monitored_seconds=0)
             self.campaign(True)
             while not due(deadline,self.run/'STOP'):
                 for board in BOARDS:

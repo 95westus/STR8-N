@@ -168,6 +168,24 @@ def main():
         if is816:assert cpu.mode==1 and cpu.b==0xA5
 
     rows={r['opcode']:r for r in json.loads((ROOT/'release/candidates/rc1/source/assembler/opcodes.json').read_text())}
+    # Execute MAINT's actual linked guard through the banked RAM gate. Check
+    # every marker byte, not merely that a matching build reaches its title.
+    utilities=allsy['xip/utilities']
+    for slot in ('A','B'):
+        for mismatch in (None,0,1,2,3,'legacy'):
+            cpu,m=fixture(slot,2)
+            for address,value in s19(out/'s/xip/gate.s19').items():m.ram[address]=value
+            m.ram[0x7BFA]=3
+            marker=utilities.get('BOOT_COMPAT_DATA',boot['BOOT_COMPAT_DATA'])-0x8000
+            assert bytes(m.banks[3][marker:marker+4])==bytes.fromhex('31474244')
+            if mismatch=='legacy':m.banks[3][marker:marker+4]=bytes.fromhex('010967EC')
+            elif mismatch is not None:m.banks[3][marker+mismatch]^=1
+            cpu.pc=utilities['MM_START'];cpu.sp=255;cpu.p=0x24
+            run(cpu,lambda:cpu.pc in (utilities['MM_BM_UNSUPPORTED'],utilities['MM_BM_NORMAL_START']),1000000)
+            assert cpu.pc==utilities['MM_BM_NORMAL_START' if mismatch is None else 'MM_BM_UNSUPPORTED']
+            assert not m.writes
+            if is816:assert cpu.mode==1 and cpu.native_detector_steps==0
+    passed('MAINT matching DBG1 boot marker accepted; each mismatched byte and legacy marker refused in both slots without flash writes')
     if is816:
         # Exercise the imported model itself before it becomes our oracle.
         for sp in (0,1,2,0xFE,0xFF):

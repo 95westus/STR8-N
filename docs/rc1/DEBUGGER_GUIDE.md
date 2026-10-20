@@ -11,6 +11,28 @@ On the 816, E=1 and direct page, DBR and PBR must be zero. Keep IRQ masked.
 Native applications and native debugging are outside scope; the existing
 startup CPU detector is unchanged.
 
+## Candidate review status
+
+The current `v1g` candidate includes the MAINT compatibility correction and
+the two service fixes found in the historical `v1f` review: `$82` rejects
+invalid user IDs before table lookup, and `$84` preserves saved registers/flags
+when valid text ends at the application RAM limit. Both CPU models and both
+boards passed the focused regressions in MON A and MON B, including
+rollback/reinstall. No known unresolved firmware defect is recorded in this scope.
+
+R3, R4 and R5 closed safely in their separate scopes. The ten-pattern R6
+continuation then closed cleanly at owner STOP after 12,803.703 seconds of
+monitored/active workload, with 61/60 cycles and 976/960 breakpoint hits on
+2604/2609. Both original full application RAM images were restored and reread
+after final drift; all flash/settings matched and actual worker exit was verified.
+Every cycle included 630 LED frames across ten patterns, entry-LED restoration
+before BRK without CRA/DDRA writes and the existing debugger tests. The run
+reached only final drift, with zero periodic checkpoints before owner stop.
+Immutable distribution r7 packages the reviewed closeout. Promotion remains
+held. See [current status and exact evidence](DBG1_CANDIDATE_STATUS.md)
+and [board results](DEBUGGER_BOARD_RESULTS.md). Native applications/debugging
+remain excluded; earlier run scopes do not substitute for R6 acceptance.
+
 ## Enter automatically with BRK xx
 
 Run a RAM application normally, for example `G 0200`. An application `BRK $01`
@@ -93,8 +115,8 @@ zero-page/stack images; a low-page D/M request must remain in one page, and
 zero-page writes above `$DF` are refused. Do not edit private debugger state
 or interpret these commands as permission to access I/O.
 
-The component occupies B1:`$A000-$AFFF`: 3,967 code bytes plus a two-byte CRC,
-leaving 127 bytes. It uses existing reserved monitor workspace and does not
+The v1g component occupies B1:`$A000-$AFFF`: 3,975 code bytes plus a two-byte CRC,
+leaving 119 bytes. It uses existing reserved monitor workspace and does not
 reduce application RAM or ASM buffers. Applications need nine free stack
 bytes for entry. Bytes below SP are scratch, not preserved allocated stack.
 
@@ -111,10 +133,12 @@ workspace with the debugger; do not call them from an active session. S/R/T
 staging and resident flash mutation protect the debugger sector. These limits
 do not grant flash debugging or native-mode support.
 
-The eight-hour hardware soak passed 431 cycles on each board (2604 MON B,
+The historical `v1e` eight-hour hardware soak passed 431 cycles on each board (2604 MON B,
 2609 MON A in E=1), with all eight breakpoints hit twice per cycle. Original
 application RAM restoration, unchanged flash/settings, and the final drift
-snapshot passed. See [results and measurement limits](DEBUGGER_BOARD_RESULTS.md).
+snapshot passed. These historical results do not qualify the LED-expanded
+R6 ten-pattern workload, whose separate owner-stopped closure is recorded above. See [current status](DBG1_CANDIDATE_STATUS.md) and
+[results and measurement limits](DEBUGGER_BOARD_RESULTS.md).
 Native mode remains outside scope.
 
 Use the [ASM examples](ASM_GUIDE.md#debugging-ram-programs-with-dbg1),

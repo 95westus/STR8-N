@@ -26,10 +26,12 @@ executable bytes plus its 24-byte stored-record header; RAM origin/entry is
 `$0200`, final executable address `$079E`. Its source and complete license
 must accompany the executable.
 
-DBG1 changes seven firmware sectors: B1:A/E/F and B3:A/B/E/F, with two
-wear-accounted C/D journal erases in its nine-transfer preserving install.
-It includes matching ASM/vector/monitor/core changes; adding only B1:A is
-insufficient. B1:9, B0/B2 and other data were preserved in both board trials.
+Current v1g DBG1 changes nine firmware sectors: B1:A/E/F, B2:8/D and
+B3:A/B/E/F, with two wear-accounted C/D journal erases in its eleven-transfer
+preserving install. B2:8/D carry the MAINT compatibility correction and its
+utility CRC. It includes matching ASM/vector/monitor/core changes; adding only
+B1:A is insufficient. B1:9, B0 and other preserved data matched their preimages
+in hardware requalification. See [current candidate status](DBG1_CANDIDATE_STATUS.md).
 No application RAM is reserved for the debugger. The published raw images
 listed here remain generation 49; use the separate experimental candidate
 procedure for DBG1, not a default-filled raw BIN over existing board data.

@@ -54,7 +54,7 @@ def main():
     banks[3][0x4000:0x6000]=b'\xff'*8192;banks[3][0x4000:0x4080]=r.record(cfg,list(range(100,132)),1000)
     original=list(map(bytes,banks));capture(out/'before',original)
     install=p.prepare(pkg,out/'before',out/'install','install');p.verify(pkg,out/'install')
-    passed('fresh repeated capture creates exact seven-sector install, nine transfers, preserved B0/B2/data/settings and counted erases')
+    passed('fresh repeated capture creates exact declared-sector install, preserves other sectors/data/settings and counts erases')
     target=[(out/'install'/f'expected-b{n}.bin').read_bytes() for n in range(4)]
     current=list(map(bytearray,target));seq,_,latest,_=r.latest(current)
     cfg=bytearray(r.preference(latest[8:24],0xB0,50));cfg[6]^=1;cfg[14:]=wire.config_sum(cfg)
@@ -202,7 +202,7 @@ def main():
             with patch.object(engine.time,'sleep',return_value=None):result=engine.execute(Endpoint(),folder)
             run(cpu,lambda:cpu.pc==symbols['MIG_HALT'])
             expected=[(folder/f'expected-b{n}.bin').read_bytes() for n in range(4)]
-            assert list(map(bytes,m.banks))==expected and result['transfers_completed']==9
+            assert list(map(bytes,m.banks))==expected and result['transfers_completed']==len(manifest['sectors'])+2
             assert [[e[1],e[2]>>12] for e in m.events if e[0]=='erase']==info['transaction']['planned_erase_order']
             if is816:assert cpu.mode==1 and cpu.b==0xA5
             passed(label+' actual packaged transport + RAM '+direction+' reaches exact targets',erase_attempts=sum(m.erases))

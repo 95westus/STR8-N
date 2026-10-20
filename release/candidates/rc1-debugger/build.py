@@ -17,6 +17,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 BASE = HERE.parent / 'rc1'
 ROOT = HERE.parents[2]
+BOOT_COMPATIBILITY = 0x44424731
 
 
 def replace(path, old, new):
@@ -47,6 +48,14 @@ def main():
     assert not stage.exists(), stage
     shutil.copytree(BASE,stage,ignore=shutil.ignore_patterns('__pycache__'))
     src = stage/'source'
+    # Keep MAINT's strict guard synchronized with this candidate's boot marker.
+    # Same-size immediate replacements preserve every utility entry/address.
+    legacy = json.loads((stage/'release.json').read_text())['boot_compatibility']
+    for index, (old, new) in enumerate(zip(legacy.to_bytes(4,'little'),
+                                         BOOT_COMPATIBILITY.to_bytes(4,'little'))):
+        replace(src/'xip/utilities.asm',
+                f'JSR X28_R{9+index}\n                        CMP #${old:02X}',
+                f'JSR X28_R{9+index}\n                        CMP #${new:02X}')
     # Monitor payload sizes/addresses are unchanged. Header code installs BRK
     # automatically and intercepts the existing HOLD entry for cleanup.
     replace(src/'core/monitor-b0.asm','START:                 JMP     V2_RESET',
@@ -98,7 +107,7 @@ DBG_NOT_BRK:
     meta=json.loads((stage/'release.json').read_text())
     meta['generation']=50
     meta['candidate_id']='rc1-debugger-v1'
-    meta['boot_compatibility']=0x44424731
+    meta['boot_compatibility']=BOOT_COMPATIBILITY
     meta['expected_changed']=list(meta['baseline_expected'])
     (stage/'release.json').write_text(json.dumps(meta,indent=2)+'\n')
     provenance={}
@@ -183,7 +192,8 @@ DBG_NOT_BRK:
         row['match']=row['expected']==row['actual']
     allowed={'assembler/asm-e000.bin','assembler/vectors-f000.bin',
              'str8n-v2-recovery-e000-efff.bin','str8n-v2-recovery-f000-ffff.bin',
-             'str8n-v2-recovery-slot-a0.bin','str8n-v2-recovery-slot-b0.bin'}
+             'str8n-v2-recovery-slot-a0.bin','str8n-v2-recovery-slot-b0.bin',
+             'xip/utilities.bin'}
     assert all(row['match'] or name in allowed for name,row in base_report['comparison'].items())
     (out/'build-report.json').write_text(json.dumps(base_report,indent=2)+'\n')
     print(f'PASS debugger candidate: {len(body)} / 4094 code bytes; application RAM intact',flush=True)

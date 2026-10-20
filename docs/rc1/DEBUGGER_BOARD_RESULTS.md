@@ -1,12 +1,141 @@
 # DBG1 board and offline test results
 
+## Current v1g status
+
+The current `v1g` image includes MAINT compatibility and BRK `$82/$84` fixes.
+Its firmware SHA-256 is
+`6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b`.
+Offline qualification and hardware requalification passed on 2604 and 2609
+in both MON A/B before and after rollback/reinstall. The
+[v1g hardware report](../../output/qualification/rc1-dbg1-v1g-hardware-requalification-2026-10-19-222241Z/report.json)
+records 144 registration scenarios, 168 focused `$82/$84` cases, 128 breakpoint
+hits and 88 device-verified transfers. Both full original application RAM images,
+flash contents and settings were verified at that completed hardware closeout.
+
+R3 closed cleanly after 3,387.5 seconds, with 42/41 cycles and 672/656
+breakpoint hits on 2604/2609; original RAM, flash/settings and final drift passed.
+R4 also closed cleanly: 156/154 cycles and 2,496/2,464 hits on 2604/2609,
+with one periodic checkpoint and final restoration/drift passed. The current
+ten-pattern LED R6 continuation passed 93 new offline checks, 16 CPU-model
+onboard assemblies, four full 630-frame LED executions and both-board hardware
+preflight. Hardware preflight covered all four LED seeds plus a complete cycle
+per board: five LED executions, 3,150 frames and 50 completed patterns per board,
+entry-LED restoration and unchanged CRA/DDRA. Both original full RAM images,
+all flash/settings, preserving drift and post-drift RAM rereads passed before
+launch. R5 closed separately with 7/6 cycles, 3,640/3,120 LED frames and 112/96
+hits on 2604/2609; its original-phase checkpoint and final restoration/drift
+passed. R6 then closed cleanly at owner STOP after **12,803.703 seconds of
+monitored/active workload**, plus 216.041609 seconds of final safe closure
+(13,019.862814 seconds total worker wall time). 2604 passed **61 cycles,
+38,430 LED frames, 610 patterns and 976 breakpoint hits**; 2609 passed
+**60 cycles, 37,800 frames, 600 patterns and 960 hits**. There were zero R6
+periodic checkpoints, no actual workload failures and no snapshot retry.
+Both original full 25,344-byte RAM images were restored and reread after final
+drift, with all flash/settings unchanged. Actual worker exit was verified.
+Final offsets were **+1.221858 s** (2604, interval +0.797302 to +1.646414 s)
+and **+0.660544 s** (2609, +0.281434 to +1.039653 s). Baseline/recovery anchors,
+rate intervals and source hashes remain in [current status and exact evidence](DBG1_CANDIDATE_STATUS.md).
+Immutable distribution r7 packages the reviewed closeout and checksums.
+Promotion remains held; the passing snapshot is preserving drift collection,
+not full RTC-endurance acceptance.
+
+## Historical v1e and v1f scope
+
+The original installation and eight-hour soak evidence below belongs to
+`v1e` firmware (`e3c7ae6247f23e579a2ffc31ea72986eb62611d22fc862da321371139ae6727a`).
+Subsequent app regression found that MAINT rejected its DBG1 boot marker.
+The corrected `v1f` firmware is
+`923c8fee01310b873e89cc5e8982778e25fd425ccb9050735fb07604ef6228ba`.
+Its offline suites and fresh hardware requalification passed in
+`output/qualification/rc1-dbg1-maint-requalification-2026-10-19-1718Z`.
+Both boards passed the corrected-image checks and rollback/reinstall.
+The owner stopped that v1f six-hour run after 2 h 33 min 11.859 s; restoration
+and final drift passed, but the planned six hours were not completed.
+The original eight-hour receipts belong to `v1e` and do not qualify v1f or v1g.
+
 The local **rc1 DBG1 generation-50 candidate** passed the bounded tests below
-on October 18–19, 2026 (America/Chicago; receipt timestamps are UTC).
+on October 18-19, 2026 (America/Chicago; receipt timestamps are UTC).
 The published generation-49 rc1 tag, ZIP and source tree remain unchanged.
 This is debugger installation/smoke and bounded soak evidence for **65C02 and 65C816 E=1**;
 native applications and native debugging are outside scope.
 
-## Hardware results
+## MAINT correction and requalification
+
+The candidate builder now generates MAINT's four compatibility comparisons from
+the same constant as the boot image. Strict rejection of mismatched markers is
+retained. Only four comparison bytes in B2:8000 and the utility CRC in B2:D000
+change from `v1e`; debugger size and application RAM capacity are unchanged.
+
+Full offline suites passed on 65C02 (22 groups) and 65C816 E=1 (25 groups),
+including both monitor boots, matching MAINT markers, refusal of each mismatched
+marker byte and the legacy marker, and exact packaged debugger smoke. Actual
+standalone install/rollback instructions were rehearsed on both CPU models;
+stale source and corrupted transfers were refused before mutation. Registration
+cases and documented ASM examples also passed on both models.
+
+| Board | Runtime | MON A / MON B | Registration cases | Breakpoint hits | Final preference |
+| --- | --- | --- | --- | --- | --- |
+| 2604 | 65C02 | Pass / Pass | 36 | 64 | B |
+| 2609 | 65C816 E=1 | Pass / Pass | 36 | 64 | A |
+
+Each slot passed MAINT, ASM, UCHESS, SRAM, WORK, EDU and CLOCK checks both before
+and after corrected-package rollback/reinstall. All 72 system/user registration
+cases passed. BRK entry, shared D/M/U, C/S/N, all eight persistent breakpoints,
+ninth refusal, clear and X/HOLD cleanup passed, with **128 breakpoint hits**
+across initial and final checks. E=1 was observed before and after each 2609
+slot's workload and during final cleanup.
+
+Each board completed an old-candidate rollback (nine transfers), followed by
+corrected-candidate install, rollback and reinstall (eleven transfers each).
+All **84 transfers** were device-verified. Fresh repeated flash/RAM backups
+preceded the transactions; all four flash banks matched each transaction target
+after reset. Final cleanup verified all 25,344 original application RAM bytes,
+original preferences/configuration, and preserved RTC control, trim, oscillator
+and backup settings. Wear accounting advanced for the flash transactions;
+preferences used journal appends during slot switching.
+
+The final 2609 reset watch initially expired while physical action was pending;
+it wrote neither firmware nor RAM. After the owner reported pressing RESET,
+fresh B3 and identity checks were observed and final verification completed.
+This operator-action wait is separate from the passing firmware/app results.
+
+The run's `report.json`, per-board receipts and `evidence-checksums.json` contain
+the detailed evidence. The prior candidate's failure and soak/drift records are
+retained. The published rc1 release and prior candidate ZIP were not rewritten.
+
+## Offline release review
+
+This section records the historical v1f review. Both findings below were
+subsequently corrected and requalified in v1g; see [current status](DBG1_CANDIDATE_STATUS.md).
+
+The MAINT correction retains all four marker comparisons; the expected bytes
+come from the same constant as the boot image. It changes exactly the four
+comparison operands and utility CRC. It does not bypass the guard or change
+debugger code, private entry addresses or application RAM capacity.
+
+The existing registration evidence covers callback arguments/results, user
+removal and missing valid IDs, sixteen user slots and seventeenth refusal,
+four system slots and fifth refusal, independent capacity, duplicate and
+protected IDs, invalid request/handler ranges, flags, nested BRK refusal and
+HOLD cleanup. Hardware ran 18 scenarios in each slot on each board: 72
+scenario executions. Each CPU model ran the same 36 slot/scenario combinations.
+
+An additional boundary review ran 44 checks per CPU, across both slots. It
+reproduced two issues: invalid `$00` removal can report success against an empty
+user slot, and valid `$84` text ending at the application RAM limit prints but
+returns an error and changes A/P. Twenty check executions reproduce these two
+issues; the other 68 of the 88 checks pass. This includes valid/missing user
+IDs, system ID/request boundaries, refusal during an active session and text
+ranges that cross the RAM limit. The original passing suites did not cover
+these exact edges. See the [debugger guide](DEBUGGER_GUIDE.md#candidate-review-status)
+for the current correction and qualification status.
+
+The v1f staging snapshot recorded these findings and then-pending six-hour
+soak/drift qualification. It was not approved for promotion. Review and staging
+use local file copies only; neither board nor the running soak's pinned inputs
+are changed. Native applications/debugging remain excluded.
+
+## Original candidate hardware results
 
 | Board | CPU/runtime | MON A | MON B | Verified breakpoint hits | Restored preference |
 | --- | --- | --- | --- | --- | --- |
@@ -43,16 +172,18 @@ Final repeated captures reverified all seven firmware sectors, preserved
 other flash data/settings, and accounted for exactly nine erases per board.
 Application RAM capacity and ASM buffers were unchanged. RTC controls, trim,
 oscillator-start and backup-enable state were preserved; no clock/trim setter
-was issued. Soaks and periodic RTC sampling remain stopped.
+was issued. At that initial checkpoint, soaks and periodic RTC sampling were stopped.
 
-Rollback plans were derived from each final fresh capture and verified
-offline. They were not executed on hardware. If the board changes, capture
+At this initial checkpoint, rollback plans were derived from each final fresh
+capture and verified offline; they had not yet been executed on hardware.
+Later hardware closeout and MAINT-fix requalification exercise rollback and
+reinstall separately. If the board changes, capture
 again and rederive a plan; old C/D journal images must not reset wear history.
 
 ## Eight-hour rc1/ASM/DBG1 soak and final RTC snapshot
 
 The owner-authorized soak ran October 18, 22:52:18 through October 19,
-06:52:42 CDT (03:52:18–11:52:42 UTC), **8h 00m 23.703s**, with no failures.
+06:52:42 CDT (03:52:18-11:52:42 UTC), **8h 00m 23.703s**, with no failures.
 The common eight-hour deadline allowed the current safe unit to finish.
 One worker alternated the boards; the soak used the preferred slot shown
 below. The earlier smoke separately established both-slot coverage.
@@ -68,7 +199,8 @@ shared D/M/U, C/S/N, all eight persistent breakpoints twice, ninth refusal,
 individual/all clear, X/HOLD cleanup, and BRK 80 query. E=1 and the supported
 ABI state were observed before and after each 2609 cycle. Native applications
 and native debugging were excluded; the startup CPU detector was unchanged.
-Callback registrations remain offline-tested, not hardware-qualified.
+At this historical v1e checkpoint, callback registrations were offline-tested,
+not hardware-qualified. The later v1g hardware qualification is recorded above.
 
 Fresh repeated full-flash and application-RAM backups preceded the soak.
 Seven hourly four-bank flash comparisons per board and final four-bank

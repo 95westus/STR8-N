@@ -55,7 +55,9 @@ the machine.
 
 ## DBG1 RAM debugging and workspace
 
-DBG1 uses B1:`$A000-$AFFF` (3,967 code bytes plus two CRC bytes, 127 free).
+Current v1g DBG1 uses B1:`$A000-$AFFF` (3,975 code bytes plus two CRC bytes,
+119 free). See [current candidate status](DBG1_CANDIDATE_STATUS.md) for
+hardware qualification and the ongoing owner-controlled soak.
 B1:`$9000-$9FFF` is unchanged. Matching MON A/B header code automatically
 installs the BRK pointer and HOLD cleanup; matching ASM accepts the explicit
 signature byte. A complete coherent generation-50 set is required. The

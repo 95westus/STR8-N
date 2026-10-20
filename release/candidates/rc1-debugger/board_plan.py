@@ -78,8 +78,15 @@ def derive(pkg,manifest,banks,direction,original=None):
         desired[bank][off:off+4096]=target
     target_cfg=r.preference(cfg,page,50 if direction=='install' else 49)
     tx,data,expected=r.transaction(banks,list(map(bytes,desired)),target_cfg,'DBG1 experimental '+direction)
-    require(len(tx['operations'])==10,'Expected reservation + staging + seven firmware sectors + activation')
-    require(expected[0]==banks[0] and expected[2]==banks[2],'B0/B2 changed')
+    require(len(tx['operations'])==len(manifest['sectors'])+3,
+            'Expected reservation + staging + declared firmware sectors + activation')
+    require(expected[0]==banks[0],'B0 changed')
+    declared={(s['bank'],s['address']) for s in manifest['sectors']}
+    for bank in range(1,4):
+        for offset in range(0,32768,4096):
+            if (bank,offset+0x8000) in declared or (bank==3 and offset in (0x4000,0x5000)):continue
+            require(expected[bank][offset:offset+4096]==banks[bank][offset:offset+4096],
+                    'Undeclared flash sector changed')
     allowed={(s['bank'],s['address']) for s in manifest['sectors']}|{(3,0xC000),(3,0xD000)}
     require(all((op['bank'],op['address']&0xF000) in allowed for op in tx['operations']),'Unexpected flash destination')
     return tx,data,expected
