@@ -39,8 +39,8 @@ cycles and 976/960 breakpoint hits on 2604/2609. Both original full application
 RAM images were restored/reread after final drift; flash/settings matched and
 the worker exited. Its 630-frame ten-pattern programs restored entry LED state
 before BRK without CRA/DDRA writes. No workload or RTC sampler was restarted.
-Immutable distribution r7 packages the reviewed closeout. Promotion remains
-held; see [current candidate status](DBG1_CANDIDATE_STATUS.md).
+Immutable distribution r7 retains its historical held-state closeout. The owner
+has approved scoped RC1 promotion in distribution r8; see [current candidate status](DBG1_CANDIDATE_STATUS.md).
 Native applications/debugging remain outside scope. See [operator details](DEBUGGER_GUIDE.md), [ASM examples](ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
 [registration ABI](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations) and
 [board results](DEBUGGER_BOARD_RESULTS.md). These documentation examples do not
@@ -99,3 +99,15 @@ unexpected setting change, preserve the evidence and mark continuity broken;
 an earlier good sample cannot establish current clock health. Obtain a separate
 decision before restoring time or starting a new measurement segment. Native 816 applications/testing, ACIA and
 crypto remain deferred; startup CPU detection retains its accepted exception.
+
+## Owner-approved distribution r8
+
+The owner authorized staging, archive/checksum verification, the related Git
+commit and scoped RC1 promotion. The new package includes the separate R-register
+qualification: 5,752 physical parser checks, 220 resume cases and 132 expected
+unsafe-PC refusals across both boards and both monitor slots, with original RAM
+restored and flash/settings unchanged. Supported runtimes are 65C02 and 65C816
+E=1; native applications/debugging are excluded. **RTC drift is not part of
+release qualification and is not a promotion gate.** Historical RTC records and
+prior held archives retain their original scope and bytes. See the
+[release policy](../../release/candidates/rc1-debugger-brkfix-r1/release-policy.json) for the owner decision.

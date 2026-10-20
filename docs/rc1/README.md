@@ -45,7 +45,7 @@ SXB2 recognition/planning remains available offline. Both CPUs use the same targ
 ## Limits and release status
 
 These manuals accompany the scoped rc1 release candidate. The owner accepted
-recorded stopped soaks; full endurance and RTC qualification remain deferred.
+recorded stopped soaks. RTC drift is outside release qualification.
 Linux extracted scripts are tested on Linux; a Linux physical serial migration
 has not been performed. An earlier WDC trial lost RTC continuity; the corrected
 empty-bank trial retained a running valid RTC, but the earlier cause and broad
@@ -89,8 +89,17 @@ and 976/960 breakpoint hits; both original full RAM images, flash/settings and
 final preserving drift were verified, and actual worker exit was confirmed.
 R6 had zero periodic checkpoints and one final checkpoint. Immutable
 distribution r7 packages the reviewed closeout and checksums for the authorized
-selective commit; full/extracted verification passed. Promotion remains held. See [current candidate status](DBG1_CANDIDATE_STATUS.md).
+selective commit; full/extracted verification passed. The owner has approved scoped RC1 promotion. See [current candidate status](DBG1_CANDIDATE_STATUS.md).
 
+
+A later separate saved-register qualification passed PC/A/X/Y/P/SP on both
+boards and both monitor slots: 5,752 parser checks, 220 actual resumes and 132
+unsafe-PC refusals, with original RAM restored and verified, and unchanged flash/settings.
+See [register editing](DEBUGGER_GUIDE.md#editing-saved-registers) and
+[the separate board results](DEBUGGER_BOARD_RESULTS.md#saved-register-edit-qualification).
+R6 retains bare-R query-only scope and immutable r7 predates these tests.
+RTC drift is outside release qualification; native applications/debugging remain
+excluded and the owner has approved scoped RC1 promotion.
 
 ## Package revision 2: power-fail timezone label
 
@@ -101,3 +110,15 @@ Only banner text, its data references and the sector checksum changed. Clock/tri
 handling, apps and migration/recovery algorithms are unchanged. The corrected
 revision was verified offline and subsequently installed/device-verified on
 both boards. DBG1 retains that correction.
+
+## Owner-approved distribution r8
+
+The owner authorized staging, archive/checksum verification, the related Git
+commit and scoped RC1 promotion. The new package includes the separate R-register
+qualification: 5,752 physical parser checks, 220 resume cases and 132 expected
+unsafe-PC refusals across both boards and both monitor slots, with original RAM
+restored and flash/settings unchanged. Supported runtimes are 65C02 and 65C816
+E=1; native applications/debugging are excluded. **RTC drift is not part of
+release qualification and is not a promotion gate.** Historical RTC records and
+prior held archives retain their original scope and bytes. See the
+[release policy](../../release/candidates/rc1-debugger-brkfix-r1/release-policy.json) for the owner decision.

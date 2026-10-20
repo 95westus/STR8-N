@@ -28,8 +28,8 @@ after final drift; all flash/settings matched and actual worker exit was verifie
 Every cycle included 630 LED frames across ten patterns, entry-LED restoration
 before BRK without CRA/DDRA writes and the existing debugger tests. The run
 reached only final drift, with zero periodic checkpoints before owner stop.
-Immutable distribution r7 packages the reviewed closeout. Promotion remains
-held. See [current status and exact evidence](DBG1_CANDIDATE_STATUS.md)
+Immutable distribution r7 retains its historical held-state closeout. The owner
+has approved scoped RC1 promotion in distribution r8. See [current status and exact evidence](DBG1_CANDIDATE_STATUS.md)
 and [board results](DEBUGGER_BOARD_RESULTS.md). Native applications/debugging
 remain excluded; earlier run scopes do not substitute for R6 acceptance.
 
@@ -88,6 +88,28 @@ stops immediately after that service returns. `S` refuses a transfer out of
 application RAM; `N` can run a firmware call to its return. Neither is a timer
 or a cycle-accurate execution mode.
 
+## Editing saved registers
+
+The supported fields are PC/A/X/Y/P/SP. Names and hex digits are case-insensitive,
+`=` is optional (`R A 12`), and surrounding spaces are allowed. Use one to four
+hexadecimal digits without `$` or `0x`. PC is a word; A/X/Y/P/SP must fit in a
+byte, including with leading zeroes (`R A=00AB`). One edit is allowed per
+command. Malformed/trailing input, multiple edits and byte overflow refuse
+with `?` without changing the saved registers.
+
+PC execution bounds are checked by C/S/N, not while storing the edited word.
+P is saved unmasked; RTI canonicalizes bits 4/5 and does not change the 816 E
+mode. Keep IRQ masked. SP edits retain the requirement for nine free stack
+bytes on entry. The hidden 816 B byte is preserved and has no edit field.
+
+Separate both-board/both-slot qualification passed 5,752 parser checks, 220
+actual resumes and 132 unsafe-PC refusals, including 48 edited-register
+S/N-then-C executions. Hardware resumes used IRQ-masked P and stack-safe SP
+subsets; exhaustive P/SP values were modeled. See [board results](DEBUGGER_BOARD_RESULTS.md#saved-register-edit-qualification)
+and [current evidence](DBG1_CANDIDATE_STATUS.md#saved-register-edit-qualification).
+R6 tested bare R queries; this later coverage is separate. Native mode remains
+excluded, RTC drift is outside release qualification and the owner has approved scoped RC1 promotion.
+
 ## All eight persistent breakpoints
 
 Choose instruction boundaries in the loaded RAM program. `B address` uses one
@@ -144,3 +166,15 @@ Native mode remains outside scope.
 Use the [ASM examples](ASM_GUIDE.md#debugging-ram-programs-with-dbg1),
 [BRK ABI and registrations](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
 and [hardware/offline results](DEBUGGER_BOARD_RESULTS.md) for the next step.
+
+## Owner-approved distribution r8
+
+The owner authorized staging, archive/checksum verification, the related Git
+commit and scoped RC1 promotion. The new package includes the separate R-register
+qualification: 5,752 physical parser checks, 220 resume cases and 132 expected
+unsafe-PC refusals across both boards and both monitor slots, with original RAM
+restored and flash/settings unchanged. Supported runtimes are 65C02 and 65C816
+E=1; native applications/debugging are excluded. **RTC drift is not part of
+release qualification and is not a promotion gate.** Historical RTC records and
+prior held archives retain their original scope and bytes. See the
+[release policy](../../release/candidates/rc1-debugger-brkfix-r1/release-policy.json) for the owner decision.

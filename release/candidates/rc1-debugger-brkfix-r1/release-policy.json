@@ -1,0 +1,18 @@
+{
+  "owner_authorized": true,
+  "owner_request": "go ahead and stage the new rc1 v1g package, verify the archive and checksums, and commit the tests and docs. promote, native mode excluded, and drift out of release qualification.",
+  "candidate_build": "v1g-BRK82-84-edge-fix",
+  "distribution_revision": 8,
+  "promotion_authorized": true,
+  "release_qualification_scope": ["65C02", "65C816 E=1"],
+  "native_applications": false,
+  "native_debugging": false,
+  "RTC_drift_in_release_qualification": false,
+  "RTC_drift_is_promotion_gate": false,
+  "historical_RTC_records": "preserved as historical integrity evidence; not release-acceptance criteria",
+  "firmware_sha256": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+  "tested_kit_manifest_sha256": "42ea635525957a3a8199ab627410915f0ced93eb893990dc70802e1142541caf",
+  "register_qualification_report_sha256": "fccf71436d7711e47ac852a6b2edcc02af0908dcc188b3908b3b742a9f69676d",
+  "new_board_access": false,
+  "firmware_rebuild_or_install": false
+}

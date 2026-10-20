@@ -1,6 +1,6 @@
 # DBG1 v1g current candidate status
 
-Status reconciled on October 20, 2026 (America/Chicago). **Promotion is held.**
+Status reconciled on October 20, 2026 (America/Chicago). **The owner has approved scoped RC1 promotion in distribution r8.**
 Scope is RAM debugging on **65C02 and 65C816 E=1**; native applications and
 native debugging remain excluded. Published generation-49 rc1 is unchanged.
 
@@ -27,6 +27,36 @@ The frozen install kit's preparation-time qualification flags and older
 distribution snapshots retain their original values. Current acceptance is
 bound to the later receipts; frozen inputs are not edited to change their flags.
 
+## Saved-register edit qualification
+
+A later, separate qualification passed all six supported R edit fields
+PC/A/X/Y/P/SP on 2604 and 2609 in both MON A and MON B. Its
+[aggregate report](../../output/qualification/rc1-v1g-register-edits-qualification-r1-2026-10-20-225008Z/report.json)
+has SHA-256 `fccf71436d7711e47ac852a6b2edcc02af0908dcc188b3908b3b742a9f69676d`.
+
+| Board | CPU | Parser checks | Actual resumes, including S/N then C | Unsafe-PC refusals |
+| --- | --- | ---: | ---: | ---: |
+| 2604 | 65C02 | 2,876 | 110 | 66 |
+| 2609 | 65C816 E=1 | 2,876 | 110 | 66 |
+| Total | | 5,752 | 220 | 132 |
+
+Each slot passed 1,438 parser checks, 55 resumes and 33 unsafe-PC refusals;
+the resume totals include **48 edited-register S/N-then-C executions**. Parser
+checks covered every byte value, accepted forms and atomic malformed/overflow
+refusals. Hardware resumes used IRQ-masked P and stack-safe SP subsets;
+exhaustive P/SP resume values were tested in CPU models. See
+[syntax and limits](DEBUGGER_GUIDE.md#editing-saved-registers).
+
+Fresh repeated full-RAM/all-four-bank backups preceded testing. Both original
+25,344-byte RAM images were restored and fully reread twice; flash/settings,
+C/P/W observations and RTC controls/trims matched. Original MON B on 2604 and
+MON A on 2609 were restored without reset or preference writes. All 2609 probes
+remained E=1 with DBR/PBR/direct page zero. Both workers exited; there were
+**zero actual test failures**. No drift snapshot or RTC accuracy qualification
+was performed. RTC drift is outside release qualification, native applications/debugging remain
+excluded and the owner has approved scoped RC1 promotion. R6 retains its bare-R query-only scope;
+immutable distribution r7 predates these new tests and remains unchanged.
+
 ## Ten-pattern LED continuation r6: owner-stopped and verified
 
 The owner-authorized run is
@@ -35,7 +65,7 @@ Its offline admission, fresh backups and expanded hardware preflight passed on
 both boards. The owner requested cooperative STOP at **22:12:41 UTC on
 October 20**; the workload closed cleanly. The
 [current soak pointer](../../output/qualification/rc1-asm-dbg1-soak-current.json)
-selects this exact stopped R6 run. Promotion stays held; firmware and installer bytes
+selects this exact stopped R6 run. The owner has approved scoped RC1 promotion; firmware and installer bytes
 are unchanged.
 
 | Identity | Recorded R6 value |
@@ -162,9 +192,10 @@ before BRK and HOLD cleanup were checked. Only LED data `$7FA0` is additionally
 writable; the application does not write CRA or DDRA. MON B remains selected
 on 2604 and MON A on 2609, with 2609 E=1 before and after each unit.
 
-The debugger's implemented command names are covered by C/S/N, shared D/M/U,
-B/BC/X smoke and added help, bare R register queries and F function inspection.
-This does not claim arbitrary register-edit parser forms. See the
+R6's command-name coverage comprised C/S/N, shared D/M/U, B/BC/X smoke and
+added help, bare R register queries and F function inspection. That soak did
+not exercise R register-edit forms; the later separate qualification above
+does not change its historical scope. See the
 [exact workload contract](../../output/qualification/rc1-v2-base-utils-led10-asm-dbg1-v1g-continuing-soak-r6-2026-10-20-180714Z/workload-scope.json).
 Utility operations exclude persistent command forms, CLOCK BATTERY and its
 policy-record path, SRAM reclaim/format, WORK resize/upgrade/repair, EDU mode
@@ -234,7 +265,7 @@ preserve that transition. The [R5 safe-stop report](../../output/qualification/r
 and [R5 final drift](../../output/qualification/rtc-campaign-snapshot-2026-10-20-182504Z/summary.json)
 record its separate outcome. No prior run is substituted for R6 qualification.
 
-## Package closeout and promotion hold
+## Package closeout and owner-approved promotion
 
 The immutable [distribution r7 archive](../../output/release/staging/str8n-v2.0rc1-dbg1-v1g-candidate-r7-staged.zip)
 and adjacent [archive checksum](../../output/release/staging/str8n-v2.0rc1-dbg1-v1g-candidate-r7-staged.zip.sha256)
@@ -256,5 +287,27 @@ This package is prepared for the authorized selective Git commit. Firmware,
 installer bytes, tested manuals, immutable RTC anchors and frozen evidence are
 preserved. Private board RAM/flash captures, serial logs, secrets and transient
 output are excluded from the release and commit. Prior r5 and earlier archives
-retain their historical scope. Promotion requires a separate owner decision
-and remains held; no publication or firmware change is implied by packaging.
+retain their historical scope. The owner has now authorized distribution r8 promotion with native mode excluded and RTC drift outside release qualification. The earlier r7 archive remains unchanged.
+
+## Owner-approved distribution r8
+
+The owner authorized staging, archive/checksum verification, the related Git
+commit and scoped RC1 promotion. The new package includes the separate R-register
+qualification: 5,752 physical parser checks, 220 resume cases and 132 expected
+unsafe-PC refusals across both boards and both monitor slots, with original RAM
+restored and flash/settings unchanged. Supported runtimes are 65C02 and 65C816
+E=1; native applications/debugging are excluded. **RTC drift is not part of
+release qualification and is not a promotion gate.** Historical RTC records and
+prior held archives retain their original scope and bytes. See the
+[release policy](../../release/candidates/rc1-debugger-brkfix-r1/release-policy.json) for the owner decision.
+
+## Verified distribution r8
+
+The [new archive](../../output/release/staging/str8n-v2.0rc1-dbg1-v1g-r8.zip)
+and [SHA-256 sidecar](../../output/release/staging/str8n-v2.0rc1-dbg1-v1g-r8.zip.sha256)
+passed full and extracted verification: 249 files, 179 package documentation
+links and 24 verifier/scope/tamper checks. Firmware and installer bytes are
+unchanged. The [distribution record](../../release/candidates/rc1-debugger-brkfix-r1/distribution-r8.json)
+binds the archive and manifest hashes to the owner-approved scope. Native mode
+is excluded; RTC drift is outside release qualification. Historical r7 and
+earlier archives remain unchanged.

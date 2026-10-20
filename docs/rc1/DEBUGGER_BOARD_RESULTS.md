@@ -36,8 +36,33 @@ Final offsets were **+1.221858 s** (2604, interval +0.797302 to +1.646414 s)
 and **+0.660544 s** (2609, +0.281434 to +1.039653 s). Baseline/recovery anchors,
 rate intervals and source hashes remain in [current status and exact evidence](DBG1_CANDIDATE_STATUS.md).
 Immutable distribution r7 packages the reviewed closeout and checksums.
-Promotion remains held; the passing snapshot is preserving drift collection,
+The owner has approved scoped RC1 promotion; the passing snapshot is preserving drift collection,
 not full RTC-endurance acceptance.
+
+## Saved-register edit qualification
+
+A separate later qualification passed PC/A/X/Y/P/SP in MON A and MON B on both
+boards, using unchanged v1g firmware. The
+[aggregate report](../../output/qualification/rc1-v1g-register-edits-qualification-r1-2026-10-20-225008Z/report.json)
+binds the per-board receipts and independent preservation audit.
+
+| Board | CPU | Parser checks | Actual resumes, including S/N then C | Unsafe-PC refusals |
+| --- | --- | ---: | ---: | ---: |
+| 2604 | 65C02 | 2,876 | 110 | 66 |
+| 2609 | 65C816 E=1 | 2,876 | 110 | 66 |
+| Total | | 5,752 | 220 | 132 |
+
+Each slot passed 1,438 parser checks, 55 resumes and 33 unsafe-PC refusals;
+the resume count includes 48 edited-register S/N-then-C executions combined.
+All byte values were parsed; hardware resumes kept IRQ masked and used
+stack-safe SP values, with exhaustive P/SP resumes modeled separately.
+Fresh repeated backups, both full 25,344-byte RAM restorations and two complete
+RAM rereads per board passed. All four flash banks, settings, C/P/W and RTC
+controls/trims matched; original MON B/2604 and MON A/2609 were restored.
+2609 remained E=1 with DBR/PBR/direct page zero. Both workers exited with zero
+actual test failures. RTC drift is outside release qualification; native mode
+is excluded and the owner has approved scoped RC1 promotion. R6 retains query-only R coverage and immutable
+r7 predates these tests. See [syntax and limits](DEBUGGER_GUIDE.md#editing-saved-registers).
 
 ## Historical v1e and v1f scope
 
@@ -287,3 +312,15 @@ are not part of the public manuals or published rc1 ZIP.
 Candidate source/build and exact experimental install/rollback procedure:
 [DBG1 candidate](../../release/candidates/rc1-debugger/README.md) and
 [board-test procedure](../../release/candidates/rc1-debugger/BOARD_TEST.md).
+
+## Owner-approved distribution r8
+
+The owner authorized staging, archive/checksum verification, the related Git
+commit and scoped RC1 promotion. The new package includes the separate R-register
+qualification: 5,752 physical parser checks, 220 resume cases and 132 expected
+unsafe-PC refusals across both boards and both monitor slots, with original RAM
+restored and flash/settings unchanged. Supported runtimes are 65C02 and 65C816
+E=1; native applications/debugging are excluded. **RTC drift is not part of
+release qualification and is not a promotion gate.** Historical RTC records and
+prior held archives retain their original scope and bytes. See the
+[release policy](../../release/candidates/rc1-debugger-brkfix-r1/release-policy.json) for the owner decision.
