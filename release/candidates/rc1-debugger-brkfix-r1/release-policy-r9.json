@@ -1,0 +1,25 @@
+{
+  "owner_authorized": true,
+  "owner_request": "fix and qualify the uniform upgrade path on 2604 and 2609, then publish a corrected package. no manual rollback through generation 49. native mode stays excluded and drift stays out of release qualification.",
+  "owner_source_clarification": "i nned the installer to support WDCMONV2 to str8n, and beta4 to r8",
+  "distribution_revision": 9,
+  "promotion_authorized": true,
+  "firmware_sha256": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+  "qualified_uniform_manifest_sha256": "0319c440e605d842a7ce0d658461a399dcb19657e2967ebf388e7a1189d2ac1e",
+  "uniform_qualification_report_sha256": "b249f4babc3644a4869f3e7e9e577552bdf3f461521054dc031ac69e1214f20f",
+  "release_qualification_scope": [
+    "65C02",
+    "65C816 E=1"
+  ],
+  "native_applications": false,
+  "native_debugging": false,
+  "RTC_drift_in_release_qualification": false,
+  "RTC_drift_is_promotion_gate": false,
+  "RTC_issue_deferred": true,
+  "component_BINs_exact_tested_image_slices": true,
+  "physical_component_uninstall_qualified": false,
+  "standalone_F_only_Jn_launcher_qualified": false,
+  "component_models_MON_A_only": true,
+  "new_hardware_operations_after_safe_upgrade_closeout": false,
+  "private_backups_serial_logs_exported": false
+}

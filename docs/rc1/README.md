@@ -1,15 +1,21 @@
 # STR8-N 2.0rc1 candidate manuals
 
-Target: **2.0rc1 generation 49, CLOCK 1.11, ASM 0.5, FT245/F30D**.
-The published release remains generation 49. These manuals also cover the
-**local DBG1 generation-50 extension**, now tested on 2604/2609 in both monitor
-slots. Debugger sections require the matching DBG1 firmware and assembler;
-neither the `2.0rc1` nor `ASM 0.5` title alone distinguishes it.
+Current target: **rc1 v1g r9, DBG1 generation 50, CLOCK 1.11, ASM 0.5**.
+The firmware is unchanged from r8. R9 supplies the corrected uniform upgrade
+entry, qualified directly from WDCMONV2 and beta4 on 2604/2609 in both monitor
+slots, with exact-current no-write verification. Use the
+[uniform upgrade guide](UNIFORM_UPGRADE.md) and [current release scope](V1G_RELEASE_STATUS.md).
+Earlier migration commands below are retained generation-49/bf1 reference;
+they are not the current default installer. Debugger sections require the
+matching DBG1 firmware and assembler; neither title alone identifies it.
 One firmware set serves 65C02 and 65C816 emulation runtime. The accepted startup
 CPU detector briefly enters native mode; applications run with E=1. Native 816
 applications/tests, ACIA and crypto remain deferred.
 
 - [Installed-board quick start: name, time, offset and first programs](QUICK_START.md)
+- [Current uniform installation and recovery](UNIFORM_UPGRADE.md)
+- [BIN choices and programmer offsets](RELEASE_PATHS.md)
+- [Optional applications, shared sectors and flash reclaim limits](FLASH_RECLAIM.md)
 - [Migration overview](QUICK_START_MIGRATION.md)
 - [Windows migration commands](QUICK_START_WINDOWS.md)
 - [Linux migration commands](QUICK_START_LINUX.md)
@@ -27,7 +33,7 @@ applications/tests, ACIA and crypto remain deferred.
 - [Firmware contents and programmer mapping](FIRMWARE_CONTENTS.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
 
-## Inherited bf1 hardware scope
+## Historical bf1 hardware scope
 
 The empty-bank full-system RAM tools were exercised on physical 2609 (original
 65C816 WDCMONV2 in B3) and 2604 (published beta4 in B3). B0/B1/B2 were erased
@@ -65,7 +71,7 @@ beta4 image is distributed. Retain the exact kit and all private recovery files.
 
 ## rc1 qualification
 
-Published firmware identity is 2.0rc1, generation 49. Source-build and offline
+The historical rc1 firmware identity was 2.0rc1, generation 49. Source-build and offline
 qualification retain prior bf1 transport/shared-CPU evidence. Subsequent rc1
 board installation and the package-revision-2 UTC correction passed on both
 boards; see the [UTC hardware update](../STR8N_RC1_UTC_BOARD_UPDATE_2026-10-18.md).

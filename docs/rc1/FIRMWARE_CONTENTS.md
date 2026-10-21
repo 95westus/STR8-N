@@ -3,16 +3,18 @@
 One STR8-N-only firmware set serves 65C02 and 65C816 emulation-mode runtime.
 It excludes B0 and WDCMONV2 binaries. Native applications, ACIA and crypto
 remain deferred; startup CPU detection retains its accepted exception.
-Published generation 49 has no DBG1 debugger. The matching local generation-50
-extension adds the row marked below; see [DBG1](DEBUGGER_GUIDE.md) and its
+Current v1g distribution r9 is generation50, with DBG1 and the corrected
+uniform upgrader. See [image choices](RELEASE_PATHS.md) for exact BINs and the
+[flash reclaim guide](FLASH_RECLAIM.md) for component/erase dependencies.
+See [DBG1](DEBUGGER_GUIDE.md) and its
 [board results](DEBUGGER_BOARD_RESULTS.md).
 
 | Application or facility | Image location / access |
 | --- | --- |
 | UCHESS / Microchess | B1:`$8000`, stored record; `T 1`, `R 1 UCHESS` |
-| DBG1 RAM debugger (generation 50 only) | B1:`$A000-$AFFF`; automatic RAM BRK entry, both MON A/B |
+| DEBUG — DBG1 RAM debugger (generation 50 only) | B1:A, `$A000-$AFFF`; automatic RAM BRK entry, both MON A/B |
 | CLOCK 1.11 | B1:`$B000–$DFFF`; `R CLOCK` |
-| ASM 0.5 | B1:`$E000` plus matching vectors; `ASM` |
+| ASM 0.5 | B1:`$E000–$FFFF`, two sectors including shared DBG1 decode tables and vectors; `ASM` |
 | MAINT, SRAM, WORK, EDU | B2 utilities/provider area; named utility commands |
 | Boot status, battery, local display, version | B2 provider regions |
 | RTC and journal services | B3:`$8000–$9FFF`, with protected mutable holes |
@@ -26,15 +28,16 @@ executable bytes plus its 24-byte stored-record header; RAM origin/entry is
 `$0200`, final executable address `$079E`. Its source and complete license
 must accompany the executable.
 
-Current v1g DBG1 changes nine firmware sectors: B1:A/E/F, B2:8/D and
-B3:A/B/E/F, with two wear-accounted C/D journal erases in its eleven-transfer
-preserving install. B2:8/D carry the MAINT compatibility correction and its
+The generation49 → v1g route changes nine firmware sectors: B1:A/E/F, B2:8/D and
+B3:A/B/E/F, with two wear-accounted C/D journal erases in its eleven-transfer install.
+Direct WDCMONV2 and beta4 routes use 23 and 22 verified transfers respectively;
+exact current v1g takes no-write verification. B2:8/D carry the MAINT compatibility correction and its
 utility CRC. It includes matching ASM/vector/monitor/core changes; adding only
 B1:A is insufficient. B1:9, B0 and other preserved data matched their preimages
-in hardware requalification. See [current candidate status](DBG1_CANDIDATE_STATUS.md).
-No application RAM is reserved for the debugger. The published raw images
-listed here remain generation 49; use the separate experimental candidate
-procedure for DBG1, not a default-filled raw BIN over existing board data.
+in hardware requalification. See [current release scope](V1G_RELEASE_STATUS.md).
+No application RAM is reserved for the debugger. Current raw component images
+are exact generation50 slices. Use the uniform preserving workflow for existing
+board data; a default-filled raw BIN is not an installed-board update.
 
 ## File offsets
 
@@ -62,18 +65,20 @@ no RTC, EEPROM or external SRAM image.
 The application image passed actual rc1 ASM 0.5 source assembly, byte comparison
 against the previously independent WDC game build, MON A table/load/gameplay/
 HOLD checks, and MON B fallback/table/run/HOLD/CLOCK BATCH checks in the W65C02
-model. Pinned firmware code remains unchanged. The full-system RAM migrations also installed providers and UCHESS on physical
-2609 from original WDC and 2604 from beta4 with empty B0/B1/B2. Both completed
-22 transfers, bf1 boot and UCHESS/BATCH checks. rc1 targets are tested offline. General occupied-bank upgrades,
-Linux physical serial migration and broad RTC preservation remain outside the
-current candidate qualification.
+model. Pinned firmware code remains unchanged. Historical bf1 migrations
+installed providers and UCHESS on physical 2609 from WDC and 2604 from beta4.
+The separate current v1g uniform-upgrade qualification passed direct WDCMONV2
+and beta4 routes on both boards, both MON A/B, with full original RAM and
+retained EEPROM/SRAM/settings restored. General occupied-bank conversion,
+Linux physical serial migration and broad RTC continuity remain outside this
+qualification. Component removal tests are models, not physical uninstall trials.
 
-See [migration](QUICK_START_MIGRATION.md), [ABI](ABI_REFERENCE.md) and
+See [uniform migration](UNIFORM_UPGRADE.md), [ABI](ABI_REFERENCE.md) and
 [attribution](THIRD_PARTY_NOTICES.md).
 
 ## Separate F component and J commands
 
-`str8n-2.0rc1-b3-f000-ffff.bin` is the exact 4,096-byte fixed F component
+`str8n-2.0rc1-dbg1-gen50-b3-f000-ffff.bin` is the exact 4,096-byte fixed F component
 already present in the complete image. Its destination is **B3 CPU
 `$F000–$FFFF`**, full-device programmer offset **`$1F000`**. It is source-built
 STR8-N code with no WDCMONV2 bytes. It is not a complete rc1 installation or a

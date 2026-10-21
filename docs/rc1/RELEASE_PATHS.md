@@ -1,80 +1,68 @@
-# rc1 installation choices and component map
+# rc1 v1g image choices and programmer offsets
 
-One generation-49 STR8-N firmware set serves 65C02 and 65C816 emulation runtime.
-The accepted startup CPU detector briefly enters native mode; native 816
-applications/tests, ACIA and crypto remain deferred.
+The current package is **DBG1 generation50 v1g**. The default preserving
+installation is the [uniform upgrade command](UNIFORM_UPGRADE.md), qualified
+directly from registered WDCMONV2 and beta4 on 2604 and 2609. Exact current
+v1g takes a verified no-write path. Firmware is unchanged from r8.
+Native applications/debugging are excluded; the 816 target runs E=1. The RTC
+issue is deferred and drift is outside release qualification.
 
-These downloads are the published generation-49 release. The separate local
-[DBG1 generation-50 candidate](DEBUGGER_GUIDE.md) is now board-tested on
-2604/2609, both slots; it is not included in those ZIP/BIN downloads. Its
-[experimental preserving procedure](../../release/candidates/rc1-debugger/BOARD_TEST.md)
-requires fresh exact-source captures and matching ASM/MON/core components.
+## Choose the artifact
 
-## Choose a path
+| Purpose | Package path | Scope |
+|---|---|---|
+| Preserving upgrade | `upgrade/upgrade.py` | Source-aware capture, admission, verified transaction, RESET when required and full borrowed-RAM restoration. |
+| Fresh full system | `firmware/str8n-2.0rc1-dbg1-gen50-full-system.bin` | 96 KiB B1/B2/B3, including MON A/B, ASM, DBG1, CLOCK, utilities, providers and UCHESS. Exact alias of the reference BIN. |
+| Fixed F recovery component | `firmware/str8n-2.0rc1-dbg1-gen50-b3-f000-ffff.bin` | Exact 4 KiB B3 F slice. Recovery component, not a normal monitor or standalone Jn bank launcher. |
+| B3 bank reference | `firmware/str8n-2.0rc1-dbg1-gen50-b3-bank-reference.bin` | Exact 32 KiB B3 slice, including generic settings/journal defaults. V1g still has cross-bank dependencies. |
+| Monitor recovery components | `firmware/str8n-2.0rc1-dbg1-gen50-monitor-a.bin` / `-monitor-b.bin` | Exact 4 KiB A/B slices; require the matching system and DBG1 hooks. |
+| ASM component references | `firmware/str8n-2.0rc1-dbg1-gen50-asm-e000-efff.bin` / `-asm-f000-ffff.bin` | Two exact 4 KiB slices. F also supplies DBG1 tables and vectors. |
+| DBG1 component | `firmware/debugger-a000.bin` | Exact B1 A sector, coupled to the v1g monitor/core/ASM build. |
 
-| Path | Download | Contents and use |
-| --- | --- | --- |
-| Bootloader / monitor core | `str8n-2.0rc1-boot-core-b3.bin` | 32 KiB B3 provisioning image: fixed F boot/recovery, E core/S/R/T, MON A/MON B, RTC/journal services and generic configuration/wear records. For an advanced programmer setup without B1/B2 utilities/apps. |
-| Full STR8-N with utilities/apps | `str8n-2.0rc1-apps-str8n-only.bin` | 96 KiB B1/B2/B3 provisioning image: the same core plus CLOCK, ASM, MAINT/SRAM/WORK/EDU, status/version/display/battery providers and UCHESS. Recommended complete system. |
-| WDCMONV2 or beta4 migration | Windows/Linux launchers in this ZIP | Exact-source, already-empty B0/B1/B2 routes install the full system with utilities/apps, with source admission, RAM preservation and bounded recovery. |
-| Component maintenance/recovery | Separate MON A, MON B and B3 F files | Matching parts for a reviewed recovery/update plan. Individual component files are not complete installations. |
+`firmware/components.json` binds the added slices to offsets, sizes and hashes.
+The complete image remains
+`firmware/str8n-2.0rc1-dbg1-gen50-reference.bin`, SHA-256
+`6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b`.
+No component is rebuilt or independently modified.
 
-The core-only image was booted with B0/B1/B2 erased in the W65C02 instruction
-model. MON A boot, MON B fallback, core console commands and J3 restart passed
-without persistent model-device changes. A separate physical core-only
-installation has not been performed. The prior bf1 full-system empty-bank
-migrations were tested on physical 65C02 and 65C816 boards; rc1 is verified offline. Utilities such as
-CLOCK, ASM and VERSION require their B1/B2 providers and are absent from the
-core-only path. Adding only F or MON A/B to an arbitrary bank does not create
-the complete core layout.
+## Programmer address map
 
-## Raw-image programmer offsets
+| Artifact | Bytes | CPU destination | Full 128 KiB device offset |
+|---|---:|---|---|
+| Full system / reference | 98304 | B1/B2/B3 `$8000–$FFFF` | `$08000` |
+| B3 bank reference | 32768 | B3 `$8000–$FFFF` | `$18000` |
+| MON A | 4096 | B3 `$A000–$AFFF` | `$1A000` |
+| MON B | 4096 | B3 `$B000–$BFFF` | `$1B000` |
+| Fixed F | 4096 | B3 `$F000–$FFFF` | `$1F000` |
+| DBG1 | 4096 | B1 `$A000–$AFFF` | `$0A000` |
+| ASM E | 4096 | B1 `$E000–$EFFF` | `$0E000` |
+| ASM F | 4096 | B1 `$F000–$FFFF` | `$0F000` |
 
-| File | Bytes | CPU destination | Offset in a full 128 KiB flash-device image |
-| --- | ---: | --- | --- |
-| `str8n-2.0rc1-boot-core-b3.bin` | 32768 | B3:`$8000–$FFFF` | `$18000` |
-| `str8n-2.0rc1-apps-str8n-only.bin` | 98304 | B1/B2/B3:`$8000–$FFFF` | `$08000` |
-| `str8n-2.0rc1-monitor-a.bin` | 4096 | B3:`$A000–$AFFF` | `$1A000` |
-| `str8n-2.0rc1-monitor-b.bin` | 4096 | B3:`$B000–$BFFF` | `$1B000` |
-| `str8n-2.0rc1-b3-f000-ffff.bin` | 4096 | B3:`$F000–$FFFF` | `$1F000` |
+File offset zero maps to the destination shown, not automatically to device
+offset zero. The full system concatenates three 32 KiB banks:
 
-File offset zero maps to the stated destination, **not** automatically to device
-offset zero. Follow the programmer's actual chip/bank mapping. Raw provisioning
-images replace covered flash contents, including settings/wear records; their
-generic tracked baseline is not lifetime erase history. They contain no B0,
-WDCMONV2, EEPROM, RTC or external SRAM image. Use the matching scripted full
-migration when its admitted source/storage conditions apply; do not substitute
-a raw image for a preserving upgrade.
+`file offset = (bank - 1) * $8000 + CPU address - $8000`
 
-MON A and MON B are the user-facing slot names. A0/B0 in internal code or old
-component filenames are B3 page values `$A0/$B0`, not flash banks B0/B1. Both
-MON files are generation 49 and require matching rc1 E/F/core services and the
-matching provider build for utility/BATCH capabilities. Prefer the verified RAM
-tools or a reviewed component recovery plan; blind single-sector writes can
-leave incompatible code or remove a fallback monitor.
+Raw BINs are **fresh provisioning/reference components**, not preserving
+updaters. They replace all covered bytes, including owner data/settings or
+journals. Generic provisioning counts are not lifetime wear. They contain no
+B0, WDCMONV2 image, private board capture, EEPROM, RTC or external SRAM image.
+Use the uniform workflow for preserving upgrades.
 
-## J0/J1/J2/J3 behavior
+## Opaque banks and J0/J1/J2/J3
 
-`Jn` selects bank n and follows that bank's `$FFFC/$FFFD` reset vector. Invalid
-or erased vectors refuse. In this rc1 layout, **J3 restarts rc1**. The B3 F
-bootstrap selects B3 and relies on the B3 A/B/E layout. It is not relocatable
-as a standalone J0/J1/J2 monitor; copying it into B1/B2 would replace their
-application/provider pages. Earlier bank-resident STR8-N layouts were different
-builds. A genuinely standalone monitor in another bank needs a separate build
-and qualification, rather than a renamed rc1 F component.
+From the normal monitor, `Jn` selects bank n and follows `$FFFC/$FFFD`;
+invalid/erased vectors refuse. It does not require a STR8-N app record or
+relocate the target. The target owns its startup, interrupt vectors and runtime
+assumptions. `J3` restarts this complete rc1 layout.
 
-## Manuals, recovery and known limits
+The F-only recovery menu has no `Jn` command parser. Neither that component nor
+the B3 bank slice is a qualified compact monitor with all B0/B1/B2 opaque.
+The full system occupies B1/B2 and DBG1 depends on B1. A minimal bank launcher
+requires a different build and separate qualification. Do not copy the B3 F
+component into another bank as a substitute.
 
-This complete release ZIP provides installed-board and migration quick
-starts, name/UTC clock/local-offset setup, user/operator guides, ASM manual,
-command reference, technical manual, public ABIs and Mermaid source/rendered
-diagrams. Run the documented host migration commands from this ZIP using the Windows
-or Linux launchers. Keep private captures and recovery receipts private.
-uChess source and its full Peter Jennings license, with Daryl Rictor and Bill
-Forster credits, accompany the application packages and documentation download.
-
-This is the owner's scoped prerelease: the earlier RTC continuity issue remains
-open and disclosed; the recorded stopped soaks are accepted as recorded. Both
-soaks and RTC collection remain stopped. Full endurance/rate qualification,
-Linux physical serial migration and generic occupied-bank upgrades are not
-claimed. Native 816 applications, ACIA and crypto remain deferred.
+Use the [flash reclaim guide](FLASH_RECLAIM.md) for optional applications,
+sector sharing, already-free space and the limits of deleting ASM or DBG1.
+Image-slice checks are host-only; component deletion checks are CPU models,
+not physical uninstall qualification. Both boards retain complete v1g.

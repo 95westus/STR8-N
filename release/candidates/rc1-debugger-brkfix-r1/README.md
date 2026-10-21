@@ -1,5 +1,22 @@
 # Separate DBG1 BRK edge-fix candidate
 
+Current distribution **rc1 v1g r9** retains the exact r8 firmware and adds the
+corrected uniform source-aware updater. Direct WDCMONV2 → v1g and beta4 → v1g
+trials passed on 2604 and 2609, both MON A/B, with original RAM and retained
+EEPROM/SRAM/settings preserved. The default entry is `upgrade/upgrade.py` in
+the extracted package; it requires no manual generation49 rollback. Current
+v1g takes a verified no-write path. See the
+[uniform guide](../../../docs/rc1/UNIFORM_UPGRADE.md) and
+[current release scope](../../../docs/rc1/V1G_RELEASE_STATUS.md).
+`uniform-v2/upgrade.py` is the corrected host source. The original `upgrade.py`
+and dated development receipts retain the beta4 protocol failure history.
+The new host workflow is qualified on Windows; native applications/debugging
+remain excluded and RTC drift is outside release qualification.
+Exact component BINs and the [flash reclaim guide](../../../docs/rc1/FLASH_RECLAIM.md)
+distinguish optional stored applications from shared ASM/DBG1/core sectors.
+These additions do not implement a generic component uninstaller or standalone
+F-only Jn monitor.
+
 `v1g` is the BRK edge-fix candidate based on the MAINT-corrected `v1f`.
 Its offline qualification and hardware requalification on 2604 and 2609
 passed, including both monitor slots and rollback/reinstall. R3 and R4 closed

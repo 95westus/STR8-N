@@ -28,14 +28,24 @@ data, active A/B selection, interrupted transfers/commits, recovery, exact
 readbacks, and representative hardware. A release cannot advertise family-wide
 support from source recognition tests alone.
 
-This is the intended contract, not the current qualification claim. The current
+The current rc1 v1g r9 implementation uses one source-aware entry for the
+registered WDCMONV2 SXB2/SXB6, beta4 generation13, rc1 generation49 and
+generation50 v1e/v1f/v1g sources. Direct WDCMONV2 → v1g and beta4 → v1g
+physical trials passed on 2604 and 2609; current v1g takes a verified no-write
+path. No manual generation49 rollback is required. See the
+[current uniform upgrade guide](rc1/UNIFORM_UPGRADE.md) for exact source,
+preservation, platform and recovery limits. Native runtime/debugging remains
+excluded, the RTC issue remains deferred, and drift is outside release qualification.
+This bounded matrix does not establish support for every historical beta.
+
+The following describes the historical beta25 qualification. Its
 implementation qualifies beta23 generation 32 and beta24 generations 34/35
 planning to beta25. Physical upgrade/retest on 2205, 2512, 2604 and 2609 passed;
 all four boards now run beta25 in B with the prior A monitor retained. Legacy b1 is
 recognized and refused pending conversion qualification. Other historical
 sources and arbitrary later targets are not yet qualified.
 
-## Current implementation
+## Historical beta25 implementation
 
 `tools/migrate_v2.py` uses a complete, repeated four-bank backup and the active
 monitor read from the board. It identifies the installed core and active monitor
