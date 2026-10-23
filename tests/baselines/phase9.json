@@ -1,0 +1,486 @@
+{
+  "schema": 1,
+  "phase": 9,
+  "complete": true,
+  "date": "2026-10-22",
+  "purpose": "Prepare and prove the complete current VERSION command with resident ASM offline",
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "hardware_qualified": false,
+  "firmware_source_changed": false,
+  "existing_firmware_images_changed": false,
+  "installer_changed": false,
+  "resident_output_installed": false,
+  "physical_output_buffer_executed": false,
+  "in_model_loaded_ram_substitution": true,
+  "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "firmware_bytes": 98304,
+  "phase1_through_phase8_baselines_unchanged": true,
+  "phase_baseline_sha256": {
+    "1": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+    "2": "69806d28b3bbe837b99febc9ec0198020796843c6b41ce055b5e684a67e3138f",
+    "3": "dec1aa37b2ec7300d7fc726bbb228238bb6b62ab44baddc8731db92c2db139db",
+    "4": "acc5b9c76633e2226a223b90032f5232970232410c966bd4dae5876edace5a84",
+    "5": "b1bd940afb676d6ba30e0f2358d5b67992d0ad2302e363869656c8b01edebf14",
+    "6": "3c439cc37a3e22e21c8dec68264da38d353eea03ae713e0ae1c8a5a39dc31184",
+    "7": "6ca15073dfce5a0b39558f2080e3160cc3194e7479adb1f94a752e2bc08d0fa7",
+    "8": "7f562a626607572733b068e2327719d4f33c5a60daef8f4e1795462d92bad78c"
+  },
+  "fresh_build": "BUILD/phase9",
+  "payloads_equal": 20,
+  "symbol_maps_equal": 29,
+  "authoritative_sources": {
+    "src/current/version/version.asm": {
+      "bytes": 3070,
+      "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999"
+    },
+    "src/current/version/version-links.inc": {
+      "bytes": 143,
+      "sha256": "a852a229ebd7969f81c6fa8d289c0d228c769ddb425a11199dde6852f426a6c4"
+    },
+    "src/current/version/version-board.inc": {
+      "bytes": 4008,
+      "sha256": "14e07f7a951921e5f05227a0c9ed3baaa4250795beb868290da3158e4fdbdaae"
+    }
+  },
+  "scope": "Complete VERSION header, command, text, working data, board-name CRC, reader and display from all three authoritative inputs",
+  "preparation_manifest": "tests/baselines/phase9-evidence/prepared/manifest.json",
+  "prepared_source": "tests/baselines/phase9-evidence/prepared/version.asm",
+  "prepared_inputs_are_generated": true,
+  "actual_resident_admission_verified": true,
+  "resident_byte_comparison_performed": true,
+  "prepared_source_lines": 303,
+  "packed_source_bytes": 4611,
+  "max_source_line_bytes": 59,
+  "max_symbol_name_bytes": 15,
+  "symbol_count": 64,
+  "imports": {
+    "BOOT_ACTIVE": 32048,
+    "BOOT_DEST": 32049,
+    "BOOT_BEST": 32245,
+    "BOOT_SLOT_CHECK": 62221,
+    "BOOT_SELECT": 62115,
+    "BOOT_CHOICE": 61926,
+    "VPTR": 208,
+    "TZ_PTR": 214
+  },
+  "aliases": {
+    "BOOT_CHOICE_SLOT": "BOOT_CHOICE",
+    "BAD_RUNNING_TEXT": "BAD_RUN_TEXT"
+  },
+  "logical_origin": 28160,
+  "logical_end_exclusive": 28796,
+  "executable_entry": 28164,
+  "physical_output_start": 512,
+  "body_bytes": 636,
+  "body_sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747",
+  "differing_bytes": 0,
+  "all_original_symbols_match_current_link": {
+    "START": 28160,
+    "APP_END": 28796,
+    "DISPLAY_VERSION": 28167,
+    "VER_LONG_16": 28184,
+    "CHECK_RUNNING": 28184,
+    "CPU_READY": 28232,
+    "BOARD_UNNAMED": 28259,
+    "RUNNING_LINE": 28266,
+    "RUNNING_GEN": 28295,
+    "RUNNING_BAD": 28310,
+    "SLOT_LIST": 28317,
+    "SLOT_LETTER": 28347,
+    "SLOT_CHAR": 28355,
+    "MON_PRINT": 28358,
+    "PRINT": 28361,
+    "PRINT_NEXT": 28367,
+    "PRINT_DONE": 28381,
+    "UNNAMED_TEXT": 28382,
+    "RUNNING_TEXT": 28399,
+    "GEN_TEXT": 28417,
+    "BAD_RUNNING_TEXT": 28424,
+    "RUNNING_SLOT": 28453,
+    "MON_CALL": 28454,
+    "TZ_SUM": 28456,
+    "TZ_CRC": 28458,
+    "TZ_CRC_BYTE": 28468,
+    "TZ_CRC_BIT": 28478,
+    "TZ_CRC_NEXT": 28502,
+    "BN_READ": 28511,
+    "BN_RESET": 28519,
+    "BN_SLOT": 28542,
+    "BN_BLANK": 28544,
+    "VB_LONG_56": 28563,
+    "BN_CHECK": 28576,
+    "VB_LONG_65": 28585,
+    "BN_HEADER": 28587,
+    "BN_CHAR_CHECK": 28629,
+    "BN_PADDING": 28652,
+    "BN_NEWEST": 28659,
+    "BN_NEWER": 28663,
+    "BN_KEEP": 28676,
+    "BN_COPY_SEQ": 28680,
+    "BN_COPY": 28699,
+    "BN_NEXT": 28710,
+    "BN_PAGE": 28721,
+    "VB_LONG_146": 28730,
+    "BN_SHOW": 28735,
+    "BN_PRINT": 28752,
+    "BN_SHOW_DONE": 28767,
+    "BN_MAGIC": 28768,
+    "BN_LABEL": 28772,
+    "BN_LENGTH": 28780,
+    "BN_WORK": 28781,
+    "BN_TEXT": 28782,
+    "BN_SEQ": 28790,
+    "BN_FREE": 28794,
+    "BOOT_ACTIVE": 32048,
+    "BOOT_DEST": 32049,
+    "BOOT_BEST": 32245,
+    "BOOT_SLOT_CHECK": 62221,
+    "BOOT_SELECT": 62115,
+    "BOOT_CHOICE_SLOT": 61926,
+    "VPTR": 208,
+    "TZ_PTR": 214
+  },
+  "data_reservations": {
+    "MON_CALL": {
+      "logical_address": 28454,
+      "bytes": 2,
+      "verified_fill": 0
+    },
+    "TZ_SUM": {
+      "logical_address": 28456,
+      "bytes": 2,
+      "verified_fill": 0
+    },
+    "BN_TEXT": {
+      "logical_address": 28782,
+      "bytes": 8,
+      "verified_fill": 0
+    },
+    "BN_SEQ": {
+      "logical_address": 28790,
+      "bytes": 4,
+      "verified_fill": 0
+    },
+    "BN_FREE": {
+      "logical_address": 28794,
+      "bytes": 2,
+      "verified_fill": 0
+    }
+  },
+  "packaging": {
+    "asset": "version/asset.bin",
+    "asset_bytes": 2048,
+    "asset_sha256": "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa",
+    "asset_crc_valid": true,
+    "bank": 2,
+    "asset_rom_address": 63488,
+    "body_asset_offset": 0,
+    "body_firmware_file_offset": 63488,
+    "in_memory_asset_replacement_byte_identical": true,
+    "in_memory_firmware_replacement_byte_identical": true,
+    "fill_worker_vectors_seal_unchanged": true
+  },
+  "s19": {
+    "complete_host_s1_bytes_and_addresses_match": true,
+    "checksums_verified": true,
+    "resident_s9_origin": 28160,
+    "host_s9": 0,
+    "entry_is_separate": 28164,
+    "raw_s19_text_equal": false
+  },
+  "verification": {
+    "assembly_configuration_count": 8,
+    "assembly_invocations": 16,
+    "assembly_matrix": [
+      {
+        "cpu": "65c02",
+        "monitor_slot": "A",
+        "edu": false,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "A",
+        "edu": true,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "B",
+        "edu": false,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "B",
+        "edu": true,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "A",
+        "edu": false,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "A",
+        "edu": true,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "B",
+        "edu": false,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "B",
+        "edu": true,
+        "passed": true,
+        "assemblies": 2
+      }
+    ],
+    "unique_host_checks": 13,
+    "host_checks": [
+      "deterministic-preparation",
+      "existing-output-refused-unchanged",
+      "changed-main-source-refused",
+      "changed-links-source-refused",
+      "changed-board-source-refused",
+      "stale-firmware-refused-before-output",
+      "stale-version-asset-refused-before-output",
+      "stale-version-s19-refused-before-output",
+      "stale-version-map-refused-before-output",
+      "stale-symbol-inventory-refused-before-output",
+      "stale-staged-main-refused-before-output",
+      "stale-staged-links-refused-before-output",
+      "stale-staged-board-refused-before-output"
+    ],
+    "source_admission": "Actual PASTE compared with canonical prepared records",
+    "all_64_original_symbol_values_compared_after_alias_restoration": true,
+    "runtime_configuration_count": 8,
+    "runtime_host_resident_pairs": 214,
+    "runtime_host_and_resident_executions": 428,
+    "full_command_pairs": 22,
+    "board_name_reader_pairs": 192,
+    "runtime_matrix": [
+      {
+        "cpu": "65c02",
+        "monitor_slot": "A",
+        "edu": false,
+        "pairs": 29,
+        "full_command_pairs": 5,
+        "board_name_reader_pairs": 24
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "A",
+        "edu": true,
+        "pairs": 26,
+        "full_command_pairs": 2,
+        "board_name_reader_pairs": 24
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "B",
+        "edu": false,
+        "pairs": 26,
+        "full_command_pairs": 2,
+        "board_name_reader_pairs": 24
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "B",
+        "edu": true,
+        "pairs": 26,
+        "full_command_pairs": 2,
+        "board_name_reader_pairs": 24
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "A",
+        "edu": false,
+        "pairs": 29,
+        "full_command_pairs": 5,
+        "board_name_reader_pairs": 24
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "A",
+        "edu": true,
+        "pairs": 26,
+        "full_command_pairs": 2,
+        "board_name_reader_pairs": 24
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "B",
+        "edu": false,
+        "pairs": 26,
+        "full_command_pairs": 2,
+        "board_name_reader_pairs": 24
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "B",
+        "edu": true,
+        "pairs": 26,
+        "full_command_pairs": 2,
+        "board_name_reader_pairs": 24
+      }
+    ],
+    "runtime_uses_actual_resident_profile_binaries": true,
+    "runtime_scope": "Real linked monitor/asset loader/CRC/VERSION/bootstrap/console; separate callable BN_READ/TZ_CRC malformed-record cases; inherited discovery and delay shortcuts",
+    "runtime_discovery_fixture": {
+      "banner_pointer_address": 32015,
+      "banner_pointer_value": 61190,
+      "source": "status-mode-init.asm FRAME_POINTER publication",
+      "edu_mode": 1,
+      "bare_mode": 2
+    },
+    "runtime_state": "Baseline valid MON A/B images, default MON A; other default/invalid-monitor paths not newly runtime exercised",
+    "journal_fixtures_per_profile": 24,
+    "flash_writes": 0,
+    "sram_transfers": 0,
+    "all_model_banks_and_sram_unchanged_after_fixture_initialization": true,
+    "runtime_comparisons": [
+      "output",
+      "full RAM hash",
+      "registers",
+      "bank/SRAM hashes",
+      "instruction counts",
+      "journal selection",
+      "PCR/slot/bank restoration",
+      "modeled I/O"
+    ],
+    "preserved_quirks": [
+      "Equal sequence chooses later record",
+      "Sequence comparisons are unsigned and do not wrap",
+      "CRC-covered bytes 17..27 need not be FF",
+      "Byte 30 is not checked",
+      "No-free-slot sentinel is BN_FREE high byte zero"
+    ],
+    "not_qualified": [
+      "physical hardware/electrical timing",
+      "RTC/EEPROM/SRAM hardware",
+      "native 816 applications",
+      "firmware installation"
+    ]
+  },
+  "documentation": "docs/RESIDENT_VERSION_FULL.md",
+  "implementation": {
+    "tools/prepare_resident_version_full.py": {
+      "bytes": 19720,
+      "sha256": "5def2c85eacd99747c1e41f00d51bf5569598d2c2fb6ed71a30732f0341ba0d6"
+    },
+    "tools/test_resident_version_full.py": {
+      "bytes": 13524,
+      "sha256": "b258d92293644d9087d8b40406c5e1528ed300cf18336fc0eff1e0c8239cb293"
+    },
+    "tools/test_resident_version_runtime.py": {
+      "bytes": 13377,
+      "sha256": "f0b3cdee241c380e6a626e1c50dd62eafc7fb438b5a9af63f3adac5519b8729a"
+    },
+    "docs/RESIDENT_VERSION_FULL.md": {
+      "bytes": 8036,
+      "sha256": "bf560ec530ceb14e4ccde21d154394cd70582a95f9bf63bf43f2dbacd85f9a10"
+    }
+  },
+  "evidence": {
+    "tests/baselines/phase9-evidence/assembly-65c02.json": {
+      "bytes": 12274,
+      "sha256": "3a4575bd2f6859d49707053b8bba87ebff83e863387a9324c1dbffbefe9c14d4"
+    },
+    "tests/baselines/phase9-evidence/assembly-65c816-e.json": {
+      "bytes": 12286,
+      "sha256": "8ad31be417ad6bd99081b5302e02ce8aabc8c942c9747d0af0e8fda203cdd93f"
+    },
+    "tests/baselines/phase9-evidence/build.json": {
+      "bytes": 33190,
+      "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+    },
+    "tests/baselines/phase9-evidence/prepared/expected.bin": {
+      "bytes": 636,
+      "sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747"
+    },
+    "tests/baselines/phase9-evidence/prepared/manifest.json": {
+      "bytes": 78045,
+      "sha256": "2d0d54be8a4c1486b075f5622fffbdc1e6ed737e45ef1426ade6f320ee4c1b24"
+    },
+    "tests/baselines/phase9-evidence/prepared/version.asm": {
+      "bytes": 3702,
+      "sha256": "56d1703e1c464b8caad72e3a2914710ccd60d01ac224f99f0588e977eadd9e77"
+    },
+    "tests/baselines/phase9-evidence/prepared/version.paste.txt": {
+      "bytes": 3710,
+      "sha256": "9dce4e01f2af510f57f6b70bd216591bb38c8bf57ec795557a0cdabd3cb2bbd3"
+    },
+    "tests/baselines/phase9-evidence/prepared/version.records.bin": {
+      "bytes": 4611,
+      "sha256": "50f414729bb933c69bc60be90084e19a3276639a45622f57e716644d68eb5c99"
+    },
+    "tests/baselines/phase9-evidence/preservation.json": {
+      "bytes": 94728,
+      "sha256": "5d024ee6dd6d39fbd3b96b775ad756c7ddcc829310781cb2759c6034668fd0ff"
+    },
+    "tests/baselines/phase9-evidence/resident.bin": {
+      "bytes": 636,
+      "sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747"
+    },
+    "tests/baselines/phase9-evidence/resident.s19": {
+      "bytes": 1723,
+      "sha256": "39310abab1424ba5aedfb11cf3ad5ed53a3ef8ac29392836c492e6fe5eb0a1e1"
+    },
+    "tests/baselines/phase9-evidence/runtime-65c02.json": {
+      "bytes": 207650,
+      "sha256": "a718b3872ca2d2d2f8f415ca3d5e194d0e784c5370bff1503fc9a7fecd2d9742"
+    },
+    "tests/baselines/phase9-evidence/runtime-65c816-e.json": {
+      "bytes": 220085,
+      "sha256": "138fada368c2b9f113a3b8ab54173a8e726a284b6bc38007c939b8b91eb4f890"
+    },
+    "tests/baselines/phase9-evidence/transcripts/65c02-A-bare.json": {
+      "bytes": 7873,
+      "sha256": "d52fccd67f271562c0b00283080ec50bb55a0461c1c05b342c3c787118cdc91b"
+    },
+    "tests/baselines/phase9-evidence/transcripts/65c02-A-edu.json": {
+      "bytes": 7873,
+      "sha256": "d52fccd67f271562c0b00283080ec50bb55a0461c1c05b342c3c787118cdc91b"
+    },
+    "tests/baselines/phase9-evidence/transcripts/65c02-B-bare.json": {
+      "bytes": 7873,
+      "sha256": "d52fccd67f271562c0b00283080ec50bb55a0461c1c05b342c3c787118cdc91b"
+    },
+    "tests/baselines/phase9-evidence/transcripts/65c02-B-edu.json": {
+      "bytes": 7873,
+      "sha256": "d52fccd67f271562c0b00283080ec50bb55a0461c1c05b342c3c787118cdc91b"
+    },
+    "tests/baselines/phase9-evidence/transcripts/65c816-e-A-bare.json": {
+      "bytes": 7873,
+      "sha256": "d52fccd67f271562c0b00283080ec50bb55a0461c1c05b342c3c787118cdc91b"
+    },
+    "tests/baselines/phase9-evidence/transcripts/65c816-e-A-edu.json": {
+      "bytes": 7873,
+      "sha256": "d52fccd67f271562c0b00283080ec50bb55a0461c1c05b342c3c787118cdc91b"
+    },
+    "tests/baselines/phase9-evidence/transcripts/65c816-e-B-bare.json": {
+      "bytes": 7873,
+      "sha256": "d52fccd67f271562c0b00283080ec50bb55a0461c1c05b342c3c787118cdc91b"
+    },
+    "tests/baselines/phase9-evidence/transcripts/65c816-e-B-edu.json": {
+      "bytes": 7873,
+      "sha256": "d52fccd67f271562c0b00283080ec50bb55a0461c1c05b342c3c787118cdc91b"
+    }
+  }
+}

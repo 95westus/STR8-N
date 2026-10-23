@@ -91,3 +91,60 @@ runtime with a shared built-in dynamic linker.
 See [the staged proposal](STR8N_V2_LAYERED_ASSEMBLER_PROPOSAL.md) for the next
 steps, compatibility constraints, and completion criteria. This remains a
 proposal, not an implemented runtime or permission to install new firmware.
+
+## Flash callers, RAM gateways, and R-YORS comparison (2026-10-23)
+
+Owner-requested design checkpoint, not an implemented ABI or assigned RAM map.
+Flash callers use stable RAM gateway addresses defined by one public include.
+Boot resolves service-name hashes and compatible interface contracts, validates
+the owning image/entry, and fills each RAM gateway with its destination bank
+and address. A proposed seven-byte gateway is JSR BANK_CALL, inline bank byte,
+inline LE16 target, RTS. One RAM-resident BANK_CALL interprets the inline data,
+skips it on return, and saves/restores per-call bank and register/flag state on
+the stack. Its transfer target must also be per-call, not shared writable
+scratch. All switch/return code stays in RAM because the entire $8000-$FFFF
+flash window changes banks. Hardware selection uses VIA PCR $7FEC and encoded
+bank bits, preserving unrelated state under an explicit ownership contract.
+
+Already-programmed flash JSR operands cannot be patched as ordinary RAM.
+Keep public RAM gateway addresses/contracts stable; resolve their destinations
+at boot. RAM-loaded callers may instead receive load-time import fixups. Flash
+callers requiring different gateway addresses must be linked before programming
+or use another agreed indirection. BANK_CALL itself may move if boot emits its
+address into the fixed RAM gateways. Bootstrap discovery, metadata formats,
+hash canonicalization/collision handling, and RAM ownership/lifetime remain
+explicit contracts. No addresses are allocated here. Respect current rc1's
+discovered application limit, not this note's historical $68FF prototype bound.
+
+Stacked banking supports dispatcher nesting; it does not make rc1 monitor
+services reentrant or interrupt-safe. Their IRQ-masked, decimal-clear and CPU
+mode requirements remain. IRQ/NMI vector paths are banked and need separate
+contracts/qualification. Current GETC already has a bank-independent RAM entry
+at $7E70; resolution may use existing public RAM entries without a bank switch.
+
+Read-only comparison against sibling C:/SRC/R-YORS:
+
+- DOC/GUIDES/CATALOG/HREC_JOIN_PROOF.md and
+  SRC/PROOFS/hrec-join-proof.asm implement the closely related HREC/RJOIN seed:
+  a local scanner finds THE_JOIN_EXEC_XY by hash; that resident resolver returns
+  executable entries, and the caller caches addresses for indirect calls.
+- Existing HREC headers are F N (V|$80), four hash bytes, kind. Current kinds
+  include inline executable and pointer/extra forms. Executable-kind validation
+  matters; a matching data record is not a callable routine.
+- DOC/GUIDES/HASH/HASH_MAP.md settles FNV-1a32 for public identities and
+  cross-bank imports. Align a future STR8-N resolver with that identity scheme
+  after agreeing exact names, canonicalization, interface versions and collision
+  checks. FTDI_GETC is not automatically the same identity or ABI as R-YORS's
+  BIO_READ_BYTE_BLOCK or BIO_FTDI_READ_BYTE_BLOCK.
+- The inspected join proof returns a 16-bit placed entry and calls through
+  RAM pointers; it does not establish a shared nested bank-switch dispatcher,
+  arbitrary relocation, or IRQ/NMI safety. Future RREC fixups/dependencies remain
+  separate from today's HREC placed-entry lookup.
+- HIMON cold entry clears RAM through $7EFF and publishes its own RY vectors
+  at $7E02-$7E1C. STR8-N gateways cannot survive that unchanged ownership
+  handoff. A future adapter must reserve/preserve or rebuild agreed gateways;
+  current guest operation must not assume v2 RAM services remain intact.
+
+This fits v2.1's stable-public-gateway direction; general loader relocation
+would extend its currently deferred scope. No R-YORS source, firmware, board,
+or release artifact is changed by this checkpoint.

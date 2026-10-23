@@ -55,6 +55,12 @@ the machine.
 
 ## DBG1 RAM debugging and workspace
 
+B1:A is **DEBUG (DBG1)**, not unowned user storage. The offline map candidate
+labels its grid cell `F` (firmware), with an explicit `B1:A F = DEBUG (DBG1)`
+legend; range and wear views describe it as `DEBUG (DBG1) A000-AFFF`, reserved.
+Recognition requires the `DG`,1,1 header and valid full-sector CRC at B1:A.
+See [offline map candidate](DEBUG_MAP.md). This change has not been flashed.
+
 Current v1g DBG1 uses B1:`$A000-$AFFF` (3,975 code bytes plus two CRC bytes,
 119 free). See [current candidate status](DBG1_CANDIDATE_STATUS.md) for
 hardware qualification and the ongoing owner-controlled soak.

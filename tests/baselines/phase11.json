@@ -1,0 +1,426 @@
+{
+  "schema": 1,
+  "phase": 11,
+  "complete": true,
+  "date": "2026-10-22",
+  "purpose": "Package and verify the proven VERSION optimization as a separate firmware candidate offline",
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "hardware_qualified": false,
+  "installation_permitted": false,
+  "current_firmware_replaced": false,
+  "firmware_source_changed": false,
+  "existing_firmware_images_changed": false,
+  "installer_or_profiles_changed": false,
+  "resident_output_installed": false,
+  "candidate_ram_substitution": false,
+  "current_firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "candidate_firmware_sha256": "4761393a3de28a1b3de76f96bf507857e40a0fd281066ae64dad31ec52f8b95d",
+  "candidate_id": "version-board-newline-tailcall-fw-v1",
+  "firmware_bytes": 98304,
+  "bank_order": [
+    1,
+    2,
+    3
+  ],
+  "fresh_build": "BUILD/phase11",
+  "payloads_equal": 20,
+  "symbol_maps_equal": 29,
+  "candidate_manifest": "tests/baselines/phase11-evidence/package/candidate-manifest.json",
+  "candidate_archive": "tests/baselines/phase11-evidence/package/candidate.zip",
+  "candidate_firmware": "tests/baselines/phase11-evidence/package/firmware.bin",
+  "phase1_through_phase10_baselines_unchanged": true,
+  "phase_baseline_sha256": {
+    "1": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+    "2": "69806d28b3bbe837b99febc9ec0198020796843c6b41ce055b5e684a67e3138f",
+    "3": "dec1aa37b2ec7300d7fc726bbb228238bb6b62ab44baddc8731db92c2db139db",
+    "4": "acc5b9c76633e2226a223b90032f5232970232410c966bd4dae5876edace5a84",
+    "5": "b1bd940afb676d6ba30e0f2358d5b67992d0ad2302e363869656c8b01edebf14",
+    "6": "3c439cc37a3e22e21c8dec68264da38d353eea03ae713e0ae1c8a5a39dc31184",
+    "7": "6ca15073dfce5a0b39558f2080e3160cc3194e7479adb1f94a752e2bc08d0fa7",
+    "8": "7f562a626607572733b068e2327719d4f33c5a60daef8f4e1795462d92bad78c",
+    "9": "264407133f2b131a59bc3b6e1e8c2310485a84019bf628f399c0468a1d2bd5dc",
+    "10": "8ba890a425721430d76c3e2dc7cc7ac8eea9eae1854dee56fffe3f06b261027c"
+  },
+  "preservation": {
+    "protected_file_count": 1229,
+    "authoritative_source_file_count": 135,
+    "all_sha256_unchanged": true,
+    "receipt": "tests/baselines/phase11-evidence/preservation.json"
+  },
+  "candidate_asset_sha256": "45eff91880623ee643feb329791d8691e9b9f4d21340b6748dbc205866597d7c",
+  "candidate_body_sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7",
+  "version": {
+    "bank": 2,
+    "rom_address": 63488,
+    "asset_bytes": 2048,
+    "body_origin": 28160,
+    "body_bytes": 636,
+    "executable_entry": 28164,
+    "seal_patch_offset": 2038,
+    "seal_patch_hex": "CF2E",
+    "crc16_ccitt": 0,
+    "embedded_powerfail_worker_unchanged": true,
+    "vector_tail_unchanged": true,
+    "all_64_symbol_values_unchanged": true
+  },
+  "identity": {
+    "version": "2.0rc1",
+    "generation": 50,
+    "boot_compatibility": 1145194289,
+    "bank_order": [
+      1,
+      2,
+      3
+    ],
+    "image_bytes": 98304,
+    "candidate_is_current_firmware": false
+  },
+  "changes": [
+    {
+      "firmware_offset": 64092,
+      "bank": 2,
+      "address": 64092,
+      "baseline": 32,
+      "candidate": 76
+    },
+    {
+      "firmware_offset": 65526,
+      "bank": 2,
+      "address": 65526,
+      "baseline": 134,
+      "candidate": 207
+    },
+    {
+      "firmware_offset": 65527,
+      "bank": 2,
+      "address": 65527,
+      "baseline": 67,
+      "candidate": 46
+    }
+  ],
+  "packaging": {
+    "data_files": 8,
+    "zip_members": 9,
+    "deterministic_zip": true,
+    "candidate_zip_sha256": "dce4fa118788de72d395d4577db790594c1e5b39ac6d3b20dbf753bbfb23eb6d",
+    "seal_patch_old_hex": "8643",
+    "seal_patch_new_hex": "CF2E",
+    "asset_crc16": 0,
+    "all_other_bytes_unchanged": true,
+    "bank1_unchanged": true,
+    "bank3_unchanged": true,
+    "current_installer_rejects_unregistered_or_relabeled_candidate": true
+  },
+  "verification": {
+    "static_checks": 19,
+    "package_checks": 14,
+    "runtime_configurations": 8,
+    "actual_rom_loader_command_pairs": 16,
+    "actual_rom_loader_command_executions": 32,
+    "loader_refusal_probes": 6,
+    "no_application_ram_substitution": true,
+    "inherited_phase10": {
+      "manifest_sha256": "8ba890a425721430d76c3e2dc7cc7ac8eea9eae1854dee56fffe3f06b261027c",
+      "resident_assemblies": 16,
+      "main_pairs": 218,
+      "isolated_tail_pairs": 2880,
+      "newly_repeated": false
+    },
+    "expected_loaded_rom_differences": [
+      28764,
+      30198,
+      30199,
+      31878,
+      31879
+    ],
+    "comparison": "Exact output, registers, private RAM/pointers/live caller frames, bank and persistent state; exclude only explicitly checked ROM-copy opcode/seal/mirror differences and inactive stack residue. Each selected ROM image remains unchanged. I/O address sets audited, not ordered bus traces.",
+    "timing": [
+      {
+        "cpu": "65c02",
+        "slot": "A",
+        "edu": false,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "unnamed-blank-journal",
+        "version_body_instruction_delta": 0,
+        "version_body_cycle_delta": 0,
+        "whole_command_instruction_delta": 385,
+        "whole_command_cycle_delta": 1386
+      },
+      {
+        "cpu": "65c02",
+        "slot": "A",
+        "edu": false,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "eight-character-name-max-sequence",
+        "version_body_instruction_delta": -1,
+        "version_body_cycle_delta": -9,
+        "whole_command_instruction_delta": 384,
+        "whole_command_cycle_delta": 1377
+      },
+      {
+        "cpu": "65c02",
+        "slot": "A",
+        "edu": true,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "unnamed-blank-journal",
+        "version_body_instruction_delta": 0,
+        "version_body_cycle_delta": 0,
+        "whole_command_instruction_delta": 385,
+        "whole_command_cycle_delta": 1386
+      },
+      {
+        "cpu": "65c02",
+        "slot": "A",
+        "edu": true,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "eight-character-name-max-sequence",
+        "version_body_instruction_delta": -1,
+        "version_body_cycle_delta": -9,
+        "whole_command_instruction_delta": 384,
+        "whole_command_cycle_delta": 1377
+      },
+      {
+        "cpu": "65c02",
+        "slot": "B",
+        "edu": false,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "unnamed-blank-journal",
+        "version_body_instruction_delta": 0,
+        "version_body_cycle_delta": 0,
+        "whole_command_instruction_delta": 385,
+        "whole_command_cycle_delta": 1386
+      },
+      {
+        "cpu": "65c02",
+        "slot": "B",
+        "edu": false,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "eight-character-name-max-sequence",
+        "version_body_instruction_delta": -1,
+        "version_body_cycle_delta": -9,
+        "whole_command_instruction_delta": 384,
+        "whole_command_cycle_delta": 1377
+      },
+      {
+        "cpu": "65c02",
+        "slot": "B",
+        "edu": true,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "unnamed-blank-journal",
+        "version_body_instruction_delta": 0,
+        "version_body_cycle_delta": 0,
+        "whole_command_instruction_delta": 385,
+        "whole_command_cycle_delta": 1386
+      },
+      {
+        "cpu": "65c02",
+        "slot": "B",
+        "edu": true,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "eight-character-name-max-sequence",
+        "version_body_instruction_delta": -1,
+        "version_body_cycle_delta": -9,
+        "whole_command_instruction_delta": 384,
+        "whole_command_cycle_delta": 1377
+      },
+      {
+        "cpu": "65c816-e",
+        "slot": "A",
+        "edu": false,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "unnamed-blank-journal",
+        "version_body_instruction_delta": 0,
+        "version_body_cycle_delta": 0,
+        "whole_command_instruction_delta": 385,
+        "whole_command_cycle_delta": 1386
+      },
+      {
+        "cpu": "65c816-e",
+        "slot": "A",
+        "edu": false,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "eight-character-name-max-sequence",
+        "version_body_instruction_delta": -1,
+        "version_body_cycle_delta": -9,
+        "whole_command_instruction_delta": 384,
+        "whole_command_cycle_delta": 1377
+      },
+      {
+        "cpu": "65c816-e",
+        "slot": "A",
+        "edu": true,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "unnamed-blank-journal",
+        "version_body_instruction_delta": 0,
+        "version_body_cycle_delta": 0,
+        "whole_command_instruction_delta": 385,
+        "whole_command_cycle_delta": 1386
+      },
+      {
+        "cpu": "65c816-e",
+        "slot": "A",
+        "edu": true,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "eight-character-name-max-sequence",
+        "version_body_instruction_delta": -1,
+        "version_body_cycle_delta": -9,
+        "whole_command_instruction_delta": 384,
+        "whole_command_cycle_delta": 1377
+      },
+      {
+        "cpu": "65c816-e",
+        "slot": "B",
+        "edu": false,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "unnamed-blank-journal",
+        "version_body_instruction_delta": 0,
+        "version_body_cycle_delta": 0,
+        "whole_command_instruction_delta": 385,
+        "whole_command_cycle_delta": 1386
+      },
+      {
+        "cpu": "65c816-e",
+        "slot": "B",
+        "edu": false,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "eight-character-name-max-sequence",
+        "version_body_instruction_delta": -1,
+        "version_body_cycle_delta": -9,
+        "whole_command_instruction_delta": 384,
+        "whole_command_cycle_delta": 1377
+      },
+      {
+        "cpu": "65c816-e",
+        "slot": "B",
+        "edu": true,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "unnamed-blank-journal",
+        "version_body_instruction_delta": 0,
+        "version_body_cycle_delta": 0,
+        "whole_command_instruction_delta": 385,
+        "whole_command_cycle_delta": 1386
+      },
+      {
+        "cpu": "65c816-e",
+        "slot": "B",
+        "edu": true,
+        "loader_before_entry_instruction_delta": 385,
+        "loader_before_entry_cycle_delta": 1386,
+        "name": "eight-character-name-max-sequence",
+        "version_body_instruction_delta": -1,
+        "version_body_cycle_delta": -9,
+        "whole_command_instruction_delta": 384,
+        "whole_command_cycle_delta": 1377
+      }
+    ],
+    "timing_scope": "VERSION entry to pre-finalRTS and whole command reported separately; loader CRC branches are data dependent.",
+    "performance_result": "VERSION body saves nine modeled cycles on named displays; complete packaged command is 1377 modeled cycles slower named and 1386 slower unnamed due to extra CRC work.",
+    "model_limits": "Selected monitor-slot initialization and inherited discovery/delay shortcuts; no physical cold-reset, peripheral or electrical timing qualification."
+  },
+  "documentation": "docs/VERSION_FIRMWARE_CANDIDATE.md",
+  "implementation": {
+    "tools/package_version_firmware_candidate.py": {
+      "bytes": 15446,
+      "sha256": "9328d32d45a140d6cbef8498d1039106d066c79b62971e86307649ecd6fa334c"
+    },
+    "tools/test_version_firmware_candidate.py": {
+      "bytes": 7942,
+      "sha256": "942a16b150b83e2ba0d0b0047fd7d270a130c8a60e1b2efce14ce1ca301b2e2b"
+    },
+    "tools/test_version_firmware_candidate_runtime.py": {
+      "bytes": 15811,
+      "sha256": "9e600864ee84616d2d9fb64babff0f13735d00aac12d9a93736dd15ddcd0a4ea"
+    },
+    "docs/VERSION_FIRMWARE_CANDIDATE.md": {
+      "bytes": 9985,
+      "sha256": "39e359db472444088fcd2caffb9e457f842250212d4afbeac595078727b65aca"
+    }
+  },
+  "evidence": {
+    "tests/baselines/phase11-evidence/build-report.json": {
+      "bytes": 33190,
+      "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+    },
+    "tests/baselines/phase11-evidence/crc-timing.json": {
+      "bytes": 859,
+      "sha256": "485ab0f186761199d00efdc9ee8fdd2271beae85200d66a70df07e5215d6c5af"
+    },
+    "tests/baselines/phase11-evidence/package/banks/bank1.bin": {
+      "bytes": 32768,
+      "sha256": "0d61654ce071bb3e51de09c80dd3e4b5307df2b3b57d6b1caff54abb53238dfd"
+    },
+    "tests/baselines/phase11-evidence/package/banks/bank2.bin": {
+      "bytes": 32768,
+      "sha256": "5eb5aab27c52bf8cc9b7654ba4e8098e7a2b3f4c3cd1fc9c7f9daa03ad396946"
+    },
+    "tests/baselines/phase11-evidence/package/banks/bank3.bin": {
+      "bytes": 32768,
+      "sha256": "5bec7eaf6132f2e16b7fbac2bf01d87f85c3fd5a192776380bb491e2009805a7"
+    },
+    "tests/baselines/phase11-evidence/package/candidate-manifest.json": {
+      "bytes": 5037,
+      "sha256": "b68885cff9b29e5871b8f6492633a79f34a71e2a48006b310c25f917d74d413e"
+    },
+    "tests/baselines/phase11-evidence/package/candidate.zip": {
+      "bytes": 502429,
+      "sha256": "dce4fa118788de72d395d4577db790594c1e5b39ac6d3b20dbf753bbfb23eb6d"
+    },
+    "tests/baselines/phase11-evidence/package/firmware.bin": {
+      "bytes": 98304,
+      "sha256": "4761393a3de28a1b3de76f96bf507857e40a0fd281066ae64dad31ec52f8b95d"
+    },
+    "tests/baselines/phase11-evidence/package/symbols.json": {
+      "bytes": 295373,
+      "sha256": "78e571099a9c71e8c6a7bc8b5ecfb61f62041daa080d504d95e8a7e9d5c0ad63"
+    },
+    "tests/baselines/phase11-evidence/package/version/asset.bin": {
+      "bytes": 2048,
+      "sha256": "45eff91880623ee643feb329791d8691e9b9f4d21340b6748dbc205866597d7c"
+    },
+    "tests/baselines/phase11-evidence/package/version/resident.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase11-evidence/package/version/resident.s19": {
+      "bytes": 1723,
+      "sha256": "f8eaea776ca73731ec828df93bcc1460cb6f8cc2fdbd530c02a5c14c54c5b5b8"
+    },
+    "tests/baselines/phase11-evidence/package-checks.json": {
+      "bytes": 752,
+      "sha256": "9dea770ec59c2f0749c4e841dc3bf335b5d7ffeaa87abeebfe3300d7c83d7d6f"
+    },
+    "tests/baselines/phase11-evidence/preservation.json": {
+      "bytes": 171935,
+      "sha256": "8e250930d8e7f5df2e5bf43c175dc6b5a7f778b3f3f9196dfd000b601e1477c4"
+    },
+    "tests/baselines/phase11-evidence/runtime-65c02.json": {
+      "bytes": 74508,
+      "sha256": "72a2594cd96d4e115e003bd82320ff89a3c4df008b9731b180bbcdf2cb09bf3e"
+    },
+    "tests/baselines/phase11-evidence/runtime-65c816-e.json": {
+      "bytes": 77090,
+      "sha256": "e8705a00f1324b4eaed2a1a913e14d23e464ff765966ea35943ae269b636e694"
+    },
+    "tests/baselines/phase11-evidence/static.json": {
+      "bytes": 2514,
+      "sha256": "a1687fb2109a0bba50bc343ab180ad1a3da56d2b449284be7ffd247c86c25e0a"
+    }
+  }
+}

@@ -1,0 +1,2328 @@
+{
+  "schema": 1,
+  "unit": {
+    "name": "version/version",
+    "authoritative_source": "src/current/version/version.asm",
+    "source_sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999",
+    "authoritative_sources": {
+      "src/current/version/version.asm": {
+        "bytes": 3070,
+        "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999"
+      },
+      "src/current/version/version-links.inc": {
+        "bytes": 143,
+        "sha256": "a852a229ebd7969f81c6fa8d289c0d228c769ddb425a11199dde6852f426a6c4"
+      },
+      "src/current/version/version-board.inc": {
+        "bytes": 4008,
+        "sha256": "14e07f7a951921e5f05227a0c9ed3baaa4250795beb868290da3158e4fdbdaae"
+      }
+    },
+    "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+    "phase8_manifest_sha256": "7f562a626607572733b068e2327719d4f33c5a60daef8f4e1795462d92bad78c",
+    "generated_source_is_authoritative": false
+  },
+  "assembly": {
+    "origin": 28160,
+    "end_exclusive": 28796,
+    "expected_bytes": 636,
+    "executable_entry": 28164,
+    "entries": {
+      "application_entry": 28164
+    },
+    "symbols": {
+      "START": 28160,
+      "APP_END": 28796,
+      "DISPLAY_VERSION": 28167,
+      "VER_LONG_16": 28184,
+      "CHECK_RUNNING": 28184,
+      "CPU_READY": 28232,
+      "BOARD_UNNAMED": 28259,
+      "RUNNING_LINE": 28266,
+      "RUNNING_GEN": 28295,
+      "RUNNING_BAD": 28310,
+      "SLOT_LIST": 28317,
+      "SLOT_LETTER": 28347,
+      "SLOT_CHAR": 28355,
+      "MON_PRINT": 28358,
+      "PRINT": 28361,
+      "PRINT_NEXT": 28367,
+      "PRINT_DONE": 28381,
+      "UNNAMED_TEXT": 28382,
+      "RUNNING_TEXT": 28399,
+      "GEN_TEXT": 28417,
+      "BAD_RUN_TEXT": 28424,
+      "RUNNING_SLOT": 28453,
+      "MON_CALL": 28454,
+      "TZ_SUM": 28456,
+      "TZ_CRC": 28458,
+      "TZ_CRC_BYTE": 28468,
+      "TZ_CRC_BIT": 28478,
+      "TZ_CRC_NEXT": 28502,
+      "BN_READ": 28511,
+      "BN_RESET": 28519,
+      "BN_SLOT": 28542,
+      "BN_BLANK": 28544,
+      "VB_LONG_56": 28563,
+      "BN_CHECK": 28576,
+      "VB_LONG_65": 28585,
+      "BN_HEADER": 28587,
+      "BN_CHAR_CHECK": 28629,
+      "BN_PADDING": 28652,
+      "BN_NEWEST": 28659,
+      "BN_NEWER": 28663,
+      "BN_KEEP": 28676,
+      "BN_COPY_SEQ": 28680,
+      "BN_COPY": 28699,
+      "BN_NEXT": 28710,
+      "BN_PAGE": 28721,
+      "VB_LONG_146": 28730,
+      "BN_SHOW": 28735,
+      "BN_PRINT": 28752,
+      "BN_SHOW_DONE": 28767,
+      "BN_MAGIC": 28768,
+      "BN_LABEL": 28772,
+      "BN_LENGTH": 28780,
+      "BN_WORK": 28781,
+      "BN_TEXT": 28782,
+      "BN_SEQ": 28790,
+      "BN_FREE": 28794,
+      "BOOT_ACTIVE": 32048,
+      "BOOT_DEST": 32049,
+      "BOOT_BEST": 32245,
+      "BOOT_SLOT_CHECK": 62221,
+      "BOOT_SELECT": 62115,
+      "BOOT_CHOICE": 61926,
+      "VPTR": 208,
+      "TZ_PTR": 214
+    },
+    "original_symbols": {
+      "START": 28160,
+      "APP_END": 28796,
+      "DISPLAY_VERSION": 28167,
+      "VER_LONG_16": 28184,
+      "CHECK_RUNNING": 28184,
+      "CPU_READY": 28232,
+      "BOARD_UNNAMED": 28259,
+      "RUNNING_LINE": 28266,
+      "RUNNING_GEN": 28295,
+      "RUNNING_BAD": 28310,
+      "SLOT_LIST": 28317,
+      "SLOT_LETTER": 28347,
+      "SLOT_CHAR": 28355,
+      "MON_PRINT": 28358,
+      "PRINT": 28361,
+      "PRINT_NEXT": 28367,
+      "PRINT_DONE": 28381,
+      "UNNAMED_TEXT": 28382,
+      "RUNNING_TEXT": 28399,
+      "GEN_TEXT": 28417,
+      "BAD_RUNNING_TEXT": 28424,
+      "RUNNING_SLOT": 28453,
+      "MON_CALL": 28454,
+      "TZ_SUM": 28456,
+      "TZ_CRC": 28458,
+      "TZ_CRC_BYTE": 28468,
+      "TZ_CRC_BIT": 28478,
+      "TZ_CRC_NEXT": 28502,
+      "BN_READ": 28511,
+      "BN_RESET": 28519,
+      "BN_SLOT": 28542,
+      "BN_BLANK": 28544,
+      "VB_LONG_56": 28563,
+      "BN_CHECK": 28576,
+      "VB_LONG_65": 28585,
+      "BN_HEADER": 28587,
+      "BN_CHAR_CHECK": 28629,
+      "BN_PADDING": 28652,
+      "BN_NEWEST": 28659,
+      "BN_NEWER": 28663,
+      "BN_KEEP": 28676,
+      "BN_COPY_SEQ": 28680,
+      "BN_COPY": 28699,
+      "BN_NEXT": 28710,
+      "BN_PAGE": 28721,
+      "VB_LONG_146": 28730,
+      "BN_SHOW": 28735,
+      "BN_PRINT": 28752,
+      "BN_SHOW_DONE": 28767,
+      "BN_MAGIC": 28768,
+      "BN_LABEL": 28772,
+      "BN_LENGTH": 28780,
+      "BN_WORK": 28781,
+      "BN_TEXT": 28782,
+      "BN_SEQ": 28790,
+      "BN_FREE": 28794,
+      "BOOT_ACTIVE": 32048,
+      "BOOT_DEST": 32049,
+      "BOOT_BEST": 32245,
+      "BOOT_SLOT_CHECK": 62221,
+      "BOOT_SELECT": 62115,
+      "BOOT_CHOICE_SLOT": 61926,
+      "VPTR": 208,
+      "TZ_PTR": 214
+    },
+    "original_to_resident_names": {
+      "START": "START",
+      "APP_END": "APP_END",
+      "DISPLAY_VERSION": "DISPLAY_VERSION",
+      "VER_LONG_16": "VER_LONG_16",
+      "CHECK_RUNNING": "CHECK_RUNNING",
+      "CPU_READY": "CPU_READY",
+      "BOARD_UNNAMED": "BOARD_UNNAMED",
+      "RUNNING_LINE": "RUNNING_LINE",
+      "RUNNING_GEN": "RUNNING_GEN",
+      "RUNNING_BAD": "RUNNING_BAD",
+      "SLOT_LIST": "SLOT_LIST",
+      "SLOT_LETTER": "SLOT_LETTER",
+      "SLOT_CHAR": "SLOT_CHAR",
+      "MON_PRINT": "MON_PRINT",
+      "PRINT": "PRINT",
+      "PRINT_NEXT": "PRINT_NEXT",
+      "PRINT_DONE": "PRINT_DONE",
+      "UNNAMED_TEXT": "UNNAMED_TEXT",
+      "RUNNING_TEXT": "RUNNING_TEXT",
+      "GEN_TEXT": "GEN_TEXT",
+      "BAD_RUNNING_TEXT": "BAD_RUN_TEXT",
+      "RUNNING_SLOT": "RUNNING_SLOT",
+      "MON_CALL": "MON_CALL",
+      "TZ_SUM": "TZ_SUM",
+      "TZ_CRC": "TZ_CRC",
+      "TZ_CRC_BYTE": "TZ_CRC_BYTE",
+      "TZ_CRC_BIT": "TZ_CRC_BIT",
+      "TZ_CRC_NEXT": "TZ_CRC_NEXT",
+      "BN_READ": "BN_READ",
+      "BN_RESET": "BN_RESET",
+      "BN_SLOT": "BN_SLOT",
+      "BN_BLANK": "BN_BLANK",
+      "VB_LONG_56": "VB_LONG_56",
+      "BN_CHECK": "BN_CHECK",
+      "VB_LONG_65": "VB_LONG_65",
+      "BN_HEADER": "BN_HEADER",
+      "BN_CHAR_CHECK": "BN_CHAR_CHECK",
+      "BN_PADDING": "BN_PADDING",
+      "BN_NEWEST": "BN_NEWEST",
+      "BN_NEWER": "BN_NEWER",
+      "BN_KEEP": "BN_KEEP",
+      "BN_COPY_SEQ": "BN_COPY_SEQ",
+      "BN_COPY": "BN_COPY",
+      "BN_NEXT": "BN_NEXT",
+      "BN_PAGE": "BN_PAGE",
+      "VB_LONG_146": "VB_LONG_146",
+      "BN_SHOW": "BN_SHOW",
+      "BN_PRINT": "BN_PRINT",
+      "BN_SHOW_DONE": "BN_SHOW_DONE",
+      "BN_MAGIC": "BN_MAGIC",
+      "BN_LABEL": "BN_LABEL",
+      "BN_LENGTH": "BN_LENGTH",
+      "BN_WORK": "BN_WORK",
+      "BN_TEXT": "BN_TEXT",
+      "BN_SEQ": "BN_SEQ",
+      "BN_FREE": "BN_FREE",
+      "BOOT_ACTIVE": "BOOT_ACTIVE",
+      "BOOT_DEST": "BOOT_DEST",
+      "BOOT_BEST": "BOOT_BEST",
+      "BOOT_SLOT_CHECK": "BOOT_SLOT_CHECK",
+      "BOOT_SELECT": "BOOT_SELECT",
+      "BOOT_CHOICE_SLOT": "BOOT_CHOICE",
+      "VPTR": "VPTR",
+      "TZ_PTR": "TZ_PTR"
+    },
+    "exports": {
+      "START": 28160,
+      "APP_END": 28796
+    },
+    "host_declared_exports": [
+      "START",
+      "APP_END"
+    ]
+  },
+  "storage": {
+    "kind": "VERSION RAM application body inside sealed ROM asset",
+    "physical_output_start": 512,
+    "ram_destination": 28160,
+    "enclosing_asset": "version/asset.bin",
+    "enclosing_asset_bytes": 2048,
+    "firmware_bank": 2,
+    "asset_rom_address": 63488,
+    "asset_offset": 0,
+    "firmware_offset": 63488,
+    "not_a_standalone_rom_image": true
+  },
+  "bindings": {
+    "symbolic_imports": {
+      "BOOT_ACTIVE": 32048,
+      "BOOT_DEST": 32049,
+      "BOOT_BEST": 32245,
+      "BOOT_SLOT_CHECK": 62221,
+      "BOOT_SELECT": 62115,
+      "BOOT_CHOICE": 61926,
+      "VPTR": 208,
+      "TZ_PTR": 214
+    },
+    "aliases": {
+      "BOOT_CHOICE_SLOT": "BOOT_CHOICE",
+      "BAD_RUNNING_TEXT": "BAD_RUN_TEXT"
+    },
+    "binding_roles": {
+      "BOOT_ACTIVE": "bootstrap running/default monitor slot byte",
+      "BOOT_DEST": "bootstrap slot validation input",
+      "BOOT_BEST": "bootstrap selected default slot byte",
+      "BOOT_SLOT_CHECK": "bootstrap validation routine, carry set means valid",
+      "BOOT_SELECT": "bootstrap current preference/validity selection routine",
+      "BOOT_CHOICE": "BOOT_CHOICE_SLOT bootstrap slot-line formatter",
+      "VPTR": "borrowed monitor zero-page string pointer $D0/$D1",
+      "TZ_PTR": "borrowed monitor zero-page source pointer $D6/$D7"
+    },
+    "literal_abi": [
+      {
+        "value": 32365,
+        "role": "monitor console byte output"
+      },
+      {
+        "value": 32380,
+        "role": "monitor hexadecimal byte output"
+      },
+      {
+        "value": 32383,
+        "role": "monitor newline output"
+      },
+      {
+        "value": 32000,
+        "role": "monitor hardware identity board value"
+      },
+      {
+        "value": 32001,
+        "role": "monitor hardware identity CPU value"
+      },
+      {
+        "value": 32748,
+        "role": "VIA PCR read/write bank-control byte"
+      },
+      {
+        "value": 39936,
+        "role": "start of bank-selected board-name record area"
+      },
+      {
+        "value": 40960,
+        "role": "exclusive end of board-name record area"
+      }
+    ]
+  },
+  "preparation": {
+    "recipe": "version-full-v1-exact-three-source-flattening",
+    "removed_wrappers": [
+      "MODULE VERSION",
+      "XDEF START",
+      "XDEF APP_END",
+      "CODE",
+      "ENDMOD"
+    ],
+    "normalization": "Flatten only the two pinned includes in original order; strip comments and outer whitespace; colonize data labels; DB becomes BYTE; exact linked zero-filled DS becomes FILL count,0",
+    "added_prefix": "ORG $6E00",
+    "added_suffix": "END",
+    "include_expansion": [
+      "version/version-links.inc",
+      "version/version-board.inc"
+    ],
+    "symbol_renaming": {
+      "BOOT_CHOICE_SLOT": "BOOT_CHOICE",
+      "BAD_RUNNING_TEXT": "BAD_RUN_TEXT"
+    },
+    "alias_scope": "Case-insensitive complete identifier tokens outside strings and character literals",
+    "internal_label_addresses_substituted": false,
+    "reservations": {
+      "MON_CALL": {
+        "logical_address": 28454,
+        "bytes": 2,
+        "verified_fill": 0
+      },
+      "TZ_SUM": {
+        "logical_address": 28456,
+        "bytes": 2,
+        "verified_fill": 0
+      },
+      "BN_TEXT": {
+        "logical_address": 28782,
+        "bytes": 8,
+        "verified_fill": 0
+      },
+      "BN_SEQ": {
+        "logical_address": 28790,
+        "bytes": 4,
+        "verified_fill": 0
+      },
+      "BN_FREE": {
+        "logical_address": 28794,
+        "bytes": 2,
+        "verified_fill": 0
+      }
+    },
+    "changed_sources_or_unsupported_syntax": "Refuse before creating output",
+    "line_mapping": [
+      {
+        "prepared_physical_line": 1,
+        "prepared_record_line": 10,
+        "authoritative_source": null,
+        "authoritative_source_line": null
+      },
+      {
+        "prepared_physical_line": 2,
+        "prepared_record_line": 20,
+        "authoritative_source": "src/current/version/version-links.inc",
+        "authoritative_source_line": 1
+      },
+      {
+        "prepared_physical_line": 3,
+        "prepared_record_line": 30,
+        "authoritative_source": "src/current/version/version-links.inc",
+        "authoritative_source_line": 2
+      },
+      {
+        "prepared_physical_line": 4,
+        "prepared_record_line": 40,
+        "authoritative_source": "src/current/version/version-links.inc",
+        "authoritative_source_line": 3
+      },
+      {
+        "prepared_physical_line": 5,
+        "prepared_record_line": 50,
+        "authoritative_source": "src/current/version/version-links.inc",
+        "authoritative_source_line": 4
+      },
+      {
+        "prepared_physical_line": 6,
+        "prepared_record_line": 60,
+        "authoritative_source": "src/current/version/version-links.inc",
+        "authoritative_source_line": 5
+      },
+      {
+        "prepared_physical_line": 7,
+        "prepared_record_line": 70,
+        "authoritative_source": "src/current/version/version-links.inc",
+        "authoritative_source_line": 6
+      },
+      {
+        "prepared_physical_line": 8,
+        "prepared_record_line": 80,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 6
+      },
+      {
+        "prepared_physical_line": 9,
+        "prepared_record_line": 90,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 7
+      },
+      {
+        "prepared_physical_line": 10,
+        "prepared_record_line": 100,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 9
+      },
+      {
+        "prepared_physical_line": 11,
+        "prepared_record_line": 110,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 10
+      },
+      {
+        "prepared_physical_line": 12,
+        "prepared_record_line": 120,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 11
+      },
+      {
+        "prepared_physical_line": 13,
+        "prepared_record_line": 130,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 12
+      },
+      {
+        "prepared_physical_line": 14,
+        "prepared_record_line": 140,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 13
+      },
+      {
+        "prepared_physical_line": 15,
+        "prepared_record_line": 150,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 14
+      },
+      {
+        "prepared_physical_line": 16,
+        "prepared_record_line": 160,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 15
+      },
+      {
+        "prepared_physical_line": 17,
+        "prepared_record_line": 170,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 16
+      },
+      {
+        "prepared_physical_line": 18,
+        "prepared_record_line": 180,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 17
+      },
+      {
+        "prepared_physical_line": 19,
+        "prepared_record_line": 190,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 18
+      },
+      {
+        "prepared_physical_line": 20,
+        "prepared_record_line": 200,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 19
+      },
+      {
+        "prepared_physical_line": 21,
+        "prepared_record_line": 210,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 20
+      },
+      {
+        "prepared_physical_line": 22,
+        "prepared_record_line": 220,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 21
+      },
+      {
+        "prepared_physical_line": 23,
+        "prepared_record_line": 230,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 22
+      },
+      {
+        "prepared_physical_line": 24,
+        "prepared_record_line": 240,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 23
+      },
+      {
+        "prepared_physical_line": 25,
+        "prepared_record_line": 250,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 24
+      },
+      {
+        "prepared_physical_line": 26,
+        "prepared_record_line": 260,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 25
+      },
+      {
+        "prepared_physical_line": 27,
+        "prepared_record_line": 270,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 26
+      },
+      {
+        "prepared_physical_line": 28,
+        "prepared_record_line": 280,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 27
+      },
+      {
+        "prepared_physical_line": 29,
+        "prepared_record_line": 290,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 28
+      },
+      {
+        "prepared_physical_line": 30,
+        "prepared_record_line": 300,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 29
+      },
+      {
+        "prepared_physical_line": 31,
+        "prepared_record_line": 310,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 30
+      },
+      {
+        "prepared_physical_line": 32,
+        "prepared_record_line": 320,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 31
+      },
+      {
+        "prepared_physical_line": 33,
+        "prepared_record_line": 330,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 32
+      },
+      {
+        "prepared_physical_line": 34,
+        "prepared_record_line": 340,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 33
+      },
+      {
+        "prepared_physical_line": 35,
+        "prepared_record_line": 350,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 34
+      },
+      {
+        "prepared_physical_line": 36,
+        "prepared_record_line": 360,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 35
+      },
+      {
+        "prepared_physical_line": 37,
+        "prepared_record_line": 370,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 36
+      },
+      {
+        "prepared_physical_line": 38,
+        "prepared_record_line": 380,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 37
+      },
+      {
+        "prepared_physical_line": 39,
+        "prepared_record_line": 390,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 38
+      },
+      {
+        "prepared_physical_line": 40,
+        "prepared_record_line": 400,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 39
+      },
+      {
+        "prepared_physical_line": 41,
+        "prepared_record_line": 410,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 40
+      },
+      {
+        "prepared_physical_line": 42,
+        "prepared_record_line": 420,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 41
+      },
+      {
+        "prepared_physical_line": 43,
+        "prepared_record_line": 430,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 42
+      },
+      {
+        "prepared_physical_line": 44,
+        "prepared_record_line": 440,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 43
+      },
+      {
+        "prepared_physical_line": 45,
+        "prepared_record_line": 450,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 44
+      },
+      {
+        "prepared_physical_line": 46,
+        "prepared_record_line": 460,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 45
+      },
+      {
+        "prepared_physical_line": 47,
+        "prepared_record_line": 470,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 46
+      },
+      {
+        "prepared_physical_line": 48,
+        "prepared_record_line": 480,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 47
+      },
+      {
+        "prepared_physical_line": 49,
+        "prepared_record_line": 490,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 48
+      },
+      {
+        "prepared_physical_line": 50,
+        "prepared_record_line": 500,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 49
+      },
+      {
+        "prepared_physical_line": 51,
+        "prepared_record_line": 510,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 50
+      },
+      {
+        "prepared_physical_line": 52,
+        "prepared_record_line": 520,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 51
+      },
+      {
+        "prepared_physical_line": 53,
+        "prepared_record_line": 530,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 52
+      },
+      {
+        "prepared_physical_line": 54,
+        "prepared_record_line": 540,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 53
+      },
+      {
+        "prepared_physical_line": 55,
+        "prepared_record_line": 550,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 54
+      },
+      {
+        "prepared_physical_line": 56,
+        "prepared_record_line": 560,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 55
+      },
+      {
+        "prepared_physical_line": 57,
+        "prepared_record_line": 570,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 56
+      },
+      {
+        "prepared_physical_line": 58,
+        "prepared_record_line": 580,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 57
+      },
+      {
+        "prepared_physical_line": 59,
+        "prepared_record_line": 590,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 58
+      },
+      {
+        "prepared_physical_line": 60,
+        "prepared_record_line": 600,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 59
+      },
+      {
+        "prepared_physical_line": 61,
+        "prepared_record_line": 610,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 60
+      },
+      {
+        "prepared_physical_line": 62,
+        "prepared_record_line": 620,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 61
+      },
+      {
+        "prepared_physical_line": 63,
+        "prepared_record_line": 630,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 62
+      },
+      {
+        "prepared_physical_line": 64,
+        "prepared_record_line": 640,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 63
+      },
+      {
+        "prepared_physical_line": 65,
+        "prepared_record_line": 650,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 64
+      },
+      {
+        "prepared_physical_line": 66,
+        "prepared_record_line": 660,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 65
+      },
+      {
+        "prepared_physical_line": 67,
+        "prepared_record_line": 670,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 66
+      },
+      {
+        "prepared_physical_line": 68,
+        "prepared_record_line": 680,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 67
+      },
+      {
+        "prepared_physical_line": 69,
+        "prepared_record_line": 690,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 68
+      },
+      {
+        "prepared_physical_line": 70,
+        "prepared_record_line": 700,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 69
+      },
+      {
+        "prepared_physical_line": 71,
+        "prepared_record_line": 710,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 70
+      },
+      {
+        "prepared_physical_line": 72,
+        "prepared_record_line": 720,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 71
+      },
+      {
+        "prepared_physical_line": 73,
+        "prepared_record_line": 730,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 72
+      },
+      {
+        "prepared_physical_line": 74,
+        "prepared_record_line": 740,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 73
+      },
+      {
+        "prepared_physical_line": 75,
+        "prepared_record_line": 750,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 74
+      },
+      {
+        "prepared_physical_line": 76,
+        "prepared_record_line": 760,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 75
+      },
+      {
+        "prepared_physical_line": 77,
+        "prepared_record_line": 770,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 76
+      },
+      {
+        "prepared_physical_line": 78,
+        "prepared_record_line": 780,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 77
+      },
+      {
+        "prepared_physical_line": 79,
+        "prepared_record_line": 790,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 78
+      },
+      {
+        "prepared_physical_line": 80,
+        "prepared_record_line": 800,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 79
+      },
+      {
+        "prepared_physical_line": 81,
+        "prepared_record_line": 810,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 80
+      },
+      {
+        "prepared_physical_line": 82,
+        "prepared_record_line": 820,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 81
+      },
+      {
+        "prepared_physical_line": 83,
+        "prepared_record_line": 830,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 82
+      },
+      {
+        "prepared_physical_line": 84,
+        "prepared_record_line": 840,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 85
+      },
+      {
+        "prepared_physical_line": 85,
+        "prepared_record_line": 850,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 86
+      },
+      {
+        "prepared_physical_line": 86,
+        "prepared_record_line": 860,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 87
+      },
+      {
+        "prepared_physical_line": 87,
+        "prepared_record_line": 870,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 88
+      },
+      {
+        "prepared_physical_line": 88,
+        "prepared_record_line": 880,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 89
+      },
+      {
+        "prepared_physical_line": 89,
+        "prepared_record_line": 890,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 90
+      },
+      {
+        "prepared_physical_line": 90,
+        "prepared_record_line": 900,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 91
+      },
+      {
+        "prepared_physical_line": 91,
+        "prepared_record_line": 910,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 92
+      },
+      {
+        "prepared_physical_line": 92,
+        "prepared_record_line": 920,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 93
+      },
+      {
+        "prepared_physical_line": 93,
+        "prepared_record_line": 930,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 94
+      },
+      {
+        "prepared_physical_line": 94,
+        "prepared_record_line": 940,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 95
+      },
+      {
+        "prepared_physical_line": 95,
+        "prepared_record_line": 950,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 96
+      },
+      {
+        "prepared_physical_line": 96,
+        "prepared_record_line": 960,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 97
+      },
+      {
+        "prepared_physical_line": 97,
+        "prepared_record_line": 970,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 98
+      },
+      {
+        "prepared_physical_line": 98,
+        "prepared_record_line": 980,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 99
+      },
+      {
+        "prepared_physical_line": 99,
+        "prepared_record_line": 990,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 100
+      },
+      {
+        "prepared_physical_line": 100,
+        "prepared_record_line": 1000,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 101
+      },
+      {
+        "prepared_physical_line": 101,
+        "prepared_record_line": 1010,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 102
+      },
+      {
+        "prepared_physical_line": 102,
+        "prepared_record_line": 1020,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 103
+      },
+      {
+        "prepared_physical_line": 103,
+        "prepared_record_line": 1030,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 104
+      },
+      {
+        "prepared_physical_line": 104,
+        "prepared_record_line": 1040,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 105
+      },
+      {
+        "prepared_physical_line": 105,
+        "prepared_record_line": 1050,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 106
+      },
+      {
+        "prepared_physical_line": 106,
+        "prepared_record_line": 1060,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 107
+      },
+      {
+        "prepared_physical_line": 107,
+        "prepared_record_line": 1070,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 108
+      },
+      {
+        "prepared_physical_line": 108,
+        "prepared_record_line": 1080,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 109
+      },
+      {
+        "prepared_physical_line": 109,
+        "prepared_record_line": 1090,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 110
+      },
+      {
+        "prepared_physical_line": 110,
+        "prepared_record_line": 1100,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 111
+      },
+      {
+        "prepared_physical_line": 111,
+        "prepared_record_line": 1110,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 112
+      },
+      {
+        "prepared_physical_line": 112,
+        "prepared_record_line": 1120,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 113
+      },
+      {
+        "prepared_physical_line": 113,
+        "prepared_record_line": 1130,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 114
+      },
+      {
+        "prepared_physical_line": 114,
+        "prepared_record_line": 1140,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 115
+      },
+      {
+        "prepared_physical_line": 115,
+        "prepared_record_line": 1150,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 116
+      },
+      {
+        "prepared_physical_line": 116,
+        "prepared_record_line": 1160,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 117
+      },
+      {
+        "prepared_physical_line": 117,
+        "prepared_record_line": 1170,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 118
+      },
+      {
+        "prepared_physical_line": 118,
+        "prepared_record_line": 1180,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 119
+      },
+      {
+        "prepared_physical_line": 119,
+        "prepared_record_line": 1190,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 120
+      },
+      {
+        "prepared_physical_line": 120,
+        "prepared_record_line": 1200,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 121
+      },
+      {
+        "prepared_physical_line": 121,
+        "prepared_record_line": 1210,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 122
+      },
+      {
+        "prepared_physical_line": 122,
+        "prepared_record_line": 1220,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 123
+      },
+      {
+        "prepared_physical_line": 123,
+        "prepared_record_line": 1230,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 124
+      },
+      {
+        "prepared_physical_line": 124,
+        "prepared_record_line": 1240,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 125
+      },
+      {
+        "prepared_physical_line": 125,
+        "prepared_record_line": 1250,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 1
+      },
+      {
+        "prepared_physical_line": 126,
+        "prepared_record_line": 1260,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 2
+      },
+      {
+        "prepared_physical_line": 127,
+        "prepared_record_line": 1270,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 3
+      },
+      {
+        "prepared_physical_line": 128,
+        "prepared_record_line": 1280,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 4
+      },
+      {
+        "prepared_physical_line": 129,
+        "prepared_record_line": 1290,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 5
+      },
+      {
+        "prepared_physical_line": 130,
+        "prepared_record_line": 1300,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 6
+      },
+      {
+        "prepared_physical_line": 131,
+        "prepared_record_line": 1310,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 7
+      },
+      {
+        "prepared_physical_line": 132,
+        "prepared_record_line": 1320,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 8
+      },
+      {
+        "prepared_physical_line": 133,
+        "prepared_record_line": 1330,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 9
+      },
+      {
+        "prepared_physical_line": 134,
+        "prepared_record_line": 1340,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 10
+      },
+      {
+        "prepared_physical_line": 135,
+        "prepared_record_line": 1350,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 11
+      },
+      {
+        "prepared_physical_line": 136,
+        "prepared_record_line": 1360,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 12
+      },
+      {
+        "prepared_physical_line": 137,
+        "prepared_record_line": 1370,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 13
+      },
+      {
+        "prepared_physical_line": 138,
+        "prepared_record_line": 1380,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 14
+      },
+      {
+        "prepared_physical_line": 139,
+        "prepared_record_line": 1390,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 15
+      },
+      {
+        "prepared_physical_line": 140,
+        "prepared_record_line": 1400,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 16
+      },
+      {
+        "prepared_physical_line": 141,
+        "prepared_record_line": 1410,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 17
+      },
+      {
+        "prepared_physical_line": 142,
+        "prepared_record_line": 1420,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 18
+      },
+      {
+        "prepared_physical_line": 143,
+        "prepared_record_line": 1430,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 19
+      },
+      {
+        "prepared_physical_line": 144,
+        "prepared_record_line": 1440,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 20
+      },
+      {
+        "prepared_physical_line": 145,
+        "prepared_record_line": 1450,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 21
+      },
+      {
+        "prepared_physical_line": 146,
+        "prepared_record_line": 1460,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 22
+      },
+      {
+        "prepared_physical_line": 147,
+        "prepared_record_line": 1470,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 23
+      },
+      {
+        "prepared_physical_line": 148,
+        "prepared_record_line": 1480,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 24
+      },
+      {
+        "prepared_physical_line": 149,
+        "prepared_record_line": 1490,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 25
+      },
+      {
+        "prepared_physical_line": 150,
+        "prepared_record_line": 1500,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 26
+      },
+      {
+        "prepared_physical_line": 151,
+        "prepared_record_line": 1510,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 27
+      },
+      {
+        "prepared_physical_line": 152,
+        "prepared_record_line": 1520,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 31
+      },
+      {
+        "prepared_physical_line": 153,
+        "prepared_record_line": 1530,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 32
+      },
+      {
+        "prepared_physical_line": 154,
+        "prepared_record_line": 1540,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 33
+      },
+      {
+        "prepared_physical_line": 155,
+        "prepared_record_line": 1550,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 34
+      },
+      {
+        "prepared_physical_line": 156,
+        "prepared_record_line": 1560,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 35
+      },
+      {
+        "prepared_physical_line": 157,
+        "prepared_record_line": 1570,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 36
+      },
+      {
+        "prepared_physical_line": 158,
+        "prepared_record_line": 1580,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 37
+      },
+      {
+        "prepared_physical_line": 159,
+        "prepared_record_line": 1590,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 38
+      },
+      {
+        "prepared_physical_line": 160,
+        "prepared_record_line": 1600,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 39
+      },
+      {
+        "prepared_physical_line": 161,
+        "prepared_record_line": 1610,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 40
+      },
+      {
+        "prepared_physical_line": 162,
+        "prepared_record_line": 1620,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 41
+      },
+      {
+        "prepared_physical_line": 163,
+        "prepared_record_line": 1630,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 42
+      },
+      {
+        "prepared_physical_line": 164,
+        "prepared_record_line": 1640,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 43
+      },
+      {
+        "prepared_physical_line": 165,
+        "prepared_record_line": 1650,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 44
+      },
+      {
+        "prepared_physical_line": 166,
+        "prepared_record_line": 1660,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 45
+      },
+      {
+        "prepared_physical_line": 167,
+        "prepared_record_line": 1670,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 46
+      },
+      {
+        "prepared_physical_line": 168,
+        "prepared_record_line": 1680,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 47
+      },
+      {
+        "prepared_physical_line": 169,
+        "prepared_record_line": 1690,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 48
+      },
+      {
+        "prepared_physical_line": 170,
+        "prepared_record_line": 1700,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 49
+      },
+      {
+        "prepared_physical_line": 171,
+        "prepared_record_line": 1710,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 50
+      },
+      {
+        "prepared_physical_line": 172,
+        "prepared_record_line": 1720,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 51
+      },
+      {
+        "prepared_physical_line": 173,
+        "prepared_record_line": 1730,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 52
+      },
+      {
+        "prepared_physical_line": 174,
+        "prepared_record_line": 1740,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 53
+      },
+      {
+        "prepared_physical_line": 175,
+        "prepared_record_line": 1750,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 54
+      },
+      {
+        "prepared_physical_line": 176,
+        "prepared_record_line": 1760,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 55
+      },
+      {
+        "prepared_physical_line": 177,
+        "prepared_record_line": 1770,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 56
+      },
+      {
+        "prepared_physical_line": 178,
+        "prepared_record_line": 1780,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 57
+      },
+      {
+        "prepared_physical_line": 179,
+        "prepared_record_line": 1790,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 58
+      },
+      {
+        "prepared_physical_line": 180,
+        "prepared_record_line": 1800,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 59
+      },
+      {
+        "prepared_physical_line": 181,
+        "prepared_record_line": 1810,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 60
+      },
+      {
+        "prepared_physical_line": 182,
+        "prepared_record_line": 1820,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 61
+      },
+      {
+        "prepared_physical_line": 183,
+        "prepared_record_line": 1830,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 62
+      },
+      {
+        "prepared_physical_line": 184,
+        "prepared_record_line": 1840,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 63
+      },
+      {
+        "prepared_physical_line": 185,
+        "prepared_record_line": 1850,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 64
+      },
+      {
+        "prepared_physical_line": 186,
+        "prepared_record_line": 1860,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 65
+      },
+      {
+        "prepared_physical_line": 187,
+        "prepared_record_line": 1870,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 66
+      },
+      {
+        "prepared_physical_line": 188,
+        "prepared_record_line": 1880,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 67
+      },
+      {
+        "prepared_physical_line": 189,
+        "prepared_record_line": 1890,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 68
+      },
+      {
+        "prepared_physical_line": 190,
+        "prepared_record_line": 1900,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 69
+      },
+      {
+        "prepared_physical_line": 191,
+        "prepared_record_line": 1910,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 70
+      },
+      {
+        "prepared_physical_line": 192,
+        "prepared_record_line": 1920,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 71
+      },
+      {
+        "prepared_physical_line": 193,
+        "prepared_record_line": 1930,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 72
+      },
+      {
+        "prepared_physical_line": 194,
+        "prepared_record_line": 1940,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 73
+      },
+      {
+        "prepared_physical_line": 195,
+        "prepared_record_line": 1950,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 74
+      },
+      {
+        "prepared_physical_line": 196,
+        "prepared_record_line": 1960,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 75
+      },
+      {
+        "prepared_physical_line": 197,
+        "prepared_record_line": 1970,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 76
+      },
+      {
+        "prepared_physical_line": 198,
+        "prepared_record_line": 1980,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 77
+      },
+      {
+        "prepared_physical_line": 199,
+        "prepared_record_line": 1990,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 78
+      },
+      {
+        "prepared_physical_line": 200,
+        "prepared_record_line": 2000,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 79
+      },
+      {
+        "prepared_physical_line": 201,
+        "prepared_record_line": 2010,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 80
+      },
+      {
+        "prepared_physical_line": 202,
+        "prepared_record_line": 2020,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 81
+      },
+      {
+        "prepared_physical_line": 203,
+        "prepared_record_line": 2030,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 82
+      },
+      {
+        "prepared_physical_line": 204,
+        "prepared_record_line": 2040,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 83
+      },
+      {
+        "prepared_physical_line": 205,
+        "prepared_record_line": 2050,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 84
+      },
+      {
+        "prepared_physical_line": 206,
+        "prepared_record_line": 2060,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 85
+      },
+      {
+        "prepared_physical_line": 207,
+        "prepared_record_line": 2070,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 86
+      },
+      {
+        "prepared_physical_line": 208,
+        "prepared_record_line": 2080,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 87
+      },
+      {
+        "prepared_physical_line": 209,
+        "prepared_record_line": 2090,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 88
+      },
+      {
+        "prepared_physical_line": 210,
+        "prepared_record_line": 2100,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 89
+      },
+      {
+        "prepared_physical_line": 211,
+        "prepared_record_line": 2110,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 90
+      },
+      {
+        "prepared_physical_line": 212,
+        "prepared_record_line": 2120,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 91
+      },
+      {
+        "prepared_physical_line": 213,
+        "prepared_record_line": 2130,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 92
+      },
+      {
+        "prepared_physical_line": 214,
+        "prepared_record_line": 2140,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 93
+      },
+      {
+        "prepared_physical_line": 215,
+        "prepared_record_line": 2150,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 94
+      },
+      {
+        "prepared_physical_line": 216,
+        "prepared_record_line": 2160,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 95
+      },
+      {
+        "prepared_physical_line": 217,
+        "prepared_record_line": 2170,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 96
+      },
+      {
+        "prepared_physical_line": 218,
+        "prepared_record_line": 2180,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 97
+      },
+      {
+        "prepared_physical_line": 219,
+        "prepared_record_line": 2190,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 98
+      },
+      {
+        "prepared_physical_line": 220,
+        "prepared_record_line": 2200,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 99
+      },
+      {
+        "prepared_physical_line": 221,
+        "prepared_record_line": 2210,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 100
+      },
+      {
+        "prepared_physical_line": 222,
+        "prepared_record_line": 2220,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 101
+      },
+      {
+        "prepared_physical_line": 223,
+        "prepared_record_line": 2230,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 102
+      },
+      {
+        "prepared_physical_line": 224,
+        "prepared_record_line": 2240,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 103
+      },
+      {
+        "prepared_physical_line": 225,
+        "prepared_record_line": 2250,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 104
+      },
+      {
+        "prepared_physical_line": 226,
+        "prepared_record_line": 2260,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 105
+      },
+      {
+        "prepared_physical_line": 227,
+        "prepared_record_line": 2270,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 106
+      },
+      {
+        "prepared_physical_line": 228,
+        "prepared_record_line": 2280,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 107
+      },
+      {
+        "prepared_physical_line": 229,
+        "prepared_record_line": 2290,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 108
+      },
+      {
+        "prepared_physical_line": 230,
+        "prepared_record_line": 2300,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 109
+      },
+      {
+        "prepared_physical_line": 231,
+        "prepared_record_line": 2310,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 110
+      },
+      {
+        "prepared_physical_line": 232,
+        "prepared_record_line": 2320,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 111
+      },
+      {
+        "prepared_physical_line": 233,
+        "prepared_record_line": 2330,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 112
+      },
+      {
+        "prepared_physical_line": 234,
+        "prepared_record_line": 2340,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 113
+      },
+      {
+        "prepared_physical_line": 235,
+        "prepared_record_line": 2350,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 114
+      },
+      {
+        "prepared_physical_line": 236,
+        "prepared_record_line": 2360,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 115
+      },
+      {
+        "prepared_physical_line": 237,
+        "prepared_record_line": 2370,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 116
+      },
+      {
+        "prepared_physical_line": 238,
+        "prepared_record_line": 2380,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 117
+      },
+      {
+        "prepared_physical_line": 239,
+        "prepared_record_line": 2390,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 118
+      },
+      {
+        "prepared_physical_line": 240,
+        "prepared_record_line": 2400,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 119
+      },
+      {
+        "prepared_physical_line": 241,
+        "prepared_record_line": 2410,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 120
+      },
+      {
+        "prepared_physical_line": 242,
+        "prepared_record_line": 2420,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 121
+      },
+      {
+        "prepared_physical_line": 243,
+        "prepared_record_line": 2430,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 122
+      },
+      {
+        "prepared_physical_line": 244,
+        "prepared_record_line": 2440,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 123
+      },
+      {
+        "prepared_physical_line": 245,
+        "prepared_record_line": 2450,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 124
+      },
+      {
+        "prepared_physical_line": 246,
+        "prepared_record_line": 2460,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 125
+      },
+      {
+        "prepared_physical_line": 247,
+        "prepared_record_line": 2470,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 126
+      },
+      {
+        "prepared_physical_line": 248,
+        "prepared_record_line": 2480,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 127
+      },
+      {
+        "prepared_physical_line": 249,
+        "prepared_record_line": 2490,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 128
+      },
+      {
+        "prepared_physical_line": 250,
+        "prepared_record_line": 2500,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 129
+      },
+      {
+        "prepared_physical_line": 251,
+        "prepared_record_line": 2510,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 130
+      },
+      {
+        "prepared_physical_line": 252,
+        "prepared_record_line": 2520,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 131
+      },
+      {
+        "prepared_physical_line": 253,
+        "prepared_record_line": 2530,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 132
+      },
+      {
+        "prepared_physical_line": 254,
+        "prepared_record_line": 2540,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 133
+      },
+      {
+        "prepared_physical_line": 255,
+        "prepared_record_line": 2550,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 134
+      },
+      {
+        "prepared_physical_line": 256,
+        "prepared_record_line": 2560,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 135
+      },
+      {
+        "prepared_physical_line": 257,
+        "prepared_record_line": 2570,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 136
+      },
+      {
+        "prepared_physical_line": 258,
+        "prepared_record_line": 2580,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 137
+      },
+      {
+        "prepared_physical_line": 259,
+        "prepared_record_line": 2590,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 138
+      },
+      {
+        "prepared_physical_line": 260,
+        "prepared_record_line": 2600,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 139
+      },
+      {
+        "prepared_physical_line": 261,
+        "prepared_record_line": 2610,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 140
+      },
+      {
+        "prepared_physical_line": 262,
+        "prepared_record_line": 2620,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 141
+      },
+      {
+        "prepared_physical_line": 263,
+        "prepared_record_line": 2630,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 142
+      },
+      {
+        "prepared_physical_line": 264,
+        "prepared_record_line": 2640,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 143
+      },
+      {
+        "prepared_physical_line": 265,
+        "prepared_record_line": 2650,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 144
+      },
+      {
+        "prepared_physical_line": 266,
+        "prepared_record_line": 2660,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 145
+      },
+      {
+        "prepared_physical_line": 267,
+        "prepared_record_line": 2670,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 146
+      },
+      {
+        "prepared_physical_line": 268,
+        "prepared_record_line": 2680,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 147
+      },
+      {
+        "prepared_physical_line": 269,
+        "prepared_record_line": 2690,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 148
+      },
+      {
+        "prepared_physical_line": 270,
+        "prepared_record_line": 2700,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 149
+      },
+      {
+        "prepared_physical_line": 271,
+        "prepared_record_line": 2710,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 150
+      },
+      {
+        "prepared_physical_line": 272,
+        "prepared_record_line": 2720,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 151
+      },
+      {
+        "prepared_physical_line": 273,
+        "prepared_record_line": 2730,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 152
+      },
+      {
+        "prepared_physical_line": 274,
+        "prepared_record_line": 2740,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 153
+      },
+      {
+        "prepared_physical_line": 275,
+        "prepared_record_line": 2750,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 154
+      },
+      {
+        "prepared_physical_line": 276,
+        "prepared_record_line": 2760,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 155
+      },
+      {
+        "prepared_physical_line": 277,
+        "prepared_record_line": 2770,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 156
+      },
+      {
+        "prepared_physical_line": 278,
+        "prepared_record_line": 2780,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 157
+      },
+      {
+        "prepared_physical_line": 279,
+        "prepared_record_line": 2790,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 158
+      },
+      {
+        "prepared_physical_line": 280,
+        "prepared_record_line": 2800,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 159
+      },
+      {
+        "prepared_physical_line": 281,
+        "prepared_record_line": 2810,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 160
+      },
+      {
+        "prepared_physical_line": 282,
+        "prepared_record_line": 2820,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 161
+      },
+      {
+        "prepared_physical_line": 283,
+        "prepared_record_line": 2830,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 162
+      },
+      {
+        "prepared_physical_line": 284,
+        "prepared_record_line": 2840,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 163
+      },
+      {
+        "prepared_physical_line": 285,
+        "prepared_record_line": 2850,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 164
+      },
+      {
+        "prepared_physical_line": 286,
+        "prepared_record_line": 2860,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 165
+      },
+      {
+        "prepared_physical_line": 287,
+        "prepared_record_line": 2870,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 166
+      },
+      {
+        "prepared_physical_line": 288,
+        "prepared_record_line": 2880,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 167
+      },
+      {
+        "prepared_physical_line": 289,
+        "prepared_record_line": 2890,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 168
+      },
+      {
+        "prepared_physical_line": 290,
+        "prepared_record_line": 2900,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 169
+      },
+      {
+        "prepared_physical_line": 291,
+        "prepared_record_line": 2910,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 170
+      },
+      {
+        "prepared_physical_line": 292,
+        "prepared_record_line": 2920,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 171
+      },
+      {
+        "prepared_physical_line": 293,
+        "prepared_record_line": 2930,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 172
+      },
+      {
+        "prepared_physical_line": 294,
+        "prepared_record_line": 2940,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 173
+      },
+      {
+        "prepared_physical_line": 295,
+        "prepared_record_line": 2950,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 174
+      },
+      {
+        "prepared_physical_line": 296,
+        "prepared_record_line": 2960,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 175
+      },
+      {
+        "prepared_physical_line": 297,
+        "prepared_record_line": 2970,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 176
+      },
+      {
+        "prepared_physical_line": 298,
+        "prepared_record_line": 2980,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 177
+      },
+      {
+        "prepared_physical_line": 299,
+        "prepared_record_line": 2990,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 178
+      },
+      {
+        "prepared_physical_line": 300,
+        "prepared_record_line": 3000,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 179
+      },
+      {
+        "prepared_physical_line": 301,
+        "prepared_record_line": 3010,
+        "authoritative_source": "src/current/version/version-board.inc",
+        "authoritative_source_line": 180
+      },
+      {
+        "prepared_physical_line": 302,
+        "prepared_record_line": 3020,
+        "authoritative_source": "src/current/version/version.asm",
+        "authoritative_source_line": 127
+      },
+      {
+        "prepared_physical_line": 303,
+        "prepared_record_line": 3030,
+        "authoritative_source": null,
+        "authoritative_source_line": null
+      }
+    ]
+  },
+  "admission": {
+    "line_count": 303,
+    "max_line_bytes": 59,
+    "max_name_bytes": 15,
+    "symbol_count": 64,
+    "packed_source_bytes": 4611,
+    "packed_source_start": 13056,
+    "packed_source_end_exclusive": 17667,
+    "record_format": "little-endian line:u16, length:u8, mode_cache:u8, ASCII text",
+    "first_line": 10,
+    "line_step": 10,
+    "canonical_mode_cache": 0,
+    "actual_resident_admission_verified": false
+  },
+  "verification": {
+    "expected_output_sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747",
+    "expected_bytes_from": "BUILD/phase10/s/version/version.s19",
+    "verified_build": "BUILD/phase10",
+    "inputs": {
+      "BUILD/phase10/build-report.json": {
+        "bytes": 33190,
+        "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+      },
+      "BUILD/phase10/firmware.bin": {
+        "bytes": 98304,
+        "sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6"
+      },
+      "BUILD/phase10/symbols.json": {
+        "bytes": 295373,
+        "sha256": "78e571099a9c71e8c6a7bc8b5ecfb61f62041daa080d504d95e8a7e9d5c0ad63"
+      },
+      "BUILD/phase10/s/batch/batch-gate.map": {
+        "bytes": 310,
+        "sha256": "ac2da50f028d9b7faeafefcdb7ad7c2a9bbe13f5781407d1a7c6bce1d86dbb35"
+      },
+      "BUILD/phase10/s/batch/batch-gate.s19": {
+        "bytes": 268,
+        "sha256": "505889e1fad1d5611f555d1f30d114cc9b8e8fdc267ff980d262447ba0dbdf52"
+      },
+      "src/current/version/version.asm": {
+        "bytes": 3070,
+        "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999"
+      },
+      "BUILD/phase10/s/version/version.asm": {
+        "bytes": 3070,
+        "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999"
+      },
+      "BUILD/phase10/s/version/version.map": {
+        "bytes": 1440,
+        "sha256": "ba048c8bb608ad6d8fa5484cc2d2023658434f420765e96d62698797812492a8"
+      },
+      "BUILD/phase10/s/version/version.s19": {
+        "bytes": 1764,
+        "sha256": "602687a03db6313abe4ca106f96eba16e7027d34a2f67a1d39b5148c9cfc3c45"
+      },
+      "BUILD/phase10/payload/version/asset.bin": {
+        "bytes": 2048,
+        "sha256": "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa"
+      },
+      "tests/baselines/phase7.json": {
+        "bytes": 9555,
+        "sha256": "6ca15073dfce5a0b39558f2080e3160cc3194e7479adb1f94a752e2bc08d0fa7"
+      },
+      "tools/prepare_resident_batch.py": {
+        "bytes": 17020,
+        "sha256": "f9ca57cd299136be8fc60d64b788337ac3c1ea07848225e1e258ed87e293ec2b"
+      },
+      "src/current/version/version-links.inc": {
+        "bytes": 143,
+        "sha256": "a852a229ebd7969f81c6fa8d289c0d228c769ddb425a11199dde6852f426a6c4"
+      },
+      "BUILD/phase10/s/version/version-links.inc": {
+        "bytes": 143,
+        "sha256": "a852a229ebd7969f81c6fa8d289c0d228c769ddb425a11199dde6852f426a6c4"
+      },
+      "src/current/version/version-board.inc": {
+        "bytes": 4008,
+        "sha256": "14e07f7a951921e5f05227a0c9ed3baaa4250795beb868290da3158e4fdbdaae"
+      },
+      "BUILD/phase10/s/version/version-board.inc": {
+        "bytes": 4008,
+        "sha256": "14e07f7a951921e5f05227a0c9ed3baaa4250795beb868290da3158e4fdbdaae"
+      },
+      "tests/baselines/phase8.json": {
+        "bytes": 10619,
+        "sha256": "7f562a626607572733b068e2327719d4f33c5a60daef8f4e1795462d92bad78c"
+      },
+      "tools/prepare_resident_version.py": {
+        "bytes": 14124,
+        "sha256": "c4bb78586146b03db6d408cb2fb7f1ee5ef8c55e8f4a59cc6311e0f8c65e747b"
+      }
+    },
+    "preparation_only": true,
+    "resident_byte_comparison_performed": false,
+    "required_next_check": "Actual resident PASTE/ASM and comparison of all 636 bytes and all 64 symbols across both CPU models"
+  },
+  "packaging": {
+    "body_bytes": 636,
+    "added_padding_bytes": 0,
+    "application_header": {
+      "magic_ascii": "BS",
+      "bytes": 4,
+      "version": 1,
+      "type": 3
+    },
+    "preserve": [
+      "asset fill",
+      "embedded power-fail worker",
+      "vector tail",
+      "CRC seal patch"
+    ],
+    "s19_entry": "Resident S9 origin $6E00 and host S9 $0000 are not application entry $6E04",
+    "replacement_rule": "Compare in-memory body substitution against the complete original asset and firmware",
+    "no_firmware_or_asset_is_generated": true
+  },
+  "execution": {
+    "hardware_execution_authorized": false,
+    "standalone_ram_program": false,
+    "model_execution_requires_separate_fixture": true,
+    "preconditions": "Initialized monitor and bootstrap services at pinned addresses; complete code at $6E00, entry $6E04; borrowed monitor ZP/state and bank mappings available; IRQ disabled, decimal clear, 816 E=1 with DP/DBR/PBR zero",
+    "effects": "Console output; borrowed $D0/$D1/$D6/$D7 and $E0/$E1 pointers; VERSION working data; bootstrap scratch/choice state; VIA PCR bank switch with saved-byte restoration in BN_READ",
+    "physical_output_is_not_execution_address": true,
+    "byte_equivalence_does_not_authorize_hardware_execution_or_installation": true,
+    "board_access": false,
+    "serial_ports_opened": 0,
+    "network_attempts": 0
+  },
+  "files": {
+    "version.asm": {
+      "bytes": 3702,
+      "sha256": "56d1703e1c464b8caad72e3a2914710ccd60d01ac224f99f0588e977eadd9e77"
+    },
+    "version.paste.txt": {
+      "bytes": 3710,
+      "sha256": "9dce4e01f2af510f57f6b70bd216591bb38c8bf57ec795557a0cdabd3cb2bbd3"
+    },
+    "version.records.bin": {
+      "bytes": 4611,
+      "sha256": "50f414729bb933c69bc60be90084e19a3276639a45622f57e716644d68eb5c99"
+    },
+    "expected.bin": {
+      "bytes": 636,
+      "sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747"
+    }
+  }
+}

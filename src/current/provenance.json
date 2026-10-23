@@ -1,0 +1,834 @@
+{
+  "apps/uchess/LICENSE.txt": {
+    "from": "release/rc1-uchess/LICENSE.txt",
+    "original_sha256": "3779740261caa144ea57d9d30ed9fce26561f1e28e6e8e3764577d9fb74b030b",
+    "sha256": "3779740261caa144ea57d9d30ed9fce26561f1e28e6e8e3764577d9fb74b030b",
+    "bytes": 1646
+  },
+  "apps/uchess/Microchess6502-upstream.txt": {
+    "from": "release/rc1-uchess/Microchess6502-upstream.txt",
+    "original_sha256": "0dd323338f8ed4f233a1f2c9012ef124030b8940fadf04f48c957b695cf81f31",
+    "sha256": "0dd323338f8ed4f233a1f2c9012ef124030b8940fadf04f48c957b695cf81f31",
+    "bytes": 22564
+  },
+  "apps/uchess/microchess-readable.asm": {
+    "from": "release/rc1-uchess/microchess-readable.asm",
+    "original_sha256": "6b749c444282f5fe43de4048313eca34b387213caf602d8aef09843b1736aae1",
+    "sha256": "6b749c444282f5fe43de4048313eca34b387213caf602d8aef09843b1736aae1",
+    "bytes": 8090
+  },
+  "apps/uchess/symbols.json": {
+    "from": "release/rc1-uchess/symbols.json",
+    "original_sha256": "417ff539c773e974acf706e5619e910ec77b7415b472afcfa675cd6d4a9884a6",
+    "sha256": "417ff539c773e974acf706e5619e910ec77b7415b472afcfa675cd6d4a9884a6",
+    "bytes": 2373
+  },
+  "apps/uchess/uchess-record.bin": {
+    "from": "release/rc1-migration-r1/applications/uchess-record.bin",
+    "original_sha256": "cfa9b1d37bed71f909fb6f750e91eff65aaf100029c0eb440438fb8de67d81eb",
+    "sha256": "cfa9b1d37bed71f909fb6f750e91eff65aaf100029c0eb440438fb8de67d81eb",
+    "bytes": 1463
+  },
+  "apps/uchess/uchess.a": {
+    "from": "release/rc1-uchess/uchess.a",
+    "original_sha256": "807a653f91d87c3a9c87e8b3e9051567e88fddeea1c3605ba799b44e708e7ecf",
+    "sha256": "807a653f91d87c3a9c87e8b3e9051567e88fddeea1c3605ba799b44e708e7ecf",
+    "bytes": 5818
+  },
+  "assembler/asm-app.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/assembler/asm-app.asm",
+    "original_sha256": "34664a74dfb89f15d8da2b259cf96d2ee5d8ca0a2567295d858c570263686774",
+    "sha256": "34664a74dfb89f15d8da2b259cf96d2ee5d8ca0a2567295d858c570263686774",
+    "bytes": 60742
+  },
+  "assembler/layout.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/assembler/layout.inc",
+    "original_sha256": "f3aa85f02c2d0e7d98c5d0cd2b1798ef842ab8ee255a8860c9faf38966f0504d",
+    "sha256": "f3aa85f02c2d0e7d98c5d0cd2b1798ef842ab8ee255a8860c9faf38966f0504d",
+    "bytes": 1699
+  },
+  "assembler/source-equ.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/assembler/source-equ.inc",
+    "original_sha256": "d68c2a2630c90fc2b9eff6cffd66b0621a97481916ec52b223c21e55a4de7b30",
+    "sha256": "d68c2a2630c90fc2b9eff6cffd66b0621a97481916ec52b223c21e55a4de7b30",
+    "bytes": 61
+  },
+  "assembler/str8n-v2-public.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/assembler/str8n-v2-public.inc",
+    "original_sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5",
+    "transformation": "Forward to include/str8n-v2-public.inc",
+    "sha256": "92f6ed5d55939e9bbeb95fef22eb9ea5c08769396d8922628d8df2fb7c04a16c",
+    "bytes": 50
+  },
+  "banner/journal-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/banner/journal-eq.inc",
+    "original_sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285",
+    "transformation": "Forward to include/journal-eq.inc",
+    "sha256": "0763d4a8ce5d1ccf5d2380ed7e23b80a4663d8b8954c661ab879bdb1b0b0ab85",
+    "bytes": 45
+  },
+  "banner/kernel-private.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/banner/kernel-private.inc",
+    "original_sha256": "ea5a9bef462d0986aa0e8131bd65d3e0db76cd26a2835a9e20ba9166e8a3911c",
+    "sha256": "ea5a9bef462d0986aa0e8131bd65d3e0db76cd26a2835a9e20ba9166e8a3911c",
+    "bytes": 54
+  },
+  "banner/kernel-rtc-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/banner/kernel-rtc-api.inc",
+    "original_sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+    "transformation": "Forward to include/kernel-rtc-api.inc",
+    "sha256": "b873524b7422b8cc858e38bc07ef6f832e3be4bfb6986277c3c32e8e8871ba17",
+    "bytes": 49
+  },
+  "banner/outage-format.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/banner/outage-format.inc",
+    "original_sha256": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a",
+    "transformation": "Forward to include/outage-format.inc",
+    "sha256": "4f17bce0c3828be5ccbda732f02a53f7a7c7bf59e00acf0d9269eeeaa6ec956a",
+    "bytes": 48
+  },
+  "banner/rtc-banner.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/banner/rtc-banner.asm",
+    "original_sha256": "a6d7ddc3142ead2b623f3c831e96872df4e0c55f10894b12a0c140c34f9996f2",
+    "sha256": "a6d7ddc3142ead2b623f3c831e96872df4e0c55f10894b12a0c140c34f9996f2",
+    "bytes": 10168
+  },
+  "batch/batch-gate.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/batch/batch-gate.asm",
+    "original_sha256": "48ea32c16b2e6b13124b4836b8b6c2cacdc4a2d97ad13aaea3ab237ee45570e8",
+    "sha256": "48ea32c16b2e6b13124b4836b8b6c2cacdc4a2d97ad13aaea3ab237ee45570e8",
+    "bytes": 896
+  },
+  "battery/battery.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/battery/battery.asm",
+    "original_sha256": "ee145b6a391f4675675a1f047a37148b6cbfd28869a374b969a816b31a2ef867",
+    "sha256": "ee145b6a391f4675675a1f047a37148b6cbfd28869a374b969a816b31a2ef867",
+    "bytes": 19354
+  },
+  "bootstrap/bootstrap-journal.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/bootstrap/bootstrap-journal.asm",
+    "original_sha256": "b18ebcf8acea4fcc9806dcca6cc296ef95f67eecda0fa7fa449e5948566a8c97",
+    "sha256": "b18ebcf8acea4fcc9806dcca6cc296ef95f67eecda0fa7fa449e5948566a8c97",
+    "bytes": 3433
+  },
+  "bootstrap/bootstrap-symbols.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/bootstrap/bootstrap-symbols.inc",
+    "original_sha256": "8eb6f806bc8f83313478d13c1485b8f8e3308b2789e54be5d9cb14df0fd18754",
+    "sha256": "8eb6f806bc8f83313478d13c1485b8f8e3308b2789e54be5d9cb14df0fd18754",
+    "bytes": 2112
+  },
+  "bootstrap/service-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/bootstrap/service-eq.inc",
+    "original_sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a",
+    "transformation": "Forward to include/service-eq.inc",
+    "sha256": "501168b5ecbe27fc1c88292936d77b07152f2d7faa81638d12a6f3b684c00086",
+    "bytes": 45
+  },
+  "bootstrap/str8n-v2-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/bootstrap/str8n-v2-eq.inc",
+    "original_sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467",
+    "transformation": "Forward to include/str8n-v2-eq.inc",
+    "sha256": "90c6376ecb7226da1d631fe48dc2d8fb8daf96609da3c0e2e99cb8dc33833b5b",
+    "bytes": 46
+  },
+  "bootstrap/str8n-v2-public.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/bootstrap/str8n-v2-public.inc",
+    "original_sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5",
+    "transformation": "Forward to include/str8n-v2-public.inc",
+    "sha256": "92f6ed5d55939e9bbeb95fef22eb9ea5c08769396d8922628d8df2fb7c04a16c",
+    "bytes": 50
+  },
+  "clock/clock.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/clock/clock.asm",
+    "original_sha256": "1ef4231650457cfc5d36406d7087a217d4ff812f06bf46e5fbf42a027e622e96",
+    "sha256": "1ef4231650457cfc5d36406d7087a217d4ff812f06bf46e5fbf42a027e622e96",
+    "bytes": 91420
+  },
+  "clock/journal-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/clock/journal-eq.inc",
+    "original_sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285",
+    "transformation": "Forward to include/journal-eq.inc",
+    "sha256": "0763d4a8ce5d1ccf5d2380ed7e23b80a4663d8b8954c661ab879bdb1b0b0ab85",
+    "bytes": 45
+  },
+  "clock/kernel-rtc-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/clock/kernel-rtc-api.inc",
+    "original_sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+    "transformation": "Forward to include/kernel-rtc-api.inc",
+    "sha256": "b873524b7422b8cc858e38bc07ef6f832e3be4bfb6986277c3c32e8e8871ba17",
+    "bytes": 49
+  },
+  "clock/outage-duration.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/clock/outage-duration.inc",
+    "original_sha256": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f",
+    "transformation": "Forward to include/outage-duration.inc",
+    "sha256": "ded47fff267809f66fce967bda00be1a4ca357a2c899fea25725f3b833b3f679",
+    "bytes": 50
+  },
+  "clock/outage-format.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/clock/outage-format.inc",
+    "original_sha256": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a",
+    "transformation": "Forward to include/outage-format.inc",
+    "sha256": "4f17bce0c3828be5ccbda732f02a53f7a7c7bf59e00acf0d9269eeeaa6ec956a",
+    "bytes": 48
+  },
+  "core/app-fixed-symbols.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/app-fixed-symbols.inc",
+    "original_sha256": "95f154ed92569321e4e1a9232f38405227a980b2da6d3335e98e12a6801238cb",
+    "sha256": "95f154ed92569321e4e1a9232f38405227a980b2da6d3335e98e12a6801238cb",
+    "bytes": 71
+  },
+  "core/app-legacy-dispatch.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/app-legacy-dispatch.inc",
+    "original_sha256": "f18cb015254ac6e55600e3889de642403187f59487dec7493cc67793e26fd511",
+    "sha256": "f18cb015254ac6e55600e3889de642403187f59487dec7493cc67793e26fd511",
+    "bytes": 1680
+  },
+  "core/app-list-check.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/app-list-check.inc",
+    "original_sha256": "4d4193a5bfbc8c70828101ebe7ba29607a888755b9b7ef02eaf301673ba49e35",
+    "sha256": "4d4193a5bfbc8c70828101ebe7ba29607a888755b9b7ef02eaf301673ba49e35",
+    "bytes": 1453
+  },
+  "core/app-text-ids.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/app-text-ids.inc",
+    "original_sha256": "280d040df2dc63d1276e3893ff14bb640af825fb4bf8df4da9a9539a143dec1b",
+    "sha256": "280d040df2dc63d1276e3893ff14bb640af825fb4bf8df4da9a9539a143dec1b",
+    "bytes": 848
+  },
+  "core/boot-symbols.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/boot-symbols.inc",
+    "original_sha256": "f9be3f6f5f44c0b9923aa23d537bb2b0788b014daf27717da21636028a197d8f",
+    "sha256": "f9be3f6f5f44c0b9923aa23d537bb2b0788b014daf27717da21636028a197d8f",
+    "bytes": 3299
+  },
+  "core/launcher.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/launcher.asm",
+    "original_sha256": "4378b58ccbdd44acc0a4bdc02a8a15d94700441273d7ac123a04bebf45e23e07",
+    "sha256": "4378b58ccbdd44acc0a4bdc02a8a15d94700441273d7ac123a04bebf45e23e07",
+    "bytes": 22863
+  },
+  "core/monitor-b0.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/monitor-b0.asm",
+    "original_sha256": "10012e49c6cbcd3a7e39741040be0522988dc4c0ae2805cd94da52ba7987af51",
+    "sha256": "10012e49c6cbcd3a7e39741040be0522988dc4c0ae2805cd94da52ba7987af51",
+    "bytes": 23417
+  },
+  "core/service-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/service-eq.inc",
+    "original_sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a",
+    "transformation": "Forward to include/service-eq.inc",
+    "sha256": "501168b5ecbe27fc1c88292936d77b07152f2d7faa81638d12a6f3b684c00086",
+    "bytes": 45
+  },
+  "core/service-kernel.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/service-kernel.inc",
+    "original_sha256": "df6fe69be35a193b5ca2b5bf7e64d1bb1a8b3e2295cd9ba0fcd32e9630c3f1f7",
+    "sha256": "df6fe69be35a193b5ca2b5bf7e64d1bb1a8b3e2295cd9ba0fcd32e9630c3f1f7",
+    "bytes": 3723
+  },
+  "core/sr-monitor-symbols.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/sr-monitor-symbols.inc",
+    "original_sha256": "fa5d0ef21572287c02fd436f3c5e74fd3d1fb2c094092e89881b8952f38441c1",
+    "sha256": "fa5d0ef21572287c02fd436f3c5e74fd3d1fb2c094092e89881b8952f38441c1",
+    "bytes": 468
+  },
+  "core/sr-stubs.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/sr-stubs.inc",
+    "original_sha256": "d090510b6f54eb09a870c941dbdfe9691422d691b07f7078172ebcff8ee6b5a4",
+    "sha256": "d090510b6f54eb09a870c941dbdfe9691422d691b07f7078172ebcff8ee6b5a4",
+    "bytes": 902
+  },
+  "core/str8n-v2-boot.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-boot.asm",
+    "original_sha256": "974f699124271068e39b7add4448f870f293cd64811d35d5a83fd8e290fae098",
+    "sha256": "974f699124271068e39b7add4448f870f293cd64811d35d5a83fd8e290fae098",
+    "bytes": 28140
+  },
+  "core/str8n-v2-config.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-config.inc",
+    "original_sha256": "8c879d38cebc3728b6847f3891758a15b817109526beb57e191c1175af7ab195",
+    "sha256": "8c879d38cebc3728b6847f3891758a15b817109526beb57e191c1175af7ab195",
+    "bytes": 12367
+  },
+  "core/str8n-v2-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-eq.inc",
+    "original_sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467",
+    "transformation": "Forward to include/str8n-v2-eq.inc",
+    "sha256": "90c6376ecb7226da1d631fe48dc2d8fb8daf96609da3c0e2e99cb8dc33833b5b",
+    "bytes": 46
+  },
+  "core/str8n-v2-flash-worker.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-flash-worker.inc",
+    "original_sha256": "40203df32c03c300e230cf186bcf2dcbe00814f9e083b9bd7dffa3e9c5adee6b",
+    "sha256": "40203df32c03c300e230cf186bcf2dcbe00814f9e083b9bd7dffa3e9c5adee6b",
+    "bytes": 9062
+  },
+  "core/str8n-v2-flash.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-flash.inc",
+    "original_sha256": "257e79f85279ff377a94b1a9e9ce1b01d69dacecd749df90993bc73e0fab84c0",
+    "sha256": "257e79f85279ff377a94b1a9e9ce1b01d69dacecd749df90993bc73e0fab84c0",
+    "bytes": 17436
+  },
+  "core/str8n-v2-journal.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-journal.inc",
+    "original_sha256": "6f36c93774a2a7dbb9fa1eb8667189994e20a21aad026079b6730ee0cbc0b3fc",
+    "sha256": "6f36c93774a2a7dbb9fa1eb8667189994e20a21aad026079b6730ee0cbc0b3fc",
+    "bytes": 23673
+  },
+  "core/str8n-v2-load.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-load.inc",
+    "original_sha256": "f2bb91abe4e17df65b2c00038589ced5a0cd3a4fa85f7a90509c9c85bd547170",
+    "sha256": "f2bb91abe4e17df65b2c00038589ced5a0cd3a4fa85f7a90509c9c85bd547170",
+    "bytes": 10182
+  },
+  "core/str8n-v2-monitor.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-monitor.inc",
+    "original_sha256": "8d283bb0c3207a882bd4be6dc5ca2d51bb581e297d4ecdb6a7fc275153f3eb9f",
+    "sha256": "8d283bb0c3207a882bd4be6dc5ca2d51bb581e297d4ecdb6a7fc275153f3eb9f",
+    "bytes": 14670
+  },
+  "core/str8n-v2-public.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-public.inc",
+    "original_sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5",
+    "transformation": "Forward to include/str8n-v2-public.inc",
+    "sha256": "92f6ed5d55939e9bbeb95fef22eb9ea5c08769396d8922628d8df2fb7c04a16c",
+    "bytes": 50
+  },
+  "core/str8n-v2-ram-console.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-ram-console.inc",
+    "original_sha256": "e38a42fd17016f07d40973665adbc2a01c9079d61e661e5f31f7e56ba3d2f752",
+    "transformation": "Forward to include/str8n-v2-ram-console.inc",
+    "sha256": "6e3e4ea6bb5a5c47dd2a7092a1dd2f5dfef6daf5ab25e16862b917b6e5276e9b",
+    "bytes": 55
+  },
+  "core/str8n-v2-sr.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-sr.asm",
+    "original_sha256": "414d8f0181ea6666c1462919d3a36fde7cc445c66472368893ae10cb2cd9fcd2",
+    "sha256": "414d8f0181ea6666c1462919d3a36fde7cc445c66472368893ae10cb2cd9fcd2",
+    "bytes": 31742
+  },
+  "core/str8n-v2-vectors.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-vectors.asm",
+    "original_sha256": "a5baf0ee08d4edc976a7aa9f6ce16aa89e7d17831ef28b4c3e0d30542e5dfaf7",
+    "sha256": "a5baf0ee08d4edc976a7aa9f6ce16aa89e7d17831ef28b4c3e0d30542e5dfaf7",
+    "bytes": 6347
+  },
+  "core/str8n-v2-worker.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-worker.asm",
+    "original_sha256": "7e402589fa35eb49fd38c87eb3568bb18ecaf58d6e997bdd75bbd2a7f86ea5f2",
+    "sha256": "7e402589fa35eb49fd38c87eb3568bb18ecaf58d6e997bdd75bbd2a7f86ea5f2",
+    "bytes": 5479
+  },
+  "core/text-ids.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/text-ids.inc",
+    "original_sha256": "6432b7ba652c5bf2d1ec16baabc757aa95b791109924d3b16b49e87dd860689c",
+    "sha256": "6432b7ba652c5bf2d1ec16baabc757aa95b791109924d3b16b49e87dd860689c",
+    "bytes": 874
+  },
+  "core/text.json": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/text.json",
+    "original_sha256": "cab61a983a1c78bbd77e1ae0a20ca7d0c630d7b591d40937479d218209e43c03",
+    "sha256": "cab61a983a1c78bbd77e1ae0a20ca7d0c630d7b591d40937479d218209e43c03",
+    "bytes": 2475
+  },
+  "core/vectors-symbols.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/vectors-symbols.inc",
+    "original_sha256": "5bc6913eb9afdc034a1170559b621dc932d401f6418b1069208642d0e8ad7816",
+    "sha256": "5bc6913eb9afdc034a1170559b621dc932d401f6418b1069208642d0e8ad7816",
+    "bytes": 3182
+  },
+  "core/worker-copy.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/worker-copy.inc",
+    "original_sha256": "018493e3f0ce60fbf6c93df3a5836e55a5e78459e7606aeba53ed32b232ef8a9",
+    "sha256": "018493e3f0ce60fbf6c93df3a5836e55a5e78459e7606aeba53ed32b232ef8a9",
+    "bytes": 281
+  },
+  "core/worker-public-symbols.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/worker-public-symbols.inc",
+    "original_sha256": "8c09932ee35acff370ddbaa04df3004efb8f4b58850af944f3cf2f0cd0dfd5f7",
+    "sha256": "8c09932ee35acff370ddbaa04df3004efb8f4b58850af944f3cf2f0cd0dfd5f7",
+    "bytes": 2054
+  },
+  "debugger/debugger.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/debugger/debugger.asm",
+    "original_sha256": "1423f76f9281e2d663260f9bbdb6dbed6f1a08179e6a49ae399fd2d75bc10510",
+    "sha256": "1423f76f9281e2d663260f9bbdb6dbed6f1a08179e6a49ae399fd2d75bc10510",
+    "bytes": 23903
+  },
+  "debugger/disasm.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/debugger/disasm.inc",
+    "original_sha256": "cd96ea029b01eb7a51cf1226d4064a1d2d9e1e74851935db98ded50b4ca46a0b",
+    "sha256": "cd96ea029b01eb7a51cf1226d4064a1d2d9e1e74851935db98ded50b4ca46a0b",
+    "bytes": 3666
+  },
+  "debugger/generated.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/debugger/generated.inc",
+    "original_sha256": "19f247d59758baea6b6e09d0abc97994705269ded655c533535bf44a25a12c1a",
+    "sha256": "19f247d59758baea6b6e09d0abc97994705269ded655c533535bf44a25a12c1a",
+    "bytes": 263
+  },
+  "debugger/layout.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/debugger/layout.inc",
+    "original_sha256": "bce7d669dc2cb8720b83ba36bf402be7a855c303d8363d5b96b7cfcd1e132dba",
+    "sha256": "bce7d669dc2cb8720b83ba36bf402be7a855c303d8363d5b96b7cfcd1e132dba",
+    "bytes": 1032
+  },
+  "debugger/step-flow.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/debugger/step-flow.inc",
+    "original_sha256": "534eb386467bdcf8bf18a65cb51819fedf94a6adae8d4184bef8370729fccf52",
+    "sha256": "534eb386467bdcf8bf18a65cb51819fedf94a6adae8d4184bef8370729fccf52",
+    "bytes": 2836
+  },
+  "edu/edu.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/utilities.asm",
+    "original_sha256": "6780ac04c53d5201e9b71f2daed1e4ca59e1b59983b6eac632da953689ee7666",
+    "extraction_start_line": 7838,
+    "sha256": "563ae93926734a38118a403ca87b1b7793094fb657b5ef4839993864aebdbef0",
+    "bytes": 14778
+  },
+  "gateway/i2c-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/gateway/i2c-api.inc",
+    "original_sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c",
+    "transformation": "Forward to include/i2c-api.inc",
+    "sha256": "d4310a63a44f66ff86f86eec9b5a3c42693a4f066608502c07e40c1a10e6ccdb",
+    "bytes": 42
+  },
+  "gateway/rtc-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/gateway/rtc-api.inc",
+    "original_sha256": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332",
+    "transformation": "Forward to include/rtc-api.inc",
+    "sha256": "a420bc223d1f7bec21d2f63b0e09492b8be5f93199c99d66074d02df61ee93b5",
+    "bytes": 42
+  },
+  "gateway/rtc-gateway.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/gateway/rtc-gateway.asm",
+    "original_sha256": "87009287721a4b22e721bb4036c1c2d9c0a70da58cf6afec0eb81c5a214d43da",
+    "sha256": "87009287721a4b22e721bb4036c1c2d9c0a70da58cf6afec0eb81c5a214d43da",
+    "bytes": 3918
+  },
+  "gateway/split-defs.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/gateway/split-defs.inc",
+    "original_sha256": "c0fc257a75e18a67df38913154a4f2a1e8adde72dfce9cbdd8cd8bebfbf85647",
+    "sha256": "c0fc257a75e18a67df38913154a4f2a1e8adde72dfce9cbdd8cd8bebfbf85647",
+    "bytes": 118
+  },
+  "include/i2c-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/gateway/i2c-api.inc",
+    "original_sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c",
+    "transformation": "Canonical shared header",
+    "sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c",
+    "bytes": 1463
+  },
+  "include/journal-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/banner/journal-eq.inc",
+    "original_sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285",
+    "transformation": "Canonical shared header",
+    "sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285",
+    "bytes": 1402
+  },
+  "include/kernel-rtc-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/banner/kernel-rtc-api.inc",
+    "original_sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+    "transformation": "Canonical shared header",
+    "sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+    "bytes": 1027
+  },
+  "include/outage-duration.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/clock/outage-duration.inc",
+    "original_sha256": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f",
+    "transformation": "Canonical shared header",
+    "sha256": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f",
+    "bytes": 4742
+  },
+  "include/outage-format.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/banner/outage-format.inc",
+    "original_sha256": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a",
+    "transformation": "Canonical shared header",
+    "sha256": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a",
+    "bytes": 2979
+  },
+  "include/rtc-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/gateway/rtc-api.inc",
+    "original_sha256": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332",
+    "transformation": "Canonical shared header",
+    "sha256": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332",
+    "bytes": 1722
+  },
+  "include/service-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/bootstrap/service-eq.inc",
+    "original_sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a",
+    "transformation": "Canonical shared header",
+    "sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a",
+    "bytes": 652
+  },
+  "include/str8n-v2-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/bootstrap/str8n-v2-eq.inc",
+    "original_sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467",
+    "transformation": "Canonical shared header",
+    "sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467",
+    "bytes": 3954
+  },
+  "include/str8n-v2-public.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/assembler/str8n-v2-public.inc",
+    "original_sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5",
+    "transformation": "Canonical shared header",
+    "sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5",
+    "bytes": 4258
+  },
+  "include/str8n-v2-ram-console.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/core/str8n-v2-ram-console.inc",
+    "original_sha256": "e38a42fd17016f07d40973665adbc2a01c9079d61e661e5f31f7e56ba3d2f752",
+    "transformation": "Canonical shared header",
+    "sha256": "e38a42fd17016f07d40973665adbc2a01c9079d61e661e5f31f7e56ba3d2f752",
+    "bytes": 6067
+  },
+  "journal/binding.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/journal/binding.inc",
+    "original_sha256": "3b449d91c9a4b4df36615fd7d0c2521b0c482b14a5b53e55aa47f47caa28476f",
+    "sha256": "3b449d91c9a4b4df36615fd7d0c2521b0c482b14a5b53e55aa47f47caa28476f",
+    "bytes": 8731
+  },
+  "journal/journal-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/journal/journal-eq.inc",
+    "original_sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285",
+    "transformation": "Forward to include/journal-eq.inc",
+    "sha256": "0763d4a8ce5d1ccf5d2380ed7e23b80a4663d8b8954c661ab879bdb1b0b0ab85",
+    "bytes": 45
+  },
+  "journal/journal-transport.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/journal/journal-transport.inc",
+    "original_sha256": "35a28d730304cc5832d9cfa272eca2b0ebfd822b09c32e5fd61fbd4dba375672",
+    "sha256": "35a28d730304cc5832d9cfa272eca2b0ebfd822b09c32e5fd61fbd4dba375672",
+    "bytes": 124
+  },
+  "journal/journal.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/journal/journal.asm",
+    "original_sha256": "744eed5c024b976f9fa65a5222db41178ff3b415697d2e80373cd92cb326af8c",
+    "sha256": "744eed5c024b976f9fa65a5222db41178ff3b415697d2e80373cd92cb326af8c",
+    "bytes": 28960
+  },
+  "journal/kernel-rtc-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/journal/kernel-rtc-api.inc",
+    "original_sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+    "transformation": "Forward to include/kernel-rtc-api.inc",
+    "sha256": "b873524b7422b8cc858e38bc07ef6f832e3be4bfb6986277c3c32e8e8871ba17",
+    "bytes": 49
+  },
+  "journal/spi-links.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/journal/spi-links.inc",
+    "original_sha256": "8fb58fbb43d9325814b15e4bb1f86855eca6320ccf3fd9a35eee579355e0834b",
+    "sha256": "8fb58fbb43d9325814b15e4bb1f86855eca6320ccf3fd9a35eee579355e0834b",
+    "bytes": 485
+  },
+  "loader/service-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/loader/service-eq.inc",
+    "original_sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a",
+    "transformation": "Forward to include/service-eq.inc",
+    "sha256": "501168b5ecbe27fc1c88292936d77b07152f2d7faa81638d12a6f3b684c00086",
+    "bytes": 45
+  },
+  "loader/status-links.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/loader/status-links.inc",
+    "original_sha256": "03d957f8c2121954813cb75b3006845932ec18b41f72a808721d8be4359ad277",
+    "sha256": "03d957f8c2121954813cb75b3006845932ec18b41f72a808721d8be4359ad277",
+    "bytes": 205
+  },
+  "loader/str8n-v2-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/loader/str8n-v2-eq.inc",
+    "original_sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467",
+    "transformation": "Forward to include/str8n-v2-eq.inc",
+    "sha256": "90c6376ecb7226da1d631fe48dc2d8fb8daf96609da3c0e2e99cb8dc33833b5b",
+    "bytes": 46
+  },
+  "loader/version-loader.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/loader/version-loader.asm",
+    "original_sha256": "091350538134acca2e43ae4b2cce7c325d8b4a1fa9655700384cc3cc92fe7ea2",
+    "sha256": "091350538134acca2e43ae4b2cce7c325d8b4a1fa9655700384cc3cc92fe7ea2",
+    "bytes": 2544
+  },
+  "local/local-display.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/local/local-display.asm",
+    "original_sha256": "d78384393941aa02128cf08b88b474f60134db786235914ac6ccb8ef78c5d670",
+    "sha256": "d78384393941aa02128cf08b88b474f60134db786235914ac6ccb8ef78c5d670",
+    "bytes": 18875
+  },
+  "maintenance/maint.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/utilities.asm",
+    "original_sha256": "6780ac04c53d5201e9b71f2daed1e4ca59e1b59983b6eac632da953689ee7666",
+    "extraction_start_line": 16,
+    "sha256": "de4afb718e262f4154f529ccfc08e8a1cbe05cd237e864beb61922d105a97389",
+    "bytes": 131094
+  },
+  "maintenance/source-protection.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/utilities.asm",
+    "original_sha256": "6780ac04c53d5201e9b71f2daed1e4ca59e1b59983b6eac632da953689ee7666",
+    "extraction_start_line": 9447,
+    "sha256": "02eed7171f229bf19c8a6deafd7d78edb817eb0b57f0cfc36fd7ffa44cbde3fc",
+    "bytes": 520
+  },
+  "migration/migration-copy.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/migration/migration-copy.inc",
+    "original_sha256": "d1488572dd37bef0aee5b90745b05352004b53b75c1ce863f355267c6b5b73df",
+    "sha256": "d1488572dd37bef0aee5b90745b05352004b53b75c1ce863f355267c6b5b73df",
+    "bytes": 235
+  },
+  "migration/migration-symbols.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/migration/migration-symbols.inc",
+    "original_sha256": "dde127950bafd316455ed93b95c631c6eb041e1f40b177fc366d0ba350747380",
+    "sha256": "dde127950bafd316455ed93b95c631c6eb041e1f40b177fc366d0ba350747380",
+    "bytes": 2054
+  },
+  "migration/migration-worker.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/migration/migration-worker.asm",
+    "original_sha256": "8890fb9d97414b330a0c5cd6fb2f74acb7913ad3297d0bb0d2f89fd573108307",
+    "sha256": "8890fb9d97414b330a0c5cd6fb2f74acb7913ad3297d0bb0d2f89fd573108307",
+    "bytes": 5518
+  },
+  "migration/rtc-migrator.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/migration/rtc-migrator.asm",
+    "original_sha256": "ce8a65e947db69ce4d9b48273e0dbe04f2c9ce776800351d803cd0a5e23d59e1",
+    "sha256": "ce8a65e947db69ce4d9b48273e0dbe04f2c9ce776800351d803cd0a5e23d59e1",
+    "bytes": 16079
+  },
+  "migration/str8n-v2-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/migration/str8n-v2-eq.inc",
+    "original_sha256": "365fbcce2925f661a819023e10c6a0f4c4f3258196e47c2bf2a77deec2dc71a8",
+    "sha256": "365fbcce2925f661a819023e10c6a0f4c4f3258196e47c2bf2a77deec2dc71a8",
+    "bytes": 3925
+  },
+  "migration/str8n-v2-flash-worker.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/migration/str8n-v2-flash-worker.inc",
+    "original_sha256": "992f5a5274384f084abc9165ed826c6176a533dbe21e8cdbbb844ca4f9f6a6f1",
+    "sha256": "992f5a5274384f084abc9165ed826c6176a533dbe21e8cdbbb844ca4f9f6a6f1",
+    "bytes": 8898
+  },
+  "migration/str8n-v2-ram-console.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/migration/str8n-v2-ram-console.inc",
+    "original_sha256": "e38a42fd17016f07d40973665adbc2a01c9079d61e661e5f31f7e56ba3d2f752",
+    "transformation": "Forward to include/str8n-v2-ram-console.inc",
+    "sha256": "6e3e4ea6bb5a5c47dd2a7092a1dd2f5dfef6daf5ab25e16862b917b6e5276e9b",
+    "bytes": 55
+  },
+  "mode/service-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/mode/service-eq.inc",
+    "original_sha256": "95aeb4ae77a04bd8d17836e9648b454d8a8244e3070fb4002081c504c80ab12a",
+    "transformation": "Forward to include/service-eq.inc",
+    "sha256": "501168b5ecbe27fc1c88292936d77b07152f2d7faa81638d12a6f3b684c00086",
+    "bytes": 45
+  },
+  "mode/status-links.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/mode/status-links.inc",
+    "original_sha256": "b0de09eb2f22052cdd3b3e68058fc55c6b8cbea798caf4ae9ed72c8304025d30",
+    "sha256": "b0de09eb2f22052cdd3b3e68058fc55c6b8cbea798caf4ae9ed72c8304025d30",
+    "bytes": 164
+  },
+  "mode/status-mode-init.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/mode/status-mode-init.asm",
+    "original_sha256": "519edf9c9b703ab985505131f12c1548f3bfc752a33686298c370868b750cf49",
+    "sha256": "519edf9c9b703ab985505131f12c1548f3bfc752a33686298c370868b750cf49",
+    "bytes": 1539
+  },
+  "mode/str8n-v2-eq.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/mode/str8n-v2-eq.inc",
+    "original_sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467",
+    "transformation": "Forward to include/str8n-v2-eq.inc",
+    "sha256": "90c6376ecb7226da1d631fe48dc2d8fb8daf96609da3c0e2e99cb8dc33833b5b",
+    "bytes": 46
+  },
+  "pf/kernel-rtc-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/pf/kernel-rtc-api.inc",
+    "original_sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+    "transformation": "Forward to include/kernel-rtc-api.inc",
+    "sha256": "b873524b7422b8cc858e38bc07ef6f832e3be4bfb6986277c3c32e8e8871ba17",
+    "bytes": 49
+  },
+  "pf/outage-duration.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/pf/outage-duration.inc",
+    "original_sha256": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f",
+    "transformation": "Forward to include/outage-duration.inc",
+    "sha256": "ded47fff267809f66fce967bda00be1a4ca357a2c899fea25725f3b833b3f679",
+    "bytes": 50
+  },
+  "pf/pf.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/pf/pf.asm",
+    "original_sha256": "6ef939940693a2260f46345a8082eca706da55e003b2383556818c131a98a9f7",
+    "sha256": "6ef939940693a2260f46345a8082eca706da55e003b2383556818c131a98a9f7",
+    "bytes": 2180
+  },
+  "provider/eeprom-transfer.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/provider/eeprom-transfer.inc",
+    "original_sha256": "37a4dd3799e8120c3c43083b9c4868b7c49180610d58d1d48035e96c6685020a",
+    "sha256": "37a4dd3799e8120c3c43083b9c4868b7c49180610d58d1d48035e96c6685020a",
+    "bytes": 5217
+  },
+  "provider/i2c-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/provider/i2c-api.inc",
+    "original_sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c",
+    "transformation": "Forward to include/i2c-api.inc",
+    "sha256": "d4310a63a44f66ff86f86eec9b5a3c42693a4f066608502c07e40c1a10e6ccdb",
+    "bytes": 42
+  },
+  "provider/i2c-transport.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/provider/i2c-transport.inc",
+    "original_sha256": "4df7bd2d9a994f5b3c36d44eec165edd087e9399977b564e7ef2bdc8d376582c",
+    "sha256": "4df7bd2d9a994f5b3c36d44eec165edd087e9399977b564e7ef2bdc8d376582c",
+    "bytes": 5823
+  },
+  "provider/rtc-api.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/provider/rtc-api.inc",
+    "original_sha256": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332",
+    "transformation": "Forward to include/rtc-api.inc",
+    "sha256": "a420bc223d1f7bec21d2f63b0e09492b8be5f93199c99d66074d02df61ee93b5",
+    "bytes": 42
+  },
+  "provider/rtc-provider.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/provider/rtc-provider.asm",
+    "original_sha256": "13a01514f98f81ab0deb2feb331bab341724fb56ef9c509c14e7adb6dcc6fde6",
+    "sha256": "13a01514f98f81ab0deb2feb331bab341724fb56ef9c509c14e7adb6dcc6fde6",
+    "bytes": 15771
+  },
+  "provider/spi-links.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/provider/spi-links.inc",
+    "original_sha256": "a5a7981a21cbd226e3d568264458335ddbc552cf35ed0da37e1f1a3727cf7c77",
+    "sha256": "a5a7981a21cbd226e3d568264458335ddbc552cf35ed0da37e1f1a3727cf7c77",
+    "bytes": 463
+  },
+  "source-store/asm-equ.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/source/asm-equ.inc",
+    "original_sha256": "78ec98cf6221a7def62373e4f04e36b1ddee20834f9974bfef314d49713cc74e",
+    "sha256": "78ec98cf6221a7def62373e4f04e36b1ddee20834f9974bfef314d49713cc74e",
+    "bytes": 11737
+  },
+  "source-store/flash.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/source/flash.inc",
+    "original_sha256": "7017c423f4fe4dea4092f31b57de6f2599199ef143e32e8c783cc8948bc7ff26",
+    "sha256": "7017c423f4fe4dea4092f31b57de6f2599199ef143e32e8c783cc8948bc7ff26",
+    "bytes": 13420
+  },
+  "source-store/source.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/source/source.asm",
+    "original_sha256": "5f9272f86e522a1301f4dfa7deb770d6ab02c0f76f88ed3fd411f3a7ea49f2c9",
+    "sha256": "5f9272f86e522a1301f4dfa7deb770d6ab02c0f76f88ed3fd411f3a7ea49f2c9",
+    "bytes": 15045
+  },
+  "source-store/state.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/source/state.inc",
+    "original_sha256": "96ba639093debd47ef84b4926db9c1454ab3c8d77f927d4d5e0a2d1881fc818e",
+    "sha256": "96ba639093debd47ef84b4926db9c1454ab3c8d77f927d4d5e0a2d1881fc818e",
+    "bytes": 597
+  },
+  "source-store/storage-equ.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/source/storage-equ.inc",
+    "original_sha256": "b527ede9508b0e1821cc6708e7be9468d9b148fc382f1690f1a3de3dcf013959",
+    "sha256": "b527ede9508b0e1821cc6708e7be9468d9b148fc382f1690f1a3de3dcf013959",
+    "bytes": 43
+  },
+  "source-store/worker-equ.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/source/worker-equ.inc",
+    "original_sha256": "059664d2bc4eb530f7ecbefc32827dd4658e6a6c65aacb9c90ee27854aca0396",
+    "sha256": "059664d2bc4eb530f7ecbefc32827dd4658e6a6c65aacb9c90ee27854aca0396",
+    "bytes": 208
+  },
+  "status/local-loader.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/status/local-loader.inc",
+    "original_sha256": "76e6002f45ff30d8f2a283b3d39e30d7f9799e96d932adfe292629c23f387573",
+    "sha256": "76e6002f45ff30d8f2a283b3d39e30d7f9799e96d932adfe292629c23f387573",
+    "bytes": 1981
+  },
+  "status/status-links.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/status/status-links.inc",
+    "original_sha256": "153dd93ef4ce2798c26cb34d066ee4ef789de3c41e66c826a3091955959945ed",
+    "sha256": "153dd93ef4ce2798c26cb34d066ee4ef789de3c41e66c826a3091955959945ed",
+    "bytes": 643
+  },
+  "status/storage-services.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/status/storage-services.inc",
+    "original_sha256": "c9cf05015cace87a58299c7b1d50de9444d99085f6adcfc29ae4a275c5c70bb1",
+    "sha256": "c9cf05015cace87a58299c7b1d50de9444d99085f6adcfc29ae4a275c5c70bb1",
+    "bytes": 10287
+  },
+  "status/storage-status.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/status/storage-status.asm",
+    "original_sha256": "ca9cd09ff488f839ab7fa03f4acbf1fef4f971b67f6c98254eaae1597ccc86ad",
+    "sha256": "ca9cd09ff488f839ab7fa03f4acbf1fef4f971b67f6c98254eaae1597ccc86ad",
+    "bytes": 10415
+  },
+  "storage/source-adapter.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/utilities.asm",
+    "original_sha256": "6780ac04c53d5201e9b71f2daed1e4ca59e1b59983b6eac632da953689ee7666",
+    "extraction_start_line": 9370,
+    "sha256": "ac310b119aaeb331bbdf30565228e609076a0dc4f3443194c41ab420f8d5941b",
+    "bytes": 940
+  },
+  "storage/sram.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/utilities.asm",
+    "original_sha256": "6780ac04c53d5201e9b71f2daed1e4ca59e1b59983b6eac632da953689ee7666",
+    "extraction_start_line": 3834,
+    "sha256": "d88c9c8da723812fe5a5d39ffbbfed7f089d926fadd5f71f5060490373f75f2e",
+    "bytes": 46543
+  },
+  "version/version-board.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/version/version-board.inc",
+    "original_sha256": "14e07f7a951921e5f05227a0c9ed3baaa4250795beb868290da3158e4fdbdaae",
+    "sha256": "14e07f7a951921e5f05227a0c9ed3baaa4250795beb868290da3158e4fdbdaae",
+    "bytes": 4008
+  },
+  "version/version-links.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/version/version-links.inc",
+    "original_sha256": "a852a229ebd7969f81c6fa8d289c0d228c769ddb425a11199dde6852f426a6c4",
+    "sha256": "a852a229ebd7969f81c6fa8d289c0d228c769ddb425a11199dde6852f426a6c4",
+    "bytes": 143
+  },
+  "version/version.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/version/version.asm",
+    "original_sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999",
+    "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999",
+    "bytes": 3070
+  },
+  "workspace/work.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/utilities.asm",
+    "original_sha256": "6780ac04c53d5201e9b71f2daed1e4ca59e1b59983b6eac632da953689ee7666",
+    "extraction_start_line": 5608,
+    "sha256": "28631126a1f04ae1ddecee2f4efea485c9e7e4b0d957e8efac593e4ea3835bab",
+    "bytes": 57175
+  },
+  "xip/dispatch.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/utilities.asm",
+    "original_sha256": "6780ac04c53d5201e9b71f2daed1e4ca59e1b59983b6eac632da953689ee7666",
+    "extraction_start_line": 8642,
+    "sha256": "6ca160459bffb3eeb84e23e94cd9bb9c1157b5fbca7563b3dfac325b7bdb650e",
+    "bytes": 17594
+  },
+  "xip/gate.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/gate.asm",
+    "original_sha256": "efeaaccd50e395c733ca461d0f370800af25992a2ef87e701f68f80df6fb395d",
+    "sha256": "efeaaccd50e395c733ca461d0f370800af25992a2ef87e701f68f80df6fb395d",
+    "bytes": 833
+  },
+  "xip/kernel.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/kernel.inc",
+    "original_sha256": "363c8571603e2fedc589f41aa6a514e8f9bb50770585fd61595cb9af31ddcdb0",
+    "sha256": "363c8571603e2fedc589f41aa6a514e8f9bb50770585fd61595cb9af31ddcdb0",
+    "bytes": 2382
+  },
+  "xip/system.inc": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/system.inc",
+    "original_sha256": "8a38b7fb884b571077475cb1ae0555fad07fbf7f558101723f976111fe3659ea",
+    "sha256": "8a38b7fb884b571077475cb1ae0555fad07fbf7f558101723f976111fe3659ea",
+    "bytes": 7846
+  },
+  "xip/utilities.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/utilities.asm",
+    "original_sha256": "6780ac04c53d5201e9b71f2daed1e4ca59e1b59983b6eac632da953689ee7666",
+    "transformation": "Include-only split; original emission order",
+    "sha256": "40e026868e68da69f4b0d4ba5092e8f2ecd4287e054d5f15e3777f53a8622a6c",
+    "bytes": 683
+  },
+  "xip/work-stub.asm": {
+    "from": "tmp/p1-clean/BUILD/rc1-asm-dev/s/xip/work-stub.asm",
+    "original_sha256": "95b603e0ea9fe2082ee6bfb0591816e11f63ef9aa6e8862ad9faf6270bb88e07",
+    "sha256": "95b603e0ea9fe2082ee6bfb0591816e11f63ef9aa6e8862ad9faf6270bb88e07",
+    "bytes": 716
+  }
+}

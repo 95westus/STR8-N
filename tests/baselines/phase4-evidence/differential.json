@@ -1,0 +1,49 @@
+{
+  "generic": {
+    "passed": true,
+    "device_artifacts": {
+      "expected-b0.bin": "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+      "expected-b1.bin": "0703dde53049942ac6dccc26fb36afcab1e9b07acfdf2697d7df3ebe6c3da525",
+      "expected-b2.bin": "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+      "expected-b3.bin": "cf2dbf2f87699c100d1fabd90ceed9f139261607918fa6758e3b9e99bd3b000a",
+      "installer-model-only.s19": "066c830def3c115c3fdc06a0605b2c58fa44d0036d609fb389b834eec8b1ea2c",
+      "source-b0.bin": "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+      "source-b1.bin": "66fb3e4d885d746aaeed4583a810d99df740970e0292f56309f6a07a56e1bdf8",
+      "source-b2.bin": "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+      "source-b3.bin": "28e09d8df9e2a0a73e7111c3d77887ff2542e5e375779c1017a65f5321560488",
+      "transfer-00.bin": "3e3a007fde964f8ddb691942eb97efb1096087291ad6694c20262452ca9a4f07",
+      "transfer-01.bin": "72065163681d082de2d07831da200b96cb85fc62cac05b1caa050ed2f2819ff2",
+      "transfer-02.bin": "bae0a5e72b2e7946e7210b7ba9a7063ee63cffcd7f20a4d815be22af6c4b0bb7",
+      "transfer-03.bin": "263ecd9cb56c05fd71304fe00349ecf04d8f591dbef2c7af1693004a475452d7",
+      "transfer-04.bin": "1b8f133e6da49e1100158679e956464d6d55a92df9fedbfa1a0c67eb2b788c94"
+    },
+    "transaction_equal_except_label": true,
+    "operation_order_and_wear_equal": true
+  },
+  "cleanup": {
+    "passed": true,
+    "device_artifacts": {
+      "expected-b0.bin": "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+      "expected-b1.bin": "a7057ee24826e1d1e6baa977d27845d745bc04d7ddb950328713b096bfa098ee",
+      "expected-b2.bin": "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+      "expected-b3.bin": "414db5c0f0b52dbdde4b1789538d3efbbf04dc42ebeec17dc85386e2912fd1d6",
+      "installer-model-only.s19": "51ea86e3b2842f8910049801d773e8dfa1a406f0ecca28fca7468bbb92aacc5c",
+      "source-b0.bin": "13e332b0fc4c2a72753a7d64cc88aa8dcfd77dc1ce86f5a643d1b11d538f4736",
+      "source-b1.bin": "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+      "source-b2.bin": "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+      "source-b3.bin": "28e09d8df9e2a0a73e7111c3d77887ff2542e5e375779c1017a65f5321560488",
+      "transfer-00.bin": "6e95b72d6700cb2b853920418a05c30bd5c770e139b16c47aab8ce7cf4af7148",
+      "transfer-01.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "transfer-02.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "transfer-03.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "transfer-04.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "transfer-05.bin": "72065163681d082de2d07831da200b96cb85fc62cac05b1caa050ed2f2819ff2",
+      "transfer-06.bin": "bae0a5e72b2e7946e7210b7ba9a7063ee63cffcd7f20a4d815be22af6c4b0bb7",
+      "transfer-07.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "transfer-08.bin": "263ecd9cb56c05fd71304fe00349ecf04d8f591dbef2c7af1693004a475452d7",
+      "transfer-09.bin": "4729cc858abf6a80894815847eb92887df54d78014bab4b7439c7183e94f2631"
+    },
+    "transaction_equal_except_label": true,
+    "operation_order_and_wear_equal": true
+  }
+}

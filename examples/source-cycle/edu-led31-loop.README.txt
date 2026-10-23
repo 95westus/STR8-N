@@ -1,0 +1,28 @@
+EDU31 doubled-delay continuous display - board 2604
+
+Master: edu-led31-loop.asm, using name = expression constants directly.
+No EQU expansion or firmware extension is needed by installed ASM 0.5.
+Generate numbered/paste companions with:
+  python -B tools/build_rc1_edu_loop_source.py
+Send edu-led31-loop.numbered.txt at ASM>, or use the .paste.txt companion.
+
+430-byte program at $0200-$03AD. IRQ masked; decimal clear.
+65C816 requires E=1 and D/DBR/PBR=0.
+Nominal timing at 8 MHz: ~0.082 seconds/frame, ~20 seconds/pass.
+All 31 patterns repeat continuously; DWELL_CHUNKS = $02 selects timing.
+Cancellation is checked between ~41 ms chunks and before each frame.
+
+G 0200 reaches the ready BRK (PC=$0252); C starts the loop.
+Ctrl-C restores the entry LED value and reaches finished BRK (PC=$0293).
+If only DBG> appears, R displays registers. C returns through HOLD to B3>.
+An arbitrary X while running/stepping can bypass application cleanup.
+
+RAM ABI calls used: CHECK_CANCEL, HEX_OUT, NEWLINE, HOLD;
+PUTC is also used on the EDU-absent error path. Five of thirteen services.
+BRK $01/$02 provide debugger stops. No dynamic BRK callbacks are required.
+There is no public LED ABI: LED_DATA=$7FA0 and LED_CRA=$7FA1 are direct I/O.
+EDU discovery locations are a current rc1 contract, named by constant definitions.
+The program does not change CRA/DDRA or program flash.
+
+The original bounded workbook sample and its debugger addresses are unchanged.
+This separate looping variant has its own labels/addresses.

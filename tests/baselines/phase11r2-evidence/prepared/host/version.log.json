@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "C:\\Program Files\\wdc\\Tools\\bin\\WDC02AS.exe",
+      "-G",
+      "-L",
+      "-S",
+      "-W",
+      "-I",
+      "C:\\SRC\\STR8-N\\BUILD\\version-cached-r2\\host",
+      "version.asm"
+    ],
+    "returncode": 0,
+    "stdout": "WDC 65C02 Assembler  Version 3.49.1 Feb  6 2006 17:25:36\n       Copyright (C) 1992-2006 by The Western Design Center, Inc.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "C:\\Program Files\\wdc\\Tools\\bin\\WDCLN.exe",
+      "-g",
+      "-s",
+      "-t",
+      "-c6E00",
+      "-hm19",
+      "-j",
+      "-o",
+      "version.s19",
+      "version.obj"
+    ],
+    "returncode": 0,
+    "stdout": "WDC 65C816 Linker Version 3.49.1 Apr 24 2006 15:40:38\n   Copyright (C) 1992-2006 The Western Design Center, Inc.\n\nSection: ORG:    ROM ORG:  SIZE:\nCODE     006E00  006E00      27CH (   636)\nTotal                        27CH (   636)\n\n",
+    "stderr": ""
+  }
+]

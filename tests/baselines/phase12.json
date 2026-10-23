@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "phase": 12,
+  "complete": true,
+  "date": "2026-10-22",
+  "purpose": "Prepare and rehearse practical resident edit/assemble/debug/export and host source handoff",
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "hardware_qualified": false,
+  "installation_permitted": false,
+  "current_firmware_changed": false,
+  "firmware_source_changed": false,
+  "installer_or_profiles_changed": false,
+  "current_firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "resident_output_installed": false,
+  "previous_phase_manifest_sha256": "62fbba34391e37b5d0845b455b2cfdb7b1645d47838029ce310393f48158d8de",
+  "kit": "tests/baselines/phase12-evidence/kit/manifest.json",
+  "guide": "docs/BOARD_DEVELOPMENT_WORKFLOW.md",
+  "preservation": {
+    "protected_file_count": 1703,
+    "authoritative_source_file_count": 135,
+    "all_sha256_unchanged": true,
+    "receipt": "tests/baselines/phase12-evidence/preservation.json"
+  },
+  "verification": {
+    "host_checks": 33,
+    "resident_profiles": 8,
+    "ram_debug_executions": 16,
+    "named_capture_pairs": 32,
+    "source_reentry_replay_cases": 8,
+    "full_version_edit_compile_export_cases": 8,
+    "optional_sram_save_cancel_load_cases": 4,
+    "bare_sram_refusal_cases": 4,
+    "default_sram_transfers": 0,
+    "modeled_flash_writes": 0,
+    "expected_version_body_sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+  },
+  "practical_result": "Reproducible four-lane kit, numbered-source capture/replay, RAM debugger loop, VERSION source editing/export and host review drafts",
+  "source_promotion": "Captured generic edits are unverified review drafts; authoritative host reconciliation and new feature/runtime proofs are still required",
+  "next_hardware_step": "Separate user authorization, fresh board/application admission, preservation, then the tiny RAM lane before any VERSION hardware work",
+  "model_scope": "Existing CPU/FT245 model with actual linked monitor/ASM/DBG instructions, inherited discovery/delay shortcuts and optional separate initialized SRAM ABI fixture; no physical timing or hardware qualification",
+  "rehearsal_archive_layout": "Each rehearsal/<cpu>-<slot>-<bare|edu>.zip contains that profile's complete raw captures, numbered replay evidence, host intake artifacts and default/optional-model transcripts.",
+  "implementation": {
+    "tools/board_development.py": {
+      "bytes": 19498,
+      "sha256": "a4a3be5730f806dcfbe1ea247f76009a54a7075d32352e111e5bd6cba36447c8"
+    },
+    "tools/test_board_development.py": {
+      "bytes": 9882,
+      "sha256": "0f66951394348f1c7c2ac3285adeaac2d77dc47d0fe36d067c46cf76cd19a1a2"
+    },
+    "tools/test_board_development_runtime.py": {
+      "bytes": 18093,
+      "sha256": "d340182ed08461ca0cf185c37f431a8538ae6f929bbd9790b3c2e19f07a52eed"
+    },
+    "docs/BOARD_DEVELOPMENT_WORKFLOW.md": {
+      "bytes": 11876,
+      "sha256": "f41576e0489813706501955c7e42ba1b9d783f268e14167d9195920d6d1e6f00"
+    }
+  },
+  "evidence": {
+    "tests/baselines/phase12-evidence/host-checks.json": {
+      "bytes": 1946,
+      "sha256": "0b1780f0a4d4fc9b98c8be17050f574df2d9c575094834f07b13ea2c1d6c1aa7"
+    },
+    "tests/baselines/phase12-evidence/independent-file-audit.json": {
+      "bytes": 6256,
+      "sha256": "8dfefbf8d21eeb7f64f1148d0640e62fc720fe3751fa035c138bd54a2cc17fa7"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-a/expected.bin": {
+      "bytes": 14,
+      "sha256": "4188b0019290e98722198a08b5b80ea97280d91bb396363096f276027c37cb50"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-a/records.bin": {
+      "bytes": 169,
+      "sha256": "f4e8f31a11e0e7d862c498bd6c3d82e146a92915216ace9a07a76e9fa440edd3"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-a/source.asm": {
+      "bytes": 130,
+      "sha256": "d04a75809ccdb219470806e4e9dfa7268fdeaf3613dada2c847103c5fa00910c"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-a/source.numbered.txt": {
+      "bytes": 173,
+      "sha256": "106f0b3b4210fa73eae4b522c2c78d02e766dfba60cf57a98f06e4479800d4ce"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-a/source.paste.txt": {
+      "bytes": 138,
+      "sha256": "6cc51fcf408b85d342c7243e1b1b6d255cdcac418c8687aaf832cfa86ce5b809"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-a/symbols.json": {
+      "bytes": 82,
+      "sha256": "ccf7af07d32ba87fd25e35d9d4c59d9b53c51d5cc987a767765416847e811704"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-b/expected.bin": {
+      "bytes": 14,
+      "sha256": "17f92ceb0e59bf9993095b4a4570e25042791cce6a39b2640c4022f669fc6769"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-b/records.bin": {
+      "bytes": 169,
+      "sha256": "2edb148970b955671644c5c43ae82724f0c2b0e6a717bf023fa5a3aba9f5017b"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-b/source.asm": {
+      "bytes": 130,
+      "sha256": "5ce612009763e007351959d04d743536e027fae261ee93025f5c1cd5275e956c"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-b/source.numbered.txt": {
+      "bytes": 173,
+      "sha256": "1da5ff4443fb1183dd4e7a4449fa0fa1f315da428500eb567867adf7b36b050a"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-b/source.paste.txt": {
+      "bytes": 138,
+      "sha256": "f3c3938b561b71992058690b06fae161f5ff6b41a0978d935e915f6ec9648460"
+    },
+    "tests/baselines/phase12-evidence/kit/hello-b/symbols.json": {
+      "bytes": 82,
+      "sha256": "1737ca043c386b9b29bf01f9fbab8857ad9bf9f121dfbd4ee44d2d4d21083b4a"
+    },
+    "tests/baselines/phase12-evidence/kit/manifest.json": {
+      "bytes": 9790,
+      "sha256": "37122bc71ace4330b33d28e268151284ff60f4e6bf76087ef45919f04b508c03"
+    },
+    "tests/baselines/phase12-evidence/kit/session-commands.json": {
+      "bytes": 2910,
+      "sha256": "87ae030317202664ee8e08fb536c9f9952b53a1483a4db06e7c5d539c500af9a"
+    },
+    "tests/baselines/phase12-evidence/kit/version-control/expected.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase12-evidence/kit/version-control/records.bin": {
+      "bytes": 4630,
+      "sha256": "74d9b9649431447c96020d52e40f40cb4e85d14a1e6f895fb400a827b27c787f"
+    },
+    "tests/baselines/phase12-evidence/kit/version-control/source.asm": {
+      "bytes": 3718,
+      "sha256": "8ca749957c8d4d8e26f69394c4a40705d6f99d6b708b564b9d8868ebba789a65"
+    },
+    "tests/baselines/phase12-evidence/kit/version-control/source.numbered.txt": {
+      "bytes": 5130,
+      "sha256": "114e92f3c39d7c6101325d5815d13752b917cf69f886e57cb7823691763df4b7"
+    },
+    "tests/baselines/phase12-evidence/kit/version-control/source.paste.txt": {
+      "bytes": 3726,
+      "sha256": "e13bfc07828caff27ca02c9c10ce98642b5a324200584628ebb16fdb8b405c04"
+    },
+    "tests/baselines/phase12-evidence/kit/version-control/symbols.json": {
+      "bytes": 1448,
+      "sha256": "fb005a4c510509a8b06a97924600648972f434d8defe881a2b48237c2936b3e4"
+    },
+    "tests/baselines/phase12-evidence/kit/version-fast/expected.bin": {
+      "bytes": 636,
+      "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+    },
+    "tests/baselines/phase12-evidence/kit/version-fast/records.bin": {
+      "bytes": 4637,
+      "sha256": "f8a0adfe8f0059bc6debbfb1bfa99753255dc04e0f6012bcd4c38819d6aa072b"
+    },
+    "tests/baselines/phase12-evidence/kit/version-fast/source.asm": {
+      "bytes": 3725,
+      "sha256": "c0567c5617c7a4b53b21bc97956dd0ae3b22000311dde50d6ada26e44c0a27f7"
+    },
+    "tests/baselines/phase12-evidence/kit/version-fast/source.numbered.txt": {
+      "bytes": 5137,
+      "sha256": "d8942d069893540cb3ade952a052348652581e5fcbe973ef7045449f66f46b29"
+    },
+    "tests/baselines/phase12-evidence/kit/version-fast/source.paste.txt": {
+      "bytes": 3733,
+      "sha256": "ca77c62834ac40fb21cfd7da9350245e2711c5503773bd09bafe801704075cd7"
+    },
+    "tests/baselines/phase12-evidence/kit/version-fast/symbols.json": {
+      "bytes": 1448,
+      "sha256": "fb005a4c510509a8b06a97924600648972f434d8defe881a2b48237c2936b3e4"
+    },
+    "tests/baselines/phase12-evidence/preservation.json": {
+      "bytes": 228447,
+      "sha256": "943c1f583e7686eac906473ca41bcd1994777014161edd6c83014dfb3528b848"
+    },
+    "tests/baselines/phase12-evidence/rehearsal/65c02-A-bare.zip": {
+      "bytes": 67401,
+      "sha256": "b12aa0feae1e16d896878f745b3e10b46832382c406ebbe2d2353676125b912d"
+    },
+    "tests/baselines/phase12-evidence/rehearsal/65c02-A-edu.zip": {
+      "bytes": 67494,
+      "sha256": "01b70a85d9bf8a383747a677a3732f0fce2480bca5145a129933fd9d7539f7dd"
+    },
+    "tests/baselines/phase12-evidence/rehearsal/65c02-B-bare.zip": {
+      "bytes": 67401,
+      "sha256": "b12aa0feae1e16d896878f745b3e10b46832382c406ebbe2d2353676125b912d"
+    },
+    "tests/baselines/phase12-evidence/rehearsal/65c02-B-edu.zip": {
+      "bytes": 67494,
+      "sha256": "01b70a85d9bf8a383747a677a3732f0fce2480bca5145a129933fd9d7539f7dd"
+    },
+    "tests/baselines/phase12-evidence/rehearsal/65c816-e-A-bare.zip": {
+      "bytes": 67403,
+      "sha256": "b4f388eb7f2f3adcdc7e78d2d417239119a484d4e54807ce4259c585191baa8e"
+    },
+    "tests/baselines/phase12-evidence/rehearsal/65c816-e-A-edu.zip": {
+      "bytes": 67496,
+      "sha256": "3ecfc6fa208c38644232d88389908a590e0df0da3315a8bdbc178319e4c1c48c"
+    },
+    "tests/baselines/phase12-evidence/rehearsal/65c816-e-B-bare.zip": {
+      "bytes": 67403,
+      "sha256": "b4f388eb7f2f3adcdc7e78d2d417239119a484d4e54807ce4259c585191baa8e"
+    },
+    "tests/baselines/phase12-evidence/rehearsal/65c816-e-B-edu.zip": {
+      "bytes": 67496,
+      "sha256": "3ecfc6fa208c38644232d88389908a590e0df0da3315a8bdbc178319e4c1c48c"
+    },
+    "tests/baselines/phase12-evidence/rehearsal-65c02.json": {
+      "bytes": 54102,
+      "sha256": "2af372abdfdfe5e3f31a42889f3a7f66c3c85b30918d35e298b85c66bc3888b3"
+    },
+    "tests/baselines/phase12-evidence/rehearsal-65c816-e.json": {
+      "bytes": 54126,
+      "sha256": "4ab66acaf91d320ad57825eb29aca0de7eb5e1c5f10cf91c6421a55d91c15794"
+    }
+  }
+}

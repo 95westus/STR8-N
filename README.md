@@ -1,5 +1,18 @@
 # STR8-N
 
+Current firmware development uses [the authoritative source tree](src/current/README.md).
+Run `python -B tools/build_current.py` or `make` for a clean offline build.
+The build verifies the selected Monitor A/B and fixed-F size candidate byte for byte
+against its qualified target fixture. Phase 1/2 baselines remain preserved. This includes
+EQU/LST/SYMS/diagnostics, fixed-F journal branch shortening/vector packing,
+recovery status initialization, and further internal branch/refusal cleanup
+(204 contiguous plus 76 internal free bytes), with the original CRC implementation;
+published-release installation instructions below remain the r9 workflow.
+Current development installers use [one profile-driven workflow](tools/installer/README.md)
+through `python -B tools/install_current.py`; its verification is offline.
+Obsolete development paths are retired into [a verified, restorable archive](archive/README.md).
+See [the active tool map](tools/README.md) for the retained example and release support.
+
 STR8-N is a monitor, assembler and utility system for WDC SXB boards, using
 one firmware set for **65C02 and 65C816 emulation-mode runtime**.
 

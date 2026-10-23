@@ -1,0 +1,275 @@
+{
+  "schema": 1,
+  "phase": 7,
+  "complete": true,
+  "date": "2026-10-22",
+  "purpose": "Prepare batch/batch-gate for unchanged resident ASM and prove current-build byte equivalence offline",
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "hardware_qualified": false,
+  "firmware_source_changed": false,
+  "existing_firmware_images_changed": false,
+  "generated_gate_executed": false,
+  "resident_output_installed": false,
+  "installer_changed": false,
+  "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "firmware_bytes": 98304,
+  "phase1_through_phase6_baselines_unchanged": true,
+  "phase_baseline_sha256": {
+    "1": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+    "2": "69806d28b3bbe837b99febc9ec0198020796843c6b41ce055b5e684a67e3138f",
+    "3": "dec1aa37b2ec7300d7fc726bbb228238bb6b62ab44baddc8731db92c2db139db",
+    "4": "acc5b9c76633e2226a223b90032f5232970232410c966bd4dae5876edace5a84",
+    "5": "b1bd940afb676d6ba30e0f2358d5b67992d0ad2302e363869656c8b01edebf14",
+    "6": "3c439cc37a3e22e21c8dec68264da38d353eea03ae713e0ae1c8a5a39dc31184"
+  },
+  "fresh_build": "BUILD/phase7",
+  "payloads_equal": 20,
+  "symbol_maps_equal": 29,
+  "authoritative_source": "src/current/batch/batch-gate.asm",
+  "authoritative_source_sha256": "48ea32c16b2e6b13124b4836b8b6c2cacdc4a2d97ad13aaea3ab237ee45570e8",
+  "preparation_manifest": "tests/baselines/phase7-evidence/prepared/manifest.json",
+  "prepared_source": "tests/baselines/phase7-evidence/prepared/batch-gate.asm",
+  "prepared_inputs_are_generated": true,
+  "actual_resident_admission_verified": true,
+  "resident_byte_comparison_performed": true,
+  "prepared_source_lines": 49,
+  "packed_source_bytes": 689,
+  "max_source_line_bytes": 27,
+  "max_symbol_name_bytes": 15,
+  "symbol_count": 11,
+  "logical_origin": 31888,
+  "logical_end_exclusive": 31980,
+  "physical_output_start": 512,
+  "body_bytes": 92,
+  "body_sha256": "8124f2af31b3b17590ceda5e6cdf56a6592af96899ad013b74db7da3534fb0e5",
+  "differing_bytes": 0,
+  "all_symbols_match_current_link": {
+    "B29_GATE_END": 31980,
+    "B29_MON": 31888,
+    "B29_CLOCK": 31892,
+    "B29_ERROR": 31896,
+    "B29_APP": 31902,
+    "B29_COMMON": 31903,
+    "B29_RETURN": 31953,
+    "B29_RAW_RETURN": 31961,
+    "B29_ORIGINAL": 31962,
+    "B29_MON_VERIFY": 31965,
+    "B29_MON_ENABLED": 31975
+  },
+  "packaging": {
+    "body_bytes": 92,
+    "padding_bytes": 4,
+    "padding_value": 234,
+    "embedded_bytes": 96,
+    "embedded_sha256": "b70b1602fd5e7f3a2d5e93143ec513510560b0873d70962345d88826e35e7a17",
+    "placements": [
+      {
+        "slot": "a0",
+        "bank": 3,
+        "address": 44959,
+        "payload_offset": 3999,
+        "firmware_offset": 77727,
+        "bytes": 96
+      },
+      {
+        "slot": "b0",
+        "bank": 3,
+        "address": 49055,
+        "payload_offset": 3999,
+        "firmware_offset": 81823,
+        "bytes": 96
+      }
+    ],
+    "both_monitor_payloads_equal": true,
+    "in_memory_firmware_replacement_byte_identical": true
+  },
+  "s19": {
+    "decoded_s1_matches_current_link": true,
+    "checksums_verified": true,
+    "resident_s9_origin": 31888,
+    "host_s9": 0,
+    "raw_s19_text_equal": false,
+    "note": "Expected terminator/format difference; no standalone executable entry"
+  },
+  "verification": {
+    "configuration_count": 8,
+    "assembly_invocations": 16,
+    "matrix": [
+      {
+        "cpu": "65c02",
+        "monitor_slot": "A",
+        "edu": false,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "A",
+        "edu": true,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "B",
+        "edu": false,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "B",
+        "edu": true,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "A",
+        "edu": false,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "A",
+        "edu": true,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "B",
+        "edu": false,
+        "passed": true,
+        "assemblies": 2
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "B",
+        "edu": true,
+        "passed": true,
+        "assemblies": 2
+      }
+    ],
+    "host_checks": [
+      "all-five-prepared-files-repeat-byte-identically",
+      "existing-output-refused-without-mutation",
+      "changed-authoritative-statement-refused",
+      "stale-firmware-refused-before-output",
+      "stale-linked-s19-refused-before-output",
+      "stale-linked-map-refused-before-output",
+      "stale-symbol-inventory-refused-before-output"
+    ],
+    "unique_host_checks": 7,
+    "host_checks_repeated_in_both_model_runs": true,
+    "source_admission": "Actual PASTE compared with canonical prepared records",
+    "source_text_preserved_except_mode_cache": true,
+    "all_11_symbol_values_and_names_compared": true,
+    "existing_gate_ram_unchanged": true,
+    "modeled_flash_unchanged": true,
+    "sram_transfers_during_checks": 0,
+    "model_scope": "Existing monitor/ASM instructions with inherited FT245/discovery/delay model; prepared gate emitted and exported only, never installed or executed",
+    "not_qualified": [
+      "gate execution",
+      "hardware/electrical timing",
+      "native 816 applications",
+      "firmware installation"
+    ]
+  },
+  "documentation": "docs/RESIDENT_BATCH_GATE.md",
+  "implementation": {
+    "tools/prepare_resident_batch.py": {
+      "bytes": 17020,
+      "sha256": "f9ca57cd299136be8fc60d64b788337ac3c1ea07848225e1e258ed87e293ec2b"
+    },
+    "tools/test_resident_batch.py": {
+      "bytes": 12190,
+      "sha256": "abd4af14b3f558d34d3690329f8d1befe2e5a5457ca262647caa21b4a0208b66"
+    },
+    "docs/RESIDENT_BATCH_GATE.md": {
+      "bytes": 5860,
+      "sha256": "23c28464dba23e3923eb2ec2eacb5a5bdbff0b2ed237361455922a3c40ee6418"
+    }
+  },
+  "evidence": {
+    "tests/baselines/phase7-evidence/build.json": {
+      "bytes": 33190,
+      "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+    },
+    "tests/baselines/phase7-evidence/prepared/batch-gate.asm": {
+      "bytes": 542,
+      "sha256": "37f0222cd9a6928bc83b18c66e24fa37cf39d8277e8c0920a609b499c1122712"
+    },
+    "tests/baselines/phase7-evidence/prepared/batch-gate.paste.txt": {
+      "bytes": 550,
+      "sha256": "ffbd4302ff94747ee267350873e384416a8639fc38c787348ae16bc6b4741694"
+    },
+    "tests/baselines/phase7-evidence/prepared/batch-gate.records.bin": {
+      "bytes": 689,
+      "sha256": "27703f849756e18158bd88316341d1643b5b7ae769a67e45d1fe4648c3d55004"
+    },
+    "tests/baselines/phase7-evidence/prepared/expected.bin": {
+      "bytes": 92,
+      "sha256": "8124f2af31b3b17590ceda5e6cdf56a6592af96899ad013b74db7da3534fb0e5"
+    },
+    "tests/baselines/phase7-evidence/prepared/manifest.json": {
+      "bytes": 13145,
+      "sha256": "e846108c1a2a6963541426b83c2cadaece56cb2a222ed4ce9b8cef5321937eab"
+    },
+    "tests/baselines/phase7-evidence/preservation.json": {
+      "bytes": 87345,
+      "sha256": "b4b2a1d9d6ead688fc8571f040d482b942ae47d9898da1ea8a0852aaca472f02"
+    },
+    "tests/baselines/phase7-evidence/resident-65c02.json": {
+      "bytes": 5473,
+      "sha256": "cb3a3140e0971b8038dde8cadfc1b0a1afac16a299faaf57fb49a2cada7b9380"
+    },
+    "tests/baselines/phase7-evidence/resident-65c816-e.json": {
+      "bytes": 5485,
+      "sha256": "5c49a34311a384129b985cbe92b04a29edffe256c54c808c499254cdbb065952"
+    },
+    "tests/baselines/phase7-evidence/resident.bin": {
+      "bytes": 92,
+      "sha256": "8124f2af31b3b17590ceda5e6cdf56a6592af96899ad013b74db7da3534fb0e5"
+    },
+    "tests/baselines/phase7-evidence/resident.s19": {
+      "bytes": 261,
+      "sha256": "588f46ea8ef35f4e195f7be1ac7d54b8649d65d1fc25787877c869e8790599cc"
+    },
+    "tests/baselines/phase7-evidence/transcripts/65c02-A-bare.json": {
+      "bytes": 1931,
+      "sha256": "464958dd4cdf41dc88bb1a5a8999a86de9ee9d80c089beae3953791cb4538208"
+    },
+    "tests/baselines/phase7-evidence/transcripts/65c02-A-edu.json": {
+      "bytes": 1931,
+      "sha256": "464958dd4cdf41dc88bb1a5a8999a86de9ee9d80c089beae3953791cb4538208"
+    },
+    "tests/baselines/phase7-evidence/transcripts/65c02-B-bare.json": {
+      "bytes": 1931,
+      "sha256": "464958dd4cdf41dc88bb1a5a8999a86de9ee9d80c089beae3953791cb4538208"
+    },
+    "tests/baselines/phase7-evidence/transcripts/65c02-B-edu.json": {
+      "bytes": 1931,
+      "sha256": "464958dd4cdf41dc88bb1a5a8999a86de9ee9d80c089beae3953791cb4538208"
+    },
+    "tests/baselines/phase7-evidence/transcripts/65c816-e-A-bare.json": {
+      "bytes": 1931,
+      "sha256": "464958dd4cdf41dc88bb1a5a8999a86de9ee9d80c089beae3953791cb4538208"
+    },
+    "tests/baselines/phase7-evidence/transcripts/65c816-e-A-edu.json": {
+      "bytes": 1931,
+      "sha256": "464958dd4cdf41dc88bb1a5a8999a86de9ee9d80c089beae3953791cb4538208"
+    },
+    "tests/baselines/phase7-evidence/transcripts/65c816-e-B-bare.json": {
+      "bytes": 1931,
+      "sha256": "464958dd4cdf41dc88bb1a5a8999a86de9ee9d80c089beae3953791cb4538208"
+    },
+    "tests/baselines/phase7-evidence/transcripts/65c816-e-B-edu.json": {
+      "bytes": 1931,
+      "sha256": "464958dd4cdf41dc88bb1a5a8999a86de9ee9d80c089beae3953791cb4538208"
+    }
+  }
+}

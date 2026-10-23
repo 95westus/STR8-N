@@ -1,0 +1,32 @@
+[
+  {
+    "command": "ASM",
+    "context": "asm",
+    "output": "ASM\r\n\r\nSTR8-N ASM 0.5 / 65C02\r\nASM> "
+  },
+  {
+    "command": "PASTE\rORG $7C90\rB29_MON: JMP B29_MON_VERIFY\rNOP\rB29_CLOCK: LDA #5\rBRA B29_COMMON\rB29_ERROR: LDA #1\rSTA $7EE7\rRTS\rB29_APP: RTS\rB29_COMMON:\rSTA $7EE8\rLDA $7FEC\rSTA $7EE9\rLDA #2\rJSR $7848\rLDA $7EE8\rJSR $D0EA\rBCS B29_RETURN\rLDA $7EE9\rSTA $7FEC\rJSR B29_ORIGINAL\rBCC B29_RAW_RETURN\rPHX\rPHY\rLDA #2\rJSR $7848\rLDA $7EE8\rORA #$80\rJSR $D0EA\rPLY\rPLX\rB29_RETURN:\rPHP\rLDA $7EE9\rSTA $7FEC\rPLP\rB29_RAW_RETURN:\rRTS\rB29_ORIGINAL: JMP ($7EEA)\rB29_MON_VERIFY:\rLDA $7EF4\rCMP #$BA\rBEQ B29_MON_ENABLED\rJMP ($7EEA)\rB29_MON_ENABLED:\rLDA #0\rJMP B29_COMMON\rB29_GATE_END:\rEND\r.",
+    "context": "asm",
+    "output": "PASTE\r\nPaste source; . ends, Ctrl-C cancels\r\n\r\nASM> "
+  },
+  {
+    "command": "ASM",
+    "context": "asm",
+    "output": "ASM\r\nOK 92 bytes, origin $7C90, buffer $0200\r\nRAM $0200-$025B\r\nORG differs; use S19/load at origin before Store.\r\nASM> "
+  },
+  {
+    "command": "ASM",
+    "context": "asm",
+    "output": "ASM\r\nOK 92 bytes, origin $7C90, buffer $0200\r\nRAM $0200-$025B\r\nORG differs; use S19/load at origin before Store.\r\nASM> "
+  },
+  {
+    "command": "SYMS",
+    "context": "asm",
+    "output": "SYMS\r\n7C90 B29_MON\r\n7CDD B29_MON_VERIFY\r\n7C94 B29_CLOCK\r\n7C9F B29_COMMON\r\n7C98 B29_ERROR\r\n7C9E B29_APP\r\n7CD1 B29_RETURN\r\n7CDA B29_ORIGINAL\r\n7CD9 B29_RAW_RETURN\r\n7CE7 B29_MON_ENABLED\r\n7CEC B29_GATE_END\r\nASM> "
+  },
+  {
+    "command": "S19",
+    "context": "asm",
+    "output": "S19\r\nS1137C904CDD7CEAA9058007A9018DE77E60608D33\r\nS1137CA0E87EADEC7F8DE97EA902204878ADE87EC0\r\nS1137CB020EAD0B01CADE97E8DEC7F20DA7C9019EF\r\nS1137CC0DA5AA902204878ADE87E098020EAD07A01\r\nS1137CD0FA08ADE97E8DEC7F28606CEA7EADF47E17\r\nS10F7CE0C9BAF0036CEA7EA9004C9F7C3A\r\nS9037C90F0\r\nASM> "
+  }
+]

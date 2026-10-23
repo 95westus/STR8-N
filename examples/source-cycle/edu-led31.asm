@@ -1,0 +1,243 @@
+; Named constants: edit these definitions; ASM accepts name = expression.
+APP_ORG = $0200
+ABI_LAST = $03
+ABI_DESC = $7E60
+B52 = $52
+B41 = $41
+B01 = $01
+B0D = $0D
+EDU_SIG0 = $7D04
+DISC_S = 'S'
+EDU_SIG1 = $7D05
+DISC_V = 'V'
+EDU_FORMAT = $7D06
+DISC_VERSION = $01
+EDU_PRESENT = $7D0C
+LED_CRA = $7FA1
+CRA_DATA_BIT = $04
+LED_DATA = $7FA0
+NO_EDU_CHAR = 'E'
+ABI_PUTC = $7E6D
+ABI_NEWLINE = $7E7F
+ABI_HOLD = $7E67
+STOP_READY = $01
+ABI_CANCEL = $7E76
+FRAME_MASK = $07
+ABI_HEX = $7E7C
+FRAME_COUNT = $F8
+STOP_DONE = $02
+DWELL_OUTER = $FF
+LOOP_WRAP = $00
+B02 = $02
+B04 = $04
+B08 = $08
+B10 = $10
+B20 = $20
+B40 = $40
+B80 = $80
+BFE = $FE
+BFD = $FD
+BFB = $FB
+BF7 = $F7
+BEF = $EF
+BDF = $DF
+BBF = $BF
+B7F = $7F
+BF0 = $F0
+B0F = $0F
+BAA = $AA
+B55 = $55
+BFF = $FF
+B00 = $00
+B03 = $03
+B07 = $07
+B1F = $1F
+B3F = $3F
+BC0 = $C0
+BE0 = $E0
+BF8 = $F8
+BFC = $FC
+B18 = $18
+B3C = $3C
+B7E = $7E
+B81 = $81
+BC3 = $C3
+BE7 = $E7
+B06 = $06
+B0C = $0C
+B30 = $30
+B60 = $60
+B0E = $0E
+B1C = $1C
+B38 = $38
+B70 = $70
+BC1 = $C1
+B83 = $83
+B1E = $1E
+B78 = $78
+BE1 = $E1
+B87 = $87
+B11 = $11
+B22 = $22
+B44 = $44
+B88 = $88
+B42 = $42
+B24 = $24
+B05 = $05
+BA5 = $A5
+B66 = $66
+B15 = $15
+B57 = $57
+B5F = $5F
+B33 = $33
+BCC = $CC
+B77 = $77
+B12 = $12
+B09 = $09
+BBC = $BC
+B5E = $5E
+B2F = $2F
+BAF = $AF
+BCF = $CF
+; ASM 0.5 source document; paste unnumbered lines with PASTE.
+; IRQ masked, decimal clear; 816 E=1, D/DBR/PBR=0.
+; BRK 01 ready; BRK 02 complete; C continues; Ctrl-C cleans up.
+ORG APP_ORG
+SEI
+CLD
+; Validate initialized RAM ABI before calling any entry.
+LDX #ABI_LAST
+abi: LDA ABI_DESC,X
+CMP signature,X
+BNE bad
+DEX
+BPL abi
+JMP start
+bad: JMP bad
+signature: BYTE B52,B41,B01,B0D
+start: STZ frame
+; Current rc1 discovery descriptor, not a public LED ABI.
+LDA EDU_SIG0
+CMP #DISC_S
+BNE absent
+LDA EDU_SIG1
+CMP #DISC_V
+BNE absent
+LDA EDU_FORMAT
+CMP #DISC_VERSION
+BNE absent
+LDA EDU_PRESENT
+BEQ absent
+; Do not select DDR or rewrite CRA/DDRA.
+LDA LED_CRA
+AND #CRA_DATA_BIT
+BEQ absent
+LDA LED_DATA
+STA entry
+BRA ready
+absent: LDA #NO_EDU_CHAR
+JSR ABI_PUTC
+JSR ABI_NEWLINE
+JMP ABI_HOLD
+ready: BRK STOP_READY
+NOP
+next: JSR ABI_CANCEL
+BCS finish
+LDA frame
+AND #FRAME_MASK
+BNE show
+; Print one-based pattern number in hexadecimal.
+LDA frame
+LSR A
+LSR A
+LSR A
+INC A
+JSR ABI_HEX
+JSR ABI_NEWLINE
+show: LDX frame
+LDA patterns,X
+STA LED_DATA
+JSR delay
+INC frame
+LDA frame
+CMP #FRAME_COUNT
+BNE next
+finish: NOP
+LDA entry
+STA LED_DATA
+done: BRK STOP_DONE
+JMP ABI_HOLD
+; Edit this immediate to change the frame dwell.
+delay: LDX #DWELL_OUTER
+outer: LDY #LOOP_WRAP
+inner: DEY
+BNE inner
+DEX
+BNE outer
+RTS
+patterns:
+; 01: walking one
+BYTE B01,B02,B04,B08,B10,B20,B40,B80
+; 02: walking zero
+BYTE BFE,BFD,BFB,BF7,BEF,BDF,BBF,B7F
+; 03: reverse one
+BYTE B80,B40,B20,B10,B08,B04,B02,B01
+; 04: reverse zero
+BYTE B7F,BBF,BDF,BEF,BF7,BFB,BFD,BFE
+; 05: wigwag
+BYTE BF0,B0F,BF0,B0F,BF0,B0F,BF0,B0F
+; 06: checkerboard
+BYTE BAA,B55,BAA,B55,BAA,B55,BAA,B55
+; 07: all blink
+BYTE BFF,B00,BFF,B00,BFF,B00,BFF,B00
+; 08: fill left
+BYTE B01,B03,B07,B0F,B1F,B3F,B7F,BFF
+; 09: drain left
+BYTE BFF,B7F,B3F,B1F,B0F,B07,B03,B01
+; 10: fill right
+BYTE B80,BC0,BE0,BF0,BF8,BFC,BFE,BFF
+; 11: drain right
+BYTE BFF,BFE,BFC,BF8,BF0,BE0,BC0,B80
+; 12: expand pairs
+BYTE B18,B3C,B7E,BFF,B7E,B3C,B18,B00
+; 13: contract pairs
+BYTE B81,BC3,BE7,BFF,BE7,BC3,B81,B00
+; 14: two dot chase
+BYTE B03,B06,B0C,B18,B30,B60,BC0,B81
+; 15: three dot chase
+BYTE B07,B0E,B1C,B38,B70,BE0,BC1,B83
+; 16: four dot chase
+BYTE B0F,B1E,B3C,B78,BF0,BE1,BC3,B87
+; 17: split chase
+BYTE B11,B22,B44,B88,B11,B22,B44,B88
+; 18: outer bounce
+BYTE B81,B42,B24,B18,B24,B42,B81,B00
+; 19: gray ramp
+BYTE B00,B01,B03,B02,B06,B07,B05,B04
+; 20: binary ramp
+BYTE B00,B01,B02,B03,B04,B05,B06,B07
+; 21: mirrored binary
+BYTE B00,B81,B42,BC3,B24,BA5,B66,BE7
+; 22: alternating fill
+BYTE B01,B05,B15,B55,B57,B5F,B7F,BFF
+; 23: alternating drain
+BYTE BFF,B7F,B5F,B57,B55,B15,B05,B01
+; 24: paired blink
+BYTE B33,BCC,B33,BCC,B33,BCC,B33,BCC
+; 25: nibble count
+BYTE B00,B11,B22,B33,B44,B55,B66,B77
+; 26: center pulse
+BYTE B18,B18,B00,B18,B00,B00,B18,B00
+; 27: edge pulse
+BYTE B81,B81,B00,B81,B00,B00,B81,B00
+; 28: comet
+BYTE B01,B03,B07,B0E,B1C,B38,B70,BE0
+; 29: reverse comet
+BYTE B80,BC0,BE0,B70,B38,B1C,B0E,B07
+; 30: sparkle
+BYTE B12,B09,BBC,B5E,B2F,BAF,BEF,BCF
+; 31: crossfade halves
+BYTE BF0,BE1,BC3,B87,B0F,B1E,B3C,B78
+frame: BYTE B00
+entry: BYTE B00
+END

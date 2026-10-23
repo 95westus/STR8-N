@@ -1,0 +1,452 @@
+{
+  "schema": 1,
+  "unit": {
+    "name": "batch/batch-gate",
+    "authoritative_source": "src/current/batch/batch-gate.asm",
+    "source_sha256": "48ea32c16b2e6b13124b4836b8b6c2cacdc4a2d97ad13aaea3ab237ee45570e8",
+    "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+    "phase6_manifest_sha256": "3c439cc37a3e22e21c8dec68264da38d353eea03ae713e0ae1c8a5a39dc31184",
+    "generated_source_is_authoritative": false
+  },
+  "assembly": {
+    "origin": 31888,
+    "end_exclusive": 31980,
+    "expected_bytes": 92,
+    "executable_entry": null,
+    "entries": {
+      "B29_MON": 31888,
+      "B29_CLOCK": 31892,
+      "B29_ERROR": 31896,
+      "B29_APP": 31902
+    },
+    "symbols": {
+      "B29_GATE_END": 31980,
+      "B29_MON": 31888,
+      "B29_CLOCK": 31892,
+      "B29_ERROR": 31896,
+      "B29_APP": 31902,
+      "B29_COMMON": 31903,
+      "B29_RETURN": 31953,
+      "B29_RAW_RETURN": 31961,
+      "B29_ORIGINAL": 31962,
+      "B29_MON_VERIFY": 31965,
+      "B29_MON_ENABLED": 31975
+    },
+    "exports": {
+      "B29_GATE_END": 31980
+    },
+    "host_declared_exports": [
+      "B29_GATE_END"
+    ]
+  },
+  "storage": {
+    "kind": "monitor-embedded RAM-gate image",
+    "physical_output_start": 512,
+    "ram_destination": 31888,
+    "ram_reserved_bytes": 96,
+    "enclosing_assets": [
+      "str8n-v2-recovery-slot-a0.bin",
+      "str8n-v2-recovery-slot-b0.bin"
+    ],
+    "firmware_bank": 3,
+    "embedded_rom_addresses": {
+      "monitor_a": 44959,
+      "monitor_b": 49055
+    },
+    "not_a_standalone_rom_image": true
+  },
+  "bindings": {
+    "symbolic_imports": {},
+    "aliases": {},
+    "literal_abi": [
+      {
+        "value": 30792,
+        "role": "V2W_SELECT fixed worker bank-selection service"
+      },
+      {
+        "value": 53482,
+        "role": "bank-2 B29_ENGINE provider pre/post service call target"
+      },
+      {
+        "value": 32487,
+        "role": "byte written as 1 by B29_ERROR"
+      },
+      {
+        "value": 32488,
+        "role": "provider operation ID saved before calls"
+      },
+      {
+        "value": 32489,
+        "role": "saved VIA PCR byte"
+      },
+      {
+        "value": 32490,
+        "role": "little-endian selected original-reader pointer; provider may select another reader"
+      },
+      {
+        "value": 32500,
+        "role": "provider-verified flag, enabled only when equal to $BA"
+      },
+      {
+        "value": 32748,
+        "role": "VIA PCR address; its saved bank-control byte is restored"
+      }
+    ],
+    "literal_protocol_values": {
+      "bank": 2,
+      "clock_operation": 5,
+      "monitor_operation": 0,
+      "error_result": 1,
+      "provider_verified": 186,
+      "provider_completion_operation_mask": 128
+    }
+  },
+  "preparation": {
+    "recipe": "batch-gate-v1-exact-source",
+    "removed_wrappers": [
+      "MODULE BATCH_GATE",
+      "XDEF B29_GATE_END",
+      "CODE",
+      "ENDMOD"
+    ],
+    "normalization": "Strip outer whitespace per retained line; preserve every statement in order and spelling",
+    "added_prefix": "ORG $7C90",
+    "added_suffix": "END",
+    "include_expansion": false,
+    "symbol_renaming": false,
+    "unsupported_syntax_and_collisions": "Refuse before creating output",
+    "line_mapping": [
+      {
+        "prepared_physical_line": 1,
+        "prepared_record_line": 10,
+        "authoritative_source_line": null
+      },
+      {
+        "prepared_physical_line": 2,
+        "prepared_record_line": 20,
+        "authoritative_source_line": 4
+      },
+      {
+        "prepared_physical_line": 3,
+        "prepared_record_line": 30,
+        "authoritative_source_line": 5
+      },
+      {
+        "prepared_physical_line": 4,
+        "prepared_record_line": 40,
+        "authoritative_source_line": 6
+      },
+      {
+        "prepared_physical_line": 5,
+        "prepared_record_line": 50,
+        "authoritative_source_line": 7
+      },
+      {
+        "prepared_physical_line": 6,
+        "prepared_record_line": 60,
+        "authoritative_source_line": 8
+      },
+      {
+        "prepared_physical_line": 7,
+        "prepared_record_line": 70,
+        "authoritative_source_line": 9
+      },
+      {
+        "prepared_physical_line": 8,
+        "prepared_record_line": 80,
+        "authoritative_source_line": 10
+      },
+      {
+        "prepared_physical_line": 9,
+        "prepared_record_line": 90,
+        "authoritative_source_line": 11
+      },
+      {
+        "prepared_physical_line": 10,
+        "prepared_record_line": 100,
+        "authoritative_source_line": 12
+      },
+      {
+        "prepared_physical_line": 11,
+        "prepared_record_line": 110,
+        "authoritative_source_line": 13
+      },
+      {
+        "prepared_physical_line": 12,
+        "prepared_record_line": 120,
+        "authoritative_source_line": 14
+      },
+      {
+        "prepared_physical_line": 13,
+        "prepared_record_line": 130,
+        "authoritative_source_line": 15
+      },
+      {
+        "prepared_physical_line": 14,
+        "prepared_record_line": 140,
+        "authoritative_source_line": 16
+      },
+      {
+        "prepared_physical_line": 15,
+        "prepared_record_line": 150,
+        "authoritative_source_line": 17
+      },
+      {
+        "prepared_physical_line": 16,
+        "prepared_record_line": 160,
+        "authoritative_source_line": 18
+      },
+      {
+        "prepared_physical_line": 17,
+        "prepared_record_line": 170,
+        "authoritative_source_line": 19
+      },
+      {
+        "prepared_physical_line": 18,
+        "prepared_record_line": 180,
+        "authoritative_source_line": 20
+      },
+      {
+        "prepared_physical_line": 19,
+        "prepared_record_line": 190,
+        "authoritative_source_line": 21
+      },
+      {
+        "prepared_physical_line": 20,
+        "prepared_record_line": 200,
+        "authoritative_source_line": 22
+      },
+      {
+        "prepared_physical_line": 21,
+        "prepared_record_line": 210,
+        "authoritative_source_line": 23
+      },
+      {
+        "prepared_physical_line": 22,
+        "prepared_record_line": 220,
+        "authoritative_source_line": 24
+      },
+      {
+        "prepared_physical_line": 23,
+        "prepared_record_line": 230,
+        "authoritative_source_line": 25
+      },
+      {
+        "prepared_physical_line": 24,
+        "prepared_record_line": 240,
+        "authoritative_source_line": 26
+      },
+      {
+        "prepared_physical_line": 25,
+        "prepared_record_line": 250,
+        "authoritative_source_line": 27
+      },
+      {
+        "prepared_physical_line": 26,
+        "prepared_record_line": 260,
+        "authoritative_source_line": 28
+      },
+      {
+        "prepared_physical_line": 27,
+        "prepared_record_line": 270,
+        "authoritative_source_line": 29
+      },
+      {
+        "prepared_physical_line": 28,
+        "prepared_record_line": 280,
+        "authoritative_source_line": 30
+      },
+      {
+        "prepared_physical_line": 29,
+        "prepared_record_line": 290,
+        "authoritative_source_line": 31
+      },
+      {
+        "prepared_physical_line": 30,
+        "prepared_record_line": 300,
+        "authoritative_source_line": 32
+      },
+      {
+        "prepared_physical_line": 31,
+        "prepared_record_line": 310,
+        "authoritative_source_line": 33
+      },
+      {
+        "prepared_physical_line": 32,
+        "prepared_record_line": 320,
+        "authoritative_source_line": 34
+      },
+      {
+        "prepared_physical_line": 33,
+        "prepared_record_line": 330,
+        "authoritative_source_line": 35
+      },
+      {
+        "prepared_physical_line": 34,
+        "prepared_record_line": 340,
+        "authoritative_source_line": 36
+      },
+      {
+        "prepared_physical_line": 35,
+        "prepared_record_line": 350,
+        "authoritative_source_line": 37
+      },
+      {
+        "prepared_physical_line": 36,
+        "prepared_record_line": 360,
+        "authoritative_source_line": 38
+      },
+      {
+        "prepared_physical_line": 37,
+        "prepared_record_line": 370,
+        "authoritative_source_line": 39
+      },
+      {
+        "prepared_physical_line": 38,
+        "prepared_record_line": 380,
+        "authoritative_source_line": 40
+      },
+      {
+        "prepared_physical_line": 39,
+        "prepared_record_line": 390,
+        "authoritative_source_line": 41
+      },
+      {
+        "prepared_physical_line": 40,
+        "prepared_record_line": 400,
+        "authoritative_source_line": 42
+      },
+      {
+        "prepared_physical_line": 41,
+        "prepared_record_line": 410,
+        "authoritative_source_line": 43
+      },
+      {
+        "prepared_physical_line": 42,
+        "prepared_record_line": 420,
+        "authoritative_source_line": 44
+      },
+      {
+        "prepared_physical_line": 43,
+        "prepared_record_line": 430,
+        "authoritative_source_line": 45
+      },
+      {
+        "prepared_physical_line": 44,
+        "prepared_record_line": 440,
+        "authoritative_source_line": 46
+      },
+      {
+        "prepared_physical_line": 45,
+        "prepared_record_line": 450,
+        "authoritative_source_line": 47
+      },
+      {
+        "prepared_physical_line": 46,
+        "prepared_record_line": 460,
+        "authoritative_source_line": 48
+      },
+      {
+        "prepared_physical_line": 47,
+        "prepared_record_line": 470,
+        "authoritative_source_line": 49
+      },
+      {
+        "prepared_physical_line": 48,
+        "prepared_record_line": 480,
+        "authoritative_source_line": 50
+      },
+      {
+        "prepared_physical_line": 49,
+        "prepared_record_line": 490,
+        "authoritative_source_line": null
+      }
+    ]
+  },
+  "admission": {
+    "line_count": 49,
+    "max_line_bytes": 27,
+    "max_name_bytes": 15,
+    "symbol_count": 11,
+    "packed_source_bytes": 689,
+    "packed_source_start": 13056,
+    "packed_source_end_exclusive": 13745,
+    "record_format": "little-endian line:u16, length:u8, mode_cache:u8, ASCII text",
+    "first_line": 10,
+    "line_step": 10,
+    "canonical_mode_cache": 0,
+    "actual_resident_admission_verified": false
+  },
+  "verification": {
+    "expected_output_sha256": "8124f2af31b3b17590ceda5e6cdf56a6592af96899ad013b74db7da3534fb0e5",
+    "expected_bytes_from": "BUILD/phase7/s/batch/batch-gate.s19",
+    "verified_build": "BUILD/phase7",
+    "inputs": {
+      "BUILD/phase7/build-report.json": {
+        "bytes": 33190,
+        "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+      },
+      "BUILD/phase7/firmware.bin": {
+        "bytes": 98304,
+        "sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6"
+      },
+      "BUILD/phase7/symbols.json": {
+        "bytes": 295373,
+        "sha256": "78e571099a9c71e8c6a7bc8b5ecfb61f62041daa080d504d95e8a7e9d5c0ad63"
+      },
+      "BUILD/phase7/s/batch/batch-gate.map": {
+        "bytes": 310,
+        "sha256": "ac2da50f028d9b7faeafefcdb7ad7c2a9bbe13f5781407d1a7c6bce1d86dbb35"
+      },
+      "BUILD/phase7/s/batch/batch-gate.s19": {
+        "bytes": 268,
+        "sha256": "505889e1fad1d5611f555d1f30d114cc9b8e8fdc267ff980d262447ba0dbdf52"
+      }
+    },
+    "preparation_only": true,
+    "resident_byte_comparison_performed": false,
+    "required_next_check": "Assemble using the unchanged resident engine on both CPU models; compare all 92 bytes and all 11 symbols against the independent linked artifact"
+  },
+  "packaging": {
+    "body_bytes": 92,
+    "embedded_bytes": 96,
+    "trailing_fill": {
+      "bytes": 4,
+      "value": 234
+    },
+    "generated_include": "s/core/batch-gate.inc",
+    "header": null,
+    "crc": "No gate-local CRC; existing monitor slot composition owns header and sealing",
+    "s19_entry": "Resident S9 origin is $7C90; host object-link S9 $0000 is not an executable entry",
+    "no_firmware_or_asset_is_generated": true
+  },
+  "execution": {
+    "authorized": false,
+    "standalone_ram_program": false,
+    "preconditions": "Existing monitor environment: gate copied to $7C90, worker services and indirect read-line vector initialized, paired bank-2 provider checked; IRQ disabled and decimal clear, 816 E=1 with DP/DBR/PBR zero",
+    "effects": "Changes banking and gate state; calls provider and selected original reader; stack/flags/register behavior remains that of the exact existing bytes",
+    "physical_output_is_not_execution_address": true,
+    "byte_equivalence_does_not_authorize_execution_or_installation": true,
+    "board_access": false,
+    "serial_ports_opened": 0,
+    "network_attempts": 0
+  },
+  "files": {
+    "batch-gate.asm": {
+      "bytes": 542,
+      "sha256": "37f0222cd9a6928bc83b18c66e24fa37cf39d8277e8c0920a609b499c1122712"
+    },
+    "batch-gate.paste.txt": {
+      "bytes": 550,
+      "sha256": "ffbd4302ff94747ee267350873e384416a8639fc38c787348ae16bc6b4741694"
+    },
+    "batch-gate.records.bin": {
+      "bytes": 689,
+      "sha256": "27703f849756e18158bd88316341d1643b5b7ae769a67e45d1fe4648c3d55004"
+    },
+    "expected.bin": {
+      "bytes": 92,
+      "sha256": "8124f2af31b3b17590ceda5e6cdf56a6592af96899ad013b74db7da3534fb0e5"
+    }
+  }
+}

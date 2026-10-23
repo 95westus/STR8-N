@@ -1,0 +1,1778 @@
+{
+  "schema": 1,
+  "scope": "Offline source/artifact reproduction; no board access",
+  "commit": "35b2649f5d4fe33fd276068e6ae5aa50c5c71bab",
+  "initial_worktree_status": [
+    " M docs/STR8N_V2_1_ABI_METADATA_ROADMAP.md",
+    " M docs/rc1/ASM_GUIDE.md",
+    " M docs/rc1/COMMAND_REFERENCE.md",
+    " M docs/rc1/DEBUGGER_GUIDE.md",
+    " M docs/rc1/QUICK_START.md",
+    " M docs/rc1/README.md",
+    " M docs/rc1/TECHNICAL_MANUAL.md",
+    " M docs/rc1/USER_GUIDE.md",
+    "?? docs/rc1/ASM_DEVELOPMENT.md",
+    "?? docs/rc1/ASM_SAVE_STORE.md",
+    "?? docs/rc1/DEBUG_MAP.md",
+    "?? docs/rc1/SOURCE_DEVELOPMENT_WORKBOOK.md",
+    "?? docs/rc1/SOURCE_HARDWARE_TEST_PLAN.md",
+    "?? examples/source-cycle/",
+    "?? tools/admit_rc1_asm_dev_2604.py",
+    "?? tools/admit_rc1_console_edit_2604.py",
+    "?? tools/admit_rc1_latest_2609.py",
+    "?? tools/asm-dev.inc",
+    "?? tools/build_rc1_asm_dev.py",
+    "?? tools/build_rc1_asm_docs_pdf.py",
+    "?? tools/build_rc1_asm_equ.py",
+    "?? tools/build_rc1_console_edit.py",
+    "?? tools/build_rc1_debug_map.py",
+    "?? tools/build_rc1_dev_samples.py",
+    "?? tools/build_rc1_edu_loop_source.py",
+    "?? tools/build_rc1_loop_workbook.py",
+    "?? tools/build_rc1_maint_source.py",
+    "?? tools/build_rc1_sample_listings.py",
+    "?? tools/build_rc1_source_evidence.py",
+    "?? tools/build_rc1_source_pdfs.py",
+    "?? tools/build_rc1_source_store.py",
+    "?? tools/check_rc1_asm_docs.py",
+    "?? tools/check_rc1_source_pdfs.py",
+    "?? tools/close_rc1_2604_source_test.py",
+    "?? tools/flash_rc1_asm_dev_2604.py",
+    "?? tools/flash_rc1_console_edit_2604.py",
+    "?? tools/flash_rc1_latest_2609.py",
+    "?? tools/flash_rc1_maint_source_2604.py",
+    "?? tools/name_rc1_demo_constants.py",
+    "?? tools/preflight_rc1_2604_source.py",
+    "?? tools/preflight_rc1_asm_dev_2604.py",
+    "?? tools/preflight_rc1_console_edit_2604.py",
+    "?? tools/preflight_rc1_latest_2609.py",
+    "?? tools/prepare_rc1_asm_dev_cleanup.py",
+    "?? tools/prepare_rc1_asm_dev_installer.py",
+    "?? tools/prepare_rc1_console_edit_installer.py",
+    "?? tools/prepare_rc1_latest_2609_installer.py",
+    "?? tools/prepare_rc1_maint_source_installer.py",
+    "?? tools/prepare_rc1_source_installer.py",
+    "?? tools/rc1_asm_dev_cpu_model.py",
+    "?? tools/rc1_edu31_probe.py",
+    "?? tools/send_rc1_edu_loop_2604.py",
+    "?? tools/source-store/",
+    "?? tools/summarize_rc1_source_development.py",
+    "?? tools/test_rc1_2604_source_hardware.py",
+    "?? tools/test_rc1_asm_dev.py",
+    "?? tools/test_rc1_asm_dev_2604.py",
+    "?? tools/test_rc1_asm_equ.py",
+    "?? tools/test_rc1_console_edit.py",
+    "?? tools/test_rc1_console_edit_2604.py",
+    "?? tools/test_rc1_debug_map.py",
+    "?? tools/test_rc1_demo_constants.py",
+    "?? tools/test_rc1_dev_samples.py",
+    "?? tools/test_rc1_maint_source.py",
+    "?? tools/test_rc1_sample_walkthroughs.py",
+    "?? tools/test_rc1_source_flash.py",
+    "?? tools/test_rc1_source_flash_edges.py",
+    "?? tools/test_rc1_source_installer.py",
+    "?? tools/test_rc1_source_store.py"
+  ],
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "python_executable": "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+  "toolchain": {
+    "wdc02as": {
+      "path": "C:\\Program Files\\WDC\\Tools\\BIN\\wdc02as.EXE",
+      "sha256": "e56dc6b3143a5d1afe289219bf6fdb2df4ad358aa3e3821c9b252eae81a724a2"
+    },
+    "wdcln": {
+      "path": "C:\\Program Files\\WDC\\Tools\\BIN\\wdcln.EXE",
+      "sha256": "4c293614ba8d0657f83d0240a921068b2edcf1a2e3abc1f54032256b5369ff41"
+    }
+  },
+  "runs": [
+    {
+      "name": "rc1-generation49",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "release/candidates/rc1/build.py",
+        "--out",
+        "BUILD/base49"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/rc1-generation49.log",
+      "log_sha256": "a5a1ae061481c289426565597b3924c6280f4099917113a0dfe6c633061cee96"
+    },
+    {
+      "name": "released-v1g",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "release/candidates/rc1-debugger-brkfix-r1/build.py",
+        "--out",
+        "BUILD/rc1-debugger-v1g"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/released-v1g.log",
+      "log_sha256": "5d3e6c869af90560087b1edc06293bfc628bfcf8ef15425ed1cc3eafd701a0b6"
+    },
+    {
+      "name": "build_rc1_source_store",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/build_rc1_source_store.py"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/build_rc1_source_store.log",
+      "log_sha256": "04f399600af11cf36234aaad13e6b0cea37d27e63e162fdb393bf7445602f80a"
+    },
+    {
+      "name": "build_rc1_maint_source",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/build_rc1_maint_source.py"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/build_rc1_maint_source.log",
+      "log_sha256": "0102e15c8eada6f620bd86ccfb0075eb014b3572ecf684fbdf17645f82806a83"
+    },
+    {
+      "name": "build_rc1_console_edit",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/build_rc1_console_edit.py"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/build_rc1_console_edit.log",
+      "log_sha256": "8b6cc3bc5ab6908afd5a0b1396d496177ceb8836604a8e784d82c608a829b323"
+    },
+    {
+      "name": "build_rc1_asm_dev",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/build_rc1_asm_dev.py"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/build_rc1_asm_dev.log",
+      "log_sha256": "950d6acb4909695ef7559cf1ae0fc7c2071d1c97b4b031b5f4ddbb9772627131"
+    },
+    {
+      "name": "current-asm-dev",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/test_rc1_asm_dev.py"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/current-asm-dev.log",
+      "log_sha256": "edb0c78831316320913407340b03ce05a7cb836ef74a0a2e2c7bef04154493b3"
+    },
+    {
+      "name": "console-edit",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/test_rc1_console_edit.py"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/console-edit.log",
+      "log_sha256": "4f88638a881187914868e823b139873c7ee8b9f38508d8ec35566683391d6a16"
+    },
+    {
+      "name": "released-debugger-65c02",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/test_rc1_debugger.py",
+        "--build",
+        "BUILD/rc1-debugger-v1g",
+        "--cpu",
+        "65c02"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/released-debugger-65c02.log",
+      "log_sha256": "d2a29cc3348267c43c8f956a70f5630750d238e1a1fdae8638111e9d2c2b4325"
+    },
+    {
+      "name": "released-debugger-65c816-e",
+      "command": [
+        "C:\\Users\\Walter\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/test_rc1_debugger.py",
+        "--build",
+        "BUILD/rc1-debugger-v1g",
+        "--cpu",
+        "65c816-e"
+      ],
+      "returncode": 0,
+      "log": "tmp/p1-evidence/released-debugger-65c816-e.log",
+      "log_sha256": "65ca833372fb926af7729be863f887f294f1b635e10efbe4d82769c61c33bb96"
+    }
+  ],
+  "baselines": {
+    "rc1-debugger-v1g": {
+      "existing_firmware_sha256": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+      "existing_firmware_bytes": 98304,
+      "existing_symbols_sha256": "58007fbdfe4cba56d9fc92ef0784adbce809fe549ac8f4625a43bd743ab40c09",
+      "rebuilt_firmware_sha256": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+      "firmware_equal": true,
+      "symbols_equal": true,
+      "payload_comparisons": {
+        "assembler/asm-e000.bin": true,
+        "assembler/vectors-f000.bin": true,
+        "battery/asset.bin": true,
+        "boot-status/asset.bin": true,
+        "bootstrap/bootstrap-journal.bin": true,
+        "clock/clock.bin": true,
+        "clock/clock.s19": true,
+        "clock/storage.bin": true,
+        "debugger-a000.bin": true,
+        "local-display/asset.bin": true,
+        "migrator/rtc-migrator-2000.s19": true,
+        "pf-worker/asset.bin": true,
+        "str8n-journal-9000-9fff.bin": true,
+        "str8n-rtc-component-8000-8fff.bin": true,
+        "str8n-v2-recovery-e000-efff.bin": true,
+        "str8n-v2-recovery-f000-ffff.bin": true,
+        "str8n-v2-recovery-slot-a0.bin": true,
+        "str8n-v2-recovery-slot-b0.bin": true,
+        "version/asset.bin": true,
+        "xip/utilities.bin": true
+      },
+      "firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "8000",
+          "sha256": "c50c61e8c1d98388726cff71225be73a49e37a6c99317db2d45b6f36fe3c38d5"
+        },
+        {
+          "bank": 1,
+          "address": "9000",
+          "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+        },
+        {
+          "bank": 1,
+          "address": "A000",
+          "sha256": "30bd33d89d0ad332b89111a8d477db42e639a08596729a7d928c9980d48d5f72"
+        },
+        {
+          "bank": 1,
+          "address": "B000",
+          "sha256": "e66efa85830e77422b02b3cf6bd70d4705b76693119b329f15de287094529768"
+        },
+        {
+          "bank": 1,
+          "address": "C000",
+          "sha256": "4aeaf1ab05747f7d09bd3aba76f213095d19b9b810c3cc5f30e337c702e7dd20"
+        },
+        {
+          "bank": 1,
+          "address": "D000",
+          "sha256": "8d13723bc444462b6ae13ffdbe4edba28559874b983ba56d0f7737c991282a7a"
+        },
+        {
+          "bank": 1,
+          "address": "E000",
+          "sha256": "27eb8c0d76635fdc6db9ef691535fec668c2038f3ab1bc67e047c6c68f0ae96a"
+        },
+        {
+          "bank": 1,
+          "address": "F000",
+          "sha256": "383da617aa598c8827f32220939557e2c938559ebc343d0238c3c2d03e7ff727"
+        },
+        {
+          "bank": 2,
+          "address": "8000",
+          "sha256": "58df54b06a57122a4a8e0f3314b78807d35f30be98e34c535a4e8734c86ea0a7"
+        },
+        {
+          "bank": 2,
+          "address": "9000",
+          "sha256": "b455110347dc6936b9045502f1383f8aa18d814b2cb83a02a45d81389a3a7040"
+        },
+        {
+          "bank": 2,
+          "address": "A000",
+          "sha256": "07afbd1879ee4e87a72b80b10dd4415cfb6b98be14d77208e7328d2e7ddd2de6"
+        },
+        {
+          "bank": 2,
+          "address": "B000",
+          "sha256": "c42bacb1a05ac59508111209045f7871fd2ac3ea4a775ab1d79944217b902003"
+        },
+        {
+          "bank": 2,
+          "address": "C000",
+          "sha256": "8e936536af1bf612048e98210b26b37919ca3dd32f34e63b3a1bf3b77466a9e2"
+        },
+        {
+          "bank": 2,
+          "address": "D000",
+          "sha256": "3eb4a6f9272cea467f25667c0c9afc70d7ac54782e52ff2b7114480a0ff5b55e"
+        },
+        {
+          "bank": 2,
+          "address": "E000",
+          "sha256": "3d37dd3c1538bd445ea0c31bf077e78f615efb073e246d4d3bce744e1be00278"
+        },
+        {
+          "bank": 2,
+          "address": "F000",
+          "sha256": "2e1884a1436f960e126a19ab944ad849db9b05e37345d57862b5d92a11767fb3"
+        },
+        {
+          "bank": 3,
+          "address": "8000",
+          "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3"
+        },
+        {
+          "bank": 3,
+          "address": "9000",
+          "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5"
+        },
+        {
+          "bank": 3,
+          "address": "A000",
+          "sha256": "eede711595ec9af74ba6b2956b428e272dd31009a745757adb9e2e09da28cb18"
+        },
+        {
+          "bank": 3,
+          "address": "B000",
+          "sha256": "b7192c0758b1817cdc49712349e79f9d0beb1337f25c5974d7309f5802bd0f3e"
+        },
+        {
+          "bank": 3,
+          "address": "C000",
+          "sha256": "c6af0c377f985505455003ddb8290e990c6e608d3a71d7df6212772e178c4462"
+        },
+        {
+          "bank": 3,
+          "address": "D000",
+          "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+        },
+        {
+          "bank": 3,
+          "address": "E000",
+          "sha256": "6976467d8beca3e471f91daea7631857a89862dbb6d3f078a72c49a8b2621400"
+        },
+        {
+          "bank": 3,
+          "address": "F000",
+          "sha256": "785c9dc085d95c12f1c48112942cf103ad22b6b664bbf01c375c9bf044988791"
+        }
+      ],
+      "additional_symbol_comparisons": {
+        "debugger_symbols_equal": true,
+        "generated_symbols_equal": true
+      }
+    },
+    "rc1-source-flash": {
+      "existing_firmware_sha256": "440120da26a82a843cf92687e41e8114a871e81fa76a898dc5cefc509c4dc5ae",
+      "existing_firmware_bytes": 98304,
+      "existing_symbols_sha256": "6a837976af9afa82de613c9394d9393ebbb09295f2519ddd6efb392316e3c9eb",
+      "rebuilt_firmware_sha256": "440120da26a82a843cf92687e41e8114a871e81fa76a898dc5cefc509c4dc5ae",
+      "firmware_equal": true,
+      "symbols_equal": true,
+      "payload_comparisons": {
+        "assembler/asm-e000.bin": true,
+        "assembler/vectors-f000.bin": true,
+        "battery/asset.bin": true,
+        "boot-status/asset.bin": true,
+        "bootstrap/bootstrap-journal.bin": true,
+        "clock/clock.bin": true,
+        "clock/clock.s19": true,
+        "clock/storage.bin": true,
+        "debugger-a000.bin": true,
+        "local-display/asset.bin": true,
+        "migrator/rtc-migrator-2000.s19": true,
+        "pf-worker/asset.bin": true,
+        "str8n-journal-9000-9fff.bin": true,
+        "str8n-rtc-component-8000-8fff.bin": true,
+        "str8n-v2-recovery-e000-efff.bin": true,
+        "str8n-v2-recovery-f000-ffff.bin": true,
+        "str8n-v2-recovery-slot-a0.bin": true,
+        "str8n-v2-recovery-slot-b0.bin": true,
+        "version/asset.bin": true,
+        "xip/utilities.bin": true
+      },
+      "firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "8000",
+          "sha256": "c50c61e8c1d98388726cff71225be73a49e37a6c99317db2d45b6f36fe3c38d5"
+        },
+        {
+          "bank": 1,
+          "address": "9000",
+          "sha256": "8d5a41e39d0595561c976547ed2ace2352f871a3c8350c8e93eeb64e63343d11"
+        },
+        {
+          "bank": 1,
+          "address": "A000",
+          "sha256": "30bd33d89d0ad332b89111a8d477db42e639a08596729a7d928c9980d48d5f72"
+        },
+        {
+          "bank": 1,
+          "address": "B000",
+          "sha256": "e66efa85830e77422b02b3cf6bd70d4705b76693119b329f15de287094529768"
+        },
+        {
+          "bank": 1,
+          "address": "C000",
+          "sha256": "4aeaf1ab05747f7d09bd3aba76f213095d19b9b810c3cc5f30e337c702e7dd20"
+        },
+        {
+          "bank": 1,
+          "address": "D000",
+          "sha256": "8d13723bc444462b6ae13ffdbe4edba28559874b983ba56d0f7737c991282a7a"
+        },
+        {
+          "bank": 1,
+          "address": "E000",
+          "sha256": "625ec376948261e66583881376fb36134f07383786c8ee85fea52106e3e1abff"
+        },
+        {
+          "bank": 1,
+          "address": "F000",
+          "sha256": "383da617aa598c8827f32220939557e2c938559ebc343d0238c3c2d03e7ff727"
+        },
+        {
+          "bank": 2,
+          "address": "8000",
+          "sha256": "58df54b06a57122a4a8e0f3314b78807d35f30be98e34c535a4e8734c86ea0a7"
+        },
+        {
+          "bank": 2,
+          "address": "9000",
+          "sha256": "b455110347dc6936b9045502f1383f8aa18d814b2cb83a02a45d81389a3a7040"
+        },
+        {
+          "bank": 2,
+          "address": "A000",
+          "sha256": "07afbd1879ee4e87a72b80b10dd4415cfb6b98be14d77208e7328d2e7ddd2de6"
+        },
+        {
+          "bank": 2,
+          "address": "B000",
+          "sha256": "68fabe913510ac3d11d3d8a6daeb6e00db7e2f1b80be954bd76f80df4ba22f2c"
+        },
+        {
+          "bank": 2,
+          "address": "C000",
+          "sha256": "8e936536af1bf612048e98210b26b37919ca3dd32f34e63b3a1bf3b77466a9e2"
+        },
+        {
+          "bank": 2,
+          "address": "D000",
+          "sha256": "76da342299dd27b492e072afd35143dc46a1c5395cc27c2862fb602e328e1296"
+        },
+        {
+          "bank": 2,
+          "address": "E000",
+          "sha256": "3d37dd3c1538bd445ea0c31bf077e78f615efb073e246d4d3bce744e1be00278"
+        },
+        {
+          "bank": 2,
+          "address": "F000",
+          "sha256": "2e1884a1436f960e126a19ab944ad849db9b05e37345d57862b5d92a11767fb3"
+        },
+        {
+          "bank": 3,
+          "address": "8000",
+          "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3"
+        },
+        {
+          "bank": 3,
+          "address": "9000",
+          "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5"
+        },
+        {
+          "bank": 3,
+          "address": "A000",
+          "sha256": "eede711595ec9af74ba6b2956b428e272dd31009a745757adb9e2e09da28cb18"
+        },
+        {
+          "bank": 3,
+          "address": "B000",
+          "sha256": "b7192c0758b1817cdc49712349e79f9d0beb1337f25c5974d7309f5802bd0f3e"
+        },
+        {
+          "bank": 3,
+          "address": "C000",
+          "sha256": "c6af0c377f985505455003ddb8290e990c6e608d3a71d7df6212772e178c4462"
+        },
+        {
+          "bank": 3,
+          "address": "D000",
+          "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+        },
+        {
+          "bank": 3,
+          "address": "E000",
+          "sha256": "e8eb07589d023fe66413ca7fbe387ff9fa3e9262f2069688cc55d187e92d9a1e"
+        },
+        {
+          "bank": 3,
+          "address": "F000",
+          "sha256": "785c9dc085d95c12f1c48112942cf103ad22b6b664bbf01c375c9bf044988791"
+        }
+      ],
+      "additional_symbol_comparisons": {
+        "source_symbols_equal": true,
+        "debugger_symbols_equal": true,
+        "generated_symbols_equal": true
+      }
+    },
+    "rc1-maint-source": {
+      "existing_firmware_sha256": "2177875c395239b244406446267622a34769e4656a3b970e4ef1adfd549d14b6",
+      "existing_firmware_bytes": 98304,
+      "existing_symbols_sha256": "073958200da4a3747a04f0e97cc882c28f9df7d5b7058d7eb4ed8bb6367fdf5a",
+      "rebuilt_firmware_sha256": "2177875c395239b244406446267622a34769e4656a3b970e4ef1adfd549d14b6",
+      "firmware_equal": true,
+      "symbols_equal": true,
+      "payload_comparisons": {
+        "assembler/asm-e000.bin": true,
+        "assembler/vectors-f000.bin": true,
+        "battery/asset.bin": true,
+        "boot-status/asset.bin": true,
+        "bootstrap/bootstrap-journal.bin": true,
+        "clock/clock.bin": true,
+        "clock/clock.s19": true,
+        "clock/storage.bin": true,
+        "debugger-a000.bin": true,
+        "local-display/asset.bin": true,
+        "migrator/rtc-migrator-2000.s19": true,
+        "pf-worker/asset.bin": true,
+        "str8n-journal-9000-9fff.bin": true,
+        "str8n-rtc-component-8000-8fff.bin": true,
+        "str8n-v2-recovery-e000-efff.bin": true,
+        "str8n-v2-recovery-f000-ffff.bin": true,
+        "str8n-v2-recovery-slot-a0.bin": true,
+        "str8n-v2-recovery-slot-b0.bin": true,
+        "version/asset.bin": true,
+        "xip/utilities.bin": true
+      },
+      "firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "8000",
+          "sha256": "c50c61e8c1d98388726cff71225be73a49e37a6c99317db2d45b6f36fe3c38d5"
+        },
+        {
+          "bank": 1,
+          "address": "9000",
+          "sha256": "8d5a41e39d0595561c976547ed2ace2352f871a3c8350c8e93eeb64e63343d11"
+        },
+        {
+          "bank": 1,
+          "address": "A000",
+          "sha256": "30bd33d89d0ad332b89111a8d477db42e639a08596729a7d928c9980d48d5f72"
+        },
+        {
+          "bank": 1,
+          "address": "B000",
+          "sha256": "e66efa85830e77422b02b3cf6bd70d4705b76693119b329f15de287094529768"
+        },
+        {
+          "bank": 1,
+          "address": "C000",
+          "sha256": "4aeaf1ab05747f7d09bd3aba76f213095d19b9b810c3cc5f30e337c702e7dd20"
+        },
+        {
+          "bank": 1,
+          "address": "D000",
+          "sha256": "8d13723bc444462b6ae13ffdbe4edba28559874b983ba56d0f7737c991282a7a"
+        },
+        {
+          "bank": 1,
+          "address": "E000",
+          "sha256": "625ec376948261e66583881376fb36134f07383786c8ee85fea52106e3e1abff"
+        },
+        {
+          "bank": 1,
+          "address": "F000",
+          "sha256": "383da617aa598c8827f32220939557e2c938559ebc343d0238c3c2d03e7ff727"
+        },
+        {
+          "bank": 2,
+          "address": "8000",
+          "sha256": "c57e323847a6e91e9c27a79ba7cef0efb3c6fbf48469a19299bdb0093fb560f9"
+        },
+        {
+          "bank": 2,
+          "address": "9000",
+          "sha256": "af699d2c3546aa0e8aa87972349fb56540818db1d07e8f79301e53fc92ad4516"
+        },
+        {
+          "bank": 2,
+          "address": "A000",
+          "sha256": "201f013d13e8fb669000843edd4932ffc023a2d904c5cfad7630c799506b6764"
+        },
+        {
+          "bank": 2,
+          "address": "B000",
+          "sha256": "68fabe913510ac3d11d3d8a6daeb6e00db7e2f1b80be954bd76f80df4ba22f2c"
+        },
+        {
+          "bank": 2,
+          "address": "C000",
+          "sha256": "8e936536af1bf612048e98210b26b37919ca3dd32f34e63b3a1bf3b77466a9e2"
+        },
+        {
+          "bank": 2,
+          "address": "D000",
+          "sha256": "5ee5b74ea0b4a54ddd47d1d61fe8d1802c261dfbdb0b554081c23259d0fe632b"
+        },
+        {
+          "bank": 2,
+          "address": "E000",
+          "sha256": "3d37dd3c1538bd445ea0c31bf077e78f615efb073e246d4d3bce744e1be00278"
+        },
+        {
+          "bank": 2,
+          "address": "F000",
+          "sha256": "2e1884a1436f960e126a19ab944ad849db9b05e37345d57862b5d92a11767fb3"
+        },
+        {
+          "bank": 3,
+          "address": "8000",
+          "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3"
+        },
+        {
+          "bank": 3,
+          "address": "9000",
+          "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5"
+        },
+        {
+          "bank": 3,
+          "address": "A000",
+          "sha256": "eede711595ec9af74ba6b2956b428e272dd31009a745757adb9e2e09da28cb18"
+        },
+        {
+          "bank": 3,
+          "address": "B000",
+          "sha256": "b7192c0758b1817cdc49712349e79f9d0beb1337f25c5974d7309f5802bd0f3e"
+        },
+        {
+          "bank": 3,
+          "address": "C000",
+          "sha256": "c6af0c377f985505455003ddb8290e990c6e608d3a71d7df6212772e178c4462"
+        },
+        {
+          "bank": 3,
+          "address": "D000",
+          "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+        },
+        {
+          "bank": 3,
+          "address": "E000",
+          "sha256": "e8eb07589d023fe66413ca7fbe387ff9fa3e9262f2069688cc55d187e92d9a1e"
+        },
+        {
+          "bank": 3,
+          "address": "F000",
+          "sha256": "785c9dc085d95c12f1c48112942cf103ad22b6b664bbf01c375c9bf044988791"
+        }
+      ],
+      "additional_symbol_comparisons": {
+        "source_symbols_equal": true,
+        "debugger_symbols_equal": true,
+        "generated_symbols_equal": true
+      }
+    },
+    "rc1-console-edit": {
+      "existing_firmware_sha256": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e",
+      "existing_firmware_bytes": 98304,
+      "existing_symbols_sha256": "a411825ec017347c57e0b0a721772eff94f3ec918428ecc0e647881675f51b07",
+      "rebuilt_firmware_sha256": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e",
+      "firmware_equal": true,
+      "symbols_equal": true,
+      "payload_comparisons": {
+        "assembler/asm-e000.bin": true,
+        "assembler/vectors-f000.bin": true,
+        "battery/asset.bin": true,
+        "boot-status/asset.bin": true,
+        "bootstrap/bootstrap-journal.bin": true,
+        "clock/clock.bin": true,
+        "clock/clock.s19": true,
+        "clock/storage.bin": true,
+        "debugger-a000.bin": true,
+        "local-display/asset.bin": true,
+        "migrator/rtc-migrator-2000.s19": true,
+        "pf-worker/asset.bin": true,
+        "str8n-journal-9000-9fff.bin": true,
+        "str8n-rtc-component-8000-8fff.bin": true,
+        "str8n-v2-recovery-e000-efff.bin": true,
+        "str8n-v2-recovery-f000-ffff.bin": true,
+        "str8n-v2-recovery-slot-a0.bin": true,
+        "str8n-v2-recovery-slot-b0.bin": true,
+        "version/asset.bin": true,
+        "xip/utilities.bin": true
+      },
+      "firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "8000",
+          "sha256": "c50c61e8c1d98388726cff71225be73a49e37a6c99317db2d45b6f36fe3c38d5"
+        },
+        {
+          "bank": 1,
+          "address": "9000",
+          "sha256": "8d5a41e39d0595561c976547ed2ace2352f871a3c8350c8e93eeb64e63343d11"
+        },
+        {
+          "bank": 1,
+          "address": "A000",
+          "sha256": "a4ebe659d02843995b7743649128226b239db18d302719142632cdf75b4c762d"
+        },
+        {
+          "bank": 1,
+          "address": "B000",
+          "sha256": "e66efa85830e77422b02b3cf6bd70d4705b76693119b329f15de287094529768"
+        },
+        {
+          "bank": 1,
+          "address": "C000",
+          "sha256": "4aeaf1ab05747f7d09bd3aba76f213095d19b9b810c3cc5f30e337c702e7dd20"
+        },
+        {
+          "bank": 1,
+          "address": "D000",
+          "sha256": "8d13723bc444462b6ae13ffdbe4edba28559874b983ba56d0f7737c991282a7a"
+        },
+        {
+          "bank": 1,
+          "address": "E000",
+          "sha256": "7721bc844ff7d9b324cc07b2f75ced8aa224bbf39717f8e2d80060569a00382d"
+        },
+        {
+          "bank": 1,
+          "address": "F000",
+          "sha256": "c5b03e4881dbbb83161d3590ff95803c3decd2b7b1f67a2d157dafa1386e8e70"
+        },
+        {
+          "bank": 2,
+          "address": "8000",
+          "sha256": "c57e323847a6e91e9c27a79ba7cef0efb3c6fbf48469a19299bdb0093fb560f9"
+        },
+        {
+          "bank": 2,
+          "address": "9000",
+          "sha256": "af699d2c3546aa0e8aa87972349fb56540818db1d07e8f79301e53fc92ad4516"
+        },
+        {
+          "bank": 2,
+          "address": "A000",
+          "sha256": "201f013d13e8fb669000843edd4932ffc023a2d904c5cfad7630c799506b6764"
+        },
+        {
+          "bank": 2,
+          "address": "B000",
+          "sha256": "68fabe913510ac3d11d3d8a6daeb6e00db7e2f1b80be954bd76f80df4ba22f2c"
+        },
+        {
+          "bank": 2,
+          "address": "C000",
+          "sha256": "8e936536af1bf612048e98210b26b37919ca3dd32f34e63b3a1bf3b77466a9e2"
+        },
+        {
+          "bank": 2,
+          "address": "D000",
+          "sha256": "5ee5b74ea0b4a54ddd47d1d61fe8d1802c261dfbdb0b554081c23259d0fe632b"
+        },
+        {
+          "bank": 2,
+          "address": "E000",
+          "sha256": "3d37dd3c1538bd445ea0c31bf077e78f615efb073e246d4d3bce744e1be00278"
+        },
+        {
+          "bank": 2,
+          "address": "F000",
+          "sha256": "2e1884a1436f960e126a19ab944ad849db9b05e37345d57862b5d92a11767fb3"
+        },
+        {
+          "bank": 3,
+          "address": "8000",
+          "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3"
+        },
+        {
+          "bank": 3,
+          "address": "9000",
+          "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5"
+        },
+        {
+          "bank": 3,
+          "address": "A000",
+          "sha256": "eede711595ec9af74ba6b2956b428e272dd31009a745757adb9e2e09da28cb18"
+        },
+        {
+          "bank": 3,
+          "address": "B000",
+          "sha256": "b7192c0758b1817cdc49712349e79f9d0beb1337f25c5974d7309f5802bd0f3e"
+        },
+        {
+          "bank": 3,
+          "address": "C000",
+          "sha256": "c6af0c377f985505455003ddb8290e990c6e608d3a71d7df6212772e178c4462"
+        },
+        {
+          "bank": 3,
+          "address": "D000",
+          "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+        },
+        {
+          "bank": 3,
+          "address": "E000",
+          "sha256": "625925a63a0d75c8432203a44a2a82d1e1ba15b85e3e857f785486595be7c97f"
+        },
+        {
+          "bank": 3,
+          "address": "F000",
+          "sha256": "785c9dc085d95c12f1c48112942cf103ad22b6b664bbf01c375c9bf044988791"
+        }
+      ],
+      "additional_symbol_comparisons": {
+        "source_symbols_equal": true,
+        "debugger_symbols_equal": true,
+        "generated_symbols_equal": true
+      }
+    },
+    "rc1-asm-dev": {
+      "existing_firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+      "existing_firmware_bytes": 98304,
+      "existing_symbols_sha256": "78e571099a9c71e8c6a7bc8b5ecfb61f62041daa080d504d95e8a7e9d5c0ad63",
+      "rebuilt_firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+      "firmware_equal": true,
+      "symbols_equal": true,
+      "payload_comparisons": {
+        "assembler/asm-e000.bin": true,
+        "assembler/vectors-f000.bin": true,
+        "battery/asset.bin": true,
+        "boot-status/asset.bin": true,
+        "bootstrap/bootstrap-journal.bin": true,
+        "clock/clock.bin": true,
+        "clock/clock.s19": true,
+        "clock/storage.bin": true,
+        "debugger-a000.bin": true,
+        "local-display/asset.bin": true,
+        "migrator/rtc-migrator-2000.s19": true,
+        "pf-worker/asset.bin": true,
+        "str8n-journal-9000-9fff.bin": true,
+        "str8n-rtc-component-8000-8fff.bin": true,
+        "str8n-v2-recovery-e000-efff.bin": true,
+        "str8n-v2-recovery-f000-ffff.bin": true,
+        "str8n-v2-recovery-slot-a0.bin": true,
+        "str8n-v2-recovery-slot-b0.bin": true,
+        "version/asset.bin": true,
+        "xip/utilities.bin": true
+      },
+      "firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "8000",
+          "sha256": "c50c61e8c1d98388726cff71225be73a49e37a6c99317db2d45b6f36fe3c38d5"
+        },
+        {
+          "bank": 1,
+          "address": "9000",
+          "sha256": "8d5a41e39d0595561c976547ed2ace2352f871a3c8350c8e93eeb64e63343d11"
+        },
+        {
+          "bank": 1,
+          "address": "A000",
+          "sha256": "a4ebe659d02843995b7743649128226b239db18d302719142632cdf75b4c762d"
+        },
+        {
+          "bank": 1,
+          "address": "B000",
+          "sha256": "e66efa85830e77422b02b3cf6bd70d4705b76693119b329f15de287094529768"
+        },
+        {
+          "bank": 1,
+          "address": "C000",
+          "sha256": "4aeaf1ab05747f7d09bd3aba76f213095d19b9b810c3cc5f30e337c702e7dd20"
+        },
+        {
+          "bank": 1,
+          "address": "D000",
+          "sha256": "8d13723bc444462b6ae13ffdbe4edba28559874b983ba56d0f7737c991282a7a"
+        },
+        {
+          "bank": 1,
+          "address": "E000",
+          "sha256": "bae0a5e72b2e7946e7210b7ba9a7063ee63cffcd7f20a4d815be22af6c4b0bb7"
+        },
+        {
+          "bank": 1,
+          "address": "F000",
+          "sha256": "72065163681d082de2d07831da200b96cb85fc62cac05b1caa050ed2f2819ff2"
+        },
+        {
+          "bank": 2,
+          "address": "8000",
+          "sha256": "c57e323847a6e91e9c27a79ba7cef0efb3c6fbf48469a19299bdb0093fb560f9"
+        },
+        {
+          "bank": 2,
+          "address": "9000",
+          "sha256": "af699d2c3546aa0e8aa87972349fb56540818db1d07e8f79301e53fc92ad4516"
+        },
+        {
+          "bank": 2,
+          "address": "A000",
+          "sha256": "201f013d13e8fb669000843edd4932ffc023a2d904c5cfad7630c799506b6764"
+        },
+        {
+          "bank": 2,
+          "address": "B000",
+          "sha256": "68fabe913510ac3d11d3d8a6daeb6e00db7e2f1b80be954bd76f80df4ba22f2c"
+        },
+        {
+          "bank": 2,
+          "address": "C000",
+          "sha256": "8e936536af1bf612048e98210b26b37919ca3dd32f34e63b3a1bf3b77466a9e2"
+        },
+        {
+          "bank": 2,
+          "address": "D000",
+          "sha256": "5ee5b74ea0b4a54ddd47d1d61fe8d1802c261dfbdb0b554081c23259d0fe632b"
+        },
+        {
+          "bank": 2,
+          "address": "E000",
+          "sha256": "3d37dd3c1538bd445ea0c31bf077e78f615efb073e246d4d3bce744e1be00278"
+        },
+        {
+          "bank": 2,
+          "address": "F000",
+          "sha256": "2e1884a1436f960e126a19ab944ad849db9b05e37345d57862b5d92a11767fb3"
+        },
+        {
+          "bank": 3,
+          "address": "8000",
+          "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3"
+        },
+        {
+          "bank": 3,
+          "address": "9000",
+          "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5"
+        },
+        {
+          "bank": 3,
+          "address": "A000",
+          "sha256": "eede711595ec9af74ba6b2956b428e272dd31009a745757adb9e2e09da28cb18"
+        },
+        {
+          "bank": 3,
+          "address": "B000",
+          "sha256": "b7192c0758b1817cdc49712349e79f9d0beb1337f25c5974d7309f5802bd0f3e"
+        },
+        {
+          "bank": 3,
+          "address": "C000",
+          "sha256": "c6af0c377f985505455003ddb8290e990c6e608d3a71d7df6212772e178c4462"
+        },
+        {
+          "bank": 3,
+          "address": "D000",
+          "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+        },
+        {
+          "bank": 3,
+          "address": "E000",
+          "sha256": "263ecd9cb56c05fd71304fe00349ecf04d8f591dbef2c7af1693004a475452d7"
+        },
+        {
+          "bank": 3,
+          "address": "F000",
+          "sha256": "785c9dc085d95c12f1c48112942cf103ad22b6b664bbf01c375c9bf044988791"
+        }
+      ],
+      "additional_symbol_comparisons": {
+        "source_symbols_equal": true,
+        "debugger_symbols_equal": true,
+        "generated_symbols_equal": true
+      }
+    }
+  },
+  "development_overlay": {
+    "tools/build_rc1_source_store.py": {
+      "sha256": "eb1cb219b181531663e539452025e5ae4bdc6094c232fc75e8187dce7933f692",
+      "bytes": 10082
+    },
+    "tools/build_rc1_debug_map.py": {
+      "sha256": "8dedf5731d685006eecd27a94c00441f6c925a03e354c718943914be5fb4dc0b",
+      "bytes": 2630
+    },
+    "tools/build_rc1_maint_source.py": {
+      "sha256": "565784c130188ab531fbd4a2b315c0b2bb0cfe6cb4525f59810cf6499ff76364",
+      "bytes": 7130
+    },
+    "tools/build_rc1_console_edit.py": {
+      "sha256": "33336aa760065c941e2a5fec0ca335acbff199d048fedbf99caba7e09b004435",
+      "bytes": 5262
+    },
+    "tools/build_rc1_asm_equ.py": {
+      "sha256": "e0e8f3133c6adfb39440426d1272e1383c1951777603b0f8500d049d99fbf020",
+      "bytes": 4574
+    },
+    "tools/build_rc1_asm_dev.py": {
+      "sha256": "274736768cbbded4a1b30cb086a19e297a865f3f8514785657ae4142fb4914e2",
+      "bytes": 3934
+    },
+    "tools/asm-dev.inc": {
+      "sha256": "230ddf3f752935cbba9ba11cedc49a7500ba030a5ecc2bcdda106542f79d7a3b",
+      "bytes": 4447
+    },
+    "tools/source-store/flash.inc": {
+      "sha256": "9e6f5b979d6961ae016faf411331dff90eac6fa5c64654b236e6b96fb641bbeb",
+      "bytes": 7071
+    },
+    "tools/source-store/installer_plan.py": {
+      "sha256": "9fb433694db95705cb00040d475b2b27bee74e9bd6bb1c68a98f217f3215b5bc",
+      "bytes": 7739
+    },
+    "tools/source-store/README.md": {
+      "sha256": "cd8b636fbc28b8ac7d7cafa5f45e8656c0e6da1bca2d801c92cff3e5f5670664",
+      "bytes": 10812
+    },
+    "tools/source-store/source.asm": {
+      "sha256": "3d371ce040f5b702cf33f707f3d7ec13d09dcca94f3867033b9ec4cefdf57d4c",
+      "bytes": 8252
+    },
+    "tools/source-store/state.inc": {
+      "sha256": "96ba639093debd47ef84b4926db9c1454ab3c8d77f927d4d5e0a2d1881fc818e",
+      "bytes": 597
+    },
+    "tools/source-store/storage.asm": {
+      "sha256": "a4cbad9b31c748fc267c21a775a048c6340aac5e770d749ee436aaebf62c922e",
+      "bytes": 843
+    }
+  },
+  "original_builds_unchanged": true,
+  "clean_archive_sha256": "e5fb7d3a42fa163bf55ca96c5830cb473c737df8e7859e8932009d34f6f930b4",
+  "original_build_file_counts": {
+    "rc1-debugger-v1g": 313,
+    "rc1-source-flash": 332,
+    "rc1-maint-source": 331,
+    "rc1-console-edit": 320,
+    "rc1-asm-dev": 321
+  },
+  "test_dependencies": {
+    "BUILD/v1.30/local/test-deps/py65": {
+      "__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "assembler.py": "8e92b5249c1bedcbac26d03a64ab3d35852914dae005d5abf87a275a1d20a383",
+      "compat.py": "fc140526c2f0b41d5b8cd67415273093c156d6d4b9d98c3f9421aa7e0f0d82c4",
+      "devices/__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "devices/mpu6502.py": "15d93835b4f279b702270d9a0b417938291347ec57cc12d9e0307cd344d381fe",
+      "devices/mpu65c02.py": "dfc5adcd63b82aaa95e5a4ae2a000af1c19fe7188575f41d70212542ec7694fb",
+      "devices/mpu65org16.py": "9a2685c84444dac43873855b1bb5c54e30938368fcc89ba3a9a78b389044de72",
+      "disassembler.py": "b8cca0c23ef69dcf88b6dccb08582e4a4d088a561a04c833acb37b3742cdcccc",
+      "memory.py": "4bba749fe35ed9b9912a7da72eb74035d62a21a5b5895dd6c343f7ce25609cc8",
+      "monitor.py": "36cf20d850f9c5ab099814fe8f620f13f83faaacc0a14d827e1ff00e4ed5e11e",
+      "tests/__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "tests/devices/__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "tests/devices/test_mpu6502.py": "0ca74be9e0702f15c9be52517c068c21bcd8460af7496d57e151304a13d83558",
+      "tests/devices/test_mpu65c02.py": "920c1cbf296bab3caabda3ad779f4044ff6c8b806989e3c5282a3c8e77d10694",
+      "tests/end_to_end.py": "83c5237875784d7a24b3c1600f9ef465db47d0b62667ef18795494a2544f289e",
+      "tests/test_assembler.py": "41c10c74ad05020874c3a0b7e8430a0994b10eadb7c56c04aa526886a4ffd805",
+      "tests/test_disassembler.py": "8e68441e33110fbdbe182de1e4be7d2c644ac1f35918b252154654331fd687be",
+      "tests/test_memory.py": "86c5f48a03f4327fcc614841de8e4f835557980588c481e40c4d27dccb1940f7",
+      "tests/test_monitor.py": "bcf7cb673853f75f219c3d0df7f4d0448f92fbf32de6f952da30d54478152c1b",
+      "tests/utils/__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "tests/utils/test_addressing.py": "45a118b610dc15a8529dd0dd401349f05c39bbd2172835f01c205d0158efcbcd",
+      "tests/utils/test_console.py": "a07e911d2a1e6cc0439b8fb717c871dc2d651e041d5d4a511ce3acd90e90a063",
+      "tests/utils/test_conversions.py": "691afa3f74134bdebef8087768222f4bebced78fd740d67a422c37e2f2bcfb52",
+      "tests/utils/test_devices.py": "8ab80e6da32609f0461eaa7270fde00d1fbd1b3d7a1b63e3444f176dad85ab67",
+      "utils/__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "utils/addressing.py": "3c5cb6555dc983a7990d4a739a5c4f08f7b7cd5549fafea77208fa740d6a46e1",
+      "utils/console.py": "2fb0386f87b82f541dcea6350654f1017d65cacf6ed7ea7335e0caa31201ee95",
+      "utils/conversions.py": "448b8aa2cc59aa71a6a644a5dd93051ab4b2def2ae720c4991c0e54f31a4eaa9",
+      "utils/devices.py": "fca3864bebcf1db7dbc13014487ad7091499d85c8cb14ca7288c5fdc63de6a0e"
+    },
+    "BUILD/test-deps-816/py65816": {
+      "devices/mpu65c816.py": "a94fc4c40f3a252b0c5197252ce0ea35310b6f5ada986c40eae16c649d5bfc02"
+    }
+  },
+  "test_sources": {
+    "tools\\test_rc1_source_store.py": "06552b4d3158d40b7815a474ca203e322519858b3e49c261743b680fdcc45735",
+    "tools\\test_rc1_source_flash.py": "73f45b679f000314233a6d59ac8a35a6dc5ba590183cfe067cc52bcb3982b345",
+    "tools\\test_rc1_source_flash_edges.py": "15b3ebabc0ff174784937f9c541ac8343c7b258ca36c6ff0dc27d0be915ba80e",
+    "tools\\test_rc1_asm_dev.py": "b5a4964a5bda84291d80ce60a023216dc272a6a2fcd8025ac354c888123aca76",
+    "tools\\test_rc1_console_edit.py": "1e87abf0d22624247490a0a99a9297638fd8df7bf853bbceb4d25bef66ae99cf"
+  },
+  "installer_inventory": {
+    "rc1-source-installer": {
+      "manifest_sha256": "f756b60893ce92ef306bb78d338180e76f8db453e4fa7afeedcd7b77abcac4e3",
+      "file_count": 44,
+      "all_manifest_files_match": true,
+      "mismatches": [],
+      "profile_firmware_sha256": {
+        "release-r9": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+        "source-prototype": "440120da26a82a843cf92687e41e8114a871e81fa76a898dc5cefc509c4dc5ae"
+      },
+      "changed_firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "9000"
+        },
+        {
+          "bank": 1,
+          "address": "E000"
+        },
+        {
+          "bank": 2,
+          "address": "B000"
+        },
+        {
+          "bank": 2,
+          "address": "D000"
+        },
+        {
+          "bank": 3,
+          "address": "E000"
+        }
+      ],
+      "admission_slices": [],
+      "capture_bound": false,
+      "clean_source_reproduction": "not established; preparers require earlier kits and qualification receipts"
+    },
+    "rc1-maint-source-installer": {
+      "manifest_sha256": "cdcb761aea0ec7647d62329a2b6d31660c54a217994088d727cb91627b58adcd",
+      "file_count": 43,
+      "all_manifest_files_match": true,
+      "mismatches": [],
+      "profile_firmware_sha256": {
+        "release-r9": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+        "source-prototype": "2177875c395239b244406446267622a34769e4656a3b970e4ef1adfd549d14b6"
+      },
+      "changed_firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "9000"
+        },
+        {
+          "bank": 1,
+          "address": "E000"
+        },
+        {
+          "bank": 2,
+          "address": "8000"
+        },
+        {
+          "bank": 2,
+          "address": "9000"
+        },
+        {
+          "bank": 2,
+          "address": "A000"
+        },
+        {
+          "bank": 2,
+          "address": "B000"
+        },
+        {
+          "bank": 2,
+          "address": "D000"
+        },
+        {
+          "bank": 3,
+          "address": "E000"
+        }
+      ],
+      "admission_slices": [
+        {
+          "bank": 3,
+          "address": 36864,
+          "bytes": 3072,
+          "file": "rtc-code-9000-9bff.bin"
+        }
+      ],
+      "capture_bound": false,
+      "clean_source_reproduction": "not established; preparers require earlier kits and qualification receipts"
+    },
+    "rc1-console-edit-installer": {
+      "manifest_sha256": "6c190fbcaa1334d36aa8d41eeef7684e06ac6493b814801933bb4d9d9307a9d5",
+      "file_count": 43,
+      "all_manifest_files_match": true,
+      "mismatches": [],
+      "profile_firmware_sha256": {
+        "maint-source": "2177875c395239b244406446267622a34769e4656a3b970e4ef1adfd549d14b6",
+        "source-prototype": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e"
+      },
+      "changed_firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "A000"
+        },
+        {
+          "bank": 1,
+          "address": "E000"
+        },
+        {
+          "bank": 1,
+          "address": "F000"
+        },
+        {
+          "bank": 3,
+          "address": "E000"
+        }
+      ],
+      "admission_slices": [
+        {
+          "bank": 3,
+          "address": 36864,
+          "bytes": 3072,
+          "file": "rtc-code-9000-9bff.bin"
+        }
+      ],
+      "capture_bound": false,
+      "clean_source_reproduction": "not established; preparers require earlier kits and qualification receipts"
+    },
+    "rc1-latest-2609-installer": {
+      "manifest_sha256": "b1aaac1c0c4c817f689a4fb93a3e7616e2713dab6b88d81ff034ff64a145c2c8",
+      "file_count": 43,
+      "all_manifest_files_match": true,
+      "mismatches": [],
+      "profile_firmware_sha256": {
+        "release-r9": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+        "source-prototype": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e"
+      },
+      "changed_firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "9000"
+        },
+        {
+          "bank": 1,
+          "address": "A000"
+        },
+        {
+          "bank": 1,
+          "address": "E000"
+        },
+        {
+          "bank": 1,
+          "address": "F000"
+        },
+        {
+          "bank": 2,
+          "address": "8000"
+        },
+        {
+          "bank": 2,
+          "address": "9000"
+        },
+        {
+          "bank": 2,
+          "address": "A000"
+        },
+        {
+          "bank": 2,
+          "address": "B000"
+        },
+        {
+          "bank": 2,
+          "address": "D000"
+        },
+        {
+          "bank": 3,
+          "address": "E000"
+        }
+      ],
+      "admission_slices": [
+        {
+          "bank": 3,
+          "address": 36864,
+          "bytes": 3072,
+          "file": "rtc-code-9000-9bff.bin"
+        }
+      ],
+      "capture_bound": false,
+      "clean_source_reproduction": "not established; preparers require earlier kits and qualification receipts"
+    },
+    "rc1-asm-dev-installer": {
+      "manifest_sha256": "da8528ce042402c8cdcbe9dd356503848ef1293a6311e22e393ecc41b433e42d",
+      "file_count": 43,
+      "all_manifest_files_match": true,
+      "mismatches": [],
+      "profile_firmware_sha256": {
+        "maint-source": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e",
+        "source-prototype": "bc4b2b67b90fd242ba25465401e4e34409c933971d70eee5c10b38f5ea54d7c3"
+      },
+      "changed_firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "E000"
+        },
+        {
+          "bank": 1,
+          "address": "F000"
+        },
+        {
+          "bank": 3,
+          "address": "E000"
+        }
+      ],
+      "admission_slices": [
+        {
+          "bank": 3,
+          "address": 36864,
+          "bytes": 3072,
+          "file": "rtc-code-9000-9bff.bin"
+        }
+      ],
+      "capture_bound": false,
+      "clean_source_reproduction": "not established; preparers require earlier kits and qualification receipts"
+    },
+    "rc1-asm-dev-final-installer": {
+      "manifest_sha256": "cfd56f14e0f57156b8e467b3d3393a3b75021e06a3afa21b6a6d42abe8b0dd5c",
+      "file_count": 46,
+      "all_manifest_files_match": true,
+      "mismatches": [],
+      "profile_firmware_sha256": {
+        "maint-source": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e",
+        "source-prototype": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6"
+      },
+      "changed_firmware_sectors": [
+        {
+          "bank": 1,
+          "address": "E000"
+        },
+        {
+          "bank": 1,
+          "address": "F000"
+        },
+        {
+          "bank": 3,
+          "address": "E000"
+        },
+        {
+          "bank": 0,
+          "address": "8000"
+        },
+        {
+          "bank": 0,
+          "address": "9000"
+        },
+        {
+          "bank": 0,
+          "address": "A000"
+        },
+        {
+          "bank": 0,
+          "address": "B000"
+        },
+        {
+          "bank": 1,
+          "address": "8000"
+        }
+      ],
+      "admission_slices": [
+        {
+          "bank": 3,
+          "address": 36864,
+          "bytes": 3072,
+          "file": "rtc-code-9000-9bff.bin"
+        }
+      ],
+      "capture_bound": true,
+      "clean_source_reproduction": "not established; preparers require earlier kits and qualification receipts"
+    }
+  },
+  "historical_board_evidence": {
+    "2604": {
+      "scope": "Existing receipts only; board not contacted or current state reverified",
+      "receipt": "output/qualification/rc1-asm-dev-2604-20261022-020417Z/flash-report.json",
+      "receipt_sha256": "b450f916854c2a14722300c2d7850cd2eeed07b7f86ffd6609640f086217afa2",
+      "recorded_completed_utc": "2026-10-22T02:12:19.670065+00:00",
+      "recorded_firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+      "recorded_active_monitor": "b0",
+      "passed": true,
+      "closed": true,
+      "RAM_restored": true,
+      "final_flash_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "a7057ee24826e1d1e6baa977d27845d745bc04d7ddb950328713b096bfa098ee",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "77d7652a9879dc9bd7dd8c5f9dc9858b56a475a88d2dd5f4a26324d70276c303"
+      ],
+      "stored_plan_banks_match_recorded_readback": true,
+      "settings_preserved": true,
+      "RTC_TZ_sector_preserved": true,
+      "B0_erased": true,
+      "uChess_removed": true
+    },
+    "2609": {
+      "scope": "Existing receipts only; board not contacted or current state reverified",
+      "receipt": "output/qualification/rc1-console-edit-2609-20261022-013705Z/flash-report.json",
+      "receipt_sha256": "617335e0e5e14b25ba2ab9cfa181004eb5f863254bf44c813785b4600c960b7c",
+      "recorded_completed_utc": "2026-10-22T01:42:31.445299+00:00",
+      "recorded_firmware_sha256": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e",
+      "recorded_active_monitor": "a0",
+      "passed": true,
+      "closed": true,
+      "RAM_restored": true,
+      "final_flash_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "309e270a6df7a9e5da77718d993b2a524e2f1ad2a00aaa374613d21df6309191"
+      ],
+      "stored_plan_banks_match_recorded_readback": true,
+      "settings_preserved": true,
+      "RTC_TZ_sector_preserved": true,
+      "B0_erased": null,
+      "uChess_removed": null
+    }
+  },
+  "contract_files": {
+    "release/candidates/rc1/source/core/str8n-v2-public.inc": {
+      "sha256": "6f1884eb2dd0895f6a07a61db3486ca71ea59b9f26db459de57d2e1abe5b6ae5",
+      "bytes": 4258
+    },
+    "release/candidates/rc1/source/core/str8n-v2-eq.inc": {
+      "sha256": "0a56f0c9ec8a27741bf7e7b376e03a03e7290caf11f170fd6c7c864f69df9467",
+      "bytes": 3954
+    },
+    "release/rc1-build/build_full_image.py": {
+      "sha256": "feba83003522beda90fd35ec517147dc93805c3a96e1b3b320c8bdbab5d5e5c3",
+      "bytes": 5319
+    },
+    "tools/source-store/state.inc": {
+      "sha256": "96ba639093debd47ef84b4926db9c1454ab3c8d77f927d4d5e0a2d1881fc818e",
+      "bytes": 597
+    },
+    "tools/source-store/README.md": {
+      "sha256": "cd8b636fbc28b8ac7d7cafa5f45e8656c0e6da1bca2d801c92cff3e5f5670664",
+      "bytes": 10812
+    },
+    "docs/rc1/ABI_REFERENCE.md": {
+      "sha256": "a72579ef59b0b397bb812fc04658bf68adf9586eb93ef2e7501b3fad482e50da",
+      "bytes": 9231
+    },
+    "docs/rc1/ASM_DEVELOPMENT.md": {
+      "sha256": "70478746f953a82dd6c2ddb9d357e26dbdd1b4a88eec9601f7f97d22c402a040",
+      "bytes": 4139
+    },
+    "docs/rc1/ASM_SAVE_STORE.md": {
+      "sha256": "17d8183275f2a26b6a0428eafe58253ef3a3007f4fa348056222cba2bca4ccf2",
+      "bytes": 7247
+    }
+  },
+  "resident_development_limits": {
+    "source_limit_bytes": 7168,
+    "symbol_capacity": 256,
+    "assembler_end": "FC9D",
+    "free_before_vectors_bytes": 835,
+    "source_format": "AS/1",
+    "flash_source_format": "SF/1",
+    "flash_source_arena": "B0:8000-DFFF; new names; whole erased sectors",
+    "runtime": "65C02 instructions; 65C816 E=1, D=DBR=PBR=0; no native application support",
+    "additional_asm_diagnostics_state": "63C0-63C8 (DX_*); source state declared in tools/source-store/state.inc"
+  },
+  "clean_installer_attempt": {
+    "returncode": 1,
+    "source_sha256": "1dd6d02131dbb5ff808acc3f236cb13d5e138de4a3472b90e442e69f6c501253",
+    "log": "tmp/p1-evidence/clean-installer-attempt.log",
+    "blocker": "BUILD/rc1-source-flash/prototype-status.json is not produced by the firmware build"
+  },
+  "installer_target_comparisons": {
+    "rc1-source-installer": {
+      "target_sha256": "440120da26a82a843cf92687e41e8114a871e81fa76a898dc5cefc509c4dc5ae",
+      "sectors_different_from_current_asm_dev": [
+        "B1:A000",
+        "B1:E000",
+        "B1:F000",
+        "B2:8000",
+        "B2:9000",
+        "B2:A000",
+        "B2:D000",
+        "B3:E000"
+      ],
+      "scope": "Comparison of supplied target profile slices; expected differences for older candidates and final UCHESS removal"
+    },
+    "rc1-maint-source-installer": {
+      "target_sha256": "2177875c395239b244406446267622a34769e4656a3b970e4ef1adfd549d14b6",
+      "sectors_different_from_current_asm_dev": [
+        "B1:A000",
+        "B1:E000",
+        "B1:F000",
+        "B3:E000"
+      ],
+      "scope": "Comparison of supplied target profile slices; expected differences for older candidates and final UCHESS removal"
+    },
+    "rc1-console-edit-installer": {
+      "target_sha256": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e",
+      "sectors_different_from_current_asm_dev": [
+        "B1:E000",
+        "B1:F000",
+        "B3:E000"
+      ],
+      "scope": "Comparison of supplied target profile slices; expected differences for older candidates and final UCHESS removal"
+    },
+    "rc1-latest-2609-installer": {
+      "target_sha256": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e",
+      "sectors_different_from_current_asm_dev": [
+        "B1:E000",
+        "B1:F000",
+        "B3:E000"
+      ],
+      "scope": "Comparison of supplied target profile slices; expected differences for older candidates and final UCHESS removal"
+    },
+    "rc1-asm-dev-installer": {
+      "target_sha256": "bc4b2b67b90fd242ba25465401e4e34409c933971d70eee5c10b38f5ea54d7c3",
+      "sectors_different_from_current_asm_dev": [
+        "B1:E000",
+        "B1:F000",
+        "B3:E000"
+      ],
+      "scope": "Comparison of supplied target profile slices; expected differences for older candidates and final UCHESS removal"
+    },
+    "rc1-asm-dev-final-installer": {
+      "target_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+      "sectors_different_from_current_asm_dev": [
+        "B1:8000"
+      ],
+      "scope": "Comparison of supplied target profile slices; expected differences for older candidates and final UCHESS removal"
+    }
+  },
+  "uchess_prebuilt_input": {
+    "file": "release/rc1-migration-r1/applications/uchess-record.bin",
+    "sha256": "cfa9b1d37bed71f909fb6f750e91eff65aaf100029c0eb440438fb8de67d81eb",
+    "bytes": 1463,
+    "executable_bytes": 1439,
+    "build_behavior": "copied from committed record by debugger builder; not assembled in firmware build"
+  },
+  "fresh_test_reports": {
+    "current-asm-dev": {
+      "file": "tests/baselines/phase1-evidence/current-asm-dev.json",
+      "sha256": "94985ba60ae71df79add2f2adecdc8d2e0b2385a64ba9975ff65ae9128f300bd",
+      "passed": true,
+      "case_count": 4,
+      "check_groups": null,
+      "firmware_sha256": null,
+      "full_boot_tested": null
+    },
+    "console-edit": {
+      "file": "tests/baselines/phase1-evidence/console-edit.json",
+      "sha256": "0b77b5a1378019b99559a679c40a1d2de0e4697624f55b1303745d322778299e",
+      "passed": true,
+      "case_count": 24,
+      "check_groups": null,
+      "firmware_sha256": "5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e",
+      "full_boot_tested": null
+    },
+    "released-debugger-65c02": {
+      "file": "tests/baselines/phase1-evidence/released-debugger-65c02.json",
+      "sha256": "061336ea7c28e1949b0707dd658b32c6107483c01c9e475c95c12a1a21852c65",
+      "passed": true,
+      "case_count": 21,
+      "check_groups": 21,
+      "firmware_sha256": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+      "full_boot_tested": true
+    },
+    "released-debugger-65c816-e": {
+      "file": "tests/baselines/phase1-evidence/released-debugger-65c816-e.json",
+      "sha256": "feffdd12d75323b7cc9910a4d725b5f83946fc3bcdb6d49c574f8e1034998184",
+      "passed": true,
+      "case_count": 24,
+      "check_groups": 24,
+      "firmware_sha256": "6a64a5d0d1c50c732dcfc2e9a2919ea697b95f03b7a9cf9aead7c9e6b88f8b6b",
+      "full_boot_tested": true
+    },
+    "uchess-source": {
+      "file": "tests/baselines/phase1-evidence/uchess-source.json",
+      "sha256": "58f2febb72e20bd17f026e5b39a93c07cb29e6e0bddf40a577ffe33497a198a1",
+      "passed": true,
+      "case_count": 2,
+      "check_groups": null,
+      "firmware_sha256": null,
+      "full_boot_tested": null
+    }
+  },
+  "generation49_source_build": {
+    "report": "tests/baselines/phase1-evidence/generation49-build.json",
+    "sha256": "99e58d810c58ea071e02db135316caeb1f05b60422e15d1966c96087b803ff85",
+    "source_only": true,
+    "binary_inputs": [],
+    "compiled_modules": 27,
+    "artifacts": {
+      "assembler/asm-e000.bin": {
+        "sha256": "18b0236b659b18697b34060b3adb4d4f99d60b1c1408ae2a58a6516bf74ce270",
+        "bytes": 6508
+      },
+      "assembler/vectors-f000.bin": {
+        "sha256": "9b8a59d055cfb85d99d6edf9b954c5c275f8aeaeb0d37e95305a63d141e250f4",
+        "bytes": 4096
+      },
+      "battery/asset.bin": {
+        "sha256": "6c7933aefd37b263cedbef05c5aa145bb428de76b8ad891b6307aab22b040b9d",
+        "bytes": 2560
+      },
+      "boot-status/asset.bin": {
+        "sha256": "3c1bdc224fd00a2c2b95dafe0615ae128c7525b3156770fcb0f8d7450bf0427b",
+        "bytes": 2560
+      },
+      "bootstrap/bootstrap-journal.bin": {
+        "sha256": "36517d863e1aaa48b41cf6095b3c022069852d36b6c30a90857c246b391ad839",
+        "bytes": 541
+      },
+      "clock/clock.bin": {
+        "sha256": "5291464f4aa152dadc56cd553b2bc345da391b444a0cbddc8c0399e4adc8e1d7",
+        "bytes": 12258
+      },
+      "clock/clock.s19": {
+        "sha256": "24fd71e449c433e2de13b2a1c1e109f3b830ff346f3cdc8d86ee859c2e66c3c2",
+        "bytes": 28832
+      },
+      "clock/storage.bin": {
+        "sha256": "038d938981a79cae336432e7729b0d82fe1b9c95f0bdb0fac22d2c73c3864ceb",
+        "bytes": 12288
+      },
+      "local-display/asset.bin": {
+        "sha256": "462fa9096c41a9c0efdf9c823406012cd99b2ba949770d53aa4e7438aa3336d8",
+        "bytes": 1792
+      },
+      "migrator/rtc-migrator-2000.s19": {
+        "sha256": "714ac8d0da1a7104b6a0e296ad92e33438a39beca3a03308e878ed1ab1d75eb2",
+        "bytes": 5176
+      },
+      "pf-worker/asset.bin": {
+        "sha256": "3422b1845f7c1cf6c8860aa55ab1a2b27875f4321a922d7b56454122d3477f89",
+        "bytes": 768
+      },
+      "str8n-journal-9000-9fff.bin": {
+        "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5",
+        "bytes": 4096
+      },
+      "str8n-rtc-component-8000-8fff.bin": {
+        "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3",
+        "bytes": 4096
+      },
+      "str8n-v2-recovery-e000-efff.bin": {
+        "sha256": "32c9daf3eb43d5d2c12e85785ab4fe50cf3d31ff059982855d24c773e9c14661",
+        "bytes": 4096
+      },
+      "str8n-v2-recovery-f000-ffff.bin": {
+        "sha256": "aff5874806721137ec7677beb2e80c0db7c3f563f8027967db4b898554a34028",
+        "bytes": 4096
+      },
+      "str8n-v2-recovery-slot-a0.bin": {
+        "sha256": "56324dca2c12bce3e58a73c64c8178d782e81d08a78a6473d3467bf1c8cf1791",
+        "bytes": 4096
+      },
+      "str8n-v2-recovery-slot-b0.bin": {
+        "sha256": "49644b3f7e475b9d90b1956e11ea141375df8de62093c505b0ca81e28f59d23d",
+        "bytes": 4096
+      },
+      "version/asset.bin": {
+        "sha256": "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa",
+        "bytes": 2048
+      },
+      "xip/utilities.bin": {
+        "sha256": "cd228bf8aa0a8ebeb434ab42853418b4ea71d75381f04e9d2cf1ad31dcf5deea",
+        "bytes": 22528
+      }
+    },
+    "scope": "Payloads/template output, not the generation-50 full-system image"
+  },
+  "public_abi_literal_constants": {
+    "STR8V2_SIGNATURE": "F000",
+    "STR8V2_RESET": "F004",
+    "STR8V2_HOLD": "F007",
+    "STR8V2_CON_INIT": "F00A",
+    "STR8V2_PUTC": "F00D",
+    "STR8V2_GETC": "F010",
+    "STR8V2_RAW_POLL": "F013",
+    "STR8V2_CHECK_CANCEL": "F016",
+    "STR8V2_RX_RESET": "F019",
+    "STR8V2_RESERVED_LINE": "F01C",
+    "STR8V2_HEX_OUT": "F01F",
+    "STR8V2_NEWLINE": "F022",
+    "STR8V2_HEX_NIBBLE": "F025",
+    "STR8V2_CAPS_QUERY": "F028",
+    "STR8V2_BOARD_QUERY": "F02B",
+    "STR8V2_RESERVED2": "F02E",
+    "STR8V2_RESERVED3": "F031",
+    "STR8V2_CAPS_DATA": "F035",
+    "STR8V2_CAPS_FORMAT": "01",
+    "STR8V2_CAP_65C02": "01",
+    "STR8V2_CAP_816_EMULATION": "02",
+    "STR8V2_CAP_816_NATIVE_VECTORS": "04",
+    "STR8V2_CAP_816_NATIVE_CALLS": "08",
+    "STR8V2_CAP_BANK_INDEPENDENT": "10",
+    "STR8V2_CAPS_FLAGS": "17",
+    "STR8V2_CAPS_LENGTH": "04",
+    "STR8V2_BOARD_FORMAT": "01",
+    "STR8V2_CPU_65C02": "02",
+    "STR8V2_CPU_65C816": "16",
+    "STR8V2_BOARD_FT245": "01",
+    "STR8V2_BOARD_ACIA": "02",
+    "STR8V2_BOARD_ACIA_TIMED": "04",
+    "STR8V2_BOARD_SELECTED_ACIA": "08",
+    "STR8V2_BOARD_FT245_PRESENT": "10",
+    "STR8V2_LINE": "7C00",
+    "STR8V2_LINE_LIMIT": "28",
+    "STR8V2_EMU_NMI_PTR": "7E00",
+    "STR8V2_EMU_BRK_PTR": "7E02",
+    "STR8V2_EMU_IRQ_PTR": "7E04",
+    "STR8V2_EMU_COP_PTR": "7E06",
+    "STR8V2_EMU_ABORT_PTR": "7E08",
+    "STR8V2_NATIVE_COP_PTR": "7E10",
+    "STR8V2_NATIVE_BRK_PTR": "7E12",
+    "STR8V2_NATIVE_ABORT_PTR": "7E14",
+    "STR8V2_NATIVE_NMI_PTR": "7E16",
+    "STR8V2_NATIVE_IRQ_PTR": "7E18",
+    "STR8V2_NMI_GATE": "00F4",
+    "STR8V2_RAM_SIGNATURE": "7E60",
+    "STR8V2_RAM_RESET": "7E64",
+    "STR8V2_RAM_HOLD": "7E67",
+    "STR8V2_RAM_CON_INIT": "7E6A",
+    "STR8V2_RAM_PUTC": "7E6D",
+    "STR8V2_RAM_GETC": "7E70",
+    "STR8V2_RAM_RAW_POLL": "7E73",
+    "STR8V2_RAM_CHECK_CANCEL": "7E76",
+    "STR8V2_RAM_RX_RESET": "7E79",
+    "STR8V2_RAM_HEX_OUT": "7E7C",
+    "STR8V2_RAM_NEWLINE": "7E7F",
+    "STR8V2_RAM_HEX_NIBBLE": "7E82",
+    "STR8V2_RAM_CAPS_QUERY": "7E85",
+    "STR8V2_RAM_BOARD_QUERY": "7E88",
+    "STR8V2_RAM_FORMAT": "01",
+    "STR8V2_RAM_CALLS": "0D",
+    "STR8V2_CONFIG": "7D80",
+    "STR8V2_CONFIG_SIZE": "10",
+    "STR8V2_CONFIG_FORMAT": "01",
+    "STR8V2_APPLICATION_END": "66FF",
+    "STR8V2_WEAR_FORMAT": "01",
+    "STR8V2_WEAR_JOURNAL_C": "C000",
+    "STR8V2_WEAR_JOURNAL_D": "D000"
+  },
+  "reproduction_classification": {
+    "released_v1g": "Reproduced from committed HEAD archive with stdlib Python and WDC; imports committed UCHESS record",
+    "generation49_payloads": "Reproduced entirely from committed source; build reports zero binary inputs",
+    "current_asm_dev": "Reproduced from committed archive plus hash-inventoried untracked development overlay; no old BUILD or qualification inputs",
+    "installer_kits": "Existing manifests verified; clean source-only chain not reproduced, missing qualification summary at first preparer",
+    "published_r9_zip": "Not rebuilt; stager requires prior r8 package, closed hardware qualification and authorization records",
+    "installed_board_state": "Historical receipt/plan hashes verified only; private captures/settings/journals are not generic build outputs",
+    "uchess_source": "Independently assembled with current resident ASM on 65C02 MON A/B CPU models; exact executable match"
+  },
+  "known_discrepancies": [
+    "rc1-asm-dev-installer is internally consistent but targets bc4b2b67..., not current aef72be5...; current source-prototype profile is in rc1-asm-dev-final-installer",
+    "Final 2604 kit intentionally erases UCHESS B1:8000 and declared demo sectors; clean current firmware retains UCHESS",
+    "Generation/banner are shared by different firmware images; use full SHA-256 and sector profiles"
+  ],
+  "verification_limits": [
+    "Fresh tests are offline CPU/peripheral models; no board contacted, serial port opened, electrical timing qualification or physical reset",
+    "Did not rerun the entire historical qualification suite or requalify hardware; unchanged bytes and symbols cover untouched components",
+    "No full resident rebuild of STR8-N was performed; current source and symbol limits are preserved as planning constraints"
+  ],
+  "phase1_complete": true,
+  "baseline_roles": {
+    "released_reference": "rc1-debugger-v1g",
+    "current_development_source": "rc1-asm-dev",
+    "recorded_2604_firmware": "rc1-asm-dev with capture-specific cleanup/settings/journals",
+    "recorded_2609_firmware": "rc1-console-edit with capture-specific settings/journals"
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "phase": 5,
+  "complete": true,
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "hardware_qualified": false,
+  "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "firmware_bytes": 98304,
+  "phase1_to_phase4_firmware_equal": true,
+  "firmware_source_changed": false,
+  "payloads_equal": 20,
+  "symbol_maps_equal": 29,
+  "phase_baseline_sha256": {
+    "1": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+    "2": "69806d28b3bbe837b99febc9ec0198020796843c6b41ce055b5e684a67e3138f",
+    "3": "dec1aa37b2ec7300d7fc726bbb228238bb6b62ab44baddc8731db92c2db139db",
+    "4": "acc5b9c76633e2226a223b90032f5232970232410c966bd4dae5876edace5a84"
+  },
+  "authority": {
+    "source": "src/current",
+    "build": "tools/build_current.py",
+    "installer": "tools/install_current.py"
+  },
+  "retirement": {
+    "files": 1074,
+    "obsolete_source_files": 109,
+    "obsolete_tool_files": 957,
+    "old_root_launchers_and_makefiles": 8,
+    "archive_members": 1083,
+    "archive": "archive/legacy-source.zip",
+    "archive_sha256": "c101ac9977defd06305c696b0557accfefad037fc89e919f223c90e57745107a",
+    "archive_bytes": 2646554,
+    "manifest": "archive/manifest.json",
+    "manifest_sha256": "0d48de2556cc7abeb4a8e8b23feac667e779b96598504461f75935f11127df4c",
+    "exact_restore_verified": true,
+    "archived_code_executed": false
+  },
+  "active_tree": {
+    "src": {
+      "files": 135,
+      "bytes": 1061315
+    },
+    "tools": {
+      "files": 66,
+      "bytes": 3197936
+    }
+  },
+  "active_source_and_tool_files_before": 1264,
+  "active_source_and_tool_files_after": 201,
+  "makefile": {
+    "lines_before": 627,
+    "lines_after": 35,
+    "current_only": true,
+    "broad_BUILD_delete_removed": true,
+    "routing_checked_statically": true,
+    "execution_verified": false,
+    "execution_limit": "Existing GnuWin32 make launch/DLL relocation limitation from phase3; Python entrypoints fully tested"
+  },
+  "installer": {
+    "regression_groups": 51,
+    "CPU_model_cases": 16,
+    "host_matrix_cases": 8,
+    "synthetic_only": true,
+    "historical_preparer_execution_required": false,
+    "historical_BUILD_inputs_required": false,
+    "private_capture_inputs_required": false,
+    "frozen_phase4_artifact_and_transaction_checks": true,
+    "phase4_production_files_unchanged": 19
+  },
+  "isolated_builds": true,
+  "isolated_installer_without_history_or_release": true,
+  "retained": "Current examples/model/PDF support, frozen published support, release/**, original BUILD/output evidence, backups and operation markers",
+  "fresh_outputs": [
+    "BUILD/current-phase5",
+    "BUILD/current-kit-phase5"
+  ],
+  "helper_changes": "Only firmware input selection: honor STR8_SOURCE_BUILD, default BUILD/current; test bodies unchanged",
+  "verification_scope": "Fresh offline builds, CPU/peripheral models, archive restoration and published-package tamper checks; no new hardware/electrical qualification",
+  "implementation": {
+    "Makefile": {
+      "bytes": 1354,
+      "sha256": "098c3b4be237bb4c4a5cec5f1ea0f9cc11b0a374536322058799b0f9cbb6408c"
+    },
+    "tools/restore_history.py": {
+      "bytes": 8487,
+      "sha256": "ee1675c620898383339be8de5ac24f6db4f2020ef8350371610febc4958c5fa1"
+    },
+    "tools/test_history_archive.py": {
+      "bytes": 6005,
+      "sha256": "febe5b396bc9962e36d29f33e152666a2d81aa7b1a08af97c56a61f53f921873"
+    },
+    "tools/test_current_build.py": {
+      "bytes": 6065,
+      "sha256": "ae13781190b8d16172c85fae4643add718efb72f31fb8d90b0da8127e56c6e81"
+    },
+    "tools/test_current_installer.py": {
+      "bytes": 26738,
+      "sha256": "f819c1d0fe65aa56978031fab42cc5691271af1849605f61382130d24c099851"
+    },
+    "tests/fixtures/installer-cleanup-transaction.json": {
+      "bytes": 11519,
+      "sha256": "8bc0d95076a275eca313df3b631ffac55cb34d30fd0fab5f53e0b5b9c7081a6b"
+    },
+    "tests/fixtures/installer-fixtures.json": {
+      "bytes": 2053,
+      "sha256": "43edf832b136b529024f87f7e231bacda41e3bf5c1abe6092449ceb0c1697894"
+    },
+    "tests/fixtures/installer-generic-transaction.json": {
+      "bytes": 6982,
+      "sha256": "019fde1fff906dec4204a7421e36f61ed835e06c62d1d432b6b80e064785c8ca"
+    },
+    "tests/fixtures/installer-profiles.zip": {
+      "bytes": 201204,
+      "sha256": "8fc78a950169e67e26bb80fcd5a990f5f459cae46f939fc7e65c8dfe7316ee84"
+    },
+    "tests/fixtures/README.md": {
+      "bytes": 2192,
+      "sha256": "4e201b647d16a54794367f7e04680dbfbbfcff4e8dde52ab05687502290577c1"
+    }
+  },
+  "evidence": {
+    "build-integration": {
+      "file": "tests/baselines/phase5-evidence/build-integration.json",
+      "sha256": "fc859b0bd743c21099cae638f66058f11beb77c195d7ccefeb662302ae69312b",
+      "passed": true
+    },
+    "build": {
+      "file": "tests/baselines/phase5-evidence/build.json",
+      "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d",
+      "passed": true
+    },
+    "features": {
+      "file": "tests/baselines/phase5-evidence/features.json",
+      "sha256": "a4e1650d7f1096a050ae1e99ddc5f08ffa7cd1e20b696c90e849b823ae0207df",
+      "passed": true
+    },
+    "history-and-published-release": {
+      "file": "tests/baselines/phase5-evidence/history-and-published-release.json",
+      "sha256": "0875382be034f54033fa90fb454b2ab2bcf4a9fec6b1fb7887ac492ef97047b9",
+      "passed": true
+    },
+    "installer-tests": {
+      "file": "tests/baselines/phase5-evidence/installer-tests.json",
+      "sha256": "333a847f91cc3b20dafdf914468738950fa735c6aa22b0d3649842fbf0c2fd54",
+      "passed": true
+    },
+    "package": {
+      "file": "tests/baselines/phase5-evidence/package.json",
+      "sha256": "67e0d967d9c19cfc0ffa93cf8f830a36c7c30cb815810ac5091aacce421e9d80",
+      "passed": true
+    },
+    "preservation": {
+      "file": "tests/baselines/phase5-evidence/preservation.json",
+      "sha256": "22ede172f13674daeccb0fe199ed5f44719286ce6ba45e923ead5bbcd5128a2e",
+      "passed": true
+    }
+  }
+}

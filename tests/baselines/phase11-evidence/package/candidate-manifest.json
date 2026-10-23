@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "candidate_id": "version-board-newline-tailcall-fw-v1",
+  "purpose": "Separate offline firmware package containing the Phase-10 resident VERSION optimization",
+  "installation_permitted": false,
+  "hardware_qualified": false,
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "installer_or_profile_created": false,
+  "current_firmware_replaced": false,
+  "runtime_execution_performed_by_this_tool": false,
+  "identity": {
+    "version": "2.0rc1",
+    "generation": 50,
+    "boot_compatibility": 1145194289,
+    "bank_order": [
+      1,
+      2,
+      3
+    ],
+    "image_bytes": 98304,
+    "candidate_is_current_firmware": false
+  },
+  "baseline_firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "candidate_firmware_sha256": "4761393a3de28a1b3de76f96bf507857e40a0fd281066ae64dad31ec52f8b95d",
+  "candidate_asset_sha256": "45eff91880623ee643feb329791d8691e9b9f4d21340b6748dbc205866597d7c",
+  "resident_body_sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7",
+  "version": {
+    "bank": 2,
+    "rom_address": 63488,
+    "asset_bytes": 2048,
+    "body_origin": 28160,
+    "body_bytes": 636,
+    "executable_entry": 28164,
+    "seal_patch_offset": 2038,
+    "seal_patch_hex": "CF2E",
+    "crc16_ccitt": 0,
+    "embedded_powerfail_worker_unchanged": true,
+    "vector_tail_unchanged": true,
+    "all_64_symbol_values_unchanged": true
+  },
+  "changes": [
+    {
+      "firmware_offset": 64092,
+      "bank": 2,
+      "address": 64092,
+      "baseline": 32,
+      "candidate": 76
+    },
+    {
+      "firmware_offset": 65526,
+      "bank": 2,
+      "address": 65526,
+      "baseline": 134,
+      "candidate": 207
+    },
+    {
+      "firmware_offset": 65527,
+      "bank": 2,
+      "address": 65527,
+      "baseline": 67,
+      "candidate": 46
+    }
+  ],
+  "unchanged": {
+    "bank1": true,
+    "bank3": true,
+    "all_other_firmware_bytes": true,
+    "current_sources": true,
+    "installers": true,
+    "identity": true,
+    "compatibility": true
+  },
+  "provenance": {
+    "phase10_manifest": "tests/baselines/phase10.json",
+    "phase10_manifest_sha256": "8ba890a425721430d76c3e2dc7cc7ac8eea9eae1854dee56fffe3f06b261027c",
+    "phase10_evidence_files_checked": 52,
+    "phase10_implementation_files_checked": 4,
+    "preserved_files_checked": 796,
+    "phase1_through_phase9_sha256": {
+      "1": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+      "2": "69806d28b3bbe837b99febc9ec0198020796843c6b41ce055b5e684a67e3138f",
+      "3": "dec1aa37b2ec7300d7fc726bbb228238bb6b62ab44baddc8731db92c2db139db",
+      "4": "acc5b9c76633e2226a223b90032f5232970232410c966bd4dae5876edace5a84",
+      "5": "b1bd940afb676d6ba30e0f2358d5b67992d0ad2302e363869656c8b01edebf14",
+      "6": "3c439cc37a3e22e21c8dec68264da38d353eea03ae713e0ae1c8a5a39dc31184",
+      "7": "6ca15073dfce5a0b39558f2080e3160cc3194e7479adb1f94a752e2bc08d0fa7",
+      "8": "7f562a626607572733b068e2327719d4f33c5a60daef8f4e1795462d92bad78c",
+      "9": "264407133f2b131a59bc3b6e1e8c2310485a84019bf628f399c0468a1d2bd5dc"
+    },
+    "resident_body": "tests/baselines/phase10-evidence/resident.bin",
+    "resident_s19": "tests/baselines/phase10-evidence/resident.s19",
+    "resident_assembly_profiles": 8,
+    "resident_assemblies": 16,
+    "baseline_build": "BUILD/phase11",
+    "baseline_build_report": {
+      "bytes": 33190,
+      "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+    }
+  },
+  "implementation": {
+    "tools/package_version_firmware_candidate.py": {
+      "bytes": 15446,
+      "sha256": "9328d32d45a140d6cbef8498d1039106d066c79b62971e86307649ecd6fa334c"
+    }
+  },
+  "archive": {
+    "path": "candidate.zip",
+    "compression": "stored",
+    "timestamp": "1980-01-01T00:00:00",
+    "sorted_members": true,
+    "includes": "candidate-manifest.json and every files entry; excludes itself"
+  },
+  "files": {
+    "banks/bank1.bin": {
+      "bytes": 32768,
+      "sha256": "0d61654ce071bb3e51de09c80dd3e4b5307df2b3b57d6b1caff54abb53238dfd"
+    },
+    "banks/bank2.bin": {
+      "bytes": 32768,
+      "sha256": "5eb5aab27c52bf8cc9b7654ba4e8098e7a2b3f4c3cd1fc9c7f9daa03ad396946"
+    },
+    "banks/bank3.bin": {
+      "bytes": 32768,
+      "sha256": "5bec7eaf6132f2e16b7fbac2bf01d87f85c3fd5a192776380bb491e2009805a7"
+    },
+    "firmware.bin": {
+      "bytes": 98304,
+      "sha256": "4761393a3de28a1b3de76f96bf507857e40a0fd281066ae64dad31ec52f8b95d"
+    },
+    "symbols.json": {
+      "bytes": 295373,
+      "sha256": "78e571099a9c71e8c6a7bc8b5ecfb61f62041daa080d504d95e8a7e9d5c0ad63"
+    },
+    "version/asset.bin": {
+      "bytes": 2048,
+      "sha256": "45eff91880623ee643feb329791d8691e9b9f4d21340b6748dbc205866597d7c"
+    },
+    "version/resident.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "version/resident.s19": {
+      "bytes": 1723,
+      "sha256": "f8eaea776ca73731ec828df93bcc1460cb6f8cc2fdbd530c02a5c14c54c5b5b8"
+    }
+  }
+}

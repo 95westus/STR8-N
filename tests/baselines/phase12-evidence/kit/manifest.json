@@ -1,0 +1,309 @@
+{
+  "schema": 1,
+  "name": "resident-board-development-offline",
+  "baseline_build": "BUILD/phase11",
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "installation_permitted": false,
+  "current_firmware_changed": false,
+  "authoritative_source_changed": false,
+  "frozen_manifest": "tests/baselines/phase11r2.json",
+  "frozen_manifest_sha256": "62fbba34391e37b5d0845b455b2cfdb7b1645d47838029ce310393f48158d8de",
+  "implementation": {
+    "tools/board_development.py": {
+      "bytes": 19498,
+      "sha256": "a4a3be5730f806dcfbe1ea247f76009a54a7075d32352e111e5bd6cba36447c8"
+    }
+  },
+  "source_retention": "ASM reentry clears source; retain complete host LIST capture before leaving",
+  "capture_policy": "Generic LIST captures have no completeness marker; only explicit known-source rehearsal expectations establish completeness",
+  "lanes": {
+    "hello-a": {
+      "origin": 512,
+      "entry": 512,
+      "line_count": 13,
+      "packed_source_bytes": 169,
+      "body_bytes": 14,
+      "body_sha256": "4188b0019290e98722198a08b5b80ea97280d91bb396363096f276027c37cb50",
+      "symbols": {
+        "BASE": 512,
+        "PUTC": 32365,
+        "HOLD": 32359,
+        "CHAR": 65,
+        "START": 512
+      },
+      "source_provenance": "Authored RAM lesson"
+    },
+    "hello-b": {
+      "origin": 512,
+      "entry": 512,
+      "line_count": 13,
+      "packed_source_bytes": 169,
+      "body_bytes": 14,
+      "body_sha256": "17f92ceb0e59bf9993095b4a4570e25042791cce6a39b2640c4022f669fc6769",
+      "symbols": {
+        "BASE": 512,
+        "PUTC": 32365,
+        "HOLD": 32359,
+        "CHAR": 66,
+        "START": 512
+      },
+      "source_provenance": "Authored RAM lesson"
+    },
+    "version-fast": {
+      "origin": 28160,
+      "entry": 28164,
+      "line_count": 304,
+      "packed_source_bytes": 4637,
+      "body_bytes": 636,
+      "body_sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2",
+      "symbols": {
+        "START": 28160,
+        "APP_END": 28796,
+        "DISPLAY_VERSION": 28167,
+        "VER_LONG_16": 28184,
+        "CHECK_RUNNING": 28184,
+        "CPU_READY": 28232,
+        "BOARD_UNNAMED": 28259,
+        "RUNNING_LINE": 28266,
+        "RUNNING_GEN": 28295,
+        "RUNNING_BAD": 28310,
+        "SLOT_LIST": 28317,
+        "SLOT_LETTER": 28347,
+        "SLOT_CHAR": 28355,
+        "MON_PRINT": 28358,
+        "PRINT": 28361,
+        "PRINT_NEXT": 28367,
+        "PRINT_DONE": 28381,
+        "UNNAMED_TEXT": 28382,
+        "RUNNING_TEXT": 28399,
+        "GEN_TEXT": 28417,
+        "BAD_RUN_TEXT": 28424,
+        "RUNNING_SLOT": 28453,
+        "MON_CALL": 28454,
+        "TZ_SUM": 28456,
+        "TZ_CRC": 28458,
+        "TZ_CRC_BYTE": 28468,
+        "TZ_CRC_BIT": 28478,
+        "TZ_CRC_NEXT": 28502,
+        "BN_READ": 28511,
+        "BN_RESET": 28519,
+        "BN_SLOT": 28542,
+        "BN_BLANK": 28544,
+        "VB_LONG_56": 28563,
+        "BN_CHECK": 28576,
+        "VB_LONG_65": 28585,
+        "BN_HEADER": 28587,
+        "BN_CHAR_CHECK": 28629,
+        "BN_PADDING": 28652,
+        "BN_NEWEST": 28659,
+        "BN_NEWER": 28663,
+        "BN_KEEP": 28676,
+        "BN_COPY_SEQ": 28680,
+        "BN_COPY": 28699,
+        "BN_NEXT": 28710,
+        "BN_PAGE": 28721,
+        "VB_LONG_146": 28730,
+        "BN_SHOW": 28735,
+        "BN_SHOW_CACHED": 28743,
+        "BN_PRINT": 28752,
+        "BN_SHOW_DONE": 28767,
+        "BN_MAGIC": 28768,
+        "BN_LABEL": 28772,
+        "BN_LENGTH": 28780,
+        "BN_WORK": 28781,
+        "BN_TEXT": 28782,
+        "BN_SEQ": 28790,
+        "BN_FREE": 28794,
+        "BOOT_ACTIVE": 32048,
+        "BOOT_DEST": 32049,
+        "BOOT_BEST": 32245,
+        "BOOT_SLOT_CHECK": 62221,
+        "BOOT_SELECT": 62115,
+        "BOOT_CHOICE": 61926,
+        "VPTR": 208,
+        "TZ_PTR": 214
+      },
+      "source_provenance": "Frozen Phase-11r2 prepared source; control reverts only numbered line 520"
+    },
+    "version-control": {
+      "origin": 28160,
+      "entry": 28164,
+      "line_count": 304,
+      "packed_source_bytes": 4630,
+      "body_bytes": 636,
+      "body_sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7",
+      "symbols": {
+        "START": 28160,
+        "APP_END": 28796,
+        "DISPLAY_VERSION": 28167,
+        "VER_LONG_16": 28184,
+        "CHECK_RUNNING": 28184,
+        "CPU_READY": 28232,
+        "BOARD_UNNAMED": 28259,
+        "RUNNING_LINE": 28266,
+        "RUNNING_GEN": 28295,
+        "RUNNING_BAD": 28310,
+        "SLOT_LIST": 28317,
+        "SLOT_LETTER": 28347,
+        "SLOT_CHAR": 28355,
+        "MON_PRINT": 28358,
+        "PRINT": 28361,
+        "PRINT_NEXT": 28367,
+        "PRINT_DONE": 28381,
+        "UNNAMED_TEXT": 28382,
+        "RUNNING_TEXT": 28399,
+        "GEN_TEXT": 28417,
+        "BAD_RUN_TEXT": 28424,
+        "RUNNING_SLOT": 28453,
+        "MON_CALL": 28454,
+        "TZ_SUM": 28456,
+        "TZ_CRC": 28458,
+        "TZ_CRC_BYTE": 28468,
+        "TZ_CRC_BIT": 28478,
+        "TZ_CRC_NEXT": 28502,
+        "BN_READ": 28511,
+        "BN_RESET": 28519,
+        "BN_SLOT": 28542,
+        "BN_BLANK": 28544,
+        "VB_LONG_56": 28563,
+        "BN_CHECK": 28576,
+        "VB_LONG_65": 28585,
+        "BN_HEADER": 28587,
+        "BN_CHAR_CHECK": 28629,
+        "BN_PADDING": 28652,
+        "BN_NEWEST": 28659,
+        "BN_NEWER": 28663,
+        "BN_KEEP": 28676,
+        "BN_COPY_SEQ": 28680,
+        "BN_COPY": 28699,
+        "BN_NEXT": 28710,
+        "BN_PAGE": 28721,
+        "VB_LONG_146": 28730,
+        "BN_SHOW": 28735,
+        "BN_SHOW_CACHED": 28743,
+        "BN_PRINT": 28752,
+        "BN_SHOW_DONE": 28767,
+        "BN_MAGIC": 28768,
+        "BN_LABEL": 28772,
+        "BN_LENGTH": 28780,
+        "BN_WORK": 28781,
+        "BN_TEXT": 28782,
+        "BN_SEQ": 28790,
+        "BN_FREE": 28794,
+        "BOOT_ACTIVE": 32048,
+        "BOOT_DEST": 32049,
+        "BOOT_BEST": 32245,
+        "BOOT_SLOT_CHECK": 62221,
+        "BOOT_SELECT": 62115,
+        "BOOT_CHOICE": 61926,
+        "VPTR": 208,
+        "TZ_PTR": 214
+      },
+      "source_provenance": "Frozen Phase-11r2 prepared source; control reverts only numbered line 520"
+    }
+  },
+  "files": {
+    "hello-a/expected.bin": {
+      "bytes": 14,
+      "sha256": "4188b0019290e98722198a08b5b80ea97280d91bb396363096f276027c37cb50"
+    },
+    "hello-a/records.bin": {
+      "bytes": 169,
+      "sha256": "f4e8f31a11e0e7d862c498bd6c3d82e146a92915216ace9a07a76e9fa440edd3"
+    },
+    "hello-a/source.asm": {
+      "bytes": 130,
+      "sha256": "d04a75809ccdb219470806e4e9dfa7268fdeaf3613dada2c847103c5fa00910c"
+    },
+    "hello-a/source.numbered.txt": {
+      "bytes": 173,
+      "sha256": "106f0b3b4210fa73eae4b522c2c78d02e766dfba60cf57a98f06e4479800d4ce"
+    },
+    "hello-a/source.paste.txt": {
+      "bytes": 138,
+      "sha256": "6cc51fcf408b85d342c7243e1b1b6d255cdcac418c8687aaf832cfa86ce5b809"
+    },
+    "hello-a/symbols.json": {
+      "bytes": 82,
+      "sha256": "ccf7af07d32ba87fd25e35d9d4c59d9b53c51d5cc987a767765416847e811704"
+    },
+    "hello-b/expected.bin": {
+      "bytes": 14,
+      "sha256": "17f92ceb0e59bf9993095b4a4570e25042791cce6a39b2640c4022f669fc6769"
+    },
+    "hello-b/records.bin": {
+      "bytes": 169,
+      "sha256": "2edb148970b955671644c5c43ae82724f0c2b0e6a717bf023fa5a3aba9f5017b"
+    },
+    "hello-b/source.asm": {
+      "bytes": 130,
+      "sha256": "5ce612009763e007351959d04d743536e027fae261ee93025f5c1cd5275e956c"
+    },
+    "hello-b/source.numbered.txt": {
+      "bytes": 173,
+      "sha256": "1da5ff4443fb1183dd4e7a4449fa0fa1f315da428500eb567867adf7b36b050a"
+    },
+    "hello-b/source.paste.txt": {
+      "bytes": 138,
+      "sha256": "f3c3938b561b71992058690b06fae161f5ff6b41a0978d935e915f6ec9648460"
+    },
+    "hello-b/symbols.json": {
+      "bytes": 82,
+      "sha256": "1737ca043c386b9b29bf01f9fbab8857ad9bf9f121dfbd4ee44d2d4d21083b4a"
+    },
+    "session-commands.json": {
+      "bytes": 2910,
+      "sha256": "87ae030317202664ee8e08fb536c9f9952b53a1483a4db06e7c5d539c500af9a"
+    },
+    "version-control/expected.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "version-control/records.bin": {
+      "bytes": 4630,
+      "sha256": "74d9b9649431447c96020d52e40f40cb4e85d14a1e6f895fb400a827b27c787f"
+    },
+    "version-control/source.asm": {
+      "bytes": 3718,
+      "sha256": "8ca749957c8d4d8e26f69394c4a40705d6f99d6b708b564b9d8868ebba789a65"
+    },
+    "version-control/source.numbered.txt": {
+      "bytes": 5130,
+      "sha256": "114e92f3c39d7c6101325d5815d13752b917cf69f886e57cb7823691763df4b7"
+    },
+    "version-control/source.paste.txt": {
+      "bytes": 3726,
+      "sha256": "e13bfc07828caff27ca02c9c10ce98642b5a324200584628ebb16fdb8b405c04"
+    },
+    "version-control/symbols.json": {
+      "bytes": 1448,
+      "sha256": "fb005a4c510509a8b06a97924600648972f434d8defe881a2b48237c2936b3e4"
+    },
+    "version-fast/expected.bin": {
+      "bytes": 636,
+      "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+    },
+    "version-fast/records.bin": {
+      "bytes": 4637,
+      "sha256": "f8a0adfe8f0059bc6debbfb1bfa99753255dc04e0f6012bcd4c38819d6aa072b"
+    },
+    "version-fast/source.asm": {
+      "bytes": 3725,
+      "sha256": "c0567c5617c7a4b53b21bc97956dd0ae3b22000311dde50d6ada26e44c0a27f7"
+    },
+    "version-fast/source.numbered.txt": {
+      "bytes": 5137,
+      "sha256": "d8942d069893540cb3ade952a052348652581e5fcbe973ef7045449f66f46b29"
+    },
+    "version-fast/source.paste.txt": {
+      "bytes": 3733,
+      "sha256": "ca77c62834ac40fb21cfd7da9350245e2711c5503773bd09bafe801704075cd7"
+    },
+    "version-fast/symbols.json": {
+      "bytes": 1448,
+      "sha256": "fb005a4c510509a8b06a97924600648972f434d8defe881a2b48237c2936b3e4"
+    }
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "board_access_performed": false,
+  "flash_operations_allowed": false,
+  "automatic_transmission": false,
+  "current_firmware_required": true,
+  "contexts": {
+    "monitor": "B3> ",
+    "assembler": "ASM> ",
+    "debugger": "DBG> "
+  },
+  "import_steps": [
+    {
+      "context": "monitor",
+      "command": "ASM",
+      "next": "assembler"
+    },
+    {
+      "context": "assembler",
+      "command": "NEW",
+      "next": "assembler"
+    },
+    {
+      "context": "assembler",
+      "input_file": "LANE/source.paste.txt",
+      "next": "assembler",
+      "condition": "Send only after ASM> ; PASTE appends, so NEW must precede a replacement"
+    },
+    {
+      "context": "assembler",
+      "command": "ASM",
+      "next": "assembler"
+    },
+    {
+      "context": "assembler",
+      "command": "LIST",
+      "next": "assembler"
+    },
+    {
+      "context": "assembler",
+      "command": "LST",
+      "next": "assembler"
+    },
+    {
+      "context": "assembler",
+      "command": "SYMS",
+      "next": "assembler"
+    },
+    {
+      "context": "assembler",
+      "command": "S19",
+      "next": "assembler"
+    }
+  ],
+  "hello_debug_steps": [
+    {
+      "context": "assembler",
+      "command": "QUIT",
+      "next": "monitor"
+    },
+    {
+      "context": "monitor",
+      "command": "G 0200",
+      "next": "debugger",
+      "expected_pc": 518
+    },
+    {
+      "context": "debugger",
+      "command": "R",
+      "next": "debugger",
+      "guest_instructions_executed": 0
+    },
+    {
+      "context": "debugger",
+      "command": "U 0206 03",
+      "next": "debugger",
+      "guest_instructions_executed": 0,
+      "expected_instructions": [
+        "JSR $7E6D",
+        "BRK $02",
+        "JMP $7E67"
+      ]
+    },
+    {
+      "context": "debugger",
+      "command": "N",
+      "next": "debugger",
+      "expected_pc": 521,
+      "expected_output": "A for hello-a, B for hello-b"
+    },
+    {
+      "context": "debugger",
+      "command": "C",
+      "next": "debugger",
+      "expected_pc": 523
+    },
+    {
+      "context": "debugger",
+      "command": "C",
+      "next": "monitor",
+      "expected_transfer": "JMP $7E67 HOLD"
+    }
+  ],
+  "branches": {
+    "unexpected_prompt": "Stop sending commands and identify the current context",
+    "fresh_ASM": "ASM reentry clears the document; restore saved numbered lines or NEW then PASTE",
+    "edit_A_to_B": "At ASM> after restoring hello-a, enter 40 CHAR EQU $42; then ASM and capture again",
+    "numbered_replay": "Numbered source preserves IDs; PASTE renumbers by tens and appends",
+    "version_execution": "VERSION origin $6E00 differs from output buffer $0200; kit compiles/captures it and does not issue a run/load/flash command",
+    "capture": "Save one complete LIST response and one complete S19 response, including final ASM> prompt",
+    "persistence": "No flash save or installer command belongs to this session"
+  }
+}

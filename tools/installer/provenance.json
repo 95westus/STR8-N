@@ -1,0 +1,49 @@
+{
+  "engine/runtime.py": {
+    "from": "release/rc1-migration-r1/runtime.py",
+    "original_sha256": "3b08a2fcbc55110dbcbd201327a4437d26a8a0011c773b424c253055c3028e42",
+    "sha256": "e687d0dd9cb881f80cced0e2d1274ad8b8d83ad3ea4fd1a7c1bcd46bb4db970c",
+    "adaptation": "Relative import and explicit hash-bound B0 erase rows only; default transaction unchanged"
+  },
+  "engine/legacy_transport.py": {
+    "from": "release/rc1-migration-r1/legacy_transport.py",
+    "original_sha256": "ed09adaa8bc64fb9e03747d8a758424cd06bf505890e808da7f2b3b4dee6029d",
+    "sha256": "ed09adaa8bc64fb9e03747d8a758424cd06bf505890e808da7f2b3b4dee6029d"
+  },
+  "engine/install_transport.py": {
+    "from": "release/rc1-migration-r1/install_transport.py",
+    "original_sha256": "02266442973c12b1faf288826162e80dcc725cb881c85550cef8576b1986085a",
+    "sha256": "0875bee2982ccf315fc44a234cd2090da6b2e805205c7a90dc53fbd293759af3",
+    "adaptation": "Relative import only"
+  },
+  "engine/template/manifest.json": {
+    "from": "release/rc1-migration-r1/template/manifest.json",
+    "sha256": "adc0cb03639d9e0076d100364bcc59bf77f3c684b8cbcc9baa6b1f61aa12ae16"
+  },
+  "engine/template/integrated-template.s19": {
+    "from": "release/rc1-migration-r1/template/integrated-template.s19",
+    "sha256": "13e73e67b0305c238f23fca4d0cd1e07579a4f989acca9f61f3376549934ba7e"
+  },
+  "engine/template/symbols.json": {
+    "from": "qualified template symbol table",
+    "sha256": "faaec56842672a0495912f8b14dd01878743a10efc40eab10b229fda568dbaf7"
+  },
+  "flash_model.py": {
+    "from": "tools/test_v2_recovery.py:Memory",
+    "original_sha256": "0b9b0626ae965361268d4005e22f3e21e3fb5dfb8324a2a081cf6f3f26e65d67",
+    "sha256": "bef771a57711ee672ea029711d17bf4f1c2ca7042feb6fc6c73def276c3a2c59",
+    "adaptation": "Explicit initial banks and installer-specific erase accounting; no historical module imports"
+  },
+  "model.py": {
+    "from": "tools/rc1_asm_dev_cpu_model.py",
+    "original_sha256": "e3186e274cfcd594f48203374c336f7add7f42098074b428ba5e1e971cee0369",
+    "adaptation": "Standalone shared planner, explicit dependency paths, no AST imports or stock-mode branch",
+    "sha256": "4ec71538e8fb9644bb4950b809199b85eb1ada26ba8903d8999d0e0a91036035"
+  },
+  "serial_lease.py": {
+    "from": "tools/serial_test_coordination.py",
+    "original_sha256": "dbce56ee0ddd82499089e447c7fd9aab8d294a25809be6c51783c8861a2dfddd",
+    "adaptation": "Byte-identical exclusive Windows serial lease",
+    "sha256": "dbce56ee0ddd82499089e447c7fd9aab8d294a25809be6c51783c8861a2dfddd"
+  }
+}

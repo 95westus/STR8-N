@@ -1,0 +1,145 @@
+{
+  "version": "2.0rc1",
+  "generation": 50,
+  "candidate_id": "current-asm-dev-phase1",
+  "boot_compatibility": 1145194289,
+  "expected_changed": [],
+  "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "baseline_expected": {
+    "assembler/asm-e000.bin": {
+      "bytes": 7325,
+      "sha256": "bab3db18b41e98aca36d0bdc38f1c27f4893adebe6b904fd81c34a69a965f446"
+    },
+    "assembler/vectors-f000.bin": {
+      "bytes": 4096,
+      "sha256": "72065163681d082de2d07831da200b96cb85fc62cac05b1caa050ed2f2819ff2"
+    },
+    "battery/asset.bin": {
+      "bytes": 2560,
+      "sha256": "6c7933aefd37b263cedbef05c5aa145bb428de76b8ad891b6307aab22b040b9d"
+    },
+    "boot-status/asset.bin": {
+      "bytes": 2560,
+      "sha256": "3c1bdc224fd00a2c2b95dafe0615ae128c7525b3156770fcb0f8d7450bf0427b"
+    },
+    "bootstrap/bootstrap-journal.bin": {
+      "bytes": 541,
+      "sha256": "36517d863e1aaa48b41cf6095b3c022069852d36b6c30a90857c246b391ad839"
+    },
+    "clock/clock.bin": {
+      "bytes": 12258,
+      "sha256": "5291464f4aa152dadc56cd553b2bc345da391b444a0cbddc8c0399e4adc8e1d7"
+    },
+    "clock/clock.s19": {
+      "bytes": 28832,
+      "sha256": "24fd71e449c433e2de13b2a1c1e109f3b830ff346f3cdc8d86ee859c2e66c3c2"
+    },
+    "clock/storage.bin": {
+      "bytes": 12288,
+      "sha256": "038d938981a79cae336432e7729b0d82fe1b9c95f0bdb0fac22d2c73c3864ceb"
+    },
+    "debugger-a000.bin": {
+      "bytes": 4096,
+      "sha256": "30bd33d89d0ad332b89111a8d477db42e639a08596729a7d928c9980d48d5f72"
+    },
+    "local-display/asset.bin": {
+      "bytes": 1792,
+      "sha256": "462fa9096c41a9c0efdf9c823406012cd99b2ba949770d53aa4e7438aa3336d8"
+    },
+    "migrator/rtc-migrator-2000.s19": {
+      "bytes": 5176,
+      "sha256": "714ac8d0da1a7104b6a0e296ad92e33438a39beca3a03308e878ed1ab1d75eb2"
+    },
+    "pf-worker/asset.bin": {
+      "bytes": 768,
+      "sha256": "3422b1845f7c1cf6c8860aa55ab1a2b27875f4321a922d7b56454122d3477f89"
+    },
+    "str8n-journal-9000-9fff.bin": {
+      "bytes": 4096,
+      "sha256": "a8949d4372bd01656e367a9fc1237d99437c950fabc41dcfbc5815832fc21eb5"
+    },
+    "str8n-rtc-component-8000-8fff.bin": {
+      "bytes": 4096,
+      "sha256": "4b5c823a5f51eb25b01535b7d75f60b9062f2d2ee78f08320da459a5f0e004c3"
+    },
+    "str8n-v2-recovery-e000-efff.bin": {
+      "bytes": 4096,
+      "sha256": "263ecd9cb56c05fd71304fe00349ecf04d8f591dbef2c7af1693004a475452d7"
+    },
+    "str8n-v2-recovery-f000-ffff.bin": {
+      "bytes": 4096,
+      "sha256": "785c9dc085d95c12f1c48112942cf103ad22b6b664bbf01c375c9bf044988791"
+    },
+    "str8n-v2-recovery-slot-a0.bin": {
+      "bytes": 4096,
+      "sha256": "eede711595ec9af74ba6b2956b428e272dd31009a745757adb9e2e09da28cb18"
+    },
+    "str8n-v2-recovery-slot-b0.bin": {
+      "bytes": 4096,
+      "sha256": "b7192c0758b1817cdc49712349e79f9d0beb1337f25c5974d7309f5802bd0f3e"
+    },
+    "version/asset.bin": {
+      "bytes": 2048,
+      "sha256": "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa"
+    },
+    "xip/utilities.bin": {
+      "bytes": 22528,
+      "sha256": "b422a4c0a4b246d60eb9048cef2f93a26d6e659afc84a84dc9d7cb1930ebe130"
+    }
+  },
+  "symbol_fingerprints": {
+    "core/str8n-v2-worker": "2800062e0c0a45c41bc27ac9888d3af9c91f07802dee7465f405eb2055da81ff",
+    "core/str8n-v2-vectors": "ad12590e61d0527df9eca17f13ccf7cf732a6114ad053ab41c8cf583ee960a49",
+    "core/str8n-v2-boot": "93ba189d297d8806949d89d2743b1b524195c7695244f7e07943cd3b810311fe",
+    "assembler/asm-app": "8455763a570a66a8832536fead1f4ef7484b75b07a5a81882fbb2e18b70c54a0",
+    "core/str8n-v2-sr": "782fb02764d07ec0abce2cd9848f0b50ebe7afc8896f6ed055131b7ce12a4608",
+    "core/launcher": "3fbbcd7eed6a6bdb28a946657647604ebfac7935ced229da8e28b945864e7f85",
+    "mode/status-mode-init": "4cc9fac96b0721cd83f93bc1739915b64e4644994b57c08afff86462b669b057",
+    "loader/version-loader": "7979d65988e46c9c1f9f95c5b708897ad383559404526422726a9645ba4791c3",
+    "batch/batch-gate": "d3bf3170abf9f4136fb94859214644023fc43ede92fce2c11a9c0ee374453536",
+    "core/monitor-b0": "45d7203d89cb7f921eb3d55ff42ba34e574262a2e520d1ba78fcc471110616f7",
+    "core/monitor-a0": "e54f2b296bfb3e72d27b7555b14342a71b201acaf9d8986218e572f8a4d7d480",
+    "provider/rtc-provider": "6f0f8ca0bc0b463ad97fdcdbdea59c00091947fe0cd7d2b1d9889276e3c7cdfc",
+    "gateway/rtc-gateway": "62a0075caf6c492faacbe3a34469cdd6ebc8569489e5cbdab681c2dca05aad3d",
+    "banner/rtc-banner": "a6351b355e173120b2372df4bf9b06280e3f937755d13fa625397e6c26e029e9",
+    "journal/journal": "5881c6f2995a1441c838edf1abe9975cbc71e905fa695a78d2b862202c42a968",
+    "status/storage-status": "606e346126914942ef65b1d9ce86de5b9f675227f118c497497c9deeccfbece6",
+    "battery/battery": "1017269c9444bd932706651eee394f1c72fcc32e30da7cd895e2a15cc7ef5628",
+    "local/local-display": "13cb7222447849a4e473976afad943915c33a7bdb6420db089c17cd53416c79b",
+    "pf/pf": "3880d55d0f78aad5e47abe5c4a18aad6b99c3ea6211ad42d7deb934eaf1fb92f",
+    "version/version": "c292dd333fc97b9d96ea6b348cff4cc597c2625eb892e7a3c9d46d1c579e2dfb",
+    "xip/gate": "95a9bdff2d9fa0eee08627558f381eb10ff86ab000f39f030455a8c897e1f7b0",
+    "xip/work-stub": "71756df8db83221af14569c8c18071cbf89040cb1c783cce74390131a72d5aa0",
+    "xip/utilities": "83088c1a4d1ef60ae2a5aaf1cadcd8748ae7ee88cc50257f721f05370216f864",
+    "clock/clock": "4194994a4173f13a430e1eee7ac873f41cd44200ce927cab2a6452196374331d",
+    "bootstrap/bootstrap-journal": "8aa8e12cde9288069ea5eac56e0349c6b6bcffcaa9b0ec692d82ad6b1f5794eb",
+    "migration/migration-worker": "83e6931a3854d26f21264a26eeb9e3dfcedfd5a96aed1c8a5a6bc48ff0b22ad2",
+    "migration/rtc-migrator": "7eed78f09326e9b97f7058edae606aaf86841651bd1bede2cd3c0bac52f0933d"
+  },
+  "source_symbol_fingerprint": "515b7f3632293d1831b8ad85091802763c7b98b42ab70f50153489edb98649c5",
+  "debugger_symbol_fingerprint": "7ee46a8b73479480f5a035fae018df9e7aaac0d5508f9a156e2a7c2c463e04be",
+  "uchess_record_sha256": "cfa9b1d37bed71f909fb6f750e91eff65aaf100029c0eb440438fb8de67d81eb",
+  "deferred": [
+    "RTC qualification",
+    "native 816 applications/tests",
+    "ACIA",
+    "crypto"
+  ],
+  "phase1_manifest_sha256": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+  "generated_includes": [
+    "bootstrap/initial-record.inc",
+    "core/batch-gate.inc",
+    "core/monitor-a0.asm",
+    "core/text-image.inc",
+    "core/vectors-image.inc",
+    "core/worker-image.inc",
+    "migration/migration-table.inc",
+    "migration/migration-worker-image.inc",
+    "xip/gate-image.inc",
+    "xip/work-stub.inc"
+  ],
+  "binding_policy": "Private EQU bindings and padding retained from phase 1; verify all linked symbols before changing them",
+  "omitted_unused_imports": [
+    "assembler/opcodes.json"
+  ]
+}

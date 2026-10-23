@@ -130,7 +130,51 @@ See the [migration quick start](QUICK_START_MIGRATION.md).
 
 ## Assemble a first program
 
-Follow the short example in the [ASM manual](ASM_GUIDE.md). ASM owns application
+On **2604 with the local ASM development extension**, use this first program.
+The ASM 0.5 banner alone does not prove EQU/LST/SYMS support; board 2609 and the
+published r9 image retain their earlier feature set. At `B3>`, enter ASM; at
+`ASM>`, enter NEW and the numbered source below.
+
+<!-- asm-doc-example: hello -->
+```asm
+10 BASE EQU $0200
+20 PUTC EQU $7E6D
+30 HOLD EQU $7E67
+40 CHAR EQU $41
+50 ORG BASE
+60 start: SEI
+70 CLD
+80 .ready: LDA #CHAR
+90 JSR PUTC
+100 JMP HOLD
+110 END
+```
+
+At `ASM>`, inspect the assembled result:
+
+```text
+ASM
+LST
+SYMS start
+SYMS .ready
+```
+
+Expect ten bytes, START=$0200 and START.READY=$0202. LST connects numbered
+source with addresses and emitted bytes; the LDA row is `80 0202 A9 41`.
+EQU lines define names without emitting bytes. QUIT returns to `B3>`, where
+`G 0200` prints A and returns to the monitor through HOLD.
+
+For a first error-report exercise, replace line 80 with `80 LDA MISSING`,
+then ASM. Expect `Error line 80: Undefined symbol`, the source `LDA MISSING`,
+and `Symbol: MISSING`. Restore `80 .ready: LDA #CHAR`, then ASM, LST and
+SYMS .ready. Failed assembly leaves no valid result to list or export.
+
+Continue with the [source SAVE and executable Store walkthrough](ASM_SAVE_STORE.md)
+for SRAM source reload, optional flash storage and more error examples. Use
+host text or configured SRAM to keep B0:8-F empty. uChess and the saved LED
+demos were removed from 2604; their reference documents remain available.
+
+The [ASM manual](ASM_GUIDE.md) also covers earlier firmware. ASM owns application
 RAM while running. Save source and exported S-records on the host before
 loading another application. `ORG` sets a logical origin; it does not relocate
 the output buffer automatically.

@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "phase": 4,
+  "complete": true,
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "hardware_qualified": false,
+  "authoritative_installer": "tools/install_current.py",
+  "shared_implementation": "tools/installer",
+  "command": "python -B tools/test_current_installer.py --out NEW_DIRECTORY --deps-02 PY65_PATH --deps-816 PY65816_PATH",
+  "board_profiles": [
+    "2604",
+    "2609"
+  ],
+  "candidate_profiles": [
+    "release-r9",
+    "source-store",
+    "maint-source",
+    "console-edit",
+    "asm-dev"
+  ],
+  "explicit_erase_profile": "asm-dev-cleanup-2604",
+  "host_matrix_cases": 8,
+  "regression_groups": 51,
+  "linked_cpu_model_rows": 16,
+  "no_write_CPU_execution": false,
+  "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "firmware_bytes": 98304,
+  "phase1_firmware_equal": true,
+  "phase2_firmware_equal": true,
+  "phase3_firmware_equal": true,
+  "payloads_equal": 20,
+  "linked_symbol_maps_equal": 29,
+  "kit": {
+    "path": "BUILD/current-installer",
+    "manifest_sha256": "3ad7b4d9c402450906700c88b2b3ff6e26bae2bbf3812f487534d08952b6f366",
+    "files": 112,
+    "fresh_build_used": true,
+    "deterministic_against_test_package": true,
+    "private_capture_distributed": false
+  },
+  "clean_package_inputs": [
+    "tools/installer/**",
+    "tools/install_current.py",
+    "Phase 1 registered source firmware images",
+    "Fresh tools/build_current.py target firmware"
+  ],
+  "historical_installer_chain_required": false,
+  "hardware_receipts_required_for_packaging": false,
+  "phase_baseline_sha256": {
+    "1": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+    "2": "69806d28b3bbe837b99febc9ec0198020796843c6b41ce055b5e684a67e3138f",
+    "3": "dec1aa37b2ec7300d7fc726bbb228238bb6b62ab44baddc8731db92c2db139db"
+  },
+  "preserved_checks": [
+    "Board/USB/CPU/monitor/debugger identity",
+    "Stopped campaigns, shared lease and operation markers",
+    "Repeated full flash and application RAM escrow",
+    "Exact firmware/sector profiles and immutable RTC guard",
+    "Fresh source/RAM comparison and RAM limit",
+    "Plan, kit, authorization and both-CPU proof binding",
+    "Readback after installer load, verified transfers and wear reservations",
+    "Physical reset and full four-bank target readback",
+    "Owner settings, active monitor and RTC/TZ preservation",
+    "Original RAM restore, loader readback and two full rereads",
+    "Known-state recovery with pending plan/run binding",
+    "Already-current no-write without RAM load or reset",
+    "Explicit named-sector cleanup only; no destructive automatic restore"
+  ],
+  "historical_scripts_and_kits": "Retained unchanged as reproduction references; current workflow has no runtime dependency on them",
+  "qualifications": "Offline synthetic links and linked CPU/peripheral models only; no new electrical or hardware qualification",
+  "implementation": {
+    "tools/install_current.py": {
+      "bytes": 185,
+      "sha256": "230476d623abfbb205e621ae6ac8aca0a9654d8ec8ebeed036901951aaa02682"
+    },
+    "tools/test_current_installer.py": {
+      "bytes": 24792,
+      "sha256": "5bbacbe17238f1896e1260d9862ef93ec123c3d9b8935eee55afcd89008fb98b"
+    },
+    "tools/installer/__init__.py": {
+      "bytes": 58,
+      "sha256": "a695a93f054b8d064c1b28640ec1553a9808edd5e1b3bc44d99532be3e653641"
+    },
+    "tools/installer/capture.py": {
+      "bytes": 2393,
+      "sha256": "0f024d0afba9c12a8a2137c6e84a3a5e69be2418d688a6e75e39e4e2d205327b"
+    },
+    "tools/installer/cli.py": {
+      "bytes": 6649,
+      "sha256": "1e498096ff18204901129715cbce53453cf417f3ebf6781c7a1a78f8e35f0a6c"
+    },
+    "tools/installer/common.py": {
+      "bytes": 1418,
+      "sha256": "04a0e2f0d4aee12fde340cf7a1b9a1138a3b6e7bbcf401e3a420e8f96df772ef"
+    },
+    "tools/installer/engine/__init__.py": {
+      "bytes": 55,
+      "sha256": "00dc0924abdf0477b7a80aff9c442ef6288ae3065cf86ede2a316c46e004eb56"
+    },
+    "tools/installer/engine/install_transport.py": {
+      "bytes": 2730,
+      "sha256": "0875bee2982ccf315fc44a234cd2090da6b2e805205c7a90dc53fbd293759af3"
+    },
+    "tools/installer/engine/legacy_transport.py": {
+      "bytes": 9181,
+      "sha256": "ed09adaa8bc64fb9e03747d8a758424cd06bf505890e808da7f2b3b4dee6029d"
+    },
+    "tools/installer/engine/runtime.py": {
+      "bytes": 9721,
+      "sha256": "e687d0dd9cb881f80cced0e2d1274ad8b8d83ad3ea4fd1a7c1bcd46bb4db970c"
+    },
+    "tools/installer/engine/template/integrated-template.s19": {
+      "bytes": 13892,
+      "sha256": "13e73e67b0305c238f23fca4d0cd1e07579a4f989acca9f61f3376549934ba7e"
+    },
+    "tools/installer/engine/template/manifest.json": {
+      "bytes": 270,
+      "sha256": "adc0cb03639d9e0076d100364bcc59bf77f3c684b8cbcc9baa6b1f61aa12ae16"
+    },
+    "tools/installer/engine/template/symbols.json": {
+      "bytes": 8440,
+      "sha256": "faaec56842672a0495912f8b14dd01878743a10efc40eab10b229fda568dbaf7"
+    },
+    "tools/installer/flash_model.py": {
+      "bytes": 3633,
+      "sha256": "bef771a57711ee672ea029711d17bf4f1c2ca7042feb6fc6c73def276c3a2c59"
+    },
+    "tools/installer/model.py": {
+      "bytes": 7613,
+      "sha256": "4ec71538e8fb9644bb4950b809199b85eb1ada26ba8903d8999d0e0a91036035"
+    },
+    "tools/installer/package.py": {
+      "bytes": 7975,
+      "sha256": "a1aa73cd6e593f25cf1d38623b600ecf3f86d7b810a2cd06edc8c190915b477d"
+    },
+    "tools/installer/plan.py": {
+      "bytes": 6668,
+      "sha256": "5c69ed58cf7eb3764dc0f1185812af3da03045c9483ff63cc436ea34faf2db79"
+    },
+    "tools/installer/profiles.json": {
+      "bytes": 2182,
+      "sha256": "75b2ae18a93066602d70eddda83bfe187704532ed356a54079e7635d21593882"
+    },
+    "tools/installer/provenance.json": {
+      "bytes": 2590,
+      "sha256": "5ce0489b8d1da4a7c479c5914c78a377508f60a950b8a6551643e3e2c3a32679"
+    },
+    "tools/installer/README.md": {
+      "bytes": 8249,
+      "sha256": "45e42a758b532a98c1d9ebe7e8e8960d4efd22911315a628695dcb001b310f82"
+    },
+    "tools/installer/serial_lease.py": {
+      "bytes": 3618,
+      "sha256": "dbce56ee0ddd82499089e447c7fd9aab8d294a25809be6c51783c8861a2dfddd"
+    },
+    "tools/installer/workflow.py": {
+      "bytes": 14483,
+      "sha256": "c25177c84f8d23e34e5d1ccb0997783ac376bff4f7cb03d8b27d81ebf3fa9158"
+    }
+  },
+  "evidence": {
+    "build": {
+      "file": "tests/baselines/phase4-evidence/build.json",
+      "sha256": "a230b1633c71c106adf5002a0cb5135b4e900a724a9a79e42afc1e916eb03a51",
+      "passed": true
+    },
+    "differential": {
+      "file": "tests/baselines/phase4-evidence/differential.json",
+      "sha256": "ec5fdec8822476436caefcddfd7b74834bd0dba60027dc61291836fdff2e8325",
+      "passed": true
+    },
+    "installer-tests": {
+      "file": "tests/baselines/phase4-evidence/installer-tests.json",
+      "sha256": "bf20b4e0581dbe5cb552681b37d6ee6ac061753eb762024b9efcc789d6279fbd",
+      "passed": true
+    },
+    "package": {
+      "file": "tests/baselines/phase4-evidence/package.json",
+      "sha256": "8ead4586517586f7eff134560cd3e36c99ee9938295b23dc6a41ebabb6dcdf9e",
+      "passed": true
+    },
+    "preservation": {
+      "file": "tests/baselines/phase4-evidence/preservation.json",
+      "sha256": "b3d8546cae60a2c3649d5b2b0383b2b8748642ff8f3d4b1a7bf7ebb3892ed64b",
+      "passed": true
+    }
+  }
+}

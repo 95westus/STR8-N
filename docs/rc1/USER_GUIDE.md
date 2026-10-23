@@ -54,6 +54,14 @@ PF/STATS output must be read with those limits.
 
 ## Work with programs and storage
 
+For the current local 2604 assembler, follow the
+[EQU, LST, SYMS and source-save/executable-store walkthrough](ASM_SAVE_STORE.md).
+The example prints A and uses no LED hardware. LST shows the bytes alongside
+source; SYMS start finds a global label and SYMS .ready finds a local label.
+An unresolved operand reports its numbered line, source and symbol name.
+Source SAVE/LOAD and executable S/T/R preserve different things; use host text
+or configured SRAM for source if B0:8-F should stay empty.
+
 The monitor's `D address [end]` displays memory, `G address` executes RAM code,
 and `L` receives S-record input. `M` edits allowed RAM; `F` patches a selected
 flash sector after preview and confirmation. It is not a RAM fill command.

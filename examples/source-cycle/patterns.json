@@ -1,0 +1,525 @@
+{
+  "sxb-cs-patterns": {
+    "patterns": [
+      {
+        "name": "forward chase",
+        "frames": [
+          1,
+          2,
+          4,
+          8,
+          1,
+          2,
+          4,
+          8
+        ]
+      },
+      {
+        "name": "reverse chase",
+        "frames": [
+          8,
+          4,
+          2,
+          1,
+          8,
+          4,
+          2,
+          1
+        ]
+      },
+      {
+        "name": "bounce",
+        "frames": [
+          1,
+          2,
+          4,
+          8,
+          4,
+          2,
+          1,
+          0
+        ]
+      },
+      {
+        "name": "alternating pairs",
+        "frames": [
+          5,
+          10,
+          5,
+          10,
+          5,
+          10,
+          5,
+          10
+        ]
+      },
+      {
+        "name": "fill and drain",
+        "frames": [
+          1,
+          3,
+          7,
+          15,
+          7,
+          3,
+          1,
+          0
+        ]
+      },
+      {
+        "name": "outside and inside",
+        "frames": [
+          9,
+          6,
+          9,
+          6,
+          9,
+          6,
+          9,
+          6
+        ]
+      },
+      {
+        "name": "all blink",
+        "frames": [
+          15,
+          0,
+          15,
+          0,
+          15,
+          0,
+          15,
+          0
+        ]
+      },
+      {
+        "name": "adjacent pairs",
+        "frames": [
+          3,
+          6,
+          12,
+          9,
+          3,
+          6,
+          12,
+          9
+        ]
+      }
+    ],
+    "pattern_count": 8,
+    "frame_count": 64,
+    "source_lines": 123,
+    "packed_source_bytes": 2514
+  },
+  "edu-led31": {
+    "patterns": [
+      {
+        "name": "walking one",
+        "frames": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ]
+      },
+      {
+        "name": "walking zero",
+        "frames": [
+          254,
+          253,
+          251,
+          247,
+          239,
+          223,
+          191,
+          127
+        ]
+      },
+      {
+        "name": "reverse one",
+        "frames": [
+          128,
+          64,
+          32,
+          16,
+          8,
+          4,
+          2,
+          1
+        ]
+      },
+      {
+        "name": "reverse zero",
+        "frames": [
+          127,
+          191,
+          223,
+          239,
+          247,
+          251,
+          253,
+          254
+        ]
+      },
+      {
+        "name": "wigwag",
+        "frames": [
+          240,
+          15,
+          240,
+          15,
+          240,
+          15,
+          240,
+          15
+        ]
+      },
+      {
+        "name": "checkerboard",
+        "frames": [
+          170,
+          85,
+          170,
+          85,
+          170,
+          85,
+          170,
+          85
+        ]
+      },
+      {
+        "name": "all blink",
+        "frames": [
+          255,
+          0,
+          255,
+          0,
+          255,
+          0,
+          255,
+          0
+        ]
+      },
+      {
+        "name": "fill left",
+        "frames": [
+          1,
+          3,
+          7,
+          15,
+          31,
+          63,
+          127,
+          255
+        ]
+      },
+      {
+        "name": "drain left",
+        "frames": [
+          255,
+          127,
+          63,
+          31,
+          15,
+          7,
+          3,
+          1
+        ]
+      },
+      {
+        "name": "fill right",
+        "frames": [
+          128,
+          192,
+          224,
+          240,
+          248,
+          252,
+          254,
+          255
+        ]
+      },
+      {
+        "name": "drain right",
+        "frames": [
+          255,
+          254,
+          252,
+          248,
+          240,
+          224,
+          192,
+          128
+        ]
+      },
+      {
+        "name": "expand pairs",
+        "frames": [
+          24,
+          60,
+          126,
+          255,
+          126,
+          60,
+          24,
+          0
+        ]
+      },
+      {
+        "name": "contract pairs",
+        "frames": [
+          129,
+          195,
+          231,
+          255,
+          231,
+          195,
+          129,
+          0
+        ]
+      },
+      {
+        "name": "two dot chase",
+        "frames": [
+          3,
+          6,
+          12,
+          24,
+          48,
+          96,
+          192,
+          129
+        ]
+      },
+      {
+        "name": "three dot chase",
+        "frames": [
+          7,
+          14,
+          28,
+          56,
+          112,
+          224,
+          193,
+          131
+        ]
+      },
+      {
+        "name": "four dot chase",
+        "frames": [
+          15,
+          30,
+          60,
+          120,
+          240,
+          225,
+          195,
+          135
+        ]
+      },
+      {
+        "name": "split chase",
+        "frames": [
+          17,
+          34,
+          68,
+          136,
+          17,
+          34,
+          68,
+          136
+        ]
+      },
+      {
+        "name": "outer bounce",
+        "frames": [
+          129,
+          66,
+          36,
+          24,
+          36,
+          66,
+          129,
+          0
+        ]
+      },
+      {
+        "name": "gray ramp",
+        "frames": [
+          0,
+          1,
+          3,
+          2,
+          6,
+          7,
+          5,
+          4
+        ]
+      },
+      {
+        "name": "binary ramp",
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "name": "mirrored binary",
+        "frames": [
+          0,
+          129,
+          66,
+          195,
+          36,
+          165,
+          102,
+          231
+        ]
+      },
+      {
+        "name": "alternating fill",
+        "frames": [
+          1,
+          5,
+          21,
+          85,
+          87,
+          95,
+          127,
+          255
+        ]
+      },
+      {
+        "name": "alternating drain",
+        "frames": [
+          255,
+          127,
+          95,
+          87,
+          85,
+          21,
+          5,
+          1
+        ]
+      },
+      {
+        "name": "paired blink",
+        "frames": [
+          51,
+          204,
+          51,
+          204,
+          51,
+          204,
+          51,
+          204
+        ]
+      },
+      {
+        "name": "nibble count",
+        "frames": [
+          0,
+          17,
+          34,
+          51,
+          68,
+          85,
+          102,
+          119
+        ]
+      },
+      {
+        "name": "center pulse",
+        "frames": [
+          24,
+          24,
+          0,
+          24,
+          0,
+          0,
+          24,
+          0
+        ]
+      },
+      {
+        "name": "edge pulse",
+        "frames": [
+          129,
+          129,
+          0,
+          129,
+          0,
+          0,
+          129,
+          0
+        ]
+      },
+      {
+        "name": "comet",
+        "frames": [
+          1,
+          3,
+          7,
+          14,
+          28,
+          56,
+          112,
+          224
+        ]
+      },
+      {
+        "name": "reverse comet",
+        "frames": [
+          128,
+          192,
+          224,
+          112,
+          56,
+          28,
+          14,
+          7
+        ]
+      },
+      {
+        "name": "sparkle",
+        "frames": [
+          18,
+          9,
+          188,
+          94,
+          47,
+          175,
+          239,
+          207
+        ]
+      },
+      {
+        "name": "crossfade halves",
+        "frames": [
+          240,
+          225,
+          195,
+          135,
+          15,
+          30,
+          60,
+          120
+        ]
+      }
+    ],
+    "pattern_count": 31,
+    "frame_count": 248,
+    "source_lines": 243,
+    "packed_source_bytes": 5034
+  }
+}

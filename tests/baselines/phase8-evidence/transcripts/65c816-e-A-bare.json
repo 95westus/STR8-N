@@ -1,0 +1,32 @@
+[
+  {
+    "command": "ASM",
+    "context": "asm",
+    "output": "ASM\r\n\r\nSTR8-N ASM 0.5 / 65C02\r\nASM> "
+  },
+  {
+    "command": "PASTE\rVPTR EQU $D0\rMON_CALL EQU $6F26\rORG $6EBB\rSLOT_LETTER:\rCMP #$B0\rLDA #'A'\rBCC SLOT_CHAR\rLDA #'B'\rSLOT_CHAR:\rJMP $7E6D\rMON_PRINT:\rJMP (MON_CALL)\rPRINT:  STX VPTR\rSTY VPTR+1\rLDY #0\rPRINT_NEXT:\rLDA (VPTR),Y\rBEQ PRINT_DONE\rJSR $7E6D\rINY\rBNE PRINT_NEXT\rINC VPTR+1\rBRA PRINT_NEXT\rPRINT_DONE:\rRTS\rEND\r.",
+    "context": "asm",
+    "output": "PASTE\r\nPaste source; . ends, Ctrl-C cancels\r\n\r\nASM> "
+  },
+  {
+    "command": "ASM",
+    "context": "asm",
+    "output": "ASM\r\nOK 35 bytes, origin $6EBB, buffer $0200\r\nRAM $0200-$0222\r\nORG differs; use S19/load at origin before Store.\r\nASM> "
+  },
+  {
+    "command": "ASM",
+    "context": "asm",
+    "output": "ASM\r\nOK 35 bytes, origin $6EBB, buffer $0200\r\nRAM $0200-$0222\r\nORG differs; use S19/load at origin before Store.\r\nASM> "
+  },
+  {
+    "command": "SYMS",
+    "context": "asm",
+    "output": "SYMS\r\n00D0 VPTR\r\n6F26 MON_CALL\r\n6EBB SLOT_LETTER\r\n6EC3 SLOT_CHAR\r\n6EC6 MON_PRINT\r\n6EC9 PRINT\r\n6ECF PRINT_NEXT\r\n6EDD PRINT_DONE\r\nASM> "
+  },
+  {
+    "command": "S19",
+    "context": "asm",
+    "output": "S19\r\nS1136EBBC9B0A9419002A9424C6D7E6C266F86D055\r\nS1136ECB84D1A000B1D0F00A206D7EC8D0F6E6D1F3\r\nS1066EDB80F260DE\r\nS9036EBBD3\r\nASM> "
+  }
+]

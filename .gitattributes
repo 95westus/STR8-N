@@ -8,6 +8,13 @@
 
 # Release manifests bind exact source and package bytes across checkouts.
 release/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+# Current source provenance and baseline receipts bind exact imported bytes.
+src/current/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tests/baselines/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+# Installer kits seal exact imported engine and shared implementation bytes.
+tools/installer/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tests/fixtures/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+archive/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
 # Preserve the exact source bytes sealed by uniform-upgrade qualification.
 tools/*rc1_uniform*.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
 tools/*rc1_v1g_component*.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
@@ -16,3 +23,99 @@ docs/evidence/board-2609-a24/* -text -diff
 # Serial prompts and memory-dump ASCII columns retain received trailing spaces.
 docs/STR8N_V1_34_BOARD_TRANSCRIPT_2026-09-15.txt whitespace=-blank-at-eol
 docs/STR8N_V1_34_FOLLOWUP_BOARD_TRANSCRIPT_2026-09-15.txt whitespace=-blank-at-eol
+
+# Host development receipts bind exact tool, guide and example bytes.
+# Existing rc1 manuals also retain their original line endings.
+docs/rc1/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/BOARD_DEVELOPMENT_WORKFLOW.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/MONITOR_SIZE_CANDIDATE.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/RESIDENT_BATCH_GATE.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/RESIDENT_BUILD_CONTRACT.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/RESIDENT_VERSION_CANDIDATE.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/RESIDENT_VERSION_FORMAT.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/RESIDENT_VERSION_FULL.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/RTC_NTP_BOUNDARY_SYNC_PROPOSAL.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/VERSION_CACHED_CANDIDATE.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/VERSION_FIRMWARE_CANDIDATE.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/rc1/ASM_DEVELOPMENT.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/rc1/ASM_SAVE_STORE.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/rc1/DEBUG_MAP.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/rc1/SOURCE_DEVELOPMENT_WORKBOOK.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+docs/rc1/SOURCE_HARDWARE_TEST_PLAN.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/README.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/edu-led31-loop-onboard.asm -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/edu-led31-loop.README.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/edu-led31-loop.asm -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/edu-led31-loop.numbered.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/edu-led31-loop.paste.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/edu-led31.asm -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/edu-led31.numbered.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/edu-led31.paste.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/patterns.json -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/sxb-cs-patterns-loop.README.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/sxb-cs-patterns-loop.asm -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/sxb-cs-patterns-loop.numbered.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/sxb-cs-patterns-loop.paste.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/sxb-cs-patterns.asm -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/sxb-cs-patterns.numbered.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+examples/source-cycle/sxb-cs-patterns.paste.txt -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/README.md -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/board_development.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/build_current.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/build_rc1_asm_docs_pdf.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/build_rc1_dev_samples.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/build_rc1_edu_loop_source.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/build_rc1_sample_listings.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/build_rc1_source_pdfs.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/check_rc1_asm_docs.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/check_rc1_source_pdfs.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/install_current.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/name_rc1_demo_constants.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/package_version_firmware_candidate.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/prepare_f_flow.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/prepare_f_recovery.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/prepare_f_size.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/prepare_monitor_size.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/prepare_resident_batch.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/prepare_resident_version.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/prepare_resident_version_candidate.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/prepare_resident_version_full.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/resident_module_inventory.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/restore_history.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/str8build/__init__.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/str8build/assemble.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/str8build/baselines.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/str8build/build.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/str8build/formats.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/str8build/images.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_board_development.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_board_development_runtime.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_current_build.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_current_installer.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_f_flow.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_f_recovery.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_f_size.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_history_archive.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_monitor_size.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_asm_dev.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_asm_equ.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_console_edit.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_demo_constants.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_dev_samples.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_sample_walkthroughs.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_source_flash.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_source_flash_edges.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_rc1_source_store.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_resident_batch.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_resident_contract.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_resident_version.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_resident_version_candidate.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_resident_version_candidate_runtime.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_resident_version_full.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_resident_version_runtime.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_version_cached_candidate.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_version_cached_runtime.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_version_firmware_candidate.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/test_version_firmware_candidate_runtime.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/verify_current_sources.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/version_cached_candidate.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof

@@ -1,0 +1,11 @@
+Continuous SXB CS demo
+
+sxb-cs-patterns-loop.asm uses name = expression constants directly in ASM 0.5.
+Use its .numbered.txt or .paste.txt companion for editor input.
+Eight patterns / 64 frames repeat until Ctrl-C, at the original burst timing.
+CS0=$7F00, CS1=$7F20, CS2=$7F40, CS3=$7F60; reads only.
+No external hardware is attached to those CS windows.
+G 0200 reaches ready BRK; C starts the loop.
+Ctrl-C reaches finished BRK; C returns via HOLD.
+207 bytes at $0200-$02CE. CPU model verifies two full CS sequences and cleanup.
+The bounded workbook source remains a separate reference with its published listing.

@@ -1,5 +1,9 @@
 # STR8-N 2.0rc1 candidate manuals
 
+Current source and offline development use [src/current](../../src/current/README.md)
+and [the active tool map](../../tools/README.md). Obsolete build/installer commands
+in dated records are available through [history restoration](../../archive/README.md).
+
 Current target: **rc1 v1g r9, DBG1 generation 50, CLOCK 1.11, ASM 0.5**.
 The firmware is unchanged from r8. R9 supplies the corrected uniform upgrade
 entry, qualified directly from WDCMONV2 and beta4 on 2604/2609 in both monitor
@@ -23,11 +27,14 @@ applications/tests, ACIA and crypto remain deferred.
 - [User guide](USER_GUIDE.md)
 - [Operator guide](OPERATOR_GUIDE.md)
 - [ASM 0.5 manual](ASM_GUIDE.md)
+- [Worked EQU/LST/SYMS examples, source SAVE and executable Store](ASM_SAVE_STORE.md)
+- Printable current local guides: [onboarding](../../output/pdf/STR8N-RC1-Onboarding.pdf), [ASM](../../output/pdf/STR8N-ASM-User-Guide.pdf), [save/store](../../output/pdf/STR8N-ASM-Save-Store.pdf)
 - [DBG1 RAM debugger: C/S/N and eight persistent breakpoints](DEBUGGER_GUIDE.md)
 - [DBG1 BRK services and system/user registrations](ABI_REFERENCE.md#dbg1-brk-functions-and-registrations)
 - [DBG1 board results and qualification limits](DEBUGGER_BOARD_RESULTS.md)
 - [DBG1 v1g current status and continuing-soak evidence](DBG1_CANDIDATE_STATUS.md)
 - [Program and command reference](COMMAND_REFERENCE.md)
+- [Local 2604 ASM extension: EQU, listings, symbols and diagnostics](ASM_DEVELOPMENT.md)
 - [Technical manual and Mermaid diagrams](TECHNICAL_MANUAL.md)
 - [Public ABI reference](ABI_REFERENCE.md)
 - [Firmware contents and programmer mapping](FIRMWARE_CONTENTS.md)

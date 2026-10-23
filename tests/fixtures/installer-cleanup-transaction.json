@@ -1,0 +1,342 @@
+{
+  "counts_before": [
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151
+  ],
+  "expected_sha256": [
+    "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+    "a7057ee24826e1d1e6baa977d27845d745bc04d7ddb950328713b096bfa098ee",
+    "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+    "414db5c0f0b52dbdde4b1789538d3efbbf04dc42ebeec17dc85386e2912fd1d6"
+  ],
+  "installation_permitted": false,
+  "model_only": true,
+  "operations": [
+    {
+      "address": 49280,
+      "after_sha256": [
+        "13e332b0fc4c2a72753a7d64cc88aa8dcfd77dc1ce86f5a643d1b11d538f4736",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "edd4b7c196f6c4112468959d5b0a14b7ba082e1d9519d0d31ff5165cce475ed0"
+      ],
+      "bank": 3,
+      "commit_address": 49407,
+      "data_sha256": "ae6b80d23208002c976dd6cd893d00ad641bdc2ac4b4834c54b86586ef98c6d1",
+      "kind": "reserve-record",
+      "source_sha256": [
+        "13e332b0fc4c2a72753a7d64cc88aa8dcfd77dc1ce86f5a643d1b11d538f4736",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "28e09d8df9e2a0a73e7111c3d77887ff2542e5e375779c1017a65f5321560488"
+      ]
+    },
+    {
+      "address": 53248,
+      "after_sha256": [
+        "13e332b0fc4c2a72753a7d64cc88aa8dcfd77dc1ce86f5a643d1b11d538f4736",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ],
+      "bank": 3,
+      "commit_address": null,
+      "data_sha256": "6e95b72d6700cb2b853920418a05c30bd5c770e139b16c47aab8ce7cf4af7148",
+      "kind": "stage-journal",
+      "source_sha256": [
+        "13e332b0fc4c2a72753a7d64cc88aa8dcfd77dc1ce86f5a643d1b11d538f4736",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "edd4b7c196f6c4112468959d5b0a14b7ba082e1d9519d0d31ff5165cce475ed0"
+      ]
+    },
+    {
+      "address": 45056,
+      "after_sha256": [
+        "a9d69f0f25d1ef7959a0cc1fbb8954841dc46cbf15003d570088740a46800a0b",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ],
+      "bank": 0,
+      "commit_address": null,
+      "data_sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "13e332b0fc4c2a72753a7d64cc88aa8dcfd77dc1ce86f5a643d1b11d538f4736",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ]
+    },
+    {
+      "address": 40960,
+      "after_sha256": [
+        "aa796f34f487c23e415dc255d99a4774ffd092567c3624ed9eab00362a1f5f19",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ],
+      "bank": 0,
+      "commit_address": null,
+      "data_sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "a9d69f0f25d1ef7959a0cc1fbb8954841dc46cbf15003d570088740a46800a0b",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ]
+    },
+    {
+      "address": 36864,
+      "after_sha256": [
+        "9fa57e0e259e33de3837c13691aab1636a3faaed44324113419e88fea879047f",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ],
+      "bank": 0,
+      "commit_address": null,
+      "data_sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "aa796f34f487c23e415dc255d99a4774ffd092567c3624ed9eab00362a1f5f19",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ]
+    },
+    {
+      "address": 32768,
+      "after_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ],
+      "bank": 0,
+      "commit_address": null,
+      "data_sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "9fa57e0e259e33de3837c13691aab1636a3faaed44324113419e88fea879047f",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ]
+    },
+    {
+      "address": 61440,
+      "after_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "2446bd9b1582ba91e6a94a63462380e36bec8685cd30f358133baa5c5e65125c",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ],
+      "bank": 1,
+      "commit_address": null,
+      "data_sha256": "72065163681d082de2d07831da200b96cb85fc62cac05b1caa050ed2f2819ff2",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ]
+    },
+    {
+      "address": 57344,
+      "after_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "0d61654ce071bb3e51de09c80dd3e4b5307df2b3b57d6b1caff54abb53238dfd",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ],
+      "bank": 1,
+      "commit_address": null,
+      "data_sha256": "bae0a5e72b2e7946e7210b7ba9a7063ee63cffcd7f20a4d815be22af6c4b0bb7",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "2446bd9b1582ba91e6a94a63462380e36bec8685cd30f358133baa5c5e65125c",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ]
+    },
+    {
+      "address": 32768,
+      "after_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "a7057ee24826e1d1e6baa977d27845d745bc04d7ddb950328713b096bfa098ee",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ],
+      "bank": 1,
+      "commit_address": null,
+      "data_sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "0d61654ce071bb3e51de09c80dd3e4b5307df2b3b57d6b1caff54abb53238dfd",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ]
+    },
+    {
+      "address": 57344,
+      "after_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "a7057ee24826e1d1e6baa977d27845d745bc04d7ddb950328713b096bfa098ee",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "3b1a3c529b638b1878041f88d7813f86b1aae5a7e0c6b9bd0e1621458d029258"
+      ],
+      "bank": 3,
+      "commit_address": null,
+      "data_sha256": "263ecd9cb56c05fd71304fe00349ecf04d8f591dbef2c7af1693004a475452d7",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "a7057ee24826e1d1e6baa977d27845d745bc04d7ddb950328713b096bfa098ee",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "2d967f41ada0e130f54b712bd8e313c05963fa6bc6dbe64635bd43553c4ba574"
+      ]
+    },
+    {
+      "address": 49152,
+      "after_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "a7057ee24826e1d1e6baa977d27845d745bc04d7ddb950328713b096bfa098ee",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "414db5c0f0b52dbdde4b1789538d3efbbf04dc42ebeec17dc85386e2912fd1d6"
+      ],
+      "bank": 3,
+      "commit_address": null,
+      "data_sha256": "4729cc858abf6a80894815847eb92887df54d78014bab4b7439c7183e94f2631",
+      "kind": "activate-journal",
+      "source_sha256": [
+        "2d864c0b789a43214eee8524d3182075125e5ca2cd527f3582ec87ffd94076bc",
+        "a7057ee24826e1d1e6baa977d27845d745bc04d7ddb950328713b096bfa098ee",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "3b1a3c529b638b1878041f88d7813f86b1aae5a7e0c6b9bd0e1621458d029258"
+      ]
+    }
+  ],
+  "planned_erase_order": [
+    [
+      3,
+      13
+    ],
+    [
+      0,
+      11
+    ],
+    [
+      0,
+      10
+    ],
+    [
+      0,
+      9
+    ],
+    [
+      0,
+      8
+    ],
+    [
+      1,
+      15
+    ],
+    [
+      1,
+      14
+    ],
+    [
+      1,
+      8
+    ],
+    [
+      3,
+      14
+    ],
+    [
+      3,
+      12
+    ]
+  ],
+  "reservation_offset": 16512,
+  "reserved_counts": [
+    121,
+    122,
+    123,
+    124,
+    124,
+    125,
+    126,
+    127,
+    129,
+    129,
+    130,
+    131,
+    132,
+    133,
+    135,
+    136,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    149,
+    150,
+    151,
+    151
+  ],
+  "sequence_after": 1003,
+  "sequence_before": 1000,
+  "source_config": "01000307f00a0050a032000000a5ccc8",
+  "source_sha256": [
+    "13e332b0fc4c2a72753a7d64cc88aa8dcfd77dc1ce86f5a643d1b11d538f4736",
+    "1d450591d5347e89b15dcb3eeb2fb583ce9e375318e2a5c16bad184fb7ca083a",
+    "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+    "28e09d8df9e2a0a73e7111c3d77887ff2542e5e375779c1017a65f5321560488"
+  ],
+  "target_config": "01000307f00a0050a032000000a5ccc8"
+}

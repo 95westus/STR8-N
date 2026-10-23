@@ -1,0 +1,126 @@
+; Named constants: edit these definitions; ASM accepts name = expression.
+ABI_DESC = $7E60
+ABI_CANCEL = $7E76
+ABI_HEX = $7E7C
+ABI_NEWLINE = $7E7F
+ABI_HOLD = $7E67
+CS0 = $7F00
+CS1 = $7F20
+CS2 = $7F40
+CS3 = $7F60
+APP_ORG = $0200
+FRAME_COUNT = $40
+ABI_LAST = $03
+B52 = $52
+B41 = $41
+B01 = $01
+B0D = $0D
+STOP_READY = $01
+FRAME_MASK = $07
+STOP_DONE = $02
+BURST_BATCHES = $40
+LOOP_WRAP = $00
+B02 = $02
+CRA_DATA_BIT = $04
+B08 = $08
+B04 = $04
+B00 = $00
+B05 = $05
+B0A = $0A
+B03 = $03
+B07 = $07
+B0F = $0F
+B09 = $09
+B06 = $06
+B0C = $0C
+; Continuous SXB demo; original burst timing; no external CS hardware attached.
+; ASM 0.5 source document; paste unnumbered lines with PASTE.
+; IRQ masked, decimal clear; 816 E=1, D/DBR/PBR=0.
+; BRK 01 ready; C loops all eight patterns; Ctrl-C reaches BRK 02.
+ORG APP_ORG
+SEI
+CLD
+; Validate initialized RAM ABI before calling any entry.
+LDX #ABI_LAST
+abi: LDA ABI_DESC,X
+CMP signature,X
+BNE bad
+DEX
+BPL abi
+JMP start
+bad: JMP bad
+signature: BYTE B52,B41,B01,B0D
+start: STZ frame
+ready: BRK STOP_READY
+NOP
+next: JSR ABI_CANCEL
+BCS finish
+LDA frame
+AND #FRAME_MASK
+BNE show
+; Print one-based pattern number in hexadecimal.
+LDA frame
+LSR A
+LSR A
+LSR A
+INC A
+JSR ABI_HEX
+JSR ABI_NEWLINE
+show: LDX frame
+LDA patterns,X
+STA mask
+JSR burst
+INC frame
+LDA frame
+CMP #FRAME_COUNT
+BNE next
+STZ frame
+JMP next
+finish: NOP
+done: BRK STOP_DONE
+JMP ABI_HOLD
+; Reads assert CS. No writes to these four windows.
+; Owner confirms no hardware attached to CS0-CS3 windows.
+burst: LDX #BURST_BATCHES
+batch: LDY #LOOP_WRAP
+pulse: LDA mask
+AND #B01
+BEQ skip0
+LDA CS0
+skip0: LDA mask
+AND #B02
+BEQ skip1
+LDA CS1
+skip1: LDA mask
+AND #CRA_DATA_BIT
+BEQ skip2
+LDA CS2
+skip2: LDA mask
+AND #B08
+BEQ skip3
+LDA CS3
+skip3: DEY
+BNE pulse
+DEX
+BNE batch
+RTS
+patterns:
+; 01: forward chase
+BYTE B01,B02,B04,B08,B01,B02,B04,B08
+; 02: reverse chase
+BYTE B08,B04,B02,B01,B08,B04,B02,B01
+; 03: bounce
+BYTE B01,B02,B04,B08,B04,B02,B01,B00
+; 04: alternating pairs
+BYTE B05,B0A,B05,B0A,B05,B0A,B05,B0A
+; 05: fill and drain
+BYTE B01,B03,B07,B0F,B07,B03,B01,B00
+; 06: outside and inside
+BYTE B09,B06,B09,B06,B09,B06,B09,B06
+; 07: all blink
+BYTE B0F,B00,B0F,B00,B0F,B00,B0F,B00
+; 08: adjacent pairs
+BYTE B03,B06,B0C,B09,B03,B06,B0C,B09
+frame: BYTE B00
+mask: BYTE B00
+END

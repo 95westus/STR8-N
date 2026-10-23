@@ -1,0 +1,488 @@
+{
+  "schema": 1,
+  "phase": 10,
+  "complete": true,
+  "date": "2026-10-22",
+  "purpose": "Separate resident VERSION tail-call candidate with unchanged current firmware",
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "hardware_qualified": false,
+  "firmware_source_changed": false,
+  "existing_firmware_images_changed": false,
+  "installer_changed": false,
+  "resident_output_installed": false,
+  "candidate_asset_or_firmware_generated": false,
+  "physical_output_buffer_executed": false,
+  "in_model_loaded_ram_substitution": true,
+  "fresh_build": "BUILD/phase10",
+  "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "firmware_bytes": 98304,
+  "payloads_equal": 20,
+  "symbol_maps_equal": 29,
+  "phase1_through_phase9_baselines_unchanged": true,
+  "phase_baseline_sha256": {
+    "1": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+    "2": "69806d28b3bbe837b99febc9ec0198020796843c6b41ce055b5e684a67e3138f",
+    "3": "dec1aa37b2ec7300d7fc726bbb228238bb6b62ab44baddc8731db92c2db139db",
+    "4": "acc5b9c76633e2226a223b90032f5232970232410c966bd4dae5876edace5a84",
+    "5": "b1bd940afb676d6ba30e0f2358d5b67992d0ad2302e363869656c8b01edebf14",
+    "6": "3c439cc37a3e22e21c8dec68264da38d353eea03ae713e0ae1c8a5a39dc31184",
+    "7": "6ca15073dfce5a0b39558f2080e3160cc3194e7479adb1f94a752e2bc08d0fa7",
+    "8": "7f562a626607572733b068e2327719d4f33c5a60daef8f4e1795462d92bad78c",
+    "9": "264407133f2b131a59bc3b6e1e8c2310485a84019bf628f399c0468a1d2bd5dc"
+  },
+  "preservation": {
+    "protected_file_count": 796,
+    "authoritative_source_file_count": 135,
+    "all_sha256_unchanged": true,
+    "receipt": "tests/baselines/phase10-evidence/preservation.json"
+  },
+  "candidate": {
+    "id": "version-board-newline-tailcall-v1",
+    "objective": "Use a tail call for the final named-board newline",
+    "reviewed_patch": {
+      "authoritative_source": "src/current/version/version-board.inc",
+      "source_lines": [
+        171,
+        172
+      ],
+      "before": [
+        "JSR $7E7F",
+        "BN_SHOW_DONE:"
+      ],
+      "after": [
+        "JMP $7E7F",
+        "BN_SHOW_DONE:"
+      ]
+    },
+    "baseline_bytes": 636,
+    "candidate_bytes": 636,
+    "saved_bytes": 0,
+    "baseline_sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747",
+    "candidate_sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7",
+    "baseline_preparation": "baseline/manifest.json",
+    "baseline_symbols": {
+      "START": 28160,
+      "APP_END": 28796,
+      "DISPLAY_VERSION": 28167,
+      "VER_LONG_16": 28184,
+      "CHECK_RUNNING": 28184,
+      "CPU_READY": 28232,
+      "BOARD_UNNAMED": 28259,
+      "RUNNING_LINE": 28266,
+      "RUNNING_GEN": 28295,
+      "RUNNING_BAD": 28310,
+      "SLOT_LIST": 28317,
+      "SLOT_LETTER": 28347,
+      "SLOT_CHAR": 28355,
+      "MON_PRINT": 28358,
+      "PRINT": 28361,
+      "PRINT_NEXT": 28367,
+      "PRINT_DONE": 28381,
+      "UNNAMED_TEXT": 28382,
+      "RUNNING_TEXT": 28399,
+      "GEN_TEXT": 28417,
+      "BAD_RUN_TEXT": 28424,
+      "RUNNING_SLOT": 28453,
+      "MON_CALL": 28454,
+      "TZ_SUM": 28456,
+      "TZ_CRC": 28458,
+      "TZ_CRC_BYTE": 28468,
+      "TZ_CRC_BIT": 28478,
+      "TZ_CRC_NEXT": 28502,
+      "BN_READ": 28511,
+      "BN_RESET": 28519,
+      "BN_SLOT": 28542,
+      "BN_BLANK": 28544,
+      "VB_LONG_56": 28563,
+      "BN_CHECK": 28576,
+      "VB_LONG_65": 28585,
+      "BN_HEADER": 28587,
+      "BN_CHAR_CHECK": 28629,
+      "BN_PADDING": 28652,
+      "BN_NEWEST": 28659,
+      "BN_NEWER": 28663,
+      "BN_KEEP": 28676,
+      "BN_COPY_SEQ": 28680,
+      "BN_COPY": 28699,
+      "BN_NEXT": 28710,
+      "BN_PAGE": 28721,
+      "VB_LONG_146": 28730,
+      "BN_SHOW": 28735,
+      "BN_PRINT": 28752,
+      "BN_SHOW_DONE": 28767,
+      "BN_MAGIC": 28768,
+      "BN_LABEL": 28772,
+      "BN_LENGTH": 28780,
+      "BN_WORK": 28781,
+      "BN_TEXT": 28782,
+      "BN_SEQ": 28790,
+      "BN_FREE": 28794,
+      "BOOT_ACTIVE": 32048,
+      "BOOT_DEST": 32049,
+      "BOOT_BEST": 32245,
+      "BOOT_SLOT_CHECK": 62221,
+      "BOOT_SELECT": 62115,
+      "BOOT_CHOICE": 61926,
+      "VPTR": 208,
+      "TZ_PTR": 214
+    },
+    "relocated_symbols": {},
+    "unchanged_symbol_count": 64,
+    "changed_bytes": [
+      {
+        "offset": 604,
+        "address": 28764,
+        "baseline": 32,
+        "candidate": 76
+      }
+    ],
+    "tail_call": {
+      "address": 28764,
+      "service": 32383,
+      "empty_name_exit_retained": "BN_SHOW_DONE",
+      "named_display_saved_cycles": 9,
+      "named_display_saved_instructions": 1,
+      "newline_pending_return_bytes_saved": 2,
+      "empty_name_path_changed": false,
+      "newline_scope": "Two fewer pending return bytes during the final newline only; whole-command peak stack use is not claimed"
+    },
+    "timing_claim": "Named-board display removes one JSR/RTS pair in favor of JMP; zero-name path is unchanged",
+    "firmware_installable": false,
+    "hardware_execution_authorized": false
+  },
+  "candidate_manifest": "tests/baselines/phase10-evidence/prepared/manifest.json",
+  "prepared_source": "tests/baselines/phase10-evidence/prepared/version.asm",
+  "prepared_source_lines": 303,
+  "packed_source_bytes": 4611,
+  "max_source_line_bytes": 59,
+  "max_symbol_name_bytes": 15,
+  "symbol_count": 64,
+  "all_symbol_values_unchanged": {
+    "START": 28160,
+    "APP_END": 28796,
+    "DISPLAY_VERSION": 28167,
+    "VER_LONG_16": 28184,
+    "CHECK_RUNNING": 28184,
+    "CPU_READY": 28232,
+    "BOARD_UNNAMED": 28259,
+    "RUNNING_LINE": 28266,
+    "RUNNING_GEN": 28295,
+    "RUNNING_BAD": 28310,
+    "SLOT_LIST": 28317,
+    "SLOT_LETTER": 28347,
+    "SLOT_CHAR": 28355,
+    "MON_PRINT": 28358,
+    "PRINT": 28361,
+    "PRINT_NEXT": 28367,
+    "PRINT_DONE": 28381,
+    "UNNAMED_TEXT": 28382,
+    "RUNNING_TEXT": 28399,
+    "GEN_TEXT": 28417,
+    "BAD_RUN_TEXT": 28424,
+    "RUNNING_SLOT": 28453,
+    "MON_CALL": 28454,
+    "TZ_SUM": 28456,
+    "TZ_CRC": 28458,
+    "TZ_CRC_BYTE": 28468,
+    "TZ_CRC_BIT": 28478,
+    "TZ_CRC_NEXT": 28502,
+    "BN_READ": 28511,
+    "BN_RESET": 28519,
+    "BN_SLOT": 28542,
+    "BN_BLANK": 28544,
+    "VB_LONG_56": 28563,
+    "BN_CHECK": 28576,
+    "VB_LONG_65": 28585,
+    "BN_HEADER": 28587,
+    "BN_CHAR_CHECK": 28629,
+    "BN_PADDING": 28652,
+    "BN_NEWEST": 28659,
+    "BN_NEWER": 28663,
+    "BN_KEEP": 28676,
+    "BN_COPY_SEQ": 28680,
+    "BN_COPY": 28699,
+    "BN_NEXT": 28710,
+    "BN_PAGE": 28721,
+    "VB_LONG_146": 28730,
+    "BN_SHOW": 28735,
+    "BN_PRINT": 28752,
+    "BN_SHOW_DONE": 28767,
+    "BN_MAGIC": 28768,
+    "BN_LABEL": 28772,
+    "BN_LENGTH": 28780,
+    "BN_WORK": 28781,
+    "BN_TEXT": 28782,
+    "BN_SEQ": 28790,
+    "BN_FREE": 28794,
+    "BOOT_ACTIVE": 32048,
+    "BOOT_DEST": 32049,
+    "BOOT_BEST": 32245,
+    "BOOT_SLOT_CHECK": 62221,
+    "BOOT_SELECT": 62115,
+    "BOOT_CHOICE": 61926,
+    "VPTR": 208,
+    "TZ_PTR": 214
+  },
+  "logical_origin": 28160,
+  "logical_end_exclusive": 28796,
+  "executable_entry": 28164,
+  "physical_output_start": 512,
+  "body_bytes": 636,
+  "baseline_body_sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747",
+  "candidate_body_sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7",
+  "verification": {
+    "actual_resident_admission_verified": true,
+    "independent_host_byte_comparison": true,
+    "assembly_configurations": 8,
+    "resident_assemblies": 16,
+    "runtime_configurations": 8,
+    "full_command_pairs": 22,
+    "invalid_active_command_body_pairs": 4,
+    "board_name_reader_pairs": 192,
+    "main_pairs": 218,
+    "main_executions": 436,
+    "isolated_tail_pairs": 2880,
+    "isolated_tail_executions": 5760,
+    "journal_fixture_count": 24,
+    "named_full_commands_measured": 12,
+    "named_command_processor_cycle_delta": -9,
+    "named_command_instruction_delta": -1,
+    "unnamed_or_unreached_path_cycle_delta": 0,
+    "newline_pending_return_bytes_saved": 2,
+    "whole_command_peak_stack_saving_claimed": false,
+    "comparison": "Exact console bytes, registers, all private RAM/pointers/live caller frames, bank and persistent state; only changed opcode and inactive stack residue excluded. I/O address sets audited, not ordered bus traces.",
+    "invalid_active_scope": "Four command-body probes stop before the final RTS; original invalid-ACTIVE monitor return is unsupported.",
+    "model_limits": "Inherited hardware discovery/delay shortcuts and fixture discovery state; separate stubbed tail stress tests; no physical peripheral or electrical timing qualification."
+  },
+  "documentation": "docs/RESIDENT_VERSION_CANDIDATE.md",
+  "implementation": {
+    "tools/prepare_resident_version_candidate.py": {
+      "bytes": 12163,
+      "sha256": "a5c452c440573ce5ebdbf019c30bde50ff850bdc3f7defe6851b80b625ec15b5"
+    },
+    "tools/test_resident_version_candidate.py": {
+      "bytes": 14554,
+      "sha256": "28bea98a5fbfacdf3dd92e04a87dd1bb994bdf59f325d68c9ed799181e42842b"
+    },
+    "tools/test_resident_version_candidate_runtime.py": {
+      "bytes": 20469,
+      "sha256": "53d068727fd14ee33437748bd0bda6f43c0f746143c57d83d9065cb486e26781"
+    },
+    "docs/RESIDENT_VERSION_CANDIDATE.md": {
+      "bytes": 7816,
+      "sha256": "53e00ef397650594a292e3e06107d9307751068c80fce91a7c74f57855f23a80"
+    }
+  },
+  "evidence": {
+    "tests/baselines/phase10-evidence/assembly-65c02.json": {
+      "bytes": 12407,
+      "sha256": "01aa55fee77aab7337c44122ba6b3cd553b385ce92d1a1fe716f993954379177"
+    },
+    "tests/baselines/phase10-evidence/assembly-65c816-e.json": {
+      "bytes": 12419,
+      "sha256": "0dccbbd2ee0951beadb12f33c99f6deb6c6c79e7bd4bde0c25dfc1e6fec2f961"
+    },
+    "tests/baselines/phase10-evidence/build-report.json": {
+      "bytes": 33190,
+      "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+    },
+    "tests/baselines/phase10-evidence/preparation-checks.json": {
+      "bytes": 729,
+      "sha256": "8c8a0f46027d04cd17ac40d51c9debc7229b4d40f56c0b21b930bfae38b3190a"
+    },
+    "tests/baselines/phase10-evidence/prepared/baseline/expected.bin": {
+      "bytes": 636,
+      "sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747"
+    },
+    "tests/baselines/phase10-evidence/prepared/baseline/manifest.json": {
+      "bytes": 78058,
+      "sha256": "e51843b4de82639c44a57ddf9b7171502387aaf63a386be2b6b83f35d0c53117"
+    },
+    "tests/baselines/phase10-evidence/prepared/baseline/version.asm": {
+      "bytes": 3702,
+      "sha256": "56d1703e1c464b8caad72e3a2914710ccd60d01ac224f99f0588e977eadd9e77"
+    },
+    "tests/baselines/phase10-evidence/prepared/baseline/version.paste.txt": {
+      "bytes": 3710,
+      "sha256": "9dce4e01f2af510f57f6b70bd216591bb38c8bf57ec795557a0cdabd3cb2bbd3"
+    },
+    "tests/baselines/phase10-evidence/prepared/baseline/version.records.bin": {
+      "bytes": 4611,
+      "sha256": "50f414729bb933c69bc60be90084e19a3276639a45622f57e716644d68eb5c99"
+    },
+    "tests/baselines/phase10-evidence/prepared/expected.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version-board.inc": {
+      "bytes": 4008,
+      "sha256": "2ee8d91959dd30be802094b3d325d3f4fa32835c913a53f8a841ca53608a3ff1"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version-links.inc": {
+      "bytes": 143,
+      "sha256": "a852a229ebd7969f81c6fa8d289c0d228c769ddb425a11199dde6852f426a6c4"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version.asm": {
+      "bytes": 3070,
+      "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version.log.json": {
+      "bytes": 966,
+      "sha256": "070d69eb23eadf259277ed5ba4f870e49135f898ec7fe4262ce3b77d847d697e"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version.lst": {
+      "bytes": 8161,
+      "sha256": "7918b9ac694132c0b99d8b6b124ce22bb184939a4574f8e227e4e6de50a7aa58"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version.map": {
+      "bytes": 1440,
+      "sha256": "ba048c8bb608ad6d8fa5484cc2d2023658434f420765e96d62698797812492a8"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version.obj": {
+      "bytes": 2958,
+      "sha256": "dbef0fa7842a21ffa357f06c9d81a59d688c5bfd05a69299e1bfaad1e928c16a"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version.s19": {
+      "bytes": 1764,
+      "sha256": "d251cbb2c791fd7c90bcbb095426aeb78de4de3e1f86aa6dfe20a3e30f495562"
+    },
+    "tests/baselines/phase10-evidence/prepared/host/version.sym": {
+      "bytes": 4344,
+      "sha256": "1e4985095b76803f4f7ea6d0c4f9874bf1c9628f5ad8f3273ef3a53223d85f92"
+    },
+    "tests/baselines/phase10-evidence/prepared/manifest.json": {
+      "bytes": 86415,
+      "sha256": "f2ad007dfb3676225087a11d3586157f9862c4ba7358116bd08d200c754a84ba"
+    },
+    "tests/baselines/phase10-evidence/prepared/version.asm": {
+      "bytes": 3702,
+      "sha256": "ee305d4629f5963998d6824d90ae01004d0a331ea4cab3cfbf0b75bdbc1fc05c"
+    },
+    "tests/baselines/phase10-evidence/prepared/version.paste.txt": {
+      "bytes": 3710,
+      "sha256": "4caea19b3dfd5a8f890db30c80adffa65efe75770675e8ff2ea6f361d06bb034"
+    },
+    "tests/baselines/phase10-evidence/prepared/version.records.bin": {
+      "bytes": 4611,
+      "sha256": "24b9c1d694ae8118fe066d2da736ded3c40223923e5f5b3a00b041080b1c5465"
+    },
+    "tests/baselines/phase10-evidence/preservation.json": {
+      "bytes": 120737,
+      "sha256": "7b1b0a246304bb8811e56fb93e2b0ac828763ae51d313031188f39db7f30cfa9"
+    },
+    "tests/baselines/phase10-evidence/resident.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/resident.s19": {
+      "bytes": 1723,
+      "sha256": "f8eaea776ca73731ec828df93bcc1460cb6f8cc2fdbd530c02a5c14c54c5b5b8"
+    },
+    "tests/baselines/phase10-evidence/runtime-65c02.json": {
+      "bytes": 2615223,
+      "sha256": "a61c9974c560f87f2082b019e60bbb9a8857d38c5d0ed36b967e96fb87ae7186"
+    },
+    "tests/baselines/phase10-evidence/runtime-65c816-e.json": {
+      "bytes": 1060837,
+      "sha256": "d04dafa69b53d2b3c29a34ed165b2602967e97e1e0407c59fd864b337fbde42f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-A-bare.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-A-bare.json": {
+      "bytes": 7873,
+      "sha256": "4f6befa66a248d0a1ebc873363817eaf059c0605215fa11c28bcccdb4a82649f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-A-bare.s19.txt": {
+      "bytes": 1816,
+      "sha256": "a2e386bcdf5e3f1f5d9b094cb69b69ba3ba1635e584cc21798369712b1f8cf3b"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-A-edu.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-A-edu.json": {
+      "bytes": 7873,
+      "sha256": "4f6befa66a248d0a1ebc873363817eaf059c0605215fa11c28bcccdb4a82649f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-A-edu.s19.txt": {
+      "bytes": 1816,
+      "sha256": "a2e386bcdf5e3f1f5d9b094cb69b69ba3ba1635e584cc21798369712b1f8cf3b"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-B-bare.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-B-bare.json": {
+      "bytes": 7873,
+      "sha256": "4f6befa66a248d0a1ebc873363817eaf059c0605215fa11c28bcccdb4a82649f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-B-bare.s19.txt": {
+      "bytes": 1816,
+      "sha256": "a2e386bcdf5e3f1f5d9b094cb69b69ba3ba1635e584cc21798369712b1f8cf3b"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-B-edu.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-B-edu.json": {
+      "bytes": 7873,
+      "sha256": "4f6befa66a248d0a1ebc873363817eaf059c0605215fa11c28bcccdb4a82649f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c02-B-edu.s19.txt": {
+      "bytes": 1816,
+      "sha256": "a2e386bcdf5e3f1f5d9b094cb69b69ba3ba1635e584cc21798369712b1f8cf3b"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-A-bare.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-A-bare.json": {
+      "bytes": 7873,
+      "sha256": "4f6befa66a248d0a1ebc873363817eaf059c0605215fa11c28bcccdb4a82649f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-A-bare.s19.txt": {
+      "bytes": 1816,
+      "sha256": "a2e386bcdf5e3f1f5d9b094cb69b69ba3ba1635e584cc21798369712b1f8cf3b"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-A-edu.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-A-edu.json": {
+      "bytes": 7873,
+      "sha256": "4f6befa66a248d0a1ebc873363817eaf059c0605215fa11c28bcccdb4a82649f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-A-edu.s19.txt": {
+      "bytes": 1816,
+      "sha256": "a2e386bcdf5e3f1f5d9b094cb69b69ba3ba1635e584cc21798369712b1f8cf3b"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-B-bare.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-B-bare.json": {
+      "bytes": 7873,
+      "sha256": "4f6befa66a248d0a1ebc873363817eaf059c0605215fa11c28bcccdb4a82649f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-B-bare.s19.txt": {
+      "bytes": 1816,
+      "sha256": "a2e386bcdf5e3f1f5d9b094cb69b69ba3ba1635e584cc21798369712b1f8cf3b"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-B-edu.bin": {
+      "bytes": 636,
+      "sha256": "04adfbaf52e8e36ece214c2ccfccab9fdcaf24a3623ca48bb3b22a77f443b2d7"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-B-edu.json": {
+      "bytes": 7873,
+      "sha256": "4f6befa66a248d0a1ebc873363817eaf059c0605215fa11c28bcccdb4a82649f"
+    },
+    "tests/baselines/phase10-evidence/transcripts/65c816-e-B-edu.s19.txt": {
+      "bytes": 1816,
+      "sha256": "a2e386bcdf5e3f1f5d9b094cb69b69ba3ba1635e584cc21798369712b1f8cf3b"
+    }
+  }
+}

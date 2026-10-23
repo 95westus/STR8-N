@@ -1,0 +1,238 @@
+{
+  "schema": 1,
+  "candidate_id": "version-cached-name-fw-v2",
+  "installation_permitted": false,
+  "hardware_qualified": false,
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "current_firmware_replaced": false,
+  "installer_or_profile_created": false,
+  "identity": {
+    "version": "2.0rc1",
+    "generation": 50,
+    "boot_compatibility": 1145194289,
+    "bank_order": [
+      1,
+      2,
+      3
+    ],
+    "image_bytes": 98304,
+    "candidate_is_current_firmware": false
+  },
+  "baseline_firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "candidate_firmware_sha256": "c78b0c93fa47011b2fe56075d21aaaba6a4e2928ecaf819b46efb9cab90b493a",
+  "candidate_asset_sha256": "7d766c7f885bb0b1fc76f77b91985b1670f42d03d7ea4ff28433fa364039b702",
+  "resident_body_sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2",
+  "version": {
+    "bank": 2,
+    "rom_address": 63488,
+    "asset_bytes": 2048,
+    "body_origin": 28160,
+    "body_bytes": 636,
+    "executable_entry": 28164,
+    "seal_patch_offset": 2038,
+    "seal_patch_hex": "C524",
+    "crc16_ccitt": 0,
+    "all_64_old_symbols_unchanged": true,
+    "private_symbols": {
+      "BN_SHOW_CACHED": 28743
+    },
+    "cached_entry_requires_nonzero_validated_name": true,
+    "stable_journal_without_interleaved_writer_required": true
+  },
+  "changes": [
+    {
+      "firmware_offset": 63583,
+      "bank": 2,
+      "address": 63583,
+      "baseline": 63,
+      "candidate": 71
+    },
+    {
+      "firmware_offset": 64092,
+      "bank": 2,
+      "address": 64092,
+      "baseline": 32,
+      "candidate": 76
+    },
+    {
+      "firmware_offset": 65526,
+      "bank": 2,
+      "address": 65526,
+      "baseline": 134,
+      "candidate": 197
+    },
+    {
+      "firmware_offset": 65527,
+      "bank": 2,
+      "address": 65527,
+      "baseline": 67,
+      "candidate": 36
+    }
+  ],
+  "provenance": {
+    "phase11_manifest": "tests/baselines/phase11.json",
+    "phase11_manifest_sha256": "b47d7c1c0c800d27874f88f81e332322925eb056cfd05c7b5bfb5c5485163c6f",
+    "prepared_manifest": "tests/baselines/phase11r2-evidence/prepared/manifest.json",
+    "prepared_manifest_sha256": "974d25e68956d421cfda884005acd71c639847c51c5d0f413cdd2be6076c2373",
+    "assembly_receipts": {
+      "tests/baselines/phase11r2-evidence/assembly/65c02/report.json": {
+        "bytes": 10542,
+        "sha256": "f3094933eaf09bbc5ef330ad9116887326d2444c2047e3320270bb0872e62c00"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/report.json": {
+        "bytes": 10554,
+        "sha256": "e1de9fadc33d6424b6d0bec6f96dfcc0d57345813f3cc25d240feb975513a504"
+      }
+    },
+    "resident_artifacts": {
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-A-bare.bin": {
+        "bytes": 636,
+        "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-A-bare.s19.txt": {
+        "bytes": 1816,
+        "sha256": "16862f9fd2ba749de6a48dfec85765d9eb978f2d03561d55cb4506cfa4e09c3c"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-A-bare-transcript.json": {
+        "bytes": 7920,
+        "sha256": "2863503e35a22023fd94ec76ac8247b297a7b49eab2a9d5b416dff92f852335a"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-A-edu.bin": {
+        "bytes": 636,
+        "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-A-edu.s19.txt": {
+        "bytes": 1816,
+        "sha256": "16862f9fd2ba749de6a48dfec85765d9eb978f2d03561d55cb4506cfa4e09c3c"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-A-edu-transcript.json": {
+        "bytes": 7920,
+        "sha256": "2863503e35a22023fd94ec76ac8247b297a7b49eab2a9d5b416dff92f852335a"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-B-bare.bin": {
+        "bytes": 636,
+        "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-B-bare.s19.txt": {
+        "bytes": 1816,
+        "sha256": "16862f9fd2ba749de6a48dfec85765d9eb978f2d03561d55cb4506cfa4e09c3c"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-B-bare-transcript.json": {
+        "bytes": 7920,
+        "sha256": "2863503e35a22023fd94ec76ac8247b297a7b49eab2a9d5b416dff92f852335a"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-B-edu.bin": {
+        "bytes": 636,
+        "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-B-edu.s19.txt": {
+        "bytes": 1816,
+        "sha256": "16862f9fd2ba749de6a48dfec85765d9eb978f2d03561d55cb4506cfa4e09c3c"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c02/65c02-B-edu-transcript.json": {
+        "bytes": 7920,
+        "sha256": "2863503e35a22023fd94ec76ac8247b297a7b49eab2a9d5b416dff92f852335a"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-A-bare.bin": {
+        "bytes": 636,
+        "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-A-bare.s19.txt": {
+        "bytes": 1816,
+        "sha256": "16862f9fd2ba749de6a48dfec85765d9eb978f2d03561d55cb4506cfa4e09c3c"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-A-bare-transcript.json": {
+        "bytes": 7920,
+        "sha256": "2863503e35a22023fd94ec76ac8247b297a7b49eab2a9d5b416dff92f852335a"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-A-edu.bin": {
+        "bytes": 636,
+        "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-A-edu.s19.txt": {
+        "bytes": 1816,
+        "sha256": "16862f9fd2ba749de6a48dfec85765d9eb978f2d03561d55cb4506cfa4e09c3c"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-A-edu-transcript.json": {
+        "bytes": 7920,
+        "sha256": "2863503e35a22023fd94ec76ac8247b297a7b49eab2a9d5b416dff92f852335a"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-B-bare.bin": {
+        "bytes": 636,
+        "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-B-bare.s19.txt": {
+        "bytes": 1816,
+        "sha256": "16862f9fd2ba749de6a48dfec85765d9eb978f2d03561d55cb4506cfa4e09c3c"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-B-bare-transcript.json": {
+        "bytes": 7920,
+        "sha256": "2863503e35a22023fd94ec76ac8247b297a7b49eab2a9d5b416dff92f852335a"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-B-edu.bin": {
+        "bytes": 636,
+        "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-B-edu.s19.txt": {
+        "bytes": 1816,
+        "sha256": "16862f9fd2ba749de6a48dfec85765d9eb978f2d03561d55cb4506cfa4e09c3c"
+      },
+      "tests/baselines/phase11r2-evidence/assembly/65c816-e/65c816-e-B-edu-transcript.json": {
+        "bytes": 7920,
+        "sha256": "2863503e35a22023fd94ec76ac8247b297a7b49eab2a9d5b416dff92f852335a"
+      }
+    },
+    "resident_assembly_profiles": 8,
+    "resident_assemblies": 16,
+    "baseline_build": "BUILD/phase11"
+  },
+  "implementation": {
+    "tools/version_cached_candidate.py": {
+      "bytes": 21119,
+      "sha256": "6d9b04eab1703edd85d3af9d1764798da922e17c13c0a1965817d526d921be1b"
+    }
+  },
+  "files": {
+    "banks/bank1.bin": {
+      "bytes": 32768,
+      "sha256": "0d61654ce071bb3e51de09c80dd3e4b5307df2b3b57d6b1caff54abb53238dfd"
+    },
+    "banks/bank2.bin": {
+      "bytes": 32768,
+      "sha256": "8f8b3c42e4caed44db12fcf208ce25cca7217e8109c6aaab820b70a445292e61"
+    },
+    "banks/bank3.bin": {
+      "bytes": 32768,
+      "sha256": "5bec7eaf6132f2e16b7fbac2bf01d87f85c3fd5a192776380bb491e2009805a7"
+    },
+    "firmware.bin": {
+      "bytes": 98304,
+      "sha256": "c78b0c93fa47011b2fe56075d21aaaba6a4e2928ecaf819b46efb9cab90b493a"
+    },
+    "symbols.json": {
+      "bytes": 285022,
+      "sha256": "09902dfecccb9963399e98706520c0622ef578fcd6a0d1203eab575f371f4847"
+    },
+    "version/asset.bin": {
+      "bytes": 2048,
+      "sha256": "7d766c7f885bb0b1fc76f77b91985b1670f42d03d7ea4ff28433fa364039b702"
+    },
+    "version/resident.bin": {
+      "bytes": 636,
+      "sha256": "4c5f5a2a638fc66b17b847101cafcb04c908125ab0e8343789ccabcf36f79ac2"
+    },
+    "version/resident.s19": {
+      "bytes": 1723,
+      "sha256": "eceaab37014711ba79cf1f5818349b6efffb2c23ace6aa9a6b377057ad362cdd"
+    }
+  },
+  "archive": {
+    "path": "candidate.zip",
+    "compression": "stored",
+    "fixed_timestamp": "1980-01-01T00:00:00",
+    "sorted_members": true,
+    "excludes_itself": true
+  }
+}

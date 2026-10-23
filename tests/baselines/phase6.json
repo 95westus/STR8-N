@@ -1,0 +1,286 @@
+{
+  "schema": 1,
+  "phase": 6,
+  "complete": true,
+  "date": "2026-10-22",
+  "purpose": "Establish the unchanged resident build contract and verify capabilities and limits offline",
+  "board_access": false,
+  "serial_ports_opened": 0,
+  "network_attempts": 0,
+  "hardware_qualified": false,
+  "firmware_source_changed": false,
+  "existing_firmware_images_changed": false,
+  "installer_changed": false,
+  "firmware_bytes": 98304,
+  "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+  "fresh_build": "BUILD/phase6",
+  "phase1_through_phase5_baselines_unchanged": true,
+  "phase_baseline_sha256": {
+    "1": "ffe6c9d4ec3eaee8ec58e62b4107818c4db2d0353b7ed7c1c5dff98204ac2392",
+    "2": "69806d28b3bbe837b99febc9ec0198020796843c6b41ce055b5e684a67e3138f",
+    "3": "dec1aa37b2ec7300d7fc726bbb228238bb6b62ab44baddc8731db92c2db139db",
+    "4": "acc5b9c76633e2226a223b90032f5232970232410c966bd4dae5876edace5a84",
+    "5": "b1bd940afb676d6ba30e0f2358d5b67992d0ad2302e363869656c8b01edebf14"
+  },
+  "payloads_equal": 20,
+  "symbol_maps_equal": 29,
+  "contract": "docs/RESIDENT_BUILD_CONTRACT.md",
+  "resident": {
+    "header_bank": 1,
+    "header_address": 57344,
+    "shell_entry": 57360,
+    "image_bytes": 7325,
+    "header_crc_valid": true,
+    "output": {
+      "start": 512,
+      "end_exclusive": 13056,
+      "bytes": 12544
+    },
+    "source": {
+      "start": 13056,
+      "end_exclusive": 20224,
+      "bytes": 7168,
+      "record_header_bytes": 4,
+      "source_end_pointer": 25344,
+      "canonical_cache": 0,
+      "line_numbers": [
+        1,
+        65535
+      ],
+      "canonical_text_bytes": [
+        1,
+        120
+      ]
+    },
+    "symbols": {
+      "start": 20224,
+      "end_exclusive": 25344,
+      "records": 256,
+      "record_bytes": 20,
+      "name_bytes": 15,
+      "local_leading_dot_additional": true,
+      "imports_and_unresolved_references_consume_records": true
+    },
+    "state": {
+      "start": 25344,
+      "end_exclusive": 25856
+    },
+    "application_zp": {
+      "start": 0,
+      "end_exclusive": 64
+    },
+    "expression_active_levels": 8,
+    "enclosing_parentheses_or_prefixes_max": 7,
+    "opcode_forms": 212,
+    "opcode_mnemonics": 98,
+    "isa": "65C02 language on both supported host CPUs; acceptance of bit operations is not execution qualification on 816",
+    "logical_org": true,
+    "output_is_always_in_ram": true,
+    "org_gaps": "Contiguous emitted fill; forward only after first byte; gaps consume capacity",
+    "address_ffff": "One final byte legal; next emission or ORG refuses; following label wraps to zero",
+    "forward_instruction_width": "Cached pass-1 mode; no pass-2 shrinking",
+    "arithmetic": "16-bit wrapping computations; oversized literals rejected; + and - only as infix operators",
+    "s19": {
+      "data_record": "S1",
+      "max_data_bytes": 16,
+      "termination": "S9 origin, not executable entry"
+    },
+    "private_engine": {
+      "name": "ASM_ASSEMBLE",
+      "version_pinned": true,
+      "public_reentrant_abi": false,
+      "non_listing_flag_address": 25536,
+      "result_length_address": 25346,
+      "result_origin_address": 25348,
+      "result_valid_address": 25350,
+      "environment": "Initialized ASM/monitor RAM ABI, bank 1, owned RAM/ZP, IRQ disabled, decimal clear; 816 E=1 with DP/DBR/PBR zero",
+      "failure": "Carry set, ERROR/LINENO identify failure, RESULT_VALID=0; output may be partial"
+    },
+    "missing_build_facilities": [
+      "INCLUDE/INCBIN",
+      "macros/conditionals",
+      "sections/object files/linker",
+      "WDC data aliases",
+      "multiply/divide/bitwise/shifts",
+      "native 816/24-bit operands"
+    ]
+  },
+  "verification": {
+    "passed_case_rows": 340,
+    "unique_case_names": 83,
+    "configuration_count": 8,
+    "matrix": [
+      {
+        "cpu": "65c02",
+        "monitor_slot": "A",
+        "edu": false,
+        "coverage": "full",
+        "passed_cases": 82
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "A",
+        "edu": true,
+        "coverage": "smoke",
+        "passed_cases": 3
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "B",
+        "edu": false,
+        "coverage": "smoke",
+        "passed_cases": 3
+      },
+      {
+        "cpu": "65c02",
+        "monitor_slot": "B",
+        "edu": true,
+        "coverage": "full",
+        "passed_cases": 82
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "A",
+        "edu": false,
+        "coverage": "full",
+        "passed_cases": 82
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "A",
+        "edu": true,
+        "coverage": "smoke",
+        "passed_cases": 3
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "B",
+        "edu": false,
+        "coverage": "smoke",
+        "passed_cases": 3
+      },
+      {
+        "cpu": "65c816-e",
+        "monitor_slot": "B",
+        "edu": true,
+        "coverage": "full",
+        "passed_cases": 82
+      }
+    ],
+    "inventory_lexer_checks": 14,
+    "repeated_inventory_byte_identical": true,
+    "exact_limits_and_max_plus_one_refusals": true,
+    "modeled_flash_banks_unchanged": true,
+    "upper_ram_6500_to_7aff_preserved_by_engine": true,
+    "source_text_unchanged_except_expected_mode_cache": true,
+    "sram_as1_save_load_and_cache_canonicalization": true,
+    "bare_sram_refusal": true,
+    "phase_change_refusal": true,
+    "instruction_coverage": "Complete static opcode-table inventory; representative dynamic encoding probes, not every form executed",
+    "model_scope": "Unchanged linked monitor/ASM instructions; FT245 and optional SRAM ABI modeled, discovery/delay shortcuts inherited; no emitted 65C02-only opcode executed on816",
+    "not_newly_qualified": [
+      "physical boards/electrical timing",
+      "native 816 execution",
+      "emitted 65C02-only instructions on 816",
+      "physical SRAM/flash persistence",
+      "whole-module resident byte reproduction",
+      "fresh UCHESS assembly"
+    ]
+  },
+  "inventory": {
+    "linked_units": 29,
+    "distinct_authored_main_sources": 28,
+    "unmodified_ready_units": 0,
+    "flattened_commentless_source_estimate_over_limit": 21,
+    "pruned_definition_estimate_over_limit": 9,
+    "linked_body_over_output_limit": [
+      "xip/utilities"
+    ],
+    "phase7_complete_leaf_recommendation": "batch/batch-gate",
+    "phase7_small_routine_recommendation": "version/version: formatting helper with an explicit binding list"
+  },
+  "phase7_gate": "Prepare batch/batch-gate deterministically with explicit origin/imports and compare 92 body bytes; no execution or installation authorized by byte equivalence",
+  "deferred": [
+    "source translator/preparation implementation",
+    "resident module byte equivalence",
+    "module enhancement or optimization",
+    "firmware enhancement",
+    "board access/installation"
+  ],
+  "implementation": {
+    "docs/RESIDENT_BUILD_CONTRACT.md": {
+      "bytes": 13939,
+      "sha256": "e63cf233a7496cae2d21e128ecd75300d1611f3cd9b18c35b1aefcd1b35b62fb"
+    },
+    "tools/README.md": {
+      "bytes": 2518,
+      "sha256": "33f3c2358bde2c1dee839cb6539516468303174ae73c56e1a641f9e8a788be8c"
+    },
+    "tools/test_resident_contract.py": {
+      "bytes": 17556,
+      "sha256": "ed6957690dd88b7c5cbeff5fd6242b241d1e67c632cb7f0cc17bede4a709e3ab"
+    },
+    "tools/resident_module_inventory.py": {
+      "bytes": 21914,
+      "sha256": "7d9b7c340437e48fb3a12955512187246ffd0a90d77888c9e8fef31b7f66d66a"
+    },
+    "tools/test_rc1_source_store.py": {
+      "bytes": 22400,
+      "sha256": "967c69257d6f7fc1b0cc123fcd3d84ad0d9827ba1d496a4d4932ba0022980f32"
+    },
+    "tools/build_current.py": {
+      "bytes": 1300,
+      "sha256": "d26cfd4c8de90440aca8ce6cf0f3acd6a7c4ecbc0d138827fed4dd792c0f5aed"
+    },
+    "tools/str8build/__init__.py": {
+      "bytes": 51,
+      "sha256": "7ffb5f411bf7c73b4fd29b27445c02279f87e6532d2302cd21d27d2f8511044b"
+    },
+    "tools/str8build/assemble.py": {
+      "bytes": 2647,
+      "sha256": "f09709e11b9b128856b56d39e62847ff0f3089eda509b833aa9db1f2eb99cee1"
+    },
+    "tools/str8build/baselines.py": {
+      "bytes": 5310,
+      "sha256": "32196a627511cbcaa11f347d3cf39b21b927ddf8eb2a2f5a12c65c27c732bf36"
+    },
+    "tools/str8build/build.py": {
+      "bytes": 6197,
+      "sha256": "6c022b70691aa80fda86820da2e278c135f61bd3cf52aee349a6933fb358a0b6"
+    },
+    "tools/str8build/formats.py": {
+      "bytes": 2093,
+      "sha256": "b4e28bd885f3c2d9e25803ac5b62f022fca37b27a3fa2ce5e1f03798fd89d508"
+    },
+    "tools/str8build/images.py": {
+      "bytes": 6500,
+      "sha256": "22f7bbd0d9812f53fdce289c43b471e953ab238bfa2363c595941849527b0296"
+    }
+  },
+  "evidence": {
+    "tests/baselines/phase6-evidence/build.json": {
+      "bytes": 33190,
+      "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+    },
+    "tests/baselines/phase6-evidence/module-inventory.json": {
+      "bytes": 430754,
+      "sha256": "9c6592cff4e797cb3e9b952bae729a0de259f6bb406d823e8a2a38c3070ada4e"
+    },
+    "tests/baselines/phase6-evidence/preservation.json": {
+      "bytes": 83741,
+      "sha256": "b98487c33200425cdc325259e0814037e1060708bb92d792d8522efae1a22ac1"
+    },
+    "tests/baselines/phase6-evidence/resident-65c02.json": {
+      "bytes": 58185,
+      "sha256": "9c257f39c4e2b7588b255fe9923f92b6a56daf77ed7f07df93641c55e419aacb"
+    },
+    "tests/baselines/phase6-evidence/resident-65c816-e.json": {
+      "bytes": 58695,
+      "sha256": "852db34e9f1b68961e3c8c92d2d482d35e098deb66c658ea159d8ecb105885c2"
+    },
+    "tests/baselines/phase6-evidence/static-audit.json": {
+      "bytes": 21449,
+      "sha256": "fff9e2a1c18eb415f46310da5b3c0e7056fafcf6e0712a1d2ecd1a4c56a49ad1"
+    }
+  }
+}

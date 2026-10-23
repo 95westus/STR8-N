@@ -100,6 +100,24 @@ every status entry path as universally free of persistent effects.
 
 ## ASM context
 
+The local 2604 development extension adds EQU/.EQU as constant-definition
+aliases and these commands after successful ASM:
+
+| Command at ASM> | Example and result |
+| --- | --- |
+| `LST` | Numbered source, logical addresses and emitted bytes; long data continues on more rows. |
+| `SYMS` | All constants and labels from the current successful assembly. |
+| `SYMS start` | Exact global-name lookup, case-insensitive. |
+| `SYMS .ready` | Matching locals, shown with parent names such as START.READY. |
+| `SAVE SRAM HELLOSRC` | Save editable source to initialized external SRAM; assemble again afterward. |
+| `LOAD SRAM HELLOSRC` | Restore source; YES only if prompted to discard dirty source, then ASM again. |
+
+`80 LDA MISSING` followed by ASM reports the line number, `LDA MISSING` and
+`Symbol: MISSING`. Correct the line and assemble successfully before listing
+or exporting. See the [worked EQU/save/store examples](ASM_SAVE_STORE.md).
+Optional SAVE FLASH uses B0; monitor S stores executable bytes and is a
+different prompt/context. These additions are not part of published r9.
+
 `number text` inserts/replaces a line; `number` deletes it. `NEW`, `PASTE`,
 `LIST`, `ASM`, `DUMP`, `S19`, `QUIT`, and `?` operate on the current source and
 output. See the [ASM guide](ASM_GUIDE.md) for buffer/origin rules. ASM owns much

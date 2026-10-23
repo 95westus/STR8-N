@@ -1,0 +1,101 @@
+# RTC synchronization at an NTP second boundary
+
+Recorded 2026-10-23. Status: TODO / proposed; implementation and hardware
+validation remain outstanding.
+
+- [ ] Implement and validate board-timer-scheduled NTP synchronization using
+  VIA1 Timer 2 as the preferred candidate: stage the UTC calendar in advance,
+  map NTP time to the board timer, and commit at the second boundary with
+  measured latency compensation. Confirm timer ownership and safe failure
+  handling, then measure actual RTC transition alignment on hardware.
+
+Prepare the RTC time-setting operation in advance, then commit the staged UTC
+time at the intended NTP-derived second boundary. This aims to reduce the delay
+and variation caused by starting a complete SET operation at that boundary.
+
+## Proposed approach
+
+- [ ] Obtain fresh NTP samples, retain their uncertainty, and map UTC onto a
+  monotonic host timer. Select a future whole-second target with enough time
+  to finish preparation, including calendar rollovers.
+- [ ] Split preparation from commit: validate and stage the target calendar on
+  the board, then leave a short, bounded commit path ready to execute.
+- [ ] Determine the MCP79411 write/start sequence that best aligns its actual
+  second transitions. Measure oscillator startup and divider behavior before
+  assuming that starting a stopped RTC at the boundary aligns its first tick.
+- [ ] Use a board timer to schedule the final commit locally. Send the target
+  calendar and scheduling information ahead of time; no serial command should
+  be required at the second boundary. Compensate for measured commit latency
+  and define which hardware event constitutes the commit.
+- [ ] Define cancellation, missed-deadline, and transfer-failure behavior,
+  including recovery if preparation or commit leaves the clock stopped or
+  partially changed. Preserve existing SET authorization, trim/control settings,
+  and power-fail evidence policy.
+- [ ] Verify subsequent RTC second transitions against the NTP-derived timeline,
+  report measured offset and uncertainty, and compare with the current SET path.
+
+## Board timer candidate (source review, 2026-10-23)
+
+Prefer **VIA1 Timer 2**, in PHI2 interval-timer mode, for an initial foreground
+prototype. The RTC uses VIA1 at `$7FC0`; T2 low/high are `$7FC8/$7FC9`, ACR is
+`$7FCB`, IFR is `$7FCD`, and IER is `$7FCE`. T2 uses flag/enable bit 5. This
+register mapping follows the existing VIA1 addresses and the
+[WDC W65C22 datasheet](https://www.westerndesigncenter.com/wdc/documentation/w65c22.pdf),
+sections 2.8, 2.9 and 2.14.
+
+Evidence and alternatives:
+
+- The [storage timing hardware record](STR8N_V2_STORAGE_TIMINGS_2026-10-08.md)
+  already demonstrates borrowing idle Timer 2 on board 2609 with interrupts
+  masked, accumulating modulo-65536 CPU-clock counts and restoring idle state.
+- Source review of `src/current` found no explicit T1/T2 register allocation in
+  the current RTC/SPI provider. This is a candidate resource, not proof that a
+  running application or attached peripheral leaves it available. Check timer
+  ownership, interrupt state, and ACR shift-register modes before borrowing it;
+  Timer 2 also participates in some shift-register modes.
+- **VIA1 Timer 1** at `$7FC4-$7FC7` is an alternative if periodic interrupts or
+  a software-extended tick counter are needed. Its IRQ path has prior hardware
+  proof in the [alpha11 board test](STR8N_V2_ALPHA11_BOARD_TEST_2026-09-23.md).
+  Preserve PB7 behavior and ACR settings if using T1.
+
+At nominal 8 MHz, 65,536 clocks span **8.192 ms**. Neither timer can hold a
+one-second countdown directly at that clock rate. For T2, extend the timeline
+in software with counter samples less than one wrap apart, then use a final
+short countdown or poll near the deadline. Account for timer load/underflow
+semantics and instruction overhead in the cycle model. Measure each board's
+clock rate or include its frequency error in the scheduling uncertainty.
+
+The current RTC provider enters with `SEI`, and the public service is foreground
+and nonreentrant. Therefore start with a dedicated foreground operation that
+owns the timer and I2C bus, polls the timer, and executes the prepared commit.
+A timer interrupt cannot preempt that masked path. An IRQ-based design would
+need an explicit interrupt-safe scheduling/commit contract and bounded interrupt
+latency; do not simply call the existing RTC API from an IRQ handler.
+
+Additional TODOs:
+
+- [ ] Define timestamp exchanges that associate the board's extended timer
+  with the host's NTP-derived monotonic timeline. Repeat exchanges and bound
+  transport asymmetry; a local timer removes final-command delivery jitter,
+  but does not remove uncertainty in this initial time mapping.
+- [ ] Check idle ownership before touching timer state. Preserve unrelated
+  ACR/IER bits, port behavior, and pre-existing pending flags; refuse an active
+  timer rather than attempting to recreate its running phase afterward.
+- [ ] Bound every operation while tracking wraps, reserve a quiet final window,
+  and reject a late or ambiguous deadline. Restore borrowed idle state on all
+  completion/cancellation paths.
+- [ ] Model timer scheduling and then verify on hardware with observed RTC
+  transitions. No timer was programmed and no RTC was set during this review.
+
+## Current behavior and acceptance
+
+`src/current/provider/rtc-provider.asm`, at `SET_CLOCK`, validates the request,
+stops the oscillator, waits for it to stop, and then writes the calendar. That
+work currently lies in the SET execution path.
+
+Accept the proposal only after measurements show improved boundary alignment
+with a documented error bound and safe failure handling. NTP and host scheduling
+provide an estimated boundary, not an exact hardware timing pulse. No accuracy
+target is claimed until the trigger path and RTC response have been measured.
+
+Reference: [Microchip MCP79410/11/12 datasheet, DS20002266J](https://ww1.microchip.com/downloads/en/DeviceDoc/MCP79410-MCP79411-MCP79412-Battery-Backed%20I2C-RTCC-20002266J.pdf).

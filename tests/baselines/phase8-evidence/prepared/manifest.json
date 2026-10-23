@@ -1,0 +1,341 @@
+{
+  "schema": 1,
+  "unit": {
+    "name": "version/format",
+    "authoritative_source": "src/current/version/version.asm",
+    "source_sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999",
+    "authoritative_source_lines": [
+      97,
+      118
+    ],
+    "firmware_sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6",
+    "phase7_manifest_sha256": "6ca15073dfce5a0b39558f2080e3160cc3194e7479adb1f94a752e2bc08d0fa7",
+    "generated_source_is_authoritative": false
+  },
+  "assembly": {
+    "origin": 28347,
+    "end_exclusive": 28382,
+    "expected_bytes": 35,
+    "executable_entry": null,
+    "entries": {
+      "SLOT_LETTER": 28347,
+      "MON_PRINT": 28358,
+      "PRINT": 28361
+    },
+    "symbols": {
+      "SLOT_LETTER": 28347,
+      "SLOT_CHAR": 28355,
+      "MON_PRINT": 28358,
+      "PRINT": 28361,
+      "PRINT_NEXT": 28367,
+      "PRINT_DONE": 28381,
+      "VPTR": 208,
+      "MON_CALL": 28454
+    },
+    "exports": {},
+    "host_declared_exports": [],
+    "selected_internal_labels": [
+      "SLOT_LETTER",
+      "SLOT_CHAR",
+      "MON_PRINT",
+      "PRINT",
+      "PRINT_NEXT",
+      "PRINT_DONE"
+    ]
+  },
+  "storage": {
+    "kind": "slice of VERSION RAM application inside sealed ROM asset",
+    "physical_output_start": 512,
+    "ram_destination": 28347,
+    "enclosing_asset": "version/asset.bin",
+    "enclosing_asset_bytes": 2048,
+    "enclosing_body_origin": 28160,
+    "enclosing_body_bytes": 636,
+    "firmware_bank": 2,
+    "asset_rom_address": 63488,
+    "asset_offset": 187,
+    "slice_rom_address": 63675,
+    "firmware_offset": 63675,
+    "not_a_standalone_rom_image": true
+  },
+  "bindings": {
+    "symbolic_imports": {
+      "VPTR": 208,
+      "MON_CALL": 28454
+    },
+    "aliases": {},
+    "binding_roles": {
+      "VPTR": "VERSION borrows monitor zero-page pointer $D0/$D1",
+      "MON_CALL": "existing VERSION indirect monitor formatter pointer"
+    },
+    "literal_abi": [
+      {
+        "value": 32365,
+        "symbol": "V2V_RAM_PUTC_ENTRY",
+        "role": "initialized monitor console output service"
+      }
+    ]
+  },
+  "preparation": {
+    "recipe": "version-format-v1-exact-source-slice",
+    "normalization": "Strip outer whitespace; retain all 22 original lines in order and spelling",
+    "added_prefix": [
+      "VPTR EQU $D0",
+      "MON_CALL EQU $6F26",
+      "ORG $6EBB"
+    ],
+    "added_suffix": "END",
+    "include_expansion": false,
+    "symbol_renaming": false,
+    "changed_source_or_bounds": "Refuse before creating output",
+    "line_mapping": [
+      {
+        "prepared_physical_line": 1,
+        "prepared_record_line": 10,
+        "authoritative_source_line": null
+      },
+      {
+        "prepared_physical_line": 2,
+        "prepared_record_line": 20,
+        "authoritative_source_line": null
+      },
+      {
+        "prepared_physical_line": 3,
+        "prepared_record_line": 30,
+        "authoritative_source_line": null
+      },
+      {
+        "prepared_physical_line": 4,
+        "prepared_record_line": 40,
+        "authoritative_source_line": 97
+      },
+      {
+        "prepared_physical_line": 5,
+        "prepared_record_line": 50,
+        "authoritative_source_line": 98
+      },
+      {
+        "prepared_physical_line": 6,
+        "prepared_record_line": 60,
+        "authoritative_source_line": 99
+      },
+      {
+        "prepared_physical_line": 7,
+        "prepared_record_line": 70,
+        "authoritative_source_line": 100
+      },
+      {
+        "prepared_physical_line": 8,
+        "prepared_record_line": 80,
+        "authoritative_source_line": 101
+      },
+      {
+        "prepared_physical_line": 9,
+        "prepared_record_line": 90,
+        "authoritative_source_line": 102
+      },
+      {
+        "prepared_physical_line": 10,
+        "prepared_record_line": 100,
+        "authoritative_source_line": 103
+      },
+      {
+        "prepared_physical_line": 11,
+        "prepared_record_line": 110,
+        "authoritative_source_line": 104
+      },
+      {
+        "prepared_physical_line": 12,
+        "prepared_record_line": 120,
+        "authoritative_source_line": 105
+      },
+      {
+        "prepared_physical_line": 13,
+        "prepared_record_line": 130,
+        "authoritative_source_line": 106
+      },
+      {
+        "prepared_physical_line": 14,
+        "prepared_record_line": 140,
+        "authoritative_source_line": 107
+      },
+      {
+        "prepared_physical_line": 15,
+        "prepared_record_line": 150,
+        "authoritative_source_line": 108
+      },
+      {
+        "prepared_physical_line": 16,
+        "prepared_record_line": 160,
+        "authoritative_source_line": 109
+      },
+      {
+        "prepared_physical_line": 17,
+        "prepared_record_line": 170,
+        "authoritative_source_line": 110
+      },
+      {
+        "prepared_physical_line": 18,
+        "prepared_record_line": 180,
+        "authoritative_source_line": 111
+      },
+      {
+        "prepared_physical_line": 19,
+        "prepared_record_line": 190,
+        "authoritative_source_line": 112
+      },
+      {
+        "prepared_physical_line": 20,
+        "prepared_record_line": 200,
+        "authoritative_source_line": 113
+      },
+      {
+        "prepared_physical_line": 21,
+        "prepared_record_line": 210,
+        "authoritative_source_line": 114
+      },
+      {
+        "prepared_physical_line": 22,
+        "prepared_record_line": 220,
+        "authoritative_source_line": 115
+      },
+      {
+        "prepared_physical_line": 23,
+        "prepared_record_line": 230,
+        "authoritative_source_line": 116
+      },
+      {
+        "prepared_physical_line": 24,
+        "prepared_record_line": 240,
+        "authoritative_source_line": 117
+      },
+      {
+        "prepared_physical_line": 25,
+        "prepared_record_line": 250,
+        "authoritative_source_line": 118
+      },
+      {
+        "prepared_physical_line": 26,
+        "prepared_record_line": 260,
+        "authoritative_source_line": null
+      }
+    ]
+  },
+  "admission": {
+    "line_count": 26,
+    "max_line_bytes": 18,
+    "max_name_bytes": 11,
+    "symbol_count": 8,
+    "packed_source_bytes": 371,
+    "packed_source_start": 13056,
+    "packed_source_end_exclusive": 13427,
+    "record_format": "little-endian line:u16, length:u8, mode_cache:u8, ASCII text",
+    "first_line": 10,
+    "line_step": 10,
+    "canonical_mode_cache": 0,
+    "actual_resident_admission_verified": false
+  },
+  "verification": {
+    "expected_output_sha256": "e5d6900a166da102a7ce245738c159d9c5c2dd46b58f8a77fd11ae40dc9075b5",
+    "whole_version_body_sha256": "d61ce3177f8571d29c158e1c7436fca051f4c8e3be0cdfc96ad90157431d3747",
+    "expected_bytes_from": "BUILD/phase8/s/version/version.s19",
+    "verified_build": "BUILD/phase8",
+    "inputs": {
+      "BUILD/phase8/build-report.json": {
+        "bytes": 33190,
+        "sha256": "d6b4d53361858f14199b4aa7bb0946f0a970eb0d47cbf08ddee3d4b092a91c3d"
+      },
+      "BUILD/phase8/firmware.bin": {
+        "bytes": 98304,
+        "sha256": "aef72be59c25f106a4ba5d0d08c0241b5e6adb0471d12d809b5025726e721be6"
+      },
+      "BUILD/phase8/symbols.json": {
+        "bytes": 295373,
+        "sha256": "78e571099a9c71e8c6a7bc8b5ecfb61f62041daa080d504d95e8a7e9d5c0ad63"
+      },
+      "BUILD/phase8/s/batch/batch-gate.map": {
+        "bytes": 310,
+        "sha256": "ac2da50f028d9b7faeafefcdb7ad7c2a9bbe13f5781407d1a7c6bce1d86dbb35"
+      },
+      "BUILD/phase8/s/batch/batch-gate.s19": {
+        "bytes": 268,
+        "sha256": "505889e1fad1d5611f555d1f30d114cc9b8e8fdc267ff980d262447ba0dbdf52"
+      },
+      "src/current/version/version.asm": {
+        "bytes": 3070,
+        "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999"
+      },
+      "BUILD/phase8/s/version/version.asm": {
+        "bytes": 3070,
+        "sha256": "aca00c7fe49a7d4f68da9c32f56f27a92c04f8836dd5323331b18ae16dc3a999"
+      },
+      "BUILD/phase8/s/version/version.map": {
+        "bytes": 1440,
+        "sha256": "ba048c8bb608ad6d8fa5484cc2d2023658434f420765e96d62698797812492a8"
+      },
+      "BUILD/phase8/s/version/version.s19": {
+        "bytes": 1764,
+        "sha256": "602687a03db6313abe4ca106f96eba16e7027d34a2f67a1d39b5148c9cfc3c45"
+      },
+      "BUILD/phase8/payload/version/asset.bin": {
+        "bytes": 2048,
+        "sha256": "be011dccb3162af13cb7d4647d68a99f37ef086f5f249536b49da72ddbc52aaa"
+      },
+      "tests/baselines/phase7.json": {
+        "bytes": 9555,
+        "sha256": "6ca15073dfce5a0b39558f2080e3160cc3194e7479adb1f94a752e2bc08d0fa7"
+      },
+      "tools/prepare_resident_batch.py": {
+        "bytes": 17020,
+        "sha256": "f9ca57cd299136be8fc60d64b788337ac3c1ea07848225e1e258ed87e293ec2b"
+      }
+    },
+    "preparation_only": true,
+    "resident_byte_comparison_performed": false,
+    "required_next_check": "Actual resident PASTE/ASM and comparison of all 35 bytes and eight symbol values on both CPU models"
+  },
+  "packaging": {
+    "body_bytes": 35,
+    "added_padding_bytes": 0,
+    "preserve": [
+      "other VERSION code/data",
+      "asset fill",
+      "embedded power-fail worker",
+      "vector tail",
+      "CRC seal patch"
+    ],
+    "s19_entry": "Resident S9 origin $6EBB; whole host VERSION S9 $0000 is not a helper entry",
+    "replacement_rule": "Compare in-memory slice substitution against the complete original asset and firmware",
+    "no_firmware_or_asset_is_generated": true
+  },
+  "execution": {
+    "hardware_execution_authorized": false,
+    "standalone_ram_program": false,
+    "model_execution_requires_separate_fixture": true,
+    "preconditions": "Existing monitor console service initialized; code at original logical addresses; VPTR and MON_CALL application state available; IRQ disabled, decimal clear, 816 E=1 with DP/DBR/PBR zero",
+    "effects": "PRINT modifies VPTR/Y/A and emits console bytes; SLOT_LETTER emits one byte; MON_PRINT dispatches through initialized MON_CALL",
+    "physical_output_is_not_execution_address": true,
+    "byte_equivalence_does_not_authorize_hardware_execution_or_installation": true,
+    "board_access": false,
+    "serial_ports_opened": 0,
+    "network_attempts": 0
+  },
+  "files": {
+    "version-format.asm": {
+      "bytes": 293,
+      "sha256": "cda9abe584a2c3684a4dfbae8e47e064159f81b326e744559116ae2040034279"
+    },
+    "version-format.paste.txt": {
+      "bytes": 301,
+      "sha256": "b7859221618414c23e44695e8ffc4926f18b84075a3a42908754c63c72e6305f"
+    },
+    "version-format.records.bin": {
+      "bytes": 371,
+      "sha256": "471320857fa7f420832becb1d5f03b74e36c9da1c6fadf06c4246ebe76dcf097"
+    },
+    "expected.bin": {
+      "bytes": 35,
+      "sha256": "e5d6900a166da102a7ce245738c159d9c5c2dd46b58f8a77fd11ae40dc9075b5"
+    }
+  }
+}

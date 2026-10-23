@@ -1,0 +1,227 @@
+{
+  "counts_before": [
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151
+  ],
+  "expected_sha256": [
+    "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+    "0703dde53049942ac6dccc26fb36afcab1e9b07acfdf2697d7df3ebe6c3da525",
+    "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+    "cf2dbf2f87699c100d1fabd90ceed9f139261607918fa6758e3b9e99bd3b000a"
+  ],
+  "installation_permitted": false,
+  "model_only": true,
+  "operations": [
+    {
+      "address": 49280,
+      "after_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "66fb3e4d885d746aaeed4583a810d99df740970e0292f56309f6a07a56e1bdf8",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "560194224364289e2d8f807796efa029b369eb09251807fc245219da5064b65c"
+      ],
+      "bank": 3,
+      "commit_address": 49407,
+      "data_sha256": "46c5e9d0fd003af58b4f45a5936dbbb23ee793ccc4982a396d38f41fb9a47739",
+      "kind": "reserve-record",
+      "source_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "66fb3e4d885d746aaeed4583a810d99df740970e0292f56309f6a07a56e1bdf8",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "28e09d8df9e2a0a73e7111c3d77887ff2542e5e375779c1017a65f5321560488"
+      ]
+    },
+    {
+      "address": 53248,
+      "after_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "66fb3e4d885d746aaeed4583a810d99df740970e0292f56309f6a07a56e1bdf8",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "728d0f9f9eea4b23c72a73c7a328572c21774c27c445252aa694c8ad76b2fe16"
+      ],
+      "bank": 3,
+      "commit_address": null,
+      "data_sha256": "3e3a007fde964f8ddb691942eb97efb1096087291ad6694c20262452ca9a4f07",
+      "kind": "stage-journal",
+      "source_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "66fb3e4d885d746aaeed4583a810d99df740970e0292f56309f6a07a56e1bdf8",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "560194224364289e2d8f807796efa029b369eb09251807fc245219da5064b65c"
+      ]
+    },
+    {
+      "address": 61440,
+      "after_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "5339f2a9946a1c24f6f842de80c2e68ffc4abe45881017b05c68aa094ac4fdcf",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "728d0f9f9eea4b23c72a73c7a328572c21774c27c445252aa694c8ad76b2fe16"
+      ],
+      "bank": 1,
+      "commit_address": null,
+      "data_sha256": "72065163681d082de2d07831da200b96cb85fc62cac05b1caa050ed2f2819ff2",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "66fb3e4d885d746aaeed4583a810d99df740970e0292f56309f6a07a56e1bdf8",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "728d0f9f9eea4b23c72a73c7a328572c21774c27c445252aa694c8ad76b2fe16"
+      ]
+    },
+    {
+      "address": 57344,
+      "after_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "0703dde53049942ac6dccc26fb36afcab1e9b07acfdf2697d7df3ebe6c3da525",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "728d0f9f9eea4b23c72a73c7a328572c21774c27c445252aa694c8ad76b2fe16"
+      ],
+      "bank": 1,
+      "commit_address": null,
+      "data_sha256": "bae0a5e72b2e7946e7210b7ba9a7063ee63cffcd7f20a4d815be22af6c4b0bb7",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "5339f2a9946a1c24f6f842de80c2e68ffc4abe45881017b05c68aa094ac4fdcf",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "728d0f9f9eea4b23c72a73c7a328572c21774c27c445252aa694c8ad76b2fe16"
+      ]
+    },
+    {
+      "address": 57344,
+      "after_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "0703dde53049942ac6dccc26fb36afcab1e9b07acfdf2697d7df3ebe6c3da525",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "677ed0dc494c18c4895c4f67189045ecc75a4a5a582f99c63c5aee30545399b9"
+      ],
+      "bank": 3,
+      "commit_address": null,
+      "data_sha256": "263ecd9cb56c05fd71304fe00349ecf04d8f591dbef2c7af1693004a475452d7",
+      "kind": "payload-sector",
+      "source_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "0703dde53049942ac6dccc26fb36afcab1e9b07acfdf2697d7df3ebe6c3da525",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "728d0f9f9eea4b23c72a73c7a328572c21774c27c445252aa694c8ad76b2fe16"
+      ]
+    },
+    {
+      "address": 49152,
+      "after_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "0703dde53049942ac6dccc26fb36afcab1e9b07acfdf2697d7df3ebe6c3da525",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "cf2dbf2f87699c100d1fabd90ceed9f139261607918fa6758e3b9e99bd3b000a"
+      ],
+      "bank": 3,
+      "commit_address": null,
+      "data_sha256": "1b8f133e6da49e1100158679e956464d6d55a92df9fedbfa1a0c67eb2b788c94",
+      "kind": "activate-journal",
+      "source_sha256": [
+        "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+        "0703dde53049942ac6dccc26fb36afcab1e9b07acfdf2697d7df3ebe6c3da525",
+        "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+        "677ed0dc494c18c4895c4f67189045ecc75a4a5a582f99c63c5aee30545399b9"
+      ]
+    }
+  ],
+  "planned_erase_order": [
+    [
+      3,
+      13
+    ],
+    [
+      1,
+      15
+    ],
+    [
+      1,
+      14
+    ],
+    [
+      3,
+      14
+    ],
+    [
+      3,
+      12
+    ]
+  ],
+  "reservation_offset": 16512,
+  "reserved_counts": [
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    135,
+    136,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    149,
+    150,
+    151,
+    151
+  ],
+  "sequence_after": 1003,
+  "sequence_before": 1000,
+  "source_config": "01000307f00a0050a032000000a5ccc8",
+  "source_sha256": [
+    "15290d77226e60db8e8f795eb2cd0068d85d25775dd3640f2f4ccf70eff1fb8e",
+    "66fb3e4d885d746aaeed4583a810d99df740970e0292f56309f6a07a56e1bdf8",
+    "d6b9fa4f5732afe75ccd718ef8bb609c765eb574b13404afaa38213137d9d3cf",
+    "28e09d8df9e2a0a73e7111c3d77887ff2542e5e375779c1017a65f5321560488"
+  ],
+  "target_config": "01000307f00a0050a032000000a5ccc8"
+}

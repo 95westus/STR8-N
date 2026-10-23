@@ -1,0 +1,126 @@
+10 ; Named constants: edit these definitions; ASM accepts name = expression.
+20 ABI_DESC = $7E60
+30 ABI_CANCEL = $7E76
+40 ABI_HEX = $7E7C
+50 ABI_NEWLINE = $7E7F
+60 ABI_HOLD = $7E67
+70 CS0 = $7F00
+80 CS1 = $7F20
+90 CS2 = $7F40
+100 CS3 = $7F60
+110 APP_ORG = $0200
+120 FRAME_COUNT = $40
+130 ABI_LAST = $03
+140 B52 = $52
+150 B41 = $41
+160 B01 = $01
+170 B0D = $0D
+180 STOP_READY = $01
+190 FRAME_MASK = $07
+200 STOP_DONE = $02
+210 BURST_BATCHES = $40
+220 LOOP_WRAP = $00
+230 B02 = $02
+240 CRA_DATA_BIT = $04
+250 B08 = $08
+260 B04 = $04
+270 B00 = $00
+280 B05 = $05
+290 B0A = $0A
+300 B03 = $03
+310 B07 = $07
+320 B0F = $0F
+330 B09 = $09
+340 B06 = $06
+350 B0C = $0C
+360 ; Continuous SXB demo; original burst timing; no external CS hardware attached.
+370 ; ASM 0.5 source document; paste unnumbered lines with PASTE.
+380 ; IRQ masked, decimal clear; 816 E=1, D/DBR/PBR=0.
+390 ; BRK 01 ready; C loops all eight patterns; Ctrl-C reaches BRK 02.
+400 ORG APP_ORG
+410 SEI
+420 CLD
+430 ; Validate initialized RAM ABI before calling any entry.
+440 LDX #ABI_LAST
+450 abi: LDA ABI_DESC,X
+460 CMP signature,X
+470 BNE bad
+480 DEX
+490 BPL abi
+500 JMP start
+510 bad: JMP bad
+520 signature: BYTE B52,B41,B01,B0D
+530 start: STZ frame
+540 ready: BRK STOP_READY
+550 NOP
+560 next: JSR ABI_CANCEL
+570 BCS finish
+580 LDA frame
+590 AND #FRAME_MASK
+600 BNE show
+610 ; Print one-based pattern number in hexadecimal.
+620 LDA frame
+630 LSR A
+640 LSR A
+650 LSR A
+660 INC A
+670 JSR ABI_HEX
+680 JSR ABI_NEWLINE
+690 show: LDX frame
+700 LDA patterns,X
+710 STA mask
+720 JSR burst
+730 INC frame
+740 LDA frame
+750 CMP #FRAME_COUNT
+760 BNE next
+770 STZ frame
+780 JMP next
+790 finish: NOP
+800 done: BRK STOP_DONE
+810 JMP ABI_HOLD
+820 ; Reads assert CS. No writes to these four windows.
+830 ; Owner confirms no hardware attached to CS0-CS3 windows.
+840 burst: LDX #BURST_BATCHES
+850 batch: LDY #LOOP_WRAP
+860 pulse: LDA mask
+870 AND #B01
+880 BEQ skip0
+890 LDA CS0
+900 skip0: LDA mask
+910 AND #B02
+920 BEQ skip1
+930 LDA CS1
+940 skip1: LDA mask
+950 AND #CRA_DATA_BIT
+960 BEQ skip2
+970 LDA CS2
+980 skip2: LDA mask
+990 AND #B08
+1000 BEQ skip3
+1010 LDA CS3
+1020 skip3: DEY
+1030 BNE pulse
+1040 DEX
+1050 BNE batch
+1060 RTS
+1070 patterns:
+1080 ; 01: forward chase
+1090 BYTE B01,B02,B04,B08,B01,B02,B04,B08
+1100 ; 02: reverse chase
+1110 BYTE B08,B04,B02,B01,B08,B04,B02,B01
+1120 ; 03: bounce
+1130 BYTE B01,B02,B04,B08,B04,B02,B01,B00
+1140 ; 04: alternating pairs
+1150 BYTE B05,B0A,B05,B0A,B05,B0A,B05,B0A
+1160 ; 05: fill and drain
+1170 BYTE B01,B03,B07,B0F,B07,B03,B01,B00
+1180 ; 06: outside and inside
+1190 BYTE B09,B06,B09,B06,B09,B06,B09,B06
+1200 ; 07: all blink
+1210 BYTE B0F,B00,B0F,B00,B0F,B00,B0F,B00
+1220 ; 08: adjacent pairs
+1230 BYTE B03,B06,B0C,B09,B03,B06,B0C,B09
+1240 frame: BYTE B00
+1250 mask: BYTE B00
+1260 END

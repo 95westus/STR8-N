@@ -35,6 +35,16 @@ remain excluded; earlier run scopes do not substitute for R6 acceptance.
 
 ## Enter automatically with BRK xx
 
+The `BUILD/rc1-console-edit` update fixes debugger line editing:
+Backspace (`08`), ASCII Delete (`7F`) and terminal Delete (`Esc [ 3 ~`) remove
+the last entered character and erase it visibly. Empty-line deletion is a
+no-op; deleting after a full-line overflow permits correction and resubmission.
+Other CSI sequences are ignored rather than becoming command text. This is
+end-of-line editing, not cursor movement or command history. Installed and
+physically tested on board 2604 (Monitor B), 2026-10-21: all three inputs
+passed register-command editing, visible erasure and empty-line checks. Board
+2609 is unchanged; both CPU configurations passed offline tests.
+
 Run a RAM application normally, for example `G 0200`. An application `BRK $01`
 enters `DBG>` automatically; there is no enable command. ASM accepts
 `BRK $xx` and `BRK #$xx`, with a one-byte signature. Bare `BRK` supplies `$00`.
