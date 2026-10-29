@@ -1,4 +1,24 @@
-# STR8-N
+# STR8N-F v0.3.0 — BASE1 / PR05
+
+**[Download N-F v0.3.0 — BASE1 / PR05](https://github.com/95westus/STR8N-F/releases/tag/v0.3.0)**
+
+> 4KB of firmware. One board. Up to four boot environments.
+
+For WDC W65C02SXB and W65C816SXB (65C816 emulation), with optional matching
+W65C02EDU/W65C816EDU add-ons. BASE1 boot/recovery does not require EDU.
+Compatible, user-supplied images run one at a time on shared CPU, RAM and peripherals.
+
+The kit includes the Python serial terminal, verbose WDC RAM migration programs,
+CONFIG, OPAQUE, MAP, READBACK and DEMO. F stays **STR8N-F 0.3.0 g00000001 /
+BASE1 / PR05**, exactly 4096 frozen bytes. The manual covers opaque-image
+installation/readback and saving an enabled bank as the default boot.
+
+[User manual](https://github.com/95westus/STR8N-F/blob/main/docs/USER_MANUAL.md) /
+[4KB F.bin](https://github.com/95westus/STR8N-F/releases/download/v0.3.0/F.bin) /
+[operator ZIP](https://github.com/95westus/STR8N-F/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0.zip) /
+[N-F source and release scope](https://github.com/95westus/STR8N-F).
+
+## Full-system STR8-N (separate firmware line)
 
 STR8-N is a monitor, assembler and utility system for WDC SXB boards, using
 one firmware set for **65C02 and 65C816 emulation-mode runtime**.
