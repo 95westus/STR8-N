@@ -76,6 +76,17 @@ beta4 image is distributed. Retain the exact kit and all private recovery files.
 [uChess ASM source session and S/T/R example](UCHESS_ASM_SESSION.md).
 
 
+## Current RC1 generation header and recovery update
+
+[Current RC1 g0034](R10_G0034.md) applies the F recovery fixes to the current
+2604/2609 RC1 feature baseline and gives the boot screen a definite identity:
+`2.0rc1 g0034`, with four hexadecimal generation digits. The later monitor/ASM,
+source storage and debugger features are retained. The public version remains
+RC1; the full build identity is `rc1-r10p2-current` (distribution r10 patch 2).
+2512 now runs this same g0034 build as 2604/2609. Its earlier
+[generation-51 result](R10_RECOVERY.md) is separately recorded. Historical v1g
+r9 archives and remote publication remain unchanged.
+
 ## rc1 qualification
 
 The historical rc1 firmware identity was 2.0rc1, generation 49. Source-build and offline

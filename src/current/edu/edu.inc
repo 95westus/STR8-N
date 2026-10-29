@@ -577,9 +577,9 @@ X28_R9:
         PHP
         PHA
 
-        LDA #<$F684
+        LDA #<$F754
         STA X28_PTR
-        LDA #>$F684
+        LDA #>$F754
         STA X28_PTR+1
 
         PLA
@@ -595,9 +595,9 @@ X28_R10:
         PHP
         PHA
 
-        LDA #<$F685
+        LDA #<$F755
         STA X28_PTR
-        LDA #>$F685
+        LDA #>$F755
         STA X28_PTR+1
 
         PLA
@@ -613,9 +613,9 @@ X28_R11:
         PHP
         PHA
 
-        LDA #<$F686
+        LDA #<$F756
         STA X28_PTR
-        LDA #>$F686
+        LDA #>$F756
         STA X28_PTR+1
 
         PLA
@@ -631,9 +631,9 @@ X28_R12:
         PHP
         PHA
 
-        LDA #<$F687
+        LDA #<$F757
         STA X28_PTR
-        LDA #>$F687
+        LDA #>$F757
         STA X28_PTR+1
 
         PLA

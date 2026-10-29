@@ -445,8 +445,6 @@ BOOT_SELECT_SKIP_OUT:   LDA #$10
                         JMP BOOT_SELECT_NEXT
 BOOT_SELECT_DONE_OUT:   RTS
                         DB $FF,$FF,$FF
-FBC_PAD_BOOT_SR_ROUTE:
- DB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
 BOOT_SR_ROUTE:          PHA
                         PHY
                         LDA V2_PTR
@@ -480,6 +478,7 @@ BOOT_LAUNCH:            STA BOOT_CALL_PTR+1
                         JMP (BOOT_CALL_PTR)
 
 BOOT_RECOVERY:          JSR V2W_RX_RESET
+                        STZ V2_SKIP_LF
                         LDX #<BOOT_RECOVERY_TEXT
                         LDY #>BOOT_RECOVERY_TEXT
                         JSR BOOT_PRINT
@@ -487,39 +486,20 @@ BOOT_MENU:              STZ V2_CANCEL_REQUEST
                         LDX #<BOOT_PROMPT_TEXT
                         LDY #>BOOT_PROMPT_TEXT
                         JSR BOOT_PRINT
-                        LDX #$00
-BOOT_LINE:              JSR V2W_GETC
-                        CMP #$0D
-                        BEQ BOOT_LINE_END
-                        CMP #$0A
-                        BEQ BOOT_LINE_END
-                        CMP #$03
-                        BEQ BOOT_MENU
-                        CMP #'a'
-                        BCC BOOT_LINE_STORE
-                        CMP #'z'+1
-                        BCS BOOT_LINE_STORE
-                        AND #$DF
-BOOT_LINE_STORE:
-                        CPX #$04
-                        BCS BOOT_LINE
-                        STA V2_LINE,X
-                        INX
-                        BRA BOOT_LINE
-BOOT_LINE_END:          STZ V2_LINE,X
-                        JSR V2V_RAM_NEWLINE
+                        JSR BOOT_READ_LINE
                         LDA V2_LINE
+                        BEQ BOOT_MENU
                         CMP #'U'
                         BEQ BOOT_UPDATE
                         LDA V2_LINE+1
-                        BNE BOOT_MENU
+                        BNE BOOT_SYNTAX
                         LDA V2_LINE
                         CMP #'W'
                         BEQ BOOT_MENU_W
                         CMP #'A'
                         BEQ BOOT_MENU_A
                         CMP #'B'
-                        BNE BOOT_MENU
+                        BNE BOOT_SYNTAX
                         LDA #$B0
                         BRA BOOT_MENU_SLOT
 BOOT_MENU_A:            LDA #$A0
@@ -527,36 +507,72 @@ BOOT_MENU_SLOT:         STA BOOT_DEST
                         STZ V2_PTR
                         STA V2_PTR+1
                         JSR BOOT_SLOT_CHECK
-                        BCC BOOT_MENU
+                        BCC BOOT_IMAGE_BAD
                         LDA BOOT_DEST
                         STA BOOT_ACTIVE
                         JMP BOOT_HOLD
 BOOT_MENU_W:            JSR BOOT_REPORT
                         BRA BOOT_MENU
+BOOT_SYNTAX:            LDA #BOOT_REASON_SYNTAX-BOOT_REASONS
+                        JMP BOOT_REFUSE
+BOOT_IMAGE_BAD:         LDA #BOOT_REASON_IMAGE-BOOT_REASONS
+                        JMP BOOT_REFUSE
+
+; Shared text reader: echo original keys, normalize ASCII case and CR/LF.
+; Four bytes suffice to reject overlong commands; keep draining to delimiter.
+BOOT_READ_LINE:         LDX #0
+BOOT_LINE:              JSR BOOT_TEXT_GETC
+                        CMP #13
+                        BEQ BOOT_LINE_END
+                        PHA
+                        JSR V2W_PUTC
+                        PLA
+                        CMP #'a'
+                        BCC BOOT_LINE_STORE
+                        CMP #'z'+1
+                        BCS BOOT_LINE_STORE
+                        AND #$DF
+BOOT_LINE_STORE:        CPX #4
+                        BCS BOOT_LINE
+                        STA V2_LINE,X
+                        INX
+                        BRA BOOT_LINE
+BOOT_LINE_END:          STZ V2_LINE,X
+                        JMP V2V_RAM_NEWLINE
+BOOT_TEXT_GETC:         JSR V2W_GETC
+                        LSR V2_SKIP_LF
+                        BCC BOOT_TEXT_DELIM
+                        CMP #10
+                        BEQ BOOT_TEXT_GETC
+BOOT_TEXT_DELIM:        CMP #13
+                        BNE BOOT_TEXT_LF
+                        INC V2_SKIP_LF
+BOOT_TEXT_LF:           CMP #10
+                        BNE BOOT_TEXT_DONE
+                        LDA #13
+BOOT_TEXT_DONE:         RTS
 
 ; U A|B -> Y -> exact 4096 binary bytes. This path is usable with BOTH slots
 ; corrupt; it depends only on fixed F and the copied RAM services.
-FBC_PAD_BOOT_UPDATE:
- DB $FF,$FF,$FF
 BOOT_UPDATE:            LDA V2_LINE+1
                         CMP #' '
-                        BNE FBC_UPDATE_REFUSE
+                        BNE BOOT_SYNTAX
 KEY_LONG_507:
                         LDA V2_LINE+3
-                        BNE FBC_UPDATE_REFUSE
+                        BNE BOOT_SYNTAX
 KEY_LONG_509:
                         LDA V2_LINE+2
                         CMP #'A'
                         BEQ BOOT_UPDATE_A
                         CMP #'B'
-                        BNE FBC_UPDATE_REFUSE
+                        BNE BOOT_SYNTAX
 KEY_LONG_514:
                         LDA #$B0
                         BRA BOOT_UPDATE_SLOT
 BOOT_UPDATE_A:          LDA #$A0
 BOOT_UPDATE_SLOT:       STA BOOT_DEST
                         CMP BOOT_ACTIVE
-                        BEQ FBC_UPDATE_REFUSE
+                        BEQ BOOT_ACTIVE_BAD
 KEY_LONG_520:
 ; Never replace the proven preference from a one-time candidate session.
 ; Independent recovery (no active monitor) can repair either corrupt slot.
@@ -568,20 +584,28 @@ KEY_LONG_520:
                         BNE BOOT_UPDATE_ALLOWED
                         LDA V2_CONFIG+8
                         CMP BOOT_DEST
-                        BEQ FBC_UPDATE_REFUSE
+                        BEQ BOOT_PREFERRED_BAD
 KEY_LONG_531:
 BOOT_UPDATE_ALLOWED:
                         LDX #<BOOT_CONFIRM_TEXT
                         LDY #>BOOT_CONFIRM_TEXT
                         JSR BOOT_PRINT
-                        JSR V2W_GETC
+                        JSR BOOT_READ_LINE
+                        LDA V2_LINE
                         CMP #'Y'
-                        BNE FBC_UPDATE_REFUSE
-KEY_LONG_538:
-                        JSR V2W_GETC
-                        CMP #$0D
-                        BNE FBC_UPDATE_REFUSE
-KEY_LONG_541:
+                        BNE BOOT_CONFIRM_BAD
+                        LDA V2_LINE+1
+                        BNE BOOT_CONFIRM_BAD
+; Finish text input BEFORE the binary-ready prompt. A terminal must send
+; the complete CRLF before SEND, and the host waits for SEND before binary.
+; The grace window admits a split CRLF without dropping a binary 0A/03.
+                        JSR V2W_BOOT_DELAY
+                        JSR V2W_RAW_POLL
+                        BCC BOOT_BINARY_READY
+                        CMP #10
+                        BNE BOOT_CONFIRM_BAD
+BOOT_BINARY_READY:      JSR V2W_RX_RESET
+                        STZ V2_SKIP_LF
                         LDX #<BOOT_BINARY_TEXT
                         LDY #>BOOT_BINARY_TEXT
                         JSR BOOT_PRINT
@@ -590,7 +614,36 @@ KEY_LONG_541:
                         LDA #$68
                         STA V2_BUF_PTR+1
 FBC_UPDATE_SKIP: BRA BOOT_RECEIVE
-FBC_UPDATE_REFUSE: JMP BOOT_UPDATE_BAD
+BOOT_ACTIVE_BAD:        LDA #BOOT_REASON_ACTIVE-BOOT_REASONS
+                        BRA BOOT_REFUSE
+BOOT_PREFERRED_BAD:     LDA #BOOT_REASON_PREFERRED-BOOT_REASONS
+                        BRA BOOT_REFUSE
+BOOT_CONFIRM_BAD:       LDA #BOOT_REASON_CONFIRM-BOOT_REASONS
+                        BRA BOOT_REFUSE
+BOOT_UPDATE_BAD:        LDA V2_FLASH_ERROR
+                        CMP #1
+                        BEQ BOOT_TIMEOUT_BAD
+                        CMP #2
+                        BEQ BOOT_VERIFY_BAD
+                        LDA #BOOT_REASON_FLASH-BOOT_REASONS
+                        BRA BOOT_REFUSE
+BOOT_TIMEOUT_BAD:       LDA #BOOT_REASON_TIMEOUT-BOOT_REASONS
+                        BRA BOOT_REFUSE
+BOOT_VERIFY_BAD:        LDA #BOOT_REASON_VERIFY-BOOT_REASONS
+BOOT_REFUSE:            PHA
+                        LDX #<BOOT_FAILED_TEXT
+                        LDY #>BOOT_FAILED_TEXT
+                        JSR BOOT_PRINT
+                        PLA
+                        CLC
+                        ADC #<BOOT_REASONS
+                        TAX
+                        LDA #>BOOT_REASONS
+                        ADC #0
+                        TAY
+                        JSR BOOT_PRINT
+                        JSR V2V_RAM_NEWLINE
+                        JMP BOOT_MENU
 BOOT_RECEIVE:           JSR V2W_RAW_POLL
                         BCC BOOT_RECEIVE
                         STA (V2_BUF_PTR)
@@ -604,7 +657,9 @@ BOOT_RECEIVE:           JSR V2W_RAW_POLL
                         LDA #$68
                         STA V2_PTR+1
                         JSR BOOT_SLOT_CHECK
-                        BCC BOOT_UPDATE_BAD
+                        BCS R10_IMAGE_OK
+                        JMP BOOT_IMAGE_BAD
+R10_IMAGE_OK:
 ; Reject stale/equal generations while a valid active monitor exists.
                         LDA BOOT_ACTIVE
                         BEQ BOOT_UPDATE_NEW
@@ -613,14 +668,12 @@ BOOT_RECEIVE:           JSR V2W_RAW_POLL
                         LDY #$0B
 BOOT_UPDATE_GEN:        LDA (V2_PTR),Y
                         CMP (V2_ADDR),Y
-                        BCC BOOT_UPDATE_BAD
+                        BCC BOOT_GENERATION_BAD
                         BNE BOOT_UPDATE_NEW
                         DEY
                         CPY #$07
                         BNE BOOT_UPDATE_GEN
-                        BRA BOOT_UPDATE_BAD
-FBC_PAD_BOOT_UPDATE_NEW:
- DB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+                        BRA BOOT_GENERATION_BAD
 BOOT_UPDATE_NEW:        LDA #$FF
                         STA $681F
                         LDA #$03
@@ -630,10 +683,6 @@ BOOT_UPDATE_NEW:        LDA #$FF
 ; Clear inherited status only after upload validation, before this attempt.
                         STZ V2_FLASH_ERROR
                         JSR BOOT_UPDATE_WRITE
-                        NOP
-                        NOP
-                        NOP
-                        NOP
                         BCS BOOT_UPDATE_BAD
                         STZ V2_FLASH_PTR
                         LDA BOOT_DEST
@@ -642,22 +691,23 @@ BOOT_UPDATE_NEW:        LDA #$FF
                         STA V2_FLASH_PTR
                         STZ V2_FLASH_DATA
                         JSR V2W_BYTE
-                        BCC BOOT_UPDATE_BAD
+                        BCS R10_COMMIT_OK0
+                        JMP BOOT_UPDATE_BAD
+R10_COMMIT_OK0:
                         STZ V2_PTR
                         LDA BOOT_DEST
                         STA V2_PTR+1
                         JSR BOOT_SLOT_CHECK
-                        BCC BOOT_UPDATE_BAD
+                        BCS R10_COMMIT_OK1
+                        JMP BOOT_IMAGE_BAD
+R10_COMMIT_OK1:
                         LDX #<BOOT_DONE_TEXT
                         LDY #>BOOT_DONE_TEXT
                         JSR BOOT_PRINT
                         JMP BOOT_RESET
-BOOT_UPDATE_BAD:        LDX #<BOOT_FAILED_TEXT
-                        LDY #>BOOT_FAILED_TEXT
-                        JSR BOOT_PRINT
-                        JMP BOOT_MENU
+BOOT_GENERATION_BAD:    LDA #BOOT_REASON_GENERATION-BOOT_REASONS
+                        JMP BOOT_REFUSE
 
-FBC_PAD_BOOT_PRINT:
 BOOT_PRINT:             STX V2_PTR
                         STY V2_PTR+1
                         LDY #$00
@@ -667,14 +717,22 @@ BOOT_PRINT_BYTE:        LDA (V2_PTR),Y
                         INY
                         BRA BOOT_PRINT_BYTE
 BOOT_PRINT_END:         RTS
-FBC_PAD_BOOT_RECOVERY_TEXT:
- DB $FF
 BOOT_RECOVERY_TEXT:     DB $0D,$0A,"FIXED F RECOVERY",$0D,$0A,"A/B U A|B W",$0D,$0A,0
 BOOT_PROMPT_TEXT:       DB "REC> ",0
 BOOT_CONFIRM_TEXT:     DB "Y then Enter> ",0
 BOOT_BINARY_TEXT:      DB "SEND 4096 BIN",$0D,$0A,0
 BOOT_DONE_TEXT:        DB "COMMITTED",$0D,$0A,0
-BOOT_FAILED_TEXT:      DB "REFUSED",$0D,$0A,0
+BOOT_FAILED_TEXT:      DB "REFUSED: ",0
+BOOT_REASONS:
+BOOT_REASON_SYNTAX:     DB "use A/B/W/U A|B",0
+BOOT_REASON_ACTIVE:     DB "active slot",0
+BOOT_REASON_PREFERRED:  DB "preferred slot",0
+BOOT_REASON_CONFIRM:    DB "cancelled",0
+BOOT_REASON_IMAGE:      DB "invalid image/ABI/CRC",0
+BOOT_REASON_GENERATION: DB "generation not newer",0
+BOOT_REASON_FLASH:      DB "journal/wear refused",0
+BOOT_REASON_TIMEOUT:    DB "flash timeout",0
+BOOT_REASON_VERIFY:     DB "flash verify",0
 BOOT_CHOICE_MONITOR:    DB $0D,$0A,"MONITOR ",0
 BOOT_CHOICE_GEN:        DB " gen ",0
 BOOT_CHOICE_VALID:      DB " VALID",0
@@ -686,7 +744,6 @@ BOOT_CHOICE_TEXT:       DB $0D,$0A,"A/B/S,Enter default [3s]: ",0
                         DB $FF,$FF
 ; Read at most 4*256 pending FTDI bytes, stopping at the first empty poll.
 ; No wait for more input; reset software buffering once, before input opens.
-FBC_PAD_BOOT_FIFO_DRAIN:
 BOOT_FIFO_DRAIN:        LDY #$04
                         LDX #$00
 BOOT_FIFO_DRAIN_NEXT:   JSR V2W_RAW_POLL
@@ -696,14 +753,11 @@ BOOT_FIFO_DRAIN_NEXT:   JSR V2W_RAW_POLL
                         DEY
                         BNE BOOT_FIFO_DRAIN_NEXT
 BOOT_FIFO_DRAIN_DONE:   JMP V2W_RX_RESET
-FBC_PAD_BOOT_COMPAT_DATA:
 BOOT_COMPAT_DATA:       DB $00,$00,$00,$00
                         INCLUDE "str8n-v2-journal.inc"
 ; A missing/invalid journal never permits an erase. Only completely blank
 ; C/D permits bootstrap programming of bytes which are FF or already equal.
 ; A torn matching upload resumes without programming any byte twice.
-FBC_PAD_BOOT_UPDATE_WRITE:
- DB $FF,$FF,$FF,$FF,$FF,$FF
 BOOT_UPDATE_WRITE:      JSR BOOT_META_READ
                         BCS BOOT_UPDATE_ACCOUNTED
                         STZ V2_PTR
@@ -729,8 +783,8 @@ BOOT_UPDATE_ACCOUNTED:  LDA #$01
                         JMP V2W_MUTATE
 BOOT_BOOTSTRAP_REFUSE:  SEC
                         RTS
-FBC_PAD_BOOT_WORKER_IMAGE:
 BOOT_WORKER_IMAGE:      INCLUDE "worker-image.inc"
+BOOT_VECTOR_IMAGE: INCLUDE "vectors-image.inc"
 BOOT_END:
                         ENDMOD
                         END

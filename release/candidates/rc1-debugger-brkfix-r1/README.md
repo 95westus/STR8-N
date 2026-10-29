@@ -1,5 +1,11 @@
 # Separate DBG1 BRK edge-fix candidate
 
+Owner-local **current RC1 g0034** now carries the F recovery corrections and an
+explicit hexadecimal boot generation while retaining the later monitor/ASM
+features installed on 2604/2609. See [g0034 status](../../../docs/rc1/R10_G0034.md).
+The v1g r9 distribution described below remains a historical/published artifact;
+it is not the feature baseline to substitute for those boards' current RC1.
+
 Current distribution **rc1 v1g r9** retains the exact r8 firmware and adds the
 corrected uniform source-aware updater. Direct WDCMONV2 → v1g and beta4 → v1g
 trials passed on 2604 and 2609, both MON A/B, with original RAM and retained

@@ -41,7 +41,7 @@
   },
   {
     "name": "V2_BANNER",
-    "text": "\r\nSTR8-N {version} B"
+    "text": "\r\nSTR8-N {version} g{generation_hex} B"
   },
   {
     "name": "V2_CPU_02_TEXT",

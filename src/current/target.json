@@ -1,6 +1,6 @@
 {
-  "candidate": "fixed-f-flow-size",
-  "firmware_sha256": "c85c4055eac41e5e522f1bc62f2bd354957018e3afc1ccdc25a91e52a55a980e",
-  "fixture": "tests/baselines/f-flow-current.json",
-  "fixture_sha256": "40983d1d7b6e648471a01b26a10e62108989230fa7395602239d17c2199bcb27"
+  "candidate": "rc1-r10p2-current",
+  "firmware_sha256": "0df4a802d618c0df5e658dcf2cd05037f0a892a209abaeac6bca0d595c468945",
+  "fixture": "tests/baselines/rc1-r10p2-current.json",
+  "fixture_sha256": "c1a813ad58aa62f49d23858698d2f526d86431ce9fea36507aa480bd53bc839f"
 }

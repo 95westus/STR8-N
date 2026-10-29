@@ -1,5 +1,43 @@
 # STR8-IN/65 Task List
 
+## STR8N-F foreground release
+
+- [x] Publish STR8N-F v0.2.0 with a focused operator kit, separate source kit,
+  exact existing firmware, inherited evidence and clear supported scope.
+  No assembly rebuild, CPU-model rerun or board installation. 2205 read-only.
+  [Published release](https://github.com/95westus/STR8N-F/releases/tag/v0.2.0).
+- [x] Prepare an unpublished [F compaction build checkpoint](prototypes/str8nf-fcompact-r1/README.md):
+  recover 88 bytes, yielding a 483-byte tail; rebuild matching PR05 components
+  once and check static address/CRC bindings. No CPU simulations or board access.
+- [ ] Qualify that PR05 candidate on an authorized target before promotion;
+  preserve boot records, opaque images and owner RAM. Exclude read-only 2205.
+- [x] Adopt [MIN1](prototypes/str8nf-minimal-r1/README.md): opaque B0-B2 and
+  B3:8/9/A/B/E (116 KiB); C/D journal, F recovery. Prepare matching RAM tools
+  and verbose WDC RAM migration/export source, preserving the frozen 4K F.
+- [ ] Accept MIN1 factory migration and F/recovery/journal/opaque operation on
+  hardware before publishing it. Existing-SNBT F upgrade and generic live
+  F-recovery provisioning remain separate uncompleted paths; no board touched.
+- [x] Prepare [STR8N-F BASE1 / PR05](prototypes/str8nf-base1-r1/README.md):
+  add F name/version/generation at startup, retain old PR05 addresses and freeze
+  F; add WDC resident recognition to RAM MAP and correct map roles/nibble and
+  compact-command issues. No flashing, CPU model or 2205 access.
+- [ ] Complete the BASE1 hardware/release gates in
+  [the issue record](prototypes/str8nf-base1-r1/docs/ISSUES_RESOLVED.md).
+
+## October 28 checkpoint: inventory and optional message journal
+
+- [x] Inventory all four connected boards and preserve CPU-correct private
+  WDCMONv2 backups; identify local SPI-enhanced candidates for future cases.
+  No fixture flashing or booting is part of this inventory.
+  [Completed inventory](docs/BOARD_INVENTORY_2026-10-28.md): 2604 B0 is erased;
+  its CPU-correct archived reference is separate from live captures.
+- [ ] Implement the [b16 message/metadata journal direction](docs/STR8N_B16_MESSAGE_JOURNAL_PLAN.md)
+  using only a persistent reservation from optional EDU SPI SRAM WORK space.
+  Preserve formatted program storage and the separate C/D boot journal; retain
+  ordinary startup/status wording such as EDU ON/OFF as journal messages.
+- Workflow: incremental checkpoints; no routine simulation/offline group checks
+  and no second build unless a concrete requirement makes it necessary.
+
 This is the working backlog for the standalone STR8-N / STR8-IN/65 W65C02
 project. Check an item only when its artifact hashes, host checks, board
 transcript, and final flash readback agree. Keep owner-local WDCMONv2 images
@@ -32,7 +70,26 @@ beta35/bf1 docs are records, not current campaign instructions.
 Source/tool checkpoint: [release history](docs/RELEASE_SOURCE_CHECKPOINT.md).
 Current user docs: [rc1 manuals](docs/rc1/README.md).
 
+## Deferred bank menu launcher recorded 2026-10-27
+
+- [ ] Deferred by owner direction: build a menu launcher for `FLASH`, `IO`,
+  `FILE` and `PROGRAM`. Map FLASH to B0:8 (entry `$8000`), show the other
+  pages as planned, and provide `Q` back to `B3>` through a validated MON.
+  Verify that the intended FLASH image is installed and compatible before
+  dispatch. The initial 2512 trial restored B0; the later owner-requested
+  leave-installed setup and original-B0 backup are recorded in the guide.
+  Resume implementation only when requested; no launcher build, installation
+  or board change is authorized by recording this idea. See the
+  [bank application design](docs/STR8N_B14_BOOT_AND_RECOVERY_GUIDE.md#bank-applications-and-the-flash-page-example).
+
 ## Future v2.1: ABI and metadata organization
+
+- [ ] Future-version RTC event journal: timestamp detected clock/weekday
+  mismatches, time corrections and trim/control changes, retaining old/new
+  values, intent, verified outcome and reference quality. Keep a complete host
+  history; design onboard storage and a preserving migration before changing
+  the MCP EEPROM's existing four-slot PF allocation. Owner request recorded
+  October 26, 2026. [Proposal](docs/RTC_EVENT_JOURNAL_PROPOSAL.md).
 
 v2.0rc1 remains the current release and installed version on 2604/2609.
 The rc1 package-revision-2 UTC label fix is published, verified offline and
@@ -45,8 +102,18 @@ release tag or ZIP. The separate v2.1 work and stash remain preserved.
 - [ ] Find and validate the ABI base at runtime through a documented bootstrap
   discovery mechanism, then resolve service entries from its directory. Define
   explicit absent/incompatible results and avoid private linked addresses.
-- [ ] Design an ABI for all eight LEDs, including logical bit masks, masked
-  updates, ownership and coexistence with monitor/console status use.
+- [ ] Design the LED ABI for EDU's eight LEDs and SXB CS0-CS3 indicators,
+  including logical bit masks, latched versus strobed behavior, ownership
+  and coexistence with monitor/console status use.
+- [ ] Future idea recorded October 27, 2026: map EDU LED/status patterns to
+  an equivalent CS0-CS3 display, preserving common status meanings. Define
+  the eight-to-four translation and any combined/ambiguous states later;
+  no mapping, timing contract or implementation is assigned yet.
+- [ ] Alongside the LED ABI, propose piezo buzzer on/off control for the EDU
+  and SXB CS0-CS3 board configurations: capability/state query, explicit
+  on/off, ownership, quiet cleanup and preservation of shared I/O. Advertise
+  unavailable where no supported buzzer output exists. Recorded October 27,
+  2026; proposed only, with no service IDs or implementation assigned.
 - [ ] Design timer ABIs for both VIA chips: discovery and ownership of each
   chip's T1/T2, configuration, start/stop, counter/status reads and interrupt
   handling without disturbing unrelated VIA functions.

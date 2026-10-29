@@ -6,6 +6,18 @@ host. No current firmware is edited or installed, and neither board is
 contacted. An actual board trial is a later, separately authorized step with
 fresh admission and preservation checks.
 
+## Deferred host terminal investigation (October 24, 2026)
+
+**Deferred; not started.** Investigate whether Python/pyserial can provide a
+Windows and Linux terminal program with interactive serial input/output and
+an option to select and send BIN files.
+
+Evaluate byte-exact raw BIN sending for F's RAM loader, including its ready
+marker and three-second idle auto-run. Keep text line-ending handling separate
+from binary data. Consider the opaque installer's OIP1 framing as an explicit
+transfer mode. Reuse serial ownership/coordination safeguards and test offline
+before a board trial. This item schedules no automatic work or board changes.
+
 ## Prepare the host kit
 
 With the existing verified build and model dependencies available, use a new

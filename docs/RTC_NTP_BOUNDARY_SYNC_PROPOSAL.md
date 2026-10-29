@@ -87,6 +87,44 @@ Additional TODOs:
 - [ ] Model timer scheduling and then verify on hardware with observed RTC
   transitions. No timer was programmed and no RTC was set during this review.
 
+## Expected accuracy and measurement targets
+
+These are engineering estimates and prototype targets, not measured performance
+or a guaranteed UTC error bound. For the existing host/USB path, plan initially
+for **tens of milliseconds (roughly 10-100 ms)** of absolute RTC-to-UTC error
+under favorable NTP and transport conditions, subject to measuring the RTC's
+write/start response. Poor samples, transport asymmetry, or variable oscillator
+startup can make the error larger. Reject a sample or report a wider bound when
+the measured uncertainty does not support the target.
+
+| Contribution | Planning expectation |
+| --- | --- |
+| Timer resolution at nominal 8 MHz | 0.125 microseconds per tick; resolution is not UTC accuracy |
+| Local deadline-to-commit repeatability | Target below 100 microseconds after modeling polling and compensating the I2C commit path; unverified |
+| NTP reference and host-to-board mapping | Likely dominant millisecond-scale terms; measure each run rather than assigning a fixed guarantee |
+| RTC write/start and first transition | Unknown until measured; may dominate despite an accurate local trigger |
+| Board clock error during countdown | Frequency error in ppm multiplied by wait time; e.g. 100 ppm adds 0.1 ms over one second |
+
+The existing [storage timing record](STR8N_V2_STORAGE_TIMINGS_2026-10-08.md)
+observed roughly 16-ms USB quantization in host command timing. That is evidence
+against promising sub-millisecond synchronization through the present transport,
+not a measured limit for the proposed timestamp-exchange implementation.
+Repeated exchanges can identify low-delay observations but cannot prove away
+fixed directional delay asymmetry. NTP offset, round-trip delay and dispersion
+must be retained as described in [RFC 5905](https://www.rfc-editor.org/rfc/rfc5905.html#section-8).
+
+Treat **1-10 ms absolute alignment as a stretch target**, requiring measured
+improvements to time mapping and confirmation of RTC behavior. Do not advertise
+microsecond UTC synchronization from timer resolution alone. A hardware timing
+reference such as PPS would be a separate future option, outside this software
+proposal and the current no-hardware-modification scope.
+
+Verify actual second transitions, not just integer calendar readback. Bound
+read acquisition times or capture a suitable hardware signal if already wired
+and available; report initial phase error separately from later crystal drift.
+For scale, a residual RTC rate error of 1 ppm accumulates 86.4 ms per day, so a
+precise SET does not replace oscillator calibration or periodic synchronization.
+
 ## Current behavior and acceptance
 
 `src/current/provider/rtc-provider.asm`, at `SET_CLOCK`, validates the request,

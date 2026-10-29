@@ -24,9 +24,7 @@ class Baselines:
         if sha(evidence.read_bytes()) != entry['sha256']:
             raise ValueError('Phase-2 build evidence changed')
         self.evidence = read(evidence)
-        for name in ('version','generation','boot_compatibility'):
-            if layout[name] != self.meta[name]:
-                raise ValueError('Layout differs from baseline: '+name)
+        self.layout = layout
         self.legacy = (root/'tests/baselines/phase1-legacy-debugger.bin').read_bytes()
         if sha(self.legacy) != self.meta['baseline_expected']['debugger-a000.bin']['sha256']:
             raise ValueError('Phase-1 legacy debugger fixture changed')
@@ -40,7 +38,8 @@ class Baselines:
             approved = {'console-edit':'5ccab9fd0ce49063b99411f879efcd1e3eb9a3d1096376c085989fe37c0a265e',
                         'monitor-size-branches':'efb5f2c031be32d268aefb9bc14a16d0b8f7f4bef12974293664de517ec83dad',
                         'fixed-f-size-recovery':'7fcec7cdbf8a9c9aed0766894d0d63a396c48d38e2da7cf90f894a565f2485f1',
-                        'fixed-f-flow-size':'c85c4055eac41e5e522f1bc62f2bd354957018e3afc1ccdc25a91e52a55a980e'}
+                        'fixed-f-flow-size':'c85c4055eac41e5e522f1bc62f2bd354957018e3afc1ccdc25a91e52a55a980e',
+                        'rc1-r10p2-current':'0df4a802d618c0df5e658dcf2cd05037f0a892a209abaeac6bca0d595c468945'}
             if selection['candidate'] not in approved or selection['firmware_sha256'] != approved[selection['candidate']]:
                 raise ValueError('Unrecognized selected firmware target')
             if sha(fixture.read_bytes()) != selection['fixture_sha256']:
@@ -48,6 +47,10 @@ class Baselines:
             self.target = read(fixture)
             if self.target['firmware_sha256'] != selection['firmware_sha256']:
                 raise ValueError('Selected firmware and fixture differ')
+        expected = self.target if self.target and self.target['candidate']=='rc1-r10p2-current' else self.meta
+        for name in ('version','generation','boot_compatibility'):
+            if layout[name] != expected[name]:
+                raise ValueError('Layout differs from selected baseline: '+name)
 
     def verify(self, assembly, source_symbols, debugger_symbols, image, debugger):
         if self.target is not None:
@@ -106,7 +109,7 @@ class Baselines:
             debugger_symbols=fingerprint(debugger_symbols)==target['debugger_symbol_fingerprint'],
             debugger_in_image=image[0x2000:0x3000]==debugger)
         report = dict(passed=all(checks.values()),candidate_id=target['candidate'],
-            version=self.meta['version'],generation=self.meta['generation'],board_access=False,
+            version=self.layout['version'],generation=self.layout['generation'],board_access=False,
             installation_permitted=False,firmware_sha256=sha(image),firmware_matches=checks['firmware'],
             target_checks=checks,artifacts=artifacts,compiled=assembly.compiled,source_files=assembly.sources,
             historical_phase1_and_phase2_retained=True,current_debugger_sha256=sha(debugger),

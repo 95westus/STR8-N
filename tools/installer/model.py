@@ -13,8 +13,8 @@ from .engine import runtime as r, legacy_transport as wire, install_transport as
 from .flash_model import Memory as BaseMemory
 
 
-def execute(pkg, plan, initial, *, is816, deps02, deps816, fault=None):
-    pkg,plan=Path(pkg),Path(plan);info=planning.verify(pkg,plan)
+def execute(pkg, plan, initial, *, is816, deps02, deps816, fault=None, verifier=None, owner_erased_b0=None):
+    pkg,plan=Path(pkg),Path(plan);info=(verifier or planning.verify)(pkg,plan)
     symbols=r.read(pkg/'installer/engine/template/symbols.json')
     sys.path[:0]=[str(Path(deps02).resolve()),str(Path(deps816).resolve())]
     from py65.devices.mpu65c02 import MPU as CPU02
@@ -96,7 +96,8 @@ def execute(pkg, plan, initial, *, is816, deps02, deps816, fault=None):
     assert list(map(bytes,memory.banks))==expected
     assert [[e[1],e[2]>>12] for e in memory.events if e[0]=='erase']==info['transaction']['planned_erase_order']
     owner_expected=bytearray(initial[0])
-    owner_erased_b0=[x['address']//4096 for x in package.validate(pkg)['cleanup']['owner_erase']] if package.validate(pkg)['cleanup'] else []
+    if owner_erased_b0 is None:
+        owner_erased_b0=[x['address']//4096 for x in package.validate(pkg)['cleanup']['owner_erase']] if package.validate(pkg)['cleanup'] else []
     for sector in owner_erased_b0:
         assert sector in (8,9,10,11), 'Named demo cleanup scope'
         owner_expected[(sector-8)*4096:(sector-7)*4096]=b'\xff'*4096

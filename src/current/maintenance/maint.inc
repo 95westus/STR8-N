@@ -64,16 +64,16 @@ MM_BM_INIT:                STZ $6100,X
                         CMP #$01
                         BNE MM_BM_UNSUPPORTED
                         JSR X28_R9
-                        CMP #$31
+                        CMP #$32
                         BNE MM_BM_UNSUPPORTED
                         JSR X28_R10
-                        CMP #$47
+                        CMP #$30
                         BNE MM_BM_UNSUPPORTED
                         JSR X28_R11
-                        CMP #$42
+                        CMP #$31
                         BNE MM_BM_UNSUPPORTED
                         JSR X28_R12
-                        CMP #$44
+                        CMP #$52
                         BNE MM_BM_UNSUPPORTED
                         LDA V2_RESIDENT
                         CMP #$04

@@ -23,7 +23,7 @@ def build(root, out, assembler, linker):
     first = next(i for i,m in enumerate(messages) if m['name']=='V2_BAD_PREFIX')
     pool = bytearray()
     for i, message in enumerate(messages):
-        raw = bytearray(message['text'].replace('{version}',layout['version']).encode('ascii'))
+        raw = bytearray(message['text'].replace('{version}',layout['version']).replace('{generation_hex}',f'{layout["generation"]:04X}').encode('ascii'))
         if i < first:raw = raw[4:]
         raw[-1] |= 128; pool.extend(raw)
     db(stage/'core/text-image.inc',pool,'V2_TEXT:\n')

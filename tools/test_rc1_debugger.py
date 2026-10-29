@@ -38,6 +38,8 @@ def main():
     ap.add_argument('--smoke-package',type=Path,help='rehearse the exact packaged board smoke images and command expectations')
     ap.add_argument('--manuals',type=Path,help='assemble and execute marked examples from ASM_GUIDE.md and ABI_REFERENCE.md offline')
     ap.add_argument('--skip-boot',action='store_true',help='development subset; report records omitted boot coverage')
+    ap.add_argument('--boot-compatibility',type=lambda s:int(s,0),default=0x44424731,
+                    help='expected bootstrap contract for a separately identified firmware build')
     a=ap.parse_args();out=a.build.resolve()
     harness_hash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     sys.path.insert(0,str(a.deps))
@@ -177,7 +179,7 @@ def main():
             for address,value in s19(out/'s/xip/gate.s19').items():m.ram[address]=value
             m.ram[0x7BFA]=3
             marker=utilities.get('BOOT_COMPAT_DATA',boot['BOOT_COMPAT_DATA'])-0x8000
-            assert bytes(m.banks[3][marker:marker+4])==bytes.fromhex('31474244')
+            assert bytes(m.banks[3][marker:marker+4])==a.boot_compatibility.to_bytes(4,'little')
             if mismatch=='legacy':m.banks[3][marker:marker+4]=bytes.fromhex('010967EC')
             elif mismatch is not None:m.banks[3][marker+mismatch]^=1
             cpu.pc=utilities['MM_START'];cpu.sp=255;cpu.p=0x24

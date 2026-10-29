@@ -481,10 +481,9 @@ str8n_v2_journal_LONG_400:
                         SEC
                         RTS
 
-BOOT_VECTOR_IMAGE: INCLUDE "vectors-image.inc"
 F_SIZE_PADDING:
 FBC_PAD_J_CRC_INIT:
- DB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+ DB $FF,$FF,$FF,$FF
 J_CRC_INIT:             LDA #$FF
                         STA J_CRC
                         STA J_CRC+1

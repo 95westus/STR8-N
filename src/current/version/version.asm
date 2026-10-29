@@ -82,6 +82,9 @@ RUNNING_BAD:
 SLOT_LIST:
         ; Recompute default using the bootstrap's actual preference/validity
         ; rules. Its startup formatter labels BOOT_ACTIVE as the default.
+        LDX #<BUILD_TEXT
+        LDY #>BUILD_TEXT
+        JSR PRINT
         JSR BOOT_SELECT
         LDA BOOT_BEST
         STA BOOT_ACTIVE
@@ -116,6 +119,7 @@ PRINT_NEXT:
                         BRA PRINT_NEXT
 PRINT_DONE:
         RTS
+BUILD_TEXT DB "Build: rc1-r10p2-current",13,10,0
 UNNAMED_TEXT DB "Board: unnamed",13,10,0
 RUNNING_TEXT DB "Running: MONITOR ",0
 GEN_TEXT DB ", gen ",0

@@ -1,6 +1,41 @@
-# STR8-N
+# STR8N-F v0.3.0 — BASE1 / PR05
 
-Current firmware development uses [the authoritative source tree](src/current/README.md).
+**[Download N-F v0.3.0 — BASE1 / PR05](https://github.com/95westus/STR8N-F/releases/tag/v0.3.0)**
+
+> 4KB of firmware. One board. Up to four boot environments.
+
+For WDC W65C02SXB and W65C816SXB (65C816 emulation), with optional matching
+W65C02EDU/W65C816EDU add-ons. BASE1 boot/recovery does not require EDU.
+Compatible, user-supplied images run one at a time on shared CPU, RAM and peripherals.
+
+The kit includes the Python serial terminal, verbose WDC RAM migration programs,
+CONFIG, OPAQUE, MAP, READBACK and DEMO. F stays **STR8N-F 0.3.0 g00000001 /
+BASE1 / PR05**, exactly 4096 frozen bytes. The manual covers opaque-image
+installation/readback and saving an enabled bank as the default boot.
+
+[User manual](https://github.com/95westus/STR8N-F/blob/main/docs/USER_MANUAL.md) /
+[4KB F.bin](https://github.com/95westus/STR8N-F/releases/download/v0.3.0/F.bin) /
+[operator ZIP](https://github.com/95westus/STR8N-F/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0.zip) /
+[N-F source and release scope](https://github.com/95westus/STR8N-F).
+
+## Full-system STR8-N and historical development
+
+The 2512 FLASH and 2609 F-up development now share the
+[unified STR8N-F source/build](bootstrap-opaque/docs/UNIFIED_SYSTEM.md), with
+one CONFIG and toolset and profiles preserving each board's layout and settings.
+The published RC1 workflow below remains a separate firmware line.
+
+The [October 28 board inventory](docs/BOARD_INVENTORY_2026-10-28.md) records
+all four boards and private WDCMONv2 backups. The planned
+[b16 message journal](docs/STR8N_B16_MESSAGE_JOURNAL_PLAN.md) uses only optional
+SPI SRAM WORK space and preserves formatted program storage.
+
+The separate experimental b14/b15 boot/recovery work on 2512 is documented in the
+[boot, recovery and configuration guide](docs/STR8N_B14_BOOT_AND_RECOVERY_GUIDE.md).
+It covers F, boot records, RAM tools, examples and implemented/planned status;
+these prototype instructions are separate from the released RC1 workflow below.
+
+Full-system STR8-N development uses [its source tree](src/current/README.md).
 Run `python -B tools/build_current.py` or `make` for a clean offline build.
 The build verifies the selected Monitor A/B and fixed-F size candidate byte for byte
 against its qualified target fixture. Phase 1/2 baselines remain preserved. This includes

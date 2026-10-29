@@ -1,7 +1,7 @@
 {
   "version": "2.0rc1",
-  "generation": 50,
-  "boot_compatibility": 1145194289,
+  "generation": 52,
+  "boot_compatibility": 1378955314,
   "image_bytes": 98304,
   "bank_order": [
     1,

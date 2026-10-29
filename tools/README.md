@@ -2,6 +2,7 @@
 
 | Purpose | Entry or implementation |
 | --- | --- |
+| Read-only four-board inventory and WDCMONv2 preservation | `inventory_boards_readonly.py`, `summarize_board_inventory.py`; [October 28 inventory](../docs/BOARD_INVENTORY_2026-10-28.md). Monitor reads/bank selection only; no flashing or SRAM formatting. |
 | Current firmware | `build_current.py`, `str8build/`, `src/current/` |
 | Compatibility build alias | `verify_current_sources.py` forwards to the same builder |
 | Profile-driven installer | `install_current.py`, `installer/` |
@@ -27,6 +28,37 @@ Published-release support is retained byte for byte: `test_rc1_debugger.py`,
 Frozen release recipes reference these paths/hashes. They are distinct from
 the current build and installer implementation. Model fetching remains an
 explicit network operation; offline checks use already installed dependencies.
+
+## 2512 Tera Term startup display
+
+Run `powershell -File tools/Launch-2512-TeraTerm.ps1` after closing any direct
+COM4 terminal. The launcher discovers only 2512's USB adapter, honors the shared
+serial lease and preservation gates, and starts Tera Term through a private
+loopback connection. Its copied profile uses character-at-a-time mode with
+Telnet and Telnet auto-detection disabled; the normal Tera Term profile is not
+edited. The installed local pyserial runtime is used; nothing is downloaded.
+
+For the first received bytes of that connection, `teraterm_boot.py` eats exactly
+one FF only if followed immediately by `CRLF WAIT... CRLF`. The byte is retained
+in `output/terminal/2512/<session>/serial-raw.jsonl`. Other prefixes, multiple FF
+bytes, a truncated marker, and all later bytes pass unchanged. Any transmission
+from Tera Term cancels pending recognition before forwarding user data. A held
+partial prefix is released unchanged after ten seconds. The launcher itself
+sends no board commands and changes no firmware, RAM, configuration or RTC.
+
+This is a **one-shot connection-start filter**: use a fresh launcher connection
+before physical RESET, without first typing commands. Reopen it to arm another
+startup. `-Raw` bypasses filtering entirely. Closing its Tera Term window closes
+COM4 and releases the lease. Direct COM4 connections retain their raw behavior.
+TCP mode does not forward modem-line controls or serial BREAK; use a direct
+serial connection when those operations are needed.
+
+`python -B tools/test_teraterm_boot.py --out <new-folder> --native` checks the
+saved FF-prefixed boot, split reads, nonmatching prefixes, raw retention,
+operation gates and binary data. `--native` uses installed Tera Term against a
+simulated serial receiver over loopback, including 4,096-byte binary send and
+receive files. No board port is opened by the tests. The native test also checks
+that the normal Tera Term profile is byte-identical afterward.
 
 Obsolete source/build/install entry points are in the
 [verified history archive](../archive/README.md). Restoring history never
