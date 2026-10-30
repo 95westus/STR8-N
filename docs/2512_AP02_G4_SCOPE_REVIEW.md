@@ -1,9 +1,13 @@
 # 2512 current-g4 AP/02 flash-app qualification: scope review
 
-**Prepared; awaiting exact target approval.** October 30, 2026.
-65C02 / FT245 / COM4, MON B g8, services g4. No board port has been opened
-for this preparation. This closes the version-specific positive app-launch
-gap before a proposed soak; a soak is not started by this review.
+**Owner approved one-erase trial; passed.** October 30, 2026.
+See [acceptance](2512_AP02_G4_ACCEPTANCE.md). The scope below retains the
+pre-trial review.
+
+65C02 / FT245 / COM4, MON B g8, services g4. The preparation opened no board
+port; the approved execution is recorded separately. This closes the
+version-specific positive app-launch gap before a proposed soak; a soak is
+not started by this review.
 
 ## Current evidence and required fresh admission
 
@@ -80,4 +84,5 @@ Plan SHA-256:
 `0d1570f0b19651271b612c2eb63f67a68ae91d43680aaf1e92d2e40440b21d20`.
 
 The executable host driver accepts a separate owner-approval record bound to
-this plan and its exact driver hash. This review grants no flash permission.
+this plan and its exact driver hash. The completed approval grants no
+additional erase or programming allowance.

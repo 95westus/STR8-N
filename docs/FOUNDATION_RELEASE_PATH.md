@@ -104,10 +104,15 @@ Current MON/tools evidence:
 | Installed MON B g8, current g4 maps/wear and TIME | Passed | Passed |
 | Matching flash MAINT LOAD, CLOCK, PROGRAM Table, BATCH and AUTO/NO | Passed | Passed |
 | Positive current SP1 SS1 Store/Restore/run and CRC refusal | Passed explicit Store; host scope error exactly repaired | Passed AUTO/explicit Store |
-| Positive AP/02 flash-app launch through current g4 | Earlier g3 receipt; not repeated with g4 | Passed; original WDC restored |
+| Positive AP/02 flash-app launch through current g4 | Passed current g4; original FF sector/B0 restored | Passed; original WDC restored |
 | Resident ASM/DBG | Deferred; nonblocking | Deferred; nonblocking |
 
-2609's subsequent [permanent MON A g8 acceptance](2609_MON_A_G8_ACCEPTANCE.md)
+The [2512 current-g4 AP/02 acceptance](2512_AP02_G4_ACCEPTANCE.md) also passed,
+using one B0:9 restoration erase and CC00/seq1042. Its 28 old records,
+original images, B default and owner RAM/ZP are preserved; native TIME/NTP
+continuity passed. No new soak or published download was created.
+
+2609's separate [permanent MON A g8 acceptance](2609_MON_A_G8_ACCEPTANCE.md)
 closes its matching A/B profile, physical A startup and RTC readmission.
 One A erase and one D300/seq1034 append retained all 19 prior records; default
 S, other images, frozen F and owner RAM/ZP are preserved. The current journal
