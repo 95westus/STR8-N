@@ -5,6 +5,10 @@
 [RTC receipt](../monitors/validation/2609-mon-feature-rtc.json),
 [operator manual](MON_FEATURE_PREVIEW.md).
 
+For the latest slot/journal/RAM state, see the
+[current recorded inventory](2609_CURRENT_INVENTORY.md). The installation
+checkpoint below was followed by positive PROGRAM and AP/02 acceptance.
+
 2609 now has frozen N-F 0.3.0 g1 BASE1/PR05, MON B 0.1.0-dev g8,
 services g4, WB2 g5 and PROGRAM/SP1 g1. MON A remains retained b15 firmware
 whose execution under BASE1 is unqualified. At REC>, type `B` and Enter;
@@ -24,9 +28,9 @@ SPI clocks. `BATCH T;T` completed; malformed separators were refused. Missing-
 name Restore and AUTO Store preview were checked, with NO canceling the Store.
 Q returned from tools to MON B and from MON B to REC>.
 
-Positive PROGRAM Store/Restore/run and AP/02 owner-app launch retain their
-2512/65C02 receipts. No positive 816 storage-write/run or owner-app launch
-claim is added. Full SOURCE/ASM/DEBUG, complete core/app BATCH parity,
+At this initial installation checkpoint, positive PROGRAM Store/Restore/run
+and AP/02 owner-app launch retained only the separately scoped earlier receipts.
+Later positive 816 trials are linked below. Full SOURCE/ASM/DEBUG, complete core/app BATCH parity,
 advanced CLOCK, the 4KB FLASH editor and CONFIG integration remain open.
 
 ## Writes and preservation
@@ -43,7 +47,7 @@ zero F writes, zero C erases, no power cuts. All 15 pre-repair C rows remain
 at their original locations. Old D000/seq1014 is preserved in a complete,
 hash-verified host D-sector archive rather than on the chip.
 
-Final journal: 17 valid rows, latest D000/seq1031. C=78, D=48, E=45, F=31;
+Installation checkpoint journal: 17 valid rows, latest D000/seq1031. C=78, D=48, E=45, F=31;
 B2:8=603, B2:9=262, B2:A=14 and B3:B=55. Default S, mask00, entries8000 and
 other boot-policy bytes are unchanged. B0/WDC, B1, other B2 sectors and
 B3:8/9/A/B/F outside the explicit target/history changes match their expected
@@ -83,5 +87,7 @@ The same installed tools later passed the
 [2609 PROGRAM Store/Restore/run trial](2609_PROGRAM_POSITIVE_ACCEPTANCE.md).
 Its separate receipt adds positive SS1 storage/run evidence with all temporary
 bytes restored and no flash/journal writes. The earlier query/cancel-only
-checkpoint above remains historical; neither pass qualifies flash AP/02 launch,
-native mode or the still-required [ASM/DBG port](MON_ASM_DBG_RELEASE_GATE.md).
+checkpoint above remains historical. The separate
+[AP/02 flash-launch trial](2609_AP02_ACCEPTANCE.md) also subsequently passed,
+leaving 19 records at seq1033 with original WDC restored. Native 816 tools and
+the deferred, nonblocking [ASM/DBG port](MON_ASM_DBG_RELEASE_GATE.md) remain separate.
