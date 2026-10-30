@@ -100,6 +100,11 @@ M_BIND_NO_SLOT:
         LDA #>MON_F_NO_SERVICE
         STA F_JE_HANDLER+1
         RTS
+; UI/1 caller has already admitted the MI image and reset console/stack.
+; Bind the monitor's private F gates, retain session/cache, omit the banner.
+M_QUIET_ENTRY:
+        JSR M_BIND
+        JMP M_PROMPT
 M_READ_BYTES:
         LDA F_SELECTED
         PHA

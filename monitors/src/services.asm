@@ -92,8 +92,41 @@ S_MODULE_NAMES:
         LDX #<S_CLOCK_WORD
         LDY #>S_CLOCK_WORD
         JSR S_MATCH
-        BCC S_MODULE
+        BCC S_AUTO_NAMES
         BRA S_REQUEST_LOAD
+S_AUTO_NAMES:
+        LDA #<S_AUTO_WORDS
+        STA $69F0
+        LDA #>S_AUTO_WORDS
+        STA $69F1
+S_AUTO_NEXT:
+        LDX $69F0
+        LDY $69F1
+        JSR S_MATCH
+        BCS S_AUTO_LOAD
+        LDY #0
+S_AUTO_SKIP:
+        LDA (S_PTR),Y
+        INY
+        CMP #0
+        BNE S_AUTO_SKIP
+        TYA
+        CLC
+        ADC $69F0
+        STA $69F0
+        BCC S_AUTO_PAGE
+        INC $69F1
+S_AUTO_PAGE:
+        LDA $69F0
+        STA S_PTR
+        LDA $69F1
+        STA S_PTR+1
+        LDA (S_PTR)
+        BNE S_AUTO_NEXT
+        BRA S_MODULE
+S_AUTO_LOAD:
+        INC S_LOADER_REQUEST
+        BRA S_MODULE
 S_MAINT_ARGS:
         STX S_FORCE_END
         JSR S_SKIP
@@ -143,16 +176,23 @@ S_SAVE_MON:
 S_LOAD_COPY:
         LDA S_LOAD_IMAGE,X
         STA SB_LOAD_RAM,X
+        INX
+        BNE S_LOAD_COPY
+        LDX #0
+S_LOAD_COPY_TAIL:
         LDA S_LOAD_IMAGE+256,X
         STA SB_LOAD_RAM+256,X
         INX
-        BNE S_LOAD_COPY
+        CPX #SERVICE_LOADER_TAIL
+        BNE S_LOAD_COPY_TAIL
         STZ $68F1
         LDA #>SB_MODULE_SOURCE
         JSR SB_LOAD_RAM
         BCC S_LOAD_FAILED
         LDA S_HAVE_WB
         STA SB_CLIENT_FLOOR
+        JSR S_CHECK_WB
+        BCC S_LOAD_FAILED
 S_CALL_WB:
         LDA SB_CLIENT_FLOOR
         STA WB_CLIENT_FLOOR
@@ -213,6 +253,14 @@ S_MATCH_OK:
         SEC
         RTS
 S_CHECK_WB:
+        ; A valid older cache is not the current shipping tool module.
+        LDX #5
+S_WB_GENERATION_CHECK:
+        LDA WB_ORIGIN+17,X
+        CMP S_WB_GENERATION,X
+        BNE S_UNHANDLED
+        DEX
+        BPL S_WB_GENERATION_CHECK
         LDX #7
 S_WB_ID:
         LDA WB_ORIGIN,X
@@ -306,12 +354,15 @@ S_PUTS_END:
         INCLUDE "service-wear.inc"
         INCLUDE "service-apps.inc"
 S_WB_MAGIC: DB "MW",WB_FORMAT,WB_PAGES,"PR05"
+S_WB_GENERATION: DB "WG","WORKBENCH_GENERATION_BYTES"
 S_APPS_WORD: DB "APPS",0
 S_APP_WORD: DB "APP",0
 S_MAINT_WORD: DB "MAINT",0
 S_LOAD_WORD: DB "LOAD"
 S_FLASH_WORD: DB "FLASH",0
 S_CLOCK_WORD: DB "CLOCK",0
+S_AUTO_WORDS: DB "S",0,"STORE",0,"T",0,"TABLE",0,"R",0,"RESTORE",0
+        DB "EDU",0,"SRAM",0,"WORK",0,"BATCH",0,"BOOT",0,0
 S_RANGES_TEXT: DB "B0/B1: owner images/records retained. Erased != available.",13,10
         DB "B2:8-A tool bundle; other B2 assets retained; legacy calls disabled.",13,10
         DB "B3:A/B MON; C/D boot/wear; E services; F frozen recovery.",13,10

@@ -42,21 +42,18 @@ def build(out, generation=1, reuse_loader=None):
     branch_layout = {}
     for filename in ('workbench.asm', 'workbench-loader.asm', 'workbench-interface.inc',
                      'workbench-layout.inc', 'workbench-sram.inc', 'workbench-store.inc',
-                     'workbench-batch.inc', 'workbench-clock.inc',
-                     'workbench-program.inc', 'program-layout.inc'):
+                     'workbench-batch.inc', 'workbench-clock.inc', 'workbench-native.inc',
+                     'workbench-program.inc', 'program-layout.inc',
+                     'workbench-monitor-ui.inc', 'monitor-ui.inc'):
         path = ROOT/'monitors/src'/filename
         body = path.read_text(encoding='utf-8')
         body = body.replace('WB_GENERATION_TEXT',generation_text)
+        body = body.replace('"WB_GENERATION_BYTES"',','.join(f'${v:02X}' for v in generation.to_bytes(4,'little')))
         source_hashes[path.relative_to(ROOT).as_posix()] = sha(path.read_bytes())
         if filename not in ('workbench-layout.inc','program-layout.inc'):
             body, info = conservative_branches(body, 'WB_LONG_'+re.sub(r'\W', '_', filename)+'_')
             branch_layout[filename] = info
         (out/filename).write_text(body, encoding='utf-8', newline='\n')
-    rtc_path = ROOT/'monitors/src/rtc-read.inc'
-    source_hashes[rtc_path.relative_to(ROOT).as_posix()] = sha(rtc_path.read_bytes())
-    rtc = rtc_path.read_text().replace('MR_', 'WC_').replace('M_PUTS', 'W_PUTS')
-    rtc, branch_layout['workbench-clock-read.inc'] = conservative_branches(rtc, 'WC_LONG_')
-    (out/'workbench-clock-read.inc').write_text(rtc, encoding='utf-8', newline='\n')
     shutil.copyfile(ROOT/'src/include/str8n-v2-public.inc', out/'str8n-v2-public.inc')
     (out/'workbench-foundation.inc').write_text(
         ''.join(f'{name} EQU ${value:04X}\n' for name, value in private.items()),
@@ -100,6 +97,7 @@ def build(out, generation=1, reuse_loader=None):
     assert len(loader) <= 256, 'Loader overlaps source module at 0300'
     assert len(body) <= module_bytes-2, 'Module overlaps its CRC trailer at 63FE'
     assert body[:8] == b'MW'+bytes((2,pages))+b'PR05'
+    assert body[17:23]==b'WG'+generation.to_bytes(4,'little')
     for offset, target in ((8, 'W_DISPATCH'), (11, 'W_SHELL'), (14, 'W_INIT')):
         assert body[offset:offset+3] == b'\x4c'+symbols[target].to_bytes(2, 'little')
     module = body+b'\xff'*(module_bytes-2-len(body))
@@ -124,11 +122,17 @@ def build(out, generation=1, reuse_loader=None):
                   RAM_borrowed=['0200-1EFF transfer staging', '4800-63FF module', '6400-66FF state'],
                   application_RAM_while_loaded='0200-47FF', system_ZP=['E0-E1', 'E2-E3', 'E6-E7', 'EA'],
                   entry='REC> L or ROM monitor L raw RAM BIN; g8 uses the matching MS service dispatcher',
-                  return_path='Q -> public RAM HOLD -> active monitor, or recovery if unavailable',
+                  return_path='Q -> CRC-admitted UI/1 quiet MON return; intact legacy MON falls back to HOLD; invalid MI returns to recovery',
                   monitor_A_B_changed=False, F_rebuilt=False, hardware_access=False,
                   flash_writes='Explicit S into fully erased owner-declared B0/B1 AREA only; no erase',
                   journal_writes=False, SRAM_writes=False,
                   EDU='Explicit session OFF/ON; ON is a wiring selection, not presence proof',
+                  monitor_UI=dict(requires='UI/1 with at least 6 CRC-covered MON vectors',
+                    commands=['VERSION','V','TIME','quiet Q'],
+                    peripheral_reader='WB TIME reuses MON RTC implementation/cache; native CLOCK has its own full provider',
+                    cold_entry='Initializes selected bank to B3',
+                    MAINT_entry='Preserves caller-selected bank through shell initialization',
+                    Q='Validated quiet MON return preserves selected bank/cache; intact old MON falls back to HOLD; invalid MI returns to REC'),
                   SPI=dict(profile='EDU Rev D PB0 SCK/PB1 MOSI/PB2 SRAM CS/PB5 MISO; PB3 CS kept high',
                            opcodes=['05 RDMR', '03 READ'], automatic_probe=False,
                            layout='SS/01/08 primary fixed 64KiB zero-generation; SS/02/08 nonzero generation and labelled fallback; CRC/commit/reserved fields required',
@@ -141,13 +145,13 @@ def build(out, generation=1, reuse_loader=None):
                                AUTO='Flash append tail after complete/pending SR01 records; no gap reclaim; crossing/corrupt AREA refused; explicit start address retained',
                                run='Explicit R without L; old program ABI not thereby qualified'),
                   batch=dict(text_bytes=34,separator=';',empty_segments='refused before execution',
-                             command_allowlist='checked before execution: B, TABLE/T, ?, HELP, EDU, bare SRAM/WORK',
+                             command_allowlist='checked before execution: VERSION/V, TIME, B, TABLE/T, ?, HELP, EDU, bare SRAM/WORK',
                              stop_on_error=True,cancel='Ctrl-C/ESC between commands or during Table',
                              queue_is_console_input=False,nested_batch=False,
                              completion='returning module commands only; full b35/core/apps parity remains open'),
                   companion_PROGRAM='SP/01 provider at6B00-77FF required for PROGRAM; full RAM packet supplied by services manifest',
-                  planned=['Full CLOCK administration and FLASH sector editor', 'Full BATCH command/app parity',
-                           'Merged maintenance/config/opaque routing',
+                  native_apps='Reserved R CLOCK/R FLASH/R MAINT and BOOT route to the separately packaged RAM overlays; see native acceptance',
+                  planned=['Full BATCH command/app parity', 'Independent large PROGRAM load/handoff',
                            'Source/ASM/DEBUG', 'WORKSPACE allocation review and separate append-only messages'],
                   build_passes=1, assembler_linker_invocations=len(logs),
                   reused_loader_from=str(Path(reuse_loader).resolve().relative_to(ROOT)) if reuse_loader else None,

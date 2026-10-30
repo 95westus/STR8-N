@@ -3,6 +3,7 @@
         INCLUDE "str8n-v2-public.inc"
         INCLUDE "layout.inc"
         INCLUDE "foundation.inc"
+        INCLUDE "monitor-ui.inc"
         CODE
         INCLUDE "entry.inc"
 M_START:
@@ -16,6 +17,14 @@ M_CLEAR:
         STA M_STATE,X
         INX
         BNE M_CLEAR
+        LDA #3
+        STA M_BANK
+; Only entered by a CRC-admitted UI/1 tool, with monitor state preserved.
+M_WARM_ENTRY:
+        SEI
+        CLD
+        LDX #$FF
+        TXS
         LDX #3
 M_RA_CHECK:
         LDA STR8V2_RAM_SIGNATURE,X
@@ -27,8 +36,6 @@ M_RA_CHECK:
         BCC M_BAD_F
         JSR M_BIND
         JSR STR8V2_RAM_RX_RESET
-        LDA #3
-        STA M_BANK
         JSR M_STATUS
 M_PROMPT:
         STZ M_FORCE
@@ -147,6 +154,9 @@ M_TIME_MATCH:
 M_TIME_COMMAND:
         JSR M_END_ARGS
         BCC M_SYNTAX
+        JSR M_SHARED_TIME
+        JMP M_PROMPT
+M_SHARED_TIME:
         JSR MR_SAMPLE
         STA MR_RESULT
         BEQ M_TIME_SHOW
@@ -157,8 +167,9 @@ M_TIME_COMMAND:
         JSR STR8V2_RAM_HEX_OUT
         JSR STR8V2_RAM_NEWLINE
 M_TIME_SHOW:
-        JSR M_STATUS
-        JMP M_PROMPT
+        JSR MR_DISPLAY
+        LDA MR_RESULT
+        RTS
 M_QUIT:
         JSR M_END_ARGS
         BCC M_SYNTAX

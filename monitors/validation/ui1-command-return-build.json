@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "status": "BUILD_ONLY_NOT_EXECUTION_QUALIFIED",
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "F_rebuilt": false,
+  "hardware_access": false,
+  "CPU_simulations": 0,
+  "user_BYPASS": "Quiet monitor return; keep session and omit banner/status",
+  "monitor": "g0000000A-ui1",
+  "workbench": "wb2-g00000007-ui1",
+  "services": "services-g00000005-ui1-r2",
+  "build_attempts": {
+    "MON": 1,
+    "WB": {
+      "failed": 1,
+      "successful": 1,
+      "reason": "Replace unsupported relocatable EQU with a label"
+    },
+    "services": {
+      "successful": 2,
+      "reason": "Add post-load matching-module guard after reviewing the first build"
+    }
+  },
+  "still_open": [
+    "Live common command/return acceptance",
+    "Full CLOCK SET/admin port",
+    "FLASH sector editor",
+    "Resident MAINT/CONFIG/opaque integration",
+    "Extracted unified release acceptance"
+  ]
+}

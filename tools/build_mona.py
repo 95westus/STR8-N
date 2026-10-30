@@ -65,7 +65,7 @@ def build(out, generation):
     private['MON_F_LOAD'] = 0xf000+f.index(load_pattern)
     crc = binascii.crc_hqx(f,0xffff)
     core_sources=('mona.asm','adapter.inc','layout.inc','rtc-read.inc','force.inc',
-                  'workbench-interface.inc','service-interface.inc')
+                  'workbench-interface.inc','service-interface.inc','monitor-ui.inc')
     inputs = {'monitors/src/'+name:sha((ROOT/'monitors/src'/name).read_bytes()) for name in core_sources}
     out.mkdir(parents=True)
     artifacts = {}
@@ -122,6 +122,11 @@ def build(out, generation):
             image[31] = 0
             for offset in range(32,72,2):
                 image[offset:offset+2] = sy['M_UNSUPPORTED'].to_bytes(2,'little')
+            # CRC-covered optional MON/tool API. F does not interpret it.
+            for index,name in enumerate(('M_STATUS','M_SHARED_TIME','M_WARM_ENTRY','MR_SAMPLE','MR_DISPLAY','M_QUIET_ENTRY')):
+                offset=32+2*index
+                image[offset:offset+2]=sy[name].to_bytes(2,'little')
+            image[72:80]=b'UI\x01\x06PR05'
             image[128:128+len(body)] = body
             image[18:20] = binascii.crc_hqx(image[:18]+image[32:],0xffff).to_bytes(2,'little')
             filename = 'STR8N-MON-0.1.0-dev-g'+generation_text+'-'+variant+'.bin'
@@ -166,6 +171,11 @@ def build(out, generation):
                   dump=dict(default_bytes=16,max_bytes='Entire valid non-I/O range',ASCII=True,cancel_between_rows=True),
                   status_limits='-- no reported data; explicit TIME samples EDU Rev D MCP79411; cached sample has no zone; * no physical battery/prior wear certification',
                   personalities='A and B identical commands; only slot identity differs',
+                  monitor_UI=dict(format='UI/1',descriptor_offset='48',vector_offset='20',
+                    operations=['VERSION','TIME','retain/status return','RTC sample','RTC display','bypass/quiet return'],
+                    admission='MI CRC covers descriptor and vectors; tools validate full MI CRC before calls',
+                    Foundation_ABI_changed=False,owner_RAM_or_ZP_borrowed=False,
+                    warm_return='Preserves MON state and cached RTC sample; selects tool data bank'),
                   RTCC_adapter=dict(trigger='Explicit TIME only; V never probes',profile='WDC EDU Rev D / MCP79411 / VIA1 PA0 SCL, PA7 SDA',
                     automatic_startup=False,RTC_data_writes=False,EEPROM_or_SRAM_access=False,
                     max_snapshot_attempts=3,SCL_wait_polls=255,owner_RAM_borrowed=False),

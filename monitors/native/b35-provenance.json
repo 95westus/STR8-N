@@ -1,0 +1,54 @@
+{
+  "clock.asm": {
+    "source": "BUILD/v2-beta35-candidate/clock/asm/clock.asm",
+    "sha256": "c75c136086511b5cd181820a946c8b78a7ad0cf87ec54a9962a5f07129e98391"
+  },
+  "outage-format.inc": {
+    "source": "release/beta35/source/clock/outage-format.inc",
+    "sha256": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a"
+  },
+  "outage-duration.inc": {
+    "source": "release/beta35/source/clock/outage-duration.inc",
+    "sha256": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f"
+  },
+  "kernel-rtc-api.inc": {
+    "source": "release/beta35/source/clock/kernel-rtc-api.inc",
+    "sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e"
+  },
+  "journal-eq.inc": {
+    "source": "release/beta35/source/clock/journal-eq.inc",
+    "sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285"
+  },
+  "rtc-provider.asm": {
+    "source": "BUILD/v2-beta35-candidate/split/source/rtc-provider.asm",
+    "sha256": "fd92c30cc6bd334bd1fc9e0edc48c4fcb8f6cb1f6ad3d5e029725ae78f949e51"
+  },
+  "rtc-api.inc": {
+    "source": "BUILD/v2-beta35-candidate/split/source/rtc-api.inc",
+    "sha256": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332"
+  },
+  "i2c-api.inc": {
+    "source": "BUILD/v2-beta35-candidate/split/source/i2c-api.inc",
+    "sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c"
+  },
+  "i2c-transport.inc": {
+    "source": "BUILD/v2-beta35-candidate/split/source/i2c-transport.inc",
+    "sha256": "4df7bd2d9a994f5b3c36d44eec165edd087e9399977b564e7ef2bdc8d376582c"
+  },
+  "eeprom-transfer.inc": {
+    "source": "BUILD/v2-beta35-candidate/split/source/eeprom-transfer.inc",
+    "sha256": "ad26e8ba26b9e522a5846f422a372bc066ce525d9feba93d3791b0e4422c37ca"
+  },
+  "rtc-gateway.asm": {
+    "source": "BUILD/v2-beta35-candidate/split/source/rtc-gateway.asm",
+    "sha256": "c01599b93d1956abf78c7ee33c78777650ee27af9ae04ef03b28807c72c33eea"
+  },
+  "journal.asm": {
+    "source": "release/beta35/source/journal/journal.asm",
+    "sha256": "744eed5c024b976f9fa65a5222db41178ff3b415697d2e80373cd92cb326af8c"
+  },
+  "binding.inc": {
+    "source": "release/beta35/source/journal/binding.inc",
+    "sha256": "3b449d91c9a4b4df36615fd7d0c2521b0c482b14a5b53e55aa47f47caa28476f"
+  }
+}

@@ -5,7 +5,8 @@ STR8N has produced the stable **STR8N-F Foundation v0.3.0 g00000001 /
 BASE1 / PR05**. Above it, MON A and MON B use the same source, commands,
 services and application contract. Only their slot identities differ.
 The shipping target is **all b35 capabilities except ASM and DBG**.
-The current g8/tools preview is a development checkpoint, not that target.
+The [native utilities on 2512](2512_NATIVE_UTILITIES_ACCEPTANCE.md) are the current
+development checkpoint; full-b35 shipping gaps remain explicit.
 
 This contract supersedes older preview-completion and soak-next wording in
 [the release path](FOUNDATION_RELEASE_PATH.md),
@@ -17,28 +18,46 @@ archives remain evidence for their exact bytes and scopes.
 
 | Area | Shipping behavior | Current state |
 | --- | --- | --- |
-| Identity | VERSION, name/version/generation, active A/B, Foundation identity, CPU/board/status and saved boot policy; V remains an alias | VERSION/V recognition built once in g9; live workflow and remaining b35 display fields still open |
+| Identity | VERSION, name/version/generation, active A/B, Foundation identity, CPU/board/status and saved boot policy; V remains an alias | Global VERSION/V and concise TIME accepted on MON/workbench/CLOCK; FLASH/MAINT VERSION identifies SXB/EDU profiles |
 | Monitor | b35 Dump/Modify, deliberate force, bank selection, Go, supported loading, cancellation and return | Current D/M/!M/G/B/raw BIN subset qualified; remaining b35 forms need reconciliation |
-| Storage | STORE, TABLE, RESTORE; S/T/R aliases; flash and mounted PROGRAM; AUTO start selection, clear backend/location, checked load/run/return | Existing flash/SS1 workflows qualified; full names built once in WB2 g6; new alias live checks and remaining b35 matrix stay open |
+| Storage | STORE, TABLE, RESTORE; S/T/R aliases; flash and mounted PROGRAM; AUTO start selection, clear backend/location, checked load/run/return | Existing flash/SS1 workflows qualified; full names and flash-to-PROGRAM copy/verified move/run accepted; large PROGRAM destinations remain limited |
 | Batch | b35 bounded queue, validation, stop/cancel and returning command/app behavior | Returning-command subset qualified; complete b35 behavior remains required |
-| Applications | APPS and APP name; usable native tools and AP/02 images, checked CPU/ABI/CRC, launch and public return | AP/02 positive launch/return qualified on both CPU modes; native page integration remains incomplete |
-| MAINT | Board status and working maintenance actions; direct access to CONFIG, CLOCK, storage and existing flash operations | Current workbench is partial; a help screen alone is not completion |
-| CONFIG | Show/change bank enables, entries, default/delay and A/B preference; preserve boot/wear journal semantics; return coherently to MON | Standalone host RAM tool exists; board-resident integration remains required |
-| CLOCK | Existing b35 read/status/SET and administration: UTC/local display, offset, trim, EUI, power-fail history and battery-policy services | Read-only page exists; full b35 port and actual SET workflow remain required |
-| Flash | Existing b35 programming/editing, journaled erase/update and opaque-image workflows, with the frozen-F/C/D protection policy | Guarded !M and host CONFIG/OPAQUE/update paths exist; remaining b35 command integration is required |
+| Applications | APPS and APP name; usable native tools and AP/02 images, checked CPU/ABI/CRC, launch and public return | AP/02 previously accepted; native R CLOCK/FLASH/MAINT accepted on 2512 |
+| MAINT | Board status and working maintenance actions; direct access to CONFIG, CLOCK, storage and existing flash operations | Working workbench plus resident FLASH/BOOT tools installed on 2512 |
+| CONFIG | Show/change bank enables, entries, default/delay and A/B preference; preserve boot/wear journal semantics; return coherently to MON | Resident BOOT/CONFIG implemented; default B save accepted; new OFF/DELAY/RUN positive cases remain |
+| CLOCK | Existing b35 read/status/SET and administration: UTC/local display, offset, trim, EUI, power-fail history and battery-policy services | Full b35-derived app installed; STATUS/VERSION/invalid and canceled SET passed; positive SET/ACK/trim remain |
+| Flash | Existing b35 programming/editing, journaled erase/update and opaque-image workflows, with the frozen-F/C/D protection policy | Native byte/sector programming, editor, erase, protected-target and HOST paths accepted |
 | EDU/storage/work | Existing b35 EDU selection, SRAM PROGRAM management and WORK queries/services, with explicit ownership and bounded unavailable/busy errors | Current SS1 paths qualified; reconcile the remaining b35 backend/management workflows |
-| Host kit | Python serial terminal, supported loaders/migrator, installation and opaque/default-boot manual | Existing Foundation kit is released; the complete unified candidate is not assembled yet |
+| Host kit | Python serial terminal, supported loaders/migrator, installation and opaque/default-boot manual | Published Foundation retained; native candidate/manual prepared locally with remaining gates disclosed |
 
 Source storage/data formats and existing saved contents must remain usable;
 excluding ASM/DBG does not discard programs or remove unrelated storage
 commands. Source editing that is implemented inside the deferred assembler
 must be identified as such rather than silently claimed by the monitor.
 
-The owner chose to ship existing flash operations first. A new 4 KB
-sector-grid editor and new erase/copy UI are follow-on enhancements. This
-does not remove an existing b35 erase/program capability. Persistent new
+The October 30 release scope was expanded: FLASH must provide sector erase,
+byte programming, whole-sector writing and a 4 KB buffer/editor. The earlier
+choice to defer the editor is superseded. CLOCK and FLASH are named native
+apps, available by name and through `R CLOCK` / `R FLASH`; these reserved
+system names must not depend on the selected owner data bank. MAINT includes
+CONFIG/BOOT, bank enable/entry/default settings and opaque-image operations.
+VERSION identifies the SXB CPU/profile and the configured EDU revision, with
+unverified hardware identity clearly distinguished from detected capability.
+Persistent new
 WORKSPACE messages were not a b35 capability; they remain a separate planned
 feature with their own append-only allocation, outside PROGRAM and C/D.
+
+The owner accepts B2:8-F and B3:8-E for this full environment. F remains golden
+and C/D remain the boot/wear journal. This is a 64 KiB allocation ceiling
+including F and journals, not a measured fit or permission to replace occupied
+sectors without a preservation review. B0/B1 remain owner space.
+
+“Put WDCMONv2 back at B3” means a deliberate restore-to-factory-firmware
+workflow. It does not mean replacing Foundation during normal app use. Use an
+exact, CPU/board-matched verified host backup and archive the current system
+and journal first. Restoring the WDC reset sector replaces Foundation and is
+outside the ordinary FLASH app's F/C/D guards. A firmware restoration does not
+claim to reset jumpers, RTC, EEPROM, SRAM or hardware to factory settings.
 
 ## Why components live above F
 

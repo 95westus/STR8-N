@@ -27,6 +27,8 @@ def build(out, generation, workbench_manifest, monitor_manifest, reuse_support=N
     module=(wbpath.parent/wb['module']['filename']).read_bytes()
     assert sha(module)==wb['module']['sha256'] and len(module)==7168
     assert binascii.crc_hqx(module,0xffff)==0
+    wb_generation=int(wb['generation'],16)
+    assert module[17:23]==b'WG'+wb_generation.to_bytes(4,'little')
     if program_manifest is None:raise ValueError('Current bundle requires a PROGRAM provider manifest')
     pvpath=Path(program_manifest).resolve();pv=json.loads(pvpath.read_text())
     provider=(pvpath.parent/pv['artifact']['filename']).read_bytes()
@@ -47,6 +49,7 @@ def build(out, generation, workbench_manifest, monitor_manifest, reuse_support=N
         for name in inputs:
             text=(ROOT/'monitors/src'/name).read_text()
             text=text.replace('"SERVICE_GENERATION_BYTES"',','.join(f'${v:02X}' for v in generation.to_bytes(4,'little')))
+            text=text.replace('"WORKBENCH_GENERATION_BYTES"',','.join(f'${v:02X}' for v in wb_generation.to_bytes(4,'little')))
             if label=='raw' and name=='service-bundle-boot.asm':
                 text=text.replace('$8100','$0300').replace('$8200','$0400').replace('#>SB_MODULE_SOURCE','#5')
             if not name.endswith('interface.inc') and name!='service-layout.inc':
@@ -58,8 +61,11 @@ def build(out, generation, workbench_manifest, monitor_manifest, reuse_support=N
         private=dict(bindings,SB_RAM_PROVIDER=int(ram))
         (stage/'service-foundation.inc').write_text(''.join(f'{k} EQU ${v:04X}\n' for k,v in private.items()),encoding='ascii',newline='\n')
         if loader is not None:
-            body=loader.ljust(512,b'\xff')
+            assert 256 < len(loader) <= 512
+            body=loader
             (stage/'service-load-image.inc').write_text(''.join('        DB '+','.join(f'${x:02X}' for x in body[i:i+16])+'\n' for i in range(0,len(body),16)),encoding='ascii',newline='\n')
+            p=stage/'services.asm'
+            p.write_text(p.read_text().replace('SERVICE_LOADER_TAIL',str((len(loader)-256)&255)),encoding='ascii',newline='\n')
         for command in ([assembler,'-G','-L','-S','-W',stem+'.asm'],
                         [linker,'-g','-s','-t',f'-c{origin:04X}','-hm19','-j','-o',stem+'.s19',stem+'.obj']):
             done=subprocess.run(command,cwd=stage,capture_output=True,text=True)
@@ -101,11 +107,13 @@ def build(out, generation, workbench_manifest, monitor_manifest, reuse_support=N
     if reuse_support is None:
         prefix,_=assemble('bundle','service-bundle-boot',0x8000,'SBB_END')
     assert len(prefix)<=256 and prefix[3:11]==b'WF\x03\x1cPR05'
+    prefix=bytearray(prefix);prefix[11:15]=generation.to_bytes(4,'little');prefix=bytes(prefix)
     bundle=(prefix.ljust(256,b'\xff')+loader.ljust(512,b'\xff')+module+provider).ljust(12288,b'\xff')
     assert len(bundle)==12288 and bundle[768:768+7168]==module and bundle[7936:11264]==provider
     name=f'STR8N-SERVICES-g{generation:08X}-B2-8000.bin';(out/name).write_bytes(bundle)
     artifacts[name]=dict(variant='B2 bundle',bytes=12288,sha256=sha(bundle),sectors=['B2:8','B2:9','B2:A'],module_origin='8300',provider_origin='9F00',boot_entry='8000',loader_bytes=len(loader),prefix_bytes=len(prefix),free_flash_tail_bytes=1024)
     if reuse_support is None:raw_prefix,_=assemble('raw','service-bundle-boot',0x0200,'SBB_END')
+    raw_prefix=bytearray(raw_prefix);raw_prefix[11:15]=generation.to_bytes(4,'little');raw_prefix=bytes(raw_prefix)
     raw=raw_prefix.ljust(256,b'\xff')+loader.ljust(512,b'\xff')+module+provider
     name=f'STR8N-TOOLS-WB2-SP1-g{generation:08X}-RAM.bin';(out/name).write_bytes(raw)
     artifacts[name]=dict(variant='Full tool RAM packet',bytes=len(raw),sha256=sha(raw),load_address='0200',module_RAM='4800-66FF',provider_RAM='6B00-77FF',temporary_6A_saved_restored=True)
@@ -122,8 +130,9 @@ def build(out, generation, workbench_manifest, monitor_manifest, reuse_support=N
                 workbench_manifest=str(wbpath.relative_to(ROOT)),monitor_manifest=str(monpath.relative_to(ROOT)),program_manifest=str(pvpath.relative_to(ROOT)),
                 readonly_commands=['M1','M2','M3','W','APPS'],readonly_RAM='6700-69FF; no owner RAM/ZP writes',
                 explicit_workbench_commands=['MAINT','MAINT LOAD','FLASH','CLOCK'],module_RAM='4800-66FF',provider_RAM='6B00-77FF',
-                CLOCK='bounded read-only MCP79411; advanced administration remains planned',
-                FLASH='workbench entry only; full sector buffer/editor and journaled erase/copy remain planned',
+                workbench_cache_admission='Exact WG/generation marker plus MW/02/1C/PR05 and whole-module CRC; stale valid caches reload',
+                CLOCK='R CLOCK routes to the full b35-derived native RAM app; STATUS and canceled SET accepted separately',
+                FLASH='R FLASH/R MAINT route to native sector buffer/editor, guarded BYTE/WRITE/ERASE and BOOT/HOST',
                 BATCH='returning WB2 subset; no loader/flash write/application handoff',
                 F_rebuilt=False,hardware_access=False,CPU_simulations=0,branch_layout=layouts,
                 reused_loader_bundle_from=str(Path(reuse_support).resolve().relative_to(ROOT)) if reuse_support else None)

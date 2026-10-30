@@ -10,6 +10,15 @@ the stable 4 KB F sector beneath those environments; C/D hold its persistent
 boot settings and tracked erase journal. The monitors and tools are optional
 layers above it. The frozen firmware identity remains BASE1 / PR05.
 
+**Current development checkpoint: native utilities are installed on 2512.**
+MON A/B g0000000A and shared tools provide `R CLOCK`, `R FLASH`, `R MAINT`,
+VERSION, BOOT/CONFIG, the sector editor, EDU/SRAM/WORK and STORE/TABLE/RESTORE.
+Flash-to-PROGRAM copy, verified source removal and automatic PROGRAM run passed.
+Read the [native operator manual](docs/NATIVE_UTILITIES_MANUAL.md) and
+[acceptance/remaining gates](docs/2512_NATIVE_UTILITIES_ACCEPTANCE.md).
+The full profile occupies B2/B3, 64 KiB including F and C/D; B0/B1 remain owner
+space. This local candidate does not replace either published release.
+
 **[Download optional MON/tools preview 1](https://github.com/95westus/STR8N-F/releases/tag/mon-g8-tools-preview1):**
 MON B 0.1.0-dev g8, services g4, WB2 g5 and
 PROGRAM/SP1 are [installed and accepted on 2609/65C816 emulation](docs/2609_MON_FEATURE_ACCEPTANCE.md).
@@ -19,21 +28,26 @@ The published N-F foundation and its downloads stay unchanged.
 
 Read the [preview manual](docs/MON_FEATURE_PREVIEW.md),
 [release plan](docs/MON_FEATURE_RELEASE_PLAN.md) and
-[full b35 parity checklist](docs/MON_B35_PARITY.md). SOURCE/ASM/DEBUG,
-advanced CLOCK, the 4KB FLASH editor and CONFIG integration remain unfinished.
-2512/65C02 now also has the [matching installed services g4 and WB5/SP1](docs/2512_SERVICES_G4_INSTALL_ACCEPTANCE.md).
+[full b35 parity checklist](docs/MON_B35_PARITY.md). The following paragraphs
+describe published preview1; the native checkpoint above supersedes its
+read-only CLOCK/FLASH limits. Complete BATCH/large PROGRAM handoff and the
+remaining shipping gates are still explicit open items.
+The earlier [2512 services g4 and WB5/SP1 acceptance](docs/2512_SERVICES_G4_INSTALL_ACCEPTANCE.md)
+records that preview's corresponding 65C02 qualification.
 Native maps/wear, CLOCK, forced reload, PROGRAM Table, BATCH and AUTO/NO passed,
 including physical saved-default B boot and complete preservation checks.
 At B3>, `MAINT LOAD` loads the current tools over a valid older RAM cache.
 
-The [compact full-load proposal](docs/COMPACT_FULL_LOAD_PLAN.md) budgets the
-current listed features at 28 KiB of firmware plus 8 KiB of boot/wear journal:
-36 KiB total, using B3 and part of B2. B0/B1 need not hold system code; their
-existing contents still require an explicit cleanup/replacement review.
+The historical [compact full-load proposal](docs/COMPACT_FULL_LOAD_PLAN.md)
+budgeted preview features at 36 KiB. The current full CLOCK/FLASH native profile
+uses 64 KiB, as detailed above. B0/B1 need not hold system code; their existing
+contents still require an explicit cleanup/replacement review.
 
 The development migrator now offers [WDC backup to Host, B0 or Both](migration-host/README.md#wdc-backup-destination--new-source-b0-live-qualification-pending).
-The B0-copy RAM candidate awaits live qualification; frozen F and published
-downloads remain unchanged.
+The separate [2512 backup-copy](docs/2512_WDC_BACKUP_COPY_ACCEPTANCE.md) and
+[WDC saved-default boot](docs/2512_WDC_DEFAULT_BOOT_ACCEPTANCE.md) trials passed
+and restored the original contents. They do not qualify another full WDC
+migration or factory restoration. Frozen F and published downloads remain unchanged.
 
 The [Foundation release path and next qualification](docs/FOUNDATION_RELEASE_PATH.md)
 separate the released 4 KB foundation from optional monitor features. The next

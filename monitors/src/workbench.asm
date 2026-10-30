@@ -7,6 +7,7 @@
         INCLUDE "workbench-layout.inc"
         INCLUDE "workbench-foundation.inc"
         INCLUDE "program-layout.inc"
+        INCLUDE "monitor-ui.inc"
 SP_BASE EQU $6B00
 SP_API_ENTRY EQU SP_BASE+8
 SP_READ_ENTRY EQU SP_BASE+11
@@ -19,15 +20,24 @@ W_BEGIN:
         JMP W_DISPATCH
         JMP W_SHELL
         JMP W_INIT
+        DB "WG","WB_GENERATION_BYTES"
 W_SHELL:
+        LDA #3
+W_ENTER_SHELL:
         SEI
         CLD
         LDX #$FF
         TXS
+        PHA
         JSR W_INIT
+        PLA
+        STA W_BANK
         JSR STR8V2_RAM_RX_RESET
         LDX #<W_TITLE
         LDY #>W_TITLE
+        JSR W_PUTS
+        LDX #<W_SHELL_TEXT
+        LDY #>W_SHELL_TEXT
         JSR W_PUTS
         BRA W_PROMPT
 W_INIT:
@@ -40,6 +50,9 @@ W_CLEAR:
         BNE W_CLEAR
         LDA #3
         STA W_BANK
+        LDA MU_EDU
+        AND #1
+        STA W_EDU
         RTS
 W_PROMPT:
         LDX #<W_PROMPT_TEXT
@@ -88,7 +101,9 @@ W_COMMAND_START:
         CMP #'B'
         BEQ W_BANK_NAME
         CMP #'T'
-        BEQ W_TABLE_CMD
+        BEQ W_TABLE_OR_TIME
+        CMP #'V'
+        BEQ W_VERSION_NAME
         CMP #'R'
         BEQ W_RESTORE_SHORT
         CMP #'Q'
@@ -100,6 +115,11 @@ W_COMMAND_START:
         CMP #' '
         BEQ WS_STORE
         BRA W_DEVICE_NAMES
+W_TABLE_OR_TIME:
+        LDA W_LINE+1,X
+        CMP #'I'
+        BEQ W_TIME_NAME
+        JMP W_TABLE_CMD
 W_RESTORE_SHORT:
         LDA W_LINE+1,X
         BEQ W_RESTORE_CMD
@@ -118,7 +138,11 @@ W_DEVICE_NAMES:
         LDX #<WC_FLASH_WORD
         LDY #>WC_FLASH_WORD
         JSR W_MATCH
-        BCS WC_MAINT
+        BCS WC_FLASH
+        LDX #<WC_BOOT_WORD
+        LDY #>WC_BOOT_WORD
+        JSR W_MATCH
+        BCS WC_FLASH
         LDX #<WS_AREA_WORD
         LDY #>WS_AREA_WORD
         JSR W_MATCH
@@ -194,10 +218,23 @@ W_QUIT:
         INX
         JSR W_END_ARGS
         BCC W_UNHANDLED
+        SEI
+        CLD
         JSR STR8V2_RAM_RX_RESET
         LDX #$FF
         TXS
+        LDA #MU_BYPASS
+        JSR W_UI_CHECK
+        BCC W_QUIT_LEGACY
+        LDA W_BANK
+        STA MU_BANK
+        JMP (W_UI_TARGET)
+W_QUIT_LEGACY:
+        LDA W_UI_VALID
+        BEQ W_QUIT_RECOVERY
         JMP STR8V2_RAM_HOLD
+W_QUIT_RECOVERY:
+        JMP WB_F_RECOVERY
 
 ; Normalize only complete long command words, leaving arguments untouched.
 ; The matching token supplies its own first letter; in-place copy always
@@ -376,6 +413,7 @@ W_TABLE_FINISH:
 ; R [bank] name|address [L]. Names are unique within the selected bank.
 ; Whole destination must be 0200-47FF: the RAM workbench owns 4800-66FF.
 W_RESTORE_CMD:
+        JSR W_NATIVE_RESTORE
         STZ WP_MODE
         JSR W_PROGRAM_ARGUMENT
         BCC W_RESTORE_FLASH
@@ -840,7 +878,8 @@ W_CACHE_HIT:
         INCLUDE "workbench-program.inc"
         INCLUDE "workbench-batch.inc"
         INCLUDE "workbench-clock.inc"
-        INCLUDE "workbench-clock-read.inc"
+        INCLUDE "workbench-native.inc"
+        INCLUDE "workbench-monitor-ui.inc"
 
 W_CANCEL:
         PHX
@@ -1014,9 +1053,12 @@ W_CRC_NEXT:
         BNE W_CRC_BIT
         PLX
         RTS
-W_TITLE: DB 13,10,"STR8-N WORKBENCH WB2 gWB_GENERATION_TEXT / BASE1 PR05",13,10
+W_TITLE: DB 13,10
+W_VERSION_TEXT: DB "STR8-N WORKBENCH WB2 gWB_GENERATION_TEXT / BASE1 PR05",13,10
+        DB 0
+W_SHELL_TEXT:
         DB "RAM 0200-47FF; tools 4800-66FF",13,10
-        DB "EDU OFF; ? help; Q monitor",13,10,0
+        DB "EDU selection retained; ? help; Q monitor",13,10,0
 W_PROMPT_TEXT: DB "WORKBENCH> ",0
 W_SYNTAX_TEXT: DB "REFUSED: syntax/command/input",13,10,0
 W_STORE_WORD: DB "STORE",0
@@ -1025,7 +1067,7 @@ W_RESTORE_WORD: DB "RESTORE",0
 W_HELP_TEXT: DB "B0..3; TABLE [bank|P]; RESTORE [bank|P] name|addr [L]",13,10
         DB "AREA [bank first last]; STORE bank|P addr|AUTO first last [name]",13,10
         DB "EDU ON|OFF; SRAM [PREP|READ half addr]; WORK; Q",13,10
-        DB "CLOCK; Q returns monitor (M1/W/D/M/!M)",13,10
+        DB "VERSION/V; TIME; R CLOCK|FLASH|MAINT; BOOT; Q monitor",13,10
         DB "BATCH cmd;cmd (34 bytes): B TABLE ? HELP EDU SRAM WORK",13,10,0
 W_BANK_TEXT: DB "Data bank B",0
 W_TABLE_TEXT: DB "SR01 +complete ?pending: addr load size name (hex)",13,10,0

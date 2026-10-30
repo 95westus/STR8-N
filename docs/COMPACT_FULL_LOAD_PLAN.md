@@ -1,4 +1,12 @@
-# Compact Foundation + MON/tools load
+# Historical compact Foundation + MON/tools load
+
+Current native utilities occupy **64 KiB** in B2/B3, including F and C/D.
+See [current allocation/acceptance](2512_NATIVE_UTILITIES_ACCEPTANCE.md).
+The 36 KiB proposal below is historical.
+
+Current native utilities occupy **64 KiB** in B2/B3, including F and C/D.
+See [current allocation/acceptance](2512_NATIVE_UTILITIES_ACCEPTANCE.md).
+The 36 KiB proposal below is historical.
 
 The 36 KiB figure below measures the current subset. It is not the footprint
 or completion claim for the [unified b35-capable shipping release](UNIFIED_SHIPPING_RELEASE.md).

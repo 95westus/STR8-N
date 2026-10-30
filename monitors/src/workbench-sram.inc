@@ -19,6 +19,7 @@ W_EDU_CMD:
         JSR W_END_ARGS
         BCC W_UNHANDLED
         STZ W_EDU
+        STZ MU_EDU
         BRA W_EDU_SHOW
 W_EDU_ON:
         INX
@@ -26,6 +27,7 @@ W_EDU_ON:
         BCC W_UNHANDLED
         LDA #1
         STA W_EDU
+        STA MU_EDU
 W_EDU_SHOW:
         LDX #<W_EDU_OFF_TEXT
         LDY #>W_EDU_OFF_TEXT

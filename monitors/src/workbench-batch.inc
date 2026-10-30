@@ -117,9 +117,19 @@ WB_SEGMENT_END:
 ; argument validation remains in the ordinary dispatcher, which sets RESULT.
 WB_ALLOWED:
         JSR W_ALIASES
+        LDX #<W_VERSION_WORD
+        LDY #>W_VERSION_WORD
+        JSR W_MATCH
+        BCS WB_EXACT_ARGS
+        LDX #<WC_TIME_WORD
+        LDY #>WC_TIME_WORD
+        JSR W_MATCH
+        BCS WB_EXACT_ARGS
         LDX #0
         JSR W_SKIP
         CMP #'?'
+        BEQ WB_EXACT
+        CMP #'V'
         BEQ WB_EXACT
         CMP #'B'
         BEQ WB_SHORT

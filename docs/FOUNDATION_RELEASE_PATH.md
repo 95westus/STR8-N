@@ -1,5 +1,8 @@
 # Foundation: release goal and next qualification
 
+Current development: [2512 native utilities acceptance](2512_NATIVE_UTILITIES_ACCEPTANCE.md)
+and [manual](NATIVE_UTILITIES_MANUAL.md). Published Foundation remains unchanged.
+
 **October 30 shipping clarification:** the next release is the
 [unified b35-capable MON A/B environment above frozen Foundation](UNIFIED_SHIPPING_RELEASE.md),
 with ASM/DBG excluded. VERSION, STORE/TABLE/RESTORE, APPS and functional
