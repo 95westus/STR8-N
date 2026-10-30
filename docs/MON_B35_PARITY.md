@@ -1,5 +1,12 @@
 # MON A/B: full 2.0b35 capability gate
 
+**Current shipping authority (October 30, 2026):**
+[one unified STR8N release, all b35 capabilities except ASM/DBG](UNIFIED_SHIPPING_RELEASE.md).
+The older checklist below is historical planning evidence. Its ASM/DBG and
+new WORKSPACE-message requirements do not override the current shipping scope.
+Missing CLOCK SET/administration, CONFIG and b35 command behavior remain open;
+the g8 preview or a generic soak does not close them.
+
 Updated 2026-10-29. A and B remain identical. Product naming is **STR8-N / MON
 A/B**, with a separate monitor version and generation. Mona is retired; old
 artifact filenames, hashes, installed g6 banners and acceptance receipts remain

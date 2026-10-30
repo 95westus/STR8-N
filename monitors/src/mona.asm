@@ -112,6 +112,21 @@ M_HELP:
         LDY #>M_HELP_TEXT
         JMP M_MESSAGE
 M_VERSION:
+        ; V and VERSION are exact aliases; a V-prefixed typo is not accepted.
+        LDA M_LINE,X
+        BEQ M_VERSION_ARGS
+        CMP #' '
+        BEQ M_VERSION_ARGS
+        LDY #0
+M_VERSION_MATCH:
+        LDA M_LINE,X
+        CMP M_VERSION_SUFFIX,Y
+        BNE M_SYNTAX
+        INX
+        INY
+        CPY #6
+        BCC M_VERSION_MATCH
+M_VERSION_ARGS:
         JSR M_END_ARGS
         BCC M_SYNTAX
         JSR M_STATUS
@@ -706,6 +721,7 @@ M_LOCK:
         INCLUDE "adapter.inc"
 M_RA: DB "RA",1,13
 M_HEX_DIGITS: DB "0123456789ABCDEF"
+M_VERSION_SUFFIX: DB "ERSION"
 M_TIME_SUFFIX: DB "IME"
 M_PROMPT_TEXT: DB "> ",0
 M_TITLE:
@@ -724,7 +740,7 @@ M_LIMIT_TEXT:
         DB "-- no data; * Health/prior wear unverified; tracked attempts.",13,10,0
 M_BANK_TEXT: DB "Data bank B",0
 M_HELP_TEXT:
-        DB "? V TIME; B0..3; D addr [end]; G addr; L RAM BIN",13,10
+        DB "? VERSION(V) TIME; B0..3; D addr [end]; G addr; L BIN",13,10
         DB "M/!M addr bytes (1-8); force flash 1->0",13,10
         DB "B3:C/D/F protected; Q REC",13,10
         DB "M1-3 W APPS CLOCK MAINT; BATCH S T R EDU SRAM WORK",13,10,0

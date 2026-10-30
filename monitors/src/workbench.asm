@@ -79,6 +79,7 @@ W_COMMAND_COPY:
         STA W_LINE,Y
 W_COMMAND_START:
         STZ W_BAD
+        JSR W_ALIASES
         LDX #0
         JSR W_SKIP
         BEQ W_HANDLED
@@ -89,7 +90,7 @@ W_COMMAND_START:
         CMP #'T'
         BEQ W_TABLE_CMD
         CMP #'R'
-        BEQ W_RESTORE_CMD
+        BEQ W_RESTORE_SHORT
         CMP #'Q'
         BEQ W_QUIT
         CMP #'S'
@@ -98,6 +99,13 @@ W_COMMAND_START:
         BEQ WS_STORE
         CMP #' '
         BEQ WS_STORE
+        BRA W_DEVICE_NAMES
+W_RESTORE_SHORT:
+        LDA W_LINE+1,X
+        BEQ W_RESTORE_CMD
+        CMP #' '
+        BEQ W_RESTORE_CMD
+        JMP W_UNHANDLED
 W_DEVICE_NAMES:
         LDX #<WC_WORD
         LDY #>WC_WORD
@@ -190,6 +198,37 @@ W_QUIT:
         LDX #$FF
         TXS
         JMP STR8V2_RAM_HOLD
+
+; Normalize only complete long command words, leaving arguments untouched.
+; The matching token supplies its own first letter; in-place copy always
+; moves left. BATCH validation uses the same normalization as execution.
+W_ALIASES:
+        LDX #<W_STORE_WORD
+        LDY #>W_STORE_WORD
+        JSR W_MATCH
+        BCS W_ALIAS_COPY
+        LDX #<W_TABLE_WORD
+        LDY #>W_TABLE_WORD
+        JSR W_MATCH
+        BCS W_ALIAS_COPY
+        LDX #<W_RESTORE_WORD
+        LDY #>W_RESTORE_WORD
+        JSR W_MATCH
+        BCC W_ALIAS_RETURN
+W_ALIAS_COPY:
+        LDY #0
+        LDA (W_PTR),Y
+        STA W_LINE
+        INY
+W_ALIAS_ARGUMENTS:
+        LDA W_LINE,X
+        STA W_LINE,Y
+        BEQ W_ALIAS_RETURN
+        INX
+        INY
+        BRA W_ALIAS_ARGUMENTS
+W_ALIAS_RETURN:
+        RTS
 
 ; Word matching restarts at the beginning; on success X points at arguments.
 W_MATCH:
@@ -976,20 +1015,22 @@ W_CRC_NEXT:
         PLX
         RTS
 W_TITLE: DB 13,10,"STR8-N WORKBENCH WB2 gWB_GENERATION_TEXT / BASE1 PR05",13,10
-        DB "RAM 0200-47FF; module borrows 4800-66FF",13,10
-        DB "EDU OFF (session); ? help; Q returns to monitor",13,10,0
+        DB "RAM 0200-47FF; tools 4800-66FF",13,10
+        DB "EDU OFF; ? help; Q monitor",13,10,0
 W_PROMPT_TEXT: DB "WORKBENCH> ",0
 W_SYNTAX_TEXT: DB "REFUSED: syntax/command/input",13,10,0
-W_HELP_TEXT: DB "B0..3; T [bank|P]; R [bank|P] name|addr [L]",13,10
-        DB "AREA bank first last; S bank|P addr|AUTO RAMfirst RAMlast [name]",13,10
+W_STORE_WORD: DB "STORE",0
+W_TABLE_WORD: DB "TABLE",0
+W_RESTORE_WORD: DB "RESTORE",0
+W_HELP_TEXT: DB "B0..3; TABLE [bank|P]; RESTORE [bank|P] name|addr [L]",13,10
+        DB "AREA [bank first last]; STORE bank|P addr|AUTO first last [name]",13,10
         DB "EDU ON|OFF; SRAM [PREP|READ half addr]; WORK; Q",13,10
-        DB "AREA closes",13,10
-        DB "CLOCK read-only; Q -> Bx> for M1/W/D/M/!M",13,10
-        DB "BATCH cmd;cmd (34 bytes): B T ? HELP EDU SRAM WORK",13,10,0
+        DB "CLOCK; Q returns monitor (M1/W/D/M/!M)",13,10
+        DB "BATCH cmd;cmd (34 bytes): B TABLE ? HELP EDU SRAM WORK",13,10,0
 W_BANK_TEXT: DB "Data bank B",0
-W_TABLE_TEXT: DB "SR01: + complete, ? pending; addr load length name (hex)",13,10,0
-W_TABLE_END_TEXT: DB "Scan ended. SR01 has no payload checksum.",13,10,0
-W_LOADED_TEXT: DB "Loaded; RAM readback matched source. SR01 has no payload CRC.",13,10,0
+W_TABLE_TEXT: DB "SR01 +complete ?pending: addr load size name (hex)",13,10,0
+W_TABLE_END_TEXT: DB "End; SR01 has no payload CRC.",13,10,0
+W_LOADED_TEXT: DB "Loaded; RAM verified.",13,10,0
 W_RANGE_TEXT: DB "REFUSED: record bounds or reserved destination RAM",13,10,0
 W_NOT_FOUND_TEXT: DB "No complete SR01 record at that address/name",13,10,0
 W_DUPLICATE_TEXT: DB "REFUSED: ambiguous name; select bank/P/address",13,10,0

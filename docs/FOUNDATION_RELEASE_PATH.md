@@ -1,5 +1,12 @@
 # Foundation: release goal and next qualification
 
+**October 30 shipping clarification:** the next release is the
+[unified b35-capable MON A/B environment above frozen Foundation](UNIFIED_SHIPPING_RELEASE.md),
+with ASM/DBG excluded. VERSION, STORE/TABLE/RESTORE, APPS and functional
+MAINT/CONFIG/CLOCK including SET are required. The preview's partial pages
+and a generic soak are not the completion gate. The receipts below remain
+valid evidence for their exact implementations.
+
 **4K Foundation. Up to four banked environments.**
 
 A 4 KB foundation for your own environments. One physical board selects a
@@ -80,17 +87,16 @@ scoped releases.
    help/public return, exact retained-WDC restoration and RTC readmission.
    Exactly two B0:9 erases and two wear appends; all 17 old rows retained,
    zero F writes or C/D erases. This adds no further write permission.
-4. Proposed next checkpoint: a bounded soak on the unchanged installed
-   images with the existing RTC/NTP schedule. Check the actual response,
-   image/RAM preservation and clock-continuity evidence; do not infer
-   unobserved behavior from an occasional sample. No new soak was started
-   by this qualification closeout.
+4. Current next checkpoint: complete the shared shipping commands and b35
+   MAINT/CONFIG/CLOCK behavior, including real SET. Follow the unified
+   contract and test operator workflows. A generic soak is superseded as the
+   next gate; no soak was started by the qualification closeouts.
 5. If qualifying the packaged WDC or programmer-F routes, use only a fresh
    extraction and review C/D/F replacement separately. That requires an
    admitted target; the no-flash PROGRAM trial cannot authorize it.
-6. Continue SOURCE/ASM/DEBUG and remaining command parity as separate module
-   increments. Keep 2604's rc1 reference intact until replacement workflows
-   pass. Keep 2205 out of firmware changes and retain historical branches.
+6. Complete remaining b35 command/service parity; keep ASM/DBG as the explicit
+   follow-on development tools. Keep 2604's rc1 reference intact and 2205 out
+   of firmware changes. Retain historical branches and qualified artifacts.
 
 A later monitor/tools candidate can add its new receipts and manual while
 carrying forward the same Foundation bytes. Promotion must state the tested

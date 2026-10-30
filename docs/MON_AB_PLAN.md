@@ -1,5 +1,10 @@
 # MON A/B: five-checkpoint development plan
 
+**Current shipping contract:** [one unified STR8N environment with all b35
+capabilities except ASM/DBG](UNIFIED_SHIPPING_RELEASE.md). The checkpoint
+history below does not replace that requirement. A/B have identical commands;
+board-specific work is limited to affected CPU/transport/peripheral paths.
+
 Branch: `codex/mona-monb`. Foundation: immutable N-F `v0.3.0`,
 **0.3.0 g00000001 / BASE1 / PR05**, with exact dependency pins in
 [base1-dependency.json](../monitors/base1-dependency.json).

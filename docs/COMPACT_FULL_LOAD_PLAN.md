@@ -1,5 +1,10 @@
 # Compact Foundation + MON/tools load
 
+The 36 KiB figure below measures the current subset. It is not the footprint
+or completion claim for the [unified b35-capable shipping release](UNIFIED_SHIPPING_RELEASE.md).
+Full CLOCK/CONFIG and remaining b35 behavior are required there; their shared
+module layout must be measured before claiming a final shipping size.
+
 **Layout proposal, October 30, 2026. No erase, flash write, rebuild or new
 qualification is authorized by this document.** Keep frozen STR8N-F v0.3.0
 g00000001 / BASE1 / PR05. This budgets the current listed feature set; resident

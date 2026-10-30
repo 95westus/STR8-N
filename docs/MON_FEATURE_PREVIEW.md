@@ -1,5 +1,10 @@
 # STR8-N MON feature preview
 
+This is the partial preview checkpoint. The
+[unified shipping contract](UNIFIED_SHIPPING_RELEASE.md) requires all b35
+capabilities except ASM/DBG, including functional CONFIG and CLOCK SET.
+The preview's read-only pages and historical acceptance do not complete it.
+
 Requires frozen **STR8N-F v0.3.0 g00000001 / BASE1 / PR05**.
 Runtime components: MON A/B 0.1.0-dev g8, services g4, WB2 g5 and PROGRAM/SP1 g1.
 MON B and installed tools passed the documented 2609/65C816 emulation checks.

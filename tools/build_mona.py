@@ -143,7 +143,7 @@ def build(out, generation):
                   monitor_RAM='6A00-6AFF',owner_RAM_ROM_startup='0200-66FF unchanged',
                   prompt='B0> through B3> follows selected data bank; active A/B remains in banner',
                   status_rows=['EDU','SSRAM','RTCC','Battery','Wear'],
-                  commands=['?','V','TIME','B[0-3]','D addr [end]','M addr byte...','!M addr byte...','G addr','L','Q',
+                  commands=['?','VERSION (V)','TIME','B[0-3]','D addr [end]','M addr byte...','!M addr byte...','G addr','L','Q',
                             'MS services: M1/M2/M3/W/APPS/MAINT/FLASH/CLOCK; WB2: BATCH/S/T/R/AREA/HELP/EDU/SRAM/WORK'],
                   service_dispatcher=dict(interface='MS/01/10/PR05',ROM='B3:E000-EFFF',RAM='2000-2FFF',
                     admission='Header and zero CRC residue over all4096 bytes',owner_RAM_M1_W=False),

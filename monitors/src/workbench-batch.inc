@@ -116,6 +116,7 @@ WB_SEGMENT_END:
 ; Module commands with bounded return and no subprompt/handoff. Full command
 ; argument validation remains in the ordinary dispatcher, which sets RESULT.
 WB_ALLOWED:
+        JSR W_ALIASES
         LDX #0
         JSR W_SKIP
         CMP #'?'

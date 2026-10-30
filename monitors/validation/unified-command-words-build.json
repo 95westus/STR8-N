@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "status": "BUILD_ONLY_NOT_EXECUTION_QUALIFIED",
+  "shipping_contract": "docs/UNIFIED_SHIPPING_RELEASE.md",
+  "component_build_passes": {
+    "MON_g9": 1,
+    "WB2_g6": 1
+  },
+  "reused_unchanged_WB_loader": true,
+  "F_rebuilt": false,
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "CPU_simulations": 0,
+  "hardware_access": false,
+  "flash_writes": 0,
+  "functionality": [
+    "VERSION exact alias of V",
+    "STORE/TABLE/RESTORE exact aliases of S/T/R",
+    "TABLE recognized by existing BATCH allowlist"
+  ],
+  "slots_same_commands": true,
+  "MON_slot_free_bytes": 22,
+  "WB_module_free_bytes": 29,
+  "WB_linked_bytes": 7137,
+  "previous_WB5_linked_bytes": 7136,
+  "remaining_required": [
+    "live operator command acceptance",
+    "remaining b35 VERSION/status fields",
+    "full b35 CLOCK/SET and CONFIG integration",
+    "remaining unified b35 contract rows"
+  ],
+  "MON_manifest_sha256": "d55f4b03b24117ecdf1c2c514c609f6cd02008fd1b57cc5476963f650a4cbb77",
+  "WB_manifest_sha256": "3f8e06739b96e3c5c32030e896d22413b0e30ae5a780189e674e2bfd76b4d947",
+  "published_downloads_unchanged": true,
+  "source_commits_local_only": true
+}
