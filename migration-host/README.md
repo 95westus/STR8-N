@@ -80,6 +80,13 @@ appends, all 20 old journal records and owner RAM/ZP retained. It used the
 existing OPAQUE RAM writer and an archived WDC source. It does not qualify
 NFM2, fresh-WDC migration or booting WDC from B0.
 
+The later [RAM-only B0 debugger handoff](../docs/2512_WDC_B0_HANDOFF_ACCEPTANCE.md)
+also passed on 2512: exact WDC identity, visible-bank double read, verified RAM
+upload and public Foundation HOLD return, with every flash/journal byte and
+owner RAM preserved. It bypasses the vendor reset/application path; physical
+reset and default boot remain unqualified. The private entry is pinned to
+this 65C02 vendor ROM and does not qualify NFM2.
+
 On a cancellation after capture, the archiver has already borrowed RAM; the
 original RAM remains in host escrow and still needs restoration. A refusal
 before capture opens no port. Do not automatically retry a partial flash operation.

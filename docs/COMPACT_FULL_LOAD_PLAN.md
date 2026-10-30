@@ -77,6 +77,14 @@ tools are accepted, WDC need not stay on chip. An approved erase can reclaim
 that bank while retaining exact host backups. F and the current MON/tools
 do not call WDCMONv2. This proposal performs no such copy, boot or erase.
 
+The later [2512 RAM-only debugger handoff](2512_WDC_B0_HANDOFF_ACCEPTANCE.md)
+passed using just the existing WDC **B0:F sector**, with FLASH at B0:8 retained.
+For that pinned 65C02 debugger-entry mode, an optional WDC allocation adds
+**4 KiB**, making the clean proposed profile **40 KiB** including journals,
+with **88 KiB outside it**. This does not qualify physical reset/default boot,
+reduce the required original-bank backup extent, or declare any current owner
+data disposable. The main 36 KiB profile has no WDC runtime dependency.
+
 ## Smaller targets and next work
 
 The current profile already uses only B3 plus 12 KiB of B2. Its existing
