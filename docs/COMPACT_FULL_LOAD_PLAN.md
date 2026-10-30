@@ -85,6 +85,14 @@ with **88 KiB outside it**. This does not qualify physical reset/default boot,
 reduce the required original-bank backup extent, or declare any current owner
 data disposable. The main 36 KiB profile has no WDC runtime dependency.
 
+The subsequent [saved-default WDC launcher trial](2512_WDC_DEFAULT_BOOT_ACCEPTANCE.md)
+passed through a real Foundation RESET. Its standalone entry example adds
+another 4 KiB sector (133 code/data bytes), so a profile with both the WDC
+sector and this dedicated launcher budgets **44 KiB including journals**, with
+**84 KiB outside it**. Sharing that small launcher with another environment
+is a later packing option, not a measured saving. The trial restored the
+original FLASH image and B default; it performed no allocation cleanup.
+
 ## Smaller targets and next work
 
 The current profile already uses only B3 plus 12 KiB of B2. Its existing

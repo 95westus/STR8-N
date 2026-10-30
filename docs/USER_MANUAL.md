@@ -278,6 +278,15 @@ An application's Q command is defined by that application. Restarting through
 F uses the saved default and can launch that application again. A deliberate
 return to recovery must account for the default or allow S at startup.
 
+The development source includes a [WDC B0 launcher example](../apps/candidates/wdc-b0-launch-g00000001/README.md).
+Its saved-default boot through Foundation and verified RAM return passed on
+[2512/65C02](2512_WDC_DEFAULT_BOOT_ACCEPTANCE.md). It needs the exact owner-supplied
+WDC ROM at B0:F identified in its manifest. It enters the binary WDC debugger,
+bypassing vendor reset/application startup. A cold opaque boot has no active
+MON for HOLD; its qualified return uses public RESET with S selected by the
+receiver. Original owner RAM restoration remains the host's responsibility.
+This source example is separate from the unchanged published v0.3.0 kit.
+
 The included source example `examples/base1-b0-9000.asm` demonstrates public
 RAM ABI calls and restart behavior. It is source, not a bundled opaque ROM BIN.
 Mona remains a future optional monitor. Existing g0034/full-system monitors

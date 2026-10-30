@@ -1,6 +1,7 @@
 # 2512 Foundation saved-default WDC launcher trial
 
-Prepared October 30, 2026 after the owner continued the proposed launcher,
+Prepared and completed October 30, 2026; see the
+[acceptance result](2512_WDC_DEFAULT_BOOT_ACCEPTANCE.md). The owner continued the proposed launcher,
 temporary B0 default, physical RESET and full restoration sequence. F stays
 golden. This is a Foundation opaque-image boot test, not WDC factory migration.
 

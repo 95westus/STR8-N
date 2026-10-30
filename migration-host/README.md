@@ -87,6 +87,13 @@ owner RAM preserved. It bypasses the vendor reset/application path; physical
 reset and default boot remain unqualified. The private entry is pinned to
 this 65C02 vendor ROM and does not qualify NFM2.
 
+The [2512 Foundation saved-default launcher boot](../docs/2512_WDC_DEFAULT_BOOT_ACCEPTANCE.md)
+subsequently passed: physical RESET, full countdown with no host chooser key,
+WDC identity/readback and public RESET return. Original FLASH, default B and
+owner RAM were restored; F and all 24 prior records were preserved. This
+qualifies the pinned 65C02 launcher chain, while NFM2 factory migration remains
+unqualified.
+
 On a cancellation after capture, the archiver has already borrowed RAM; the
 original RAM remains in host escrow and still needs restoration. A refusal
 before capture opens no port. Do not automatically retry a partial flash operation.
