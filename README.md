@@ -18,6 +18,8 @@ Read the [native operator manual](docs/NATIVE_UTILITIES_MANUAL.md) and
 [acceptance/remaining gates](docs/2512_NATIVE_UTILITIES_ACCEPTANCE.md).
 The full profile occupies B2/B3, 64 KiB including F and C/D; B0/B1 remain owner
 space. This local candidate does not replace either published release.
+The [candidate-1 package checkpoint](docs/NATIVE_CANDIDATE1_PACKAGE.md) records
+its source commit, archive identity and extracted preparation checks.
 
 **[Download optional MON/tools preview 1](https://github.com/95westus/STR8N-F/releases/tag/mon-g8-tools-preview1):**
 MON B 0.1.0-dev g8, services g4, WB2 g5 and
