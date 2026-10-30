@@ -10,9 +10,11 @@ For the latest slot/journal/RAM state, see the
 checkpoint below was followed by positive PROGRAM and AP/02 acceptance.
 
 2609 now has frozen N-F 0.3.0 g1 BASE1/PR05, MON B 0.1.0-dev g8,
-services g4, WB2 g5 and PROGRAM/SP1 g1. MON A remains retained b15 firmware
-whose execution under BASE1 is unqualified. At REC>, type `B` and Enter;
-on RESET, select B at the chooser. The saved default remains S/recovery.
+services g4, WB2 g5 and PROGRAM/SP1 g1. At this installation checkpoint,
+MON A remained retained b15 firmware and was unqualified under BASE1. It has
+since been replaced by [qualified MON A g8](2609_MON_A_G8_ACCEPTANCE.md).
+At REC>, type `B` and Enter; on RESET, select B at the chooser.
+The saved default remains S/recovery.
 
 ## Usable increment
 

@@ -1,9 +1,9 @@
 # 2609 current recorded inventory
 
 October 30, 2026. **W65C816SXB, 65C816 emulation / FT245, COM8.**
-This inventory checks the latest device marker against agreeing complete
-captures and the qualification receipts. No new board command, RAM upload,
-flash write or clock operation was performed for this inventory.
+Updated after the [permanent MON A g8 installation](2609_MON_A_G8_ACCEPTANCE.md).
+The installation, physical boot and read-only RTC requalification passed.
+The inventory agrees with independent complete bank captures and receipts.
 
 ## Installed flash
 
@@ -14,14 +14,14 @@ flash write or clock operation was performed for this inventory.
 | B2:8/9/A | Current WB2 g5 + PROGRAM/SP1 g1 tool bundle |
 | Other B2 sectors | Retained older assets; not cleared by the tool installation |
 | B3:8/9 | Retained older contents, outside the current replacement scope |
-| B3:A | Legacy b15 MON A, generation **8000000F**, private contract **PR04**; unqualified under BASE1 |
+| B3:A | Current MON A **0.1.0-dev g00000008**, **PR05**, qualified and retained on 65C816 emulation |
 | B3:B | Current MON B **0.1.0-dev g00000008**, **PR05**, qualified on 65C816 emulation |
-| B3:C/D | Valid boot/wear journal, **19 records**, latest **D200 / 1033** |
+| B3:C/D | Valid boot/wear journal, **20 records**, latest **D300 / 1034** |
 | B3:E | Current services g4: maps, wear, APPS and MAINT/tool dispatch |
 | B3:F | Frozen **STR8N-F 0.3.0 g00000001 / BASE1 / PR05**, 4096 bytes |
 
 The full B2 bank matches 2512's current tool bank. MON B matches the B image
-in the same prebuilt g8 candidate which supplies the proposed MON A upgrade.
+in the same prebuilt g8 candidate which supplies the installed MON A.
 Historical marker fields about older debugger/monitor generations are retained
 history; the actual current slot headers above identify the installed A/B images.
 
@@ -29,17 +29,18 @@ history; the actual current slot headers above identify the installed A/B images
 
 Saved default **S/recovery**, all bank boots disabled (mask 00), stored entries
 8000. Final qualified context **REC>**, COM8 released. At REC>, `B` and Enter
-starts the qualified MON B; its Q returns to recovery. This does not change
-the saved default. Do not treat the retained PR04 A as a qualified fallback.
+starts qualified MON B; `A` starts qualified MON A. Their Q returns to recovery.
+These selections do not change the saved default. A and B have identical commands.
+Original PR04 A is preserved in verified host archives rather than on chip.
 
-Tracked C/D/E/F counts are **78/48/45/31**; B3:A is 51 and B0:9 is 4.
-These are conservative tracked attempts, not lifetime totals. There are twelve
-ordinary append pages D300–DE00 before a peer erase would be needed; DF00 is
+Tracked C/D/E/F counts are **78/48/45/31**; B3:A is 52 and B0:9 is 4.
+These are conservative tracked attempts, not lifetime totals. There are eleven
+ordinary append pages D400–DE00 before a peer erase would be needed; DF00 is
 reserved. Erased-looking or retained regions are not permission to overwrite them.
 
 ## Current usable tools
 
-MON B provides Dump/Modify, guarded force Modify, bank selection, TIME, maps,
+MON A and B provide Dump/Modify, guarded force Modify, bank selection, TIME, maps,
 wear and APPS. MAINT LOAD brings in the matching board-flash workbench with
 CLOCK, EDU/SRAM/WORK queries, PROGRAM and flash/SRAM Table/Store/Restore,
 AUTO and bounded BATCH. Installed reload, CLOCK and read/query paths passed.
@@ -69,11 +70,12 @@ Reference RAM SHA-256:
 Reference ZP SHA-256:
 `106d61c82d3ee7f7c2e3c174888b3dc6a1aae71ad3e2a0afd14e5593cfbf6ba4`.
 
-## Next review and WDC boundary
+## Qualification and WDC boundary
 
-The [MON A review](2609_MON_A_G8_SCOPE_REVIEW.md) offers one erase to leave A
-matching B, or two erases for a temporary test followed by exact legacy-A
-restoration. Either needs an owner choice before mutation.
+The [MON A review](2609_MON_A_G8_SCOPE_REVIEW.md) was approved for the
+one-erase permanent installation. Its [acceptance](2609_MON_A_G8_ACCEPTANCE.md)
+closes matching A/B g8 and physical A startup on 2609. Future work needs its
+own scope; there is no pending automatic flash action.
 
 The 2512 WDC launcher is pinned to a **65C02/SXB2** ROM. It is not installed
 or qualified on 2609's **SXB6** ROM. The recorded B0 reset vector is F818,
@@ -92,4 +94,4 @@ Recorded bank SHA-256 values:
 - B0: `1398d9551f7072ff36203307f55b7e41204f2579ce667515920a2703845eef94`
 - B1: `fb22d9ab58700e66123c200bc68717c8a90e6280379c96a43164ddc46cbfc1eb`
 - B2: `c3a5aa83e937fd6a0799360d910725e9974f6ea0b9f24887d11e7e9c599066f7`
-- B3: `ace3c7f79f9014393fd09b3dd8f8a4df2b709740279ae5349d750e9f5553162e`
+- B3: `8fb9da7115c7566529c0d9f2f132f9ba3dce9301a6a0e3b16830ddd6559e5622`

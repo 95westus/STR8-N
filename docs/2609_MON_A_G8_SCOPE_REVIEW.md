@@ -1,8 +1,11 @@
 # 2609 MON A g8: owner-choice review
 
-**Prepared only; no new board access or flashing.** October 30, 2026.
-2609 has qualified MON B g8 and retained PR04/b15 MON A. The candidate A is
-from the exact g8 build whose B image already matches installed B byte-for-byte.
+**Owner approved install-and-keep; trial passed.** October 30, 2026.
+See [acceptance](2609_MON_A_G8_ACCEPTANCE.md). The options below retain
+the original pre-install review; only the one-erase option was executed.
+Before this trial, 2609 had qualified MON B g8 and retained PR04/b15 MON A.
+The candidate A is from the exact g8 build whose B image already matches
+installed B byte-for-byte.
 No firmware rebuild or CPU simulation is required.
 
 ## Two concrete options
