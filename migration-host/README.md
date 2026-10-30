@@ -74,6 +74,12 @@ or new released ZIP. The new B0 route is **NOT live-qualified** on either CPU.
 The existing NFM1 hardware receipts do not qualify NFM2. Future release packaging
 must include the candidate only after that gate is addressed.
 
+The [separate 2512 backup-copy trial](../docs/2512_WDC_BACKUP_COPY_ACCEPTANCE.md)
+passed with F golden: two B0 sectors copied and restored, four native wear
+appends, all 20 old journal records and owner RAM/ZP retained. It used the
+existing OPAQUE RAM writer and an archived WDC source. It does not qualify
+NFM2, fresh-WDC migration or booting WDC from B0.
+
 On a cancellation after capture, the archiver has already borrowed RAM; the
 original RAM remains in host escrow and still needs restoration. A refusal
 before capture opens no port. Do not automatically retry a partial flash operation.

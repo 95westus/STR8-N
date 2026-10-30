@@ -1,6 +1,7 @@
 # 2512 separate WDC backup-copy trial
 
-Prepared October 30, 2026. The owner approved flashing and selected:
+Prepared and subsequently completed October 30, 2026; see the
+[acceptance result](2512_WDC_BACKUP_COPY_ACCEPTANCE.md). The owner approved flashing and selected:
 **“Keep F golden; prepare a separate 2512 backup-copy trial.”**
 This case preserves the installed Foundation and all current journal records.
 It is not a fresh-WDC factory migration or acceptance of the new NFM2 engine.
@@ -77,6 +78,9 @@ The plan and guarded driver are ready. The first execution attempt on October
 board command, RAM helper upload, journal append or erase occurred. Its original
 failed report is retained; a separate preparation receipt records that owner RAM
 was untouched. Another operation's lease was not interrupted or bypassed.
-Live copy/restoration acceptance remains pending. The existing flashing approval
-is retained; a later attempt needs a fresh private output folder and full live
-source admission, not a replay of assumed board state.
+At that preparation checkpoint, live acceptance remained pending. Subsequent
+restricted-shell port refusals and a pre-erase host filename collision also
+spent no erase budget; the latter restored owner RAM before stopping. A fresh
+direct-device run then completed exactly the four reviewed erases, preserved all
+20 prior records, restored B0 and owner RAM/ZP, and released COM4. See the linked
+acceptance and receipt. Full NFM2 migration and WDC B0 boot remain unqualified.
