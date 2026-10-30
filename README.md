@@ -26,6 +26,15 @@ Native maps/wear, CLOCK, forced reload, PROGRAM Table, BATCH and AUTO/NO passed,
 including physical saved-default B boot and complete preservation checks.
 At B3>, `MAINT LOAD` loads the current tools over a valid older RAM cache.
 
+The [compact full-load proposal](docs/COMPACT_FULL_LOAD_PLAN.md) budgets the
+current listed features at 28 KiB of firmware plus 8 KiB of boot/wear journal:
+36 KiB total, using B3 and part of B2. B0/B1 need not hold system code; their
+existing contents still require an explicit cleanup/replacement review.
+
+The development migrator now offers [WDC backup to Host, B0 or Both](migration-host/README.md#wdc-backup-destination--new-source-b0-live-qualification-pending).
+The B0-copy RAM candidate awaits live qualification; frozen F and published
+downloads remain unchanged.
+
 The [Foundation release path and next qualification](docs/FOUNDATION_RELEASE_PATH.md)
 separate the released 4 KB foundation from optional monitor features. The next
 release must retain its stated CPU/backend limits. Current PROGRAM Store/Restore/run

@@ -13,8 +13,70 @@ implements explicit WDC capture/execution; it refuses to open a port without
 The ZIP includes the Python terminal; disconnect it before a CLI owns its port.
 
 The public tool ships project code only. The operator's captured WDC firmware,
-RAM, wear-history records and per-run plans stay private. Nothing is copied to
-B0 automatically; B0/B1/B2 and B3:8/9/A/B/E remain available to their owner.
+RAM, wear-history records and per-run plans stay private. The published v0.3.0
+kit does not copy WDC to B0. The development source adds the choices below;
+the published downloads and frozen F are unchanged.
+
+## WDC backup destination — new source, B0 live qualification pending
+
+Before opening a port, `nf_migrate_live.py migrate` now prompts:
+
+```text
+WDCMONv2 backup: [H] Host (default), [B] B0, [A] Both.
+Backup destination [H/B/A]:
+```
+
+| Choice | Result |
+| --- | --- |
+| Host | Standalone `wdcmonv2-b3-32768.bin` and metadata in the private plan folder; B0 preserved |
+| B0 | Exact original 32 KiB B3 copy in B0, before F/D/C migration |
+| Both | Standalone host backup and B0 copy |
+
+Every choice still keeps the mandatory independent double captures of all four
+banks and owner RAM/ZP on the host. **B0 does not mean host escrow is disabled.**
+No vendor BIN is distributed. The operator must supply their lawful firmware.
+This route supports the captured WDC source running in B3; it does not discover
+or relocate an arbitrary monitor layout.
+
+For unattended use specify `--wdc-backup host`, `b0` or `both`; missing input or
+EOF refuses before opening the port. Leaving `--engine-template` omitted selects
+the pinned released NFM1 template for Host, or the new
+`migrator/candidates/nfm2-b0-v1/template.bin` for B0/Both. An explicit template
+override must match the selected pinned engine. The old NFM1 BIN is unchanged.
+
+After capture and exact planning, B0/Both displays the changed B0 sectors and
+original/expected bank SHA-256 hashes, then requires **`COPY B0`**. Existing B0
+contents can be occupied; they are archived, never assumed disposable. For a
+separately reviewed noninteractive plan, `execute --overwrite-b0` admits that
+replacement. The combined command also accepts the flag as explicit advance
+permission to replace B0; prefer its interactive review on a new target.
+
+The NFM2 RAM candidate copies only differing B0 sectors in ascending order,
+compares staged bytes and the complete bank after each sector, then migrates
+optional F followed by D and C. It admits at most eleven erases: eight B0 plus
+F/D/C. Identical sectors cost no erase. New C/D records include all reserved
+B0/F/D/C erase counts, including imported lower bounds and unknown-history flags.
+B1/B2 and B3:8/9/A/B/E are preserved. Existing SNBT history is never cleared to
+enable a B0 copy: a new B0 write with existing SNBT is refused until a separate
+append-reservation path is implemented.
+
+`wdcmonv2-backup.json` records the source, CPU/model, identity, reset vector and
+hash. **Copy verification is not boot qualification.** WDC bank assumptions and
+its reset entry may require a separate launch/relocation check. Copying WDC does
+not enable B0 or change the saved default; new factory journals still select S.
+Deleting the B0 copy later needs a separate erase/history review and a verified
+fallback/host backup.
+
+Qualification: one NFM2 build (3360 code bytes; 8192-byte RAM template) and narrow
+host policy/ordering checks only (eight new checks plus two NFM1 serialization/
+ordering regressions passed on October 30, 2026). No CPU simulation, device write, B0 boot test
+or new released ZIP. The new B0 route is **NOT live-qualified** on either CPU.
+The existing NFM1 hardware receipts do not qualify NFM2. Future release packaging
+must include the candidate only after that gate is addressed.
+
+On a cancellation after capture, the archiver has already borrowed RAM; the
+original RAM remains in host escrow and still needs restoration. A refusal
+before capture opens no port. Do not automatically retry a partial flash operation.
 
 ## Required private capture
 
@@ -167,7 +229,6 @@ $nfArgs = @(
   'migrate', '--port', 'COMx', '--cpu', '65c02',
   '--archiver', '../migrator/payload/archive.bin',
   '--archiver-manifest', '../migrator/payload/archive-manifest.json',
-  '--engine-template', '../migrator/payload/template.bin',
   '--f-image', '../firmware/payload/STR8N-F-BOOT-4096.bin',
   '--readback', '../firmware/payload/STR8N-F-READBACK-RAM.bin',
   '--readback-manifest', '../firmware/minimal-manifest.json',
@@ -179,6 +240,9 @@ python nf_migrate_live.py @nfArgs
 ```
 
 Replace `COMx` with the explicitly assigned port, released by its terminal.
+The source command prompts for the backup destination and selects its matching
+engine; use `--wdc-backup host` to retain the original host-only route without
+that prompt. B0/Both additionally requires its reviewed overwrite admission.
 For the 65C816 use `65c816`; the 2010 WDC entry shim handles native/emulation
 entry. No terminal application is closed by this tool.
 

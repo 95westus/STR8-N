@@ -8,6 +8,7 @@ import argparse
 import importlib.util
 import json
 import os
+import sys
 from pathlib import Path
 import time
 
@@ -15,6 +16,8 @@ import nf_migrate as planning
 
 
 ENGINE_TEMPLATE_SHA256 = '794cc2cb3dc3ea514b4994b4661317cce4e6cb7e9d5dc6a77485a5d3dc682728'
+# New candidate only; the released NFM1 template remains unchanged.
+B0_ENGINE_TEMPLATE_SHA256 = '9b38710b1eb88d89d1dd7196924f7171b555538a429ea6952762961820f55d2f'
 ARCHIVER_SHA256 = '78e2ec2cdfd1145dd2396deef5df1d75409dba8d84b87277f5b3c83b82890b51'
 READBACK_SHA256 = '0c04b65ed2354e564d5cec6e2bc113d58934889b35b076586ef14c466fb3a774'
 ARCHIVE_READY = b'ARCHIVER READY; G then Enter> '
@@ -23,6 +26,7 @@ ENGINE_READY = b'Y then Enter> '
 ENGINE_SELF_OK = b'CHECK: RAM image and plan verified\r\n'
 ENGINE_SOURCE_OK = b'CHECK: all four bank preimages and SST39SF010A BF/B5 verified\r\n'
 ROW_DONE = b'VERIFY: complete B3 postimage verified; sector finished\r\n'
+B0_ROW_DONE = b'VERIFY: complete target-bank postimage verified; sector finished\r\n'
 ENGINE_DONE = b'MIGRATION VERIFIED; PRESS PHYSICAL RESET\r\n'
 REC = b'REC> '
 EXPECTED_ID = {'65c02': b'SXB2', '65c816': b'SXB6'}
@@ -271,8 +275,48 @@ def capture_wdc(link, root, *, cpu, archiver, archiver_manifest, allow_unqualifi
     return capture
 
 
+def choose_wdc_backup(choice=None, *, input_fn=input, interactive=None, message=print):
+    """Resolve before opening a port; EOF never authorizes a bank write."""
+    if choice is not None:
+        planning.require(choice in ('host', 'b0', 'both'), 'Choose host, b0 or both')
+        return choice
+    planning.require(sys.stdin.isatty() if interactive is None else interactive,
+                     'Noninteractive migration requires --wdc-backup host|b0|both; no port opened')
+    message('WDCMONv2 backup: [H] Host (default), [B] B0, [A] Both.\n'
+            'All choices retain private host transaction captures. B0 may replace owner images.\n'
+            'A raw B0 copy does not qualify its boot entry.', flush=True)
+    try:
+        value = input_fn('Backup destination [H/B/A]: ').strip().lower()
+    except EOFError as error:
+        raise ValueError('No backup choice received; no port opened') from error
+    choices = {'': 'host', 'h': 'host', 'host': 'host', 'b': 'b0', 'b0': 'b0',
+               'a': 'both', 'both': 'both'}
+    planning.require(value in choices, 'Choose H/host, B/b0 or A/both; no port opened')
+    return choices[value]
+
+
+def admit_b0_copy(plan, *, overwrite_b0=False, input_fn=input, interactive=None, message=print):
+    operations = [op for op in plan['transaction']['operations'] if op['bank'] == 0]
+    if not operations:
+        return
+    message('B0 COPY REVIEW: replace '+', '.join(f"B0:{op['address']:04X}" for op in operations)+
+            f"; {len(operations)} sector erases.\n"
+            'Original B0 SHA-256: '+plan['transaction']['source_sha256'][0]+'\n'
+            'Expected B0 SHA-256: '+plan['transaction']['expected_sha256'][0]+'\n'
+            'Original B0 is archived on the host; this copy is not boot-qualified.', flush=True)
+    if overwrite_b0:
+        return
+    planning.require(sys.stdin.isatty() if interactive is None else interactive,
+                     'B0 replacement requires reviewed --overwrite-b0 or an interactive COPY B0 confirmation')
+    try:
+        reply = input_fn('Type COPY B0 to approve exactly these sectors: ')
+    except EOFError as error:
+        raise ValueError('B0 replacement not approved') from error
+    planning.require(reply == 'COPY B0', 'B0 replacement not approved')
+
+
 def execute_wdc(link, plan_root, run_root, *, allow_unqualified=False, reset_wait=60,
-                post_rec=None, message=print, pace=time.sleep):
+                post_rec=None, message=print, pace=time.sleep, overwrite_b0=False):
     """Execute one admitted plan; optional post_rec owns independent readback/restore."""
     planning.require(allow_unqualified, 'New RAM engine is unqualified; explicit --allow-unqualified is required')
     plan_root, run_root = Path(plan_root), Path(run_root)
@@ -280,8 +324,11 @@ def execute_wdc(link, plan_root, run_root, *, allow_unqualified=False, reset_wai
     planning.require(plan['source_kind'] == 'wdcmonv2', 'This executor is the WDC route; use the F-recovery loader separately')
     if plan['transaction']['completed_noop']:
         return dict(migration_needed=False, flash_written=False, owner_RAM_restored=False)
-    planning.require(plan.get('engine_template_sha256') == ENGINE_TEMPLATE_SHA256,
-                     'Plan is not rendered with the frozen, built NFM1 engine')
+    b0_mode = plan.get('wdc_backup', {}).get('B0_copy_requested', False)
+    planning.require(plan.get('engine_template_sha256') ==
+                     (B0_ENGINE_TEMPLATE_SHA256 if b0_mode else ENGINE_TEMPLATE_SHA256),
+                     'Plan is not rendered with the matching pinned NFM1/NFM2 engine')
+    admit_b0_copy(plan, overwrite_b0=overwrite_b0, message=message)
     phases = PhaseLog(run_root, message=message)
     state = dict(schema=1, hardware_access=bool(link.hardware_access), execution_qualified=False,
                  flash_written=False, flash_may_have_changed=False, engine_executed=False, device_transaction_verified=False,
@@ -321,20 +368,23 @@ def execute_wdc(link, plan_root, run_root, *, allow_unqualified=False, reset_wai
         message('BEGIN: durable backup/intent and fresh source guards passed; sending the one transaction confirmation.', flush=True)
         link.send(b'Y\r')
         for operation in plan['transaction']['operations']:
-            marker = f"SEND 4096 BYTES FOR B3:{operation['address'] >> 12:X}\r\n".encode('ascii')
+            destination = f"B{operation['bank']}:{operation['address']:04X}"
+            marker = f"SEND 4096 BYTES FOR B{operation['bank']}:{operation['address'] >> 12:X}\r\n".encode('ascii')
             ready = link.until(marker, seconds=60)
             phases.add('sector-'+f"{operation['address']:04X}"+'-payload-starting',
-                       destination=f"B3:{operation['address']:04X}", bytes=4096,
-                       source_b3_fnv=operation['source_b3_fnv'], transfer_sha256=operation['transfer_sha256'])
+                       destination=destination, bytes=4096,
+                       source_bank_fnv=operation['source_bank_fnv' if b0_mode else 'source_b3_fnv'],
+                       transfer_sha256=operation['transfer_sha256'])
             body = (plan_root/operation['transfer_file']).read_bytes()
             for offset in range(0, 4096, 64):
                 link.send(body[offset:offset+64])
                 pace(.01)
-            result = link.until(ROW_DONE, seconds=60)
+            result = link.until(B0_ROW_DONE if b0_mode else ROW_DONE, seconds=60)
             planning.durable_write(run_root/f"sector-{operation['index']:02d}-console.txt", ready+result)
             state['flash_written'] = True
             phases.add('sector-'+f"{operation['address']:04X}"+'-device-verified',
-                       destination=f"B3:{operation['address']:04X}", final_b3_fnv=operation['final_b3_fnv'])
+                       destination=destination,
+                       final_bank_fnv=operation['final_bank_fnv' if b0_mode else 'final_b3_fnv'])
         complete = link.until(ENGINE_DONE, seconds=60)
         planning.durable_write(run_root/'engine-complete.txt', complete)
         state['device_transaction_verified'] = True
@@ -436,6 +486,7 @@ def main():
     execute.add_argument('--plan', type=Path, required=True)
     execute.add_argument('--readback', type=Path, required=True)
     execute.add_argument('--readback-manifest', type=Path)
+    execute.add_argument('--overwrite-b0', action='store_true', help='approve the exact B0 replacement in this inspected plan')
     migrate = sub.add_parser('migrate', help='capture, prepare, migrate, independently verify and restore original owner RAM')
     migrate.add_argument('--archiver', type=Path, required=True)
     migrate.add_argument('--archiver-manifest', type=Path, required=True)
@@ -443,11 +494,13 @@ def main():
     migrate.add_argument('--capture-out', type=Path, required=True)
     migrate.add_argument('--plan-out', type=Path, required=True)
     migrate.add_argument('--f-image', type=Path, required=True)
-    migrate.add_argument('--engine-template', type=Path, required=True)
+    migrate.add_argument('--engine-template', type=Path, help='override the pinned template selected by the backup choice')
     migrate.add_argument('--readback', type=Path, required=True)
     migrate.add_argument('--readback-manifest', type=Path)
     migrate.add_argument('--provision-cd', action='store_true')
     migrate.add_argument('--history', type=Path)
+    migrate.add_argument('--wdc-backup', choices=('host', 'b0', 'both'), help='prompt when omitted on an interactive terminal')
+    migrate.add_argument('--overwrite-b0', action='store_true', help='approve B0 replacement after reviewing the exact plan')
     for command in (capture, execute, migrate):
         command.add_argument('--port', required=True)
         command.add_argument('--out', type=Path, required=True)
@@ -459,7 +512,13 @@ def main():
     try:
         complete = recovery_callback(args.readback, manifest_file=args.readback_manifest) if args.command in ('execute', 'migrate') else None
         if args.command == 'migrate':
-            planning.require(planning.sha(args.engine_template.read_bytes()) == ENGINE_TEMPLATE_SHA256,
+            args.wdc_backup = choose_wdc_backup(args.wdc_backup)
+            if args.engine_template is None:
+                relative = ('migrator/candidates/nfm2-b0-v1/template.bin' if args.wdc_backup in ('b0', 'both')
+                            else 'migrator/payload/template.bin')
+                args.engine_template = Path(__file__).resolve().parents[1]/relative
+            expected_template = B0_ENGINE_TEMPLATE_SHA256 if args.wdc_backup in ('b0', 'both') else ENGINE_TEMPLATE_SHA256
+            planning.require(planning.sha(args.engine_template.read_bytes()) == expected_template,
                              'Matching built RAM engine required before capture')
             planning.require(planning.sha(args.f_image.read_bytes()) == planning.F_SHA256,
                              'Matching frozen 4096-byte F required before capture')
@@ -471,7 +530,8 @@ def main():
                     capture_wdc(link, root, cpu=args.cpu, archiver=args.archiver,
                                 archiver_manifest=args.archiver_manifest, allow_unqualified=True)
                 elif args.command == 'execute':
-                    execute_wdc(link, args.plan, root, allow_unqualified=True, post_rec=complete)
+                    execute_wdc(link, args.plan, root, allow_unqualified=True, post_rec=complete,
+                                overwrite_b0=args.overwrite_b0)
                 else:
                     planning.require(len({args.capture_out.resolve(), args.plan_out.resolve(), root}) == 3,
                                      'Capture, plan and run output directories must differ')
@@ -480,13 +540,16 @@ def main():
                                 archiver_manifest=args.archiver_manifest, allow_unqualified=True)
                     planning.prepare(captured, args.f_image, args.plan_out, cpu=args.cpu,
                                      source_kind='wdcmonv2', provision_cd=args.provision_cd,
-                                     history_file=args.history, template_file=args.engine_template)
-                    execute_wdc(link, args.plan_out, root, allow_unqualified=True, post_rec=complete)
+                                     history_file=args.history, template_file=args.engine_template,
+                                     wdc_backup=args.wdc_backup)
+                    execute_wdc(link, args.plan_out, root, allow_unqualified=True, post_rec=complete,
+                                overwrite_b0=args.overwrite_b0)
             finally:
                 link.close()
                 link = None
     except (KeyError, OSError, ValueError, TimeoutError) as error:
-        parser.exit(2, 'STOPPED: '+str(error)+'\nKeep the private backup/phase log; do not automatically replay a partial operation.\n')
+        parser.exit(2, 'STOPPED: '+str(error)+'\nKeep the private backup/phase log; do not automatically replay a partial operation.\n'
+                    'If a RAM helper already ran, owner RAM remains escrowed until restoration is independently verified.\n')
 
 
 if __name__ == '__main__':

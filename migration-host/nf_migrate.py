@@ -195,7 +195,7 @@ def history_for_new_journal(history, source_hashes):
     return counts.copy(), sequence, 0xffffffff, history['provenance']
 
 
-def derive(banks, f_image, *, source_kind, provision_cd=False, history=None):
+def derive(banks, f_image, *, source_kind, provision_cd=False, history=None, backup_b0=False):
     require(len(banks) == 4 and all(len(body) == BANK_SIZE for body in banks), 'Four complete banks required')
     require(len(f_image) == F_SIZE and sha(f_image) == F_SHA256
             and f_image[:4] == b'SN\x02\x00' and f_image[0xffc:0xffe] == b'\x04\xf0',
@@ -203,8 +203,12 @@ def derive(banks, f_image, *, source_kind, provision_cd=False, history=None):
     status = classify_journal(banks[3])
     require(status['kind'] != 'uncertain', status.get('reason', 'Uncertain journal'))
     source_hashes = bank_hashes(banks)
+    require(not backup_b0 or source_kind == 'wdcmonv2', 'B0 backup requires a declared WDC source')
+    backup_sectors = [n for n in range(8) if backup_b0
+                      and banks[0][n*4096:(n+1)*4096] != banks[3][n*4096:(n+1)*4096]]
     f_changed = bytes(banks[3][-4096:]) != f_image
     if status['kind'] == 'valid-snbt':
+        require(not backup_sectors, 'B0 backup writes with existing SNBT require append reservations; not supported')
         require(not provision_cd and history is None, 'Existing SNBT settings/history must be preserved')
         require(not f_changed,
                 'Existing SNBT F upgrade needs an onboard append reservation; not supported by this checkpoint')
@@ -218,34 +222,42 @@ def derive(banks, f_image, *, source_kind, provision_cd=False, history=None):
         require(not f_changed, 'NF recovery provisioning requires the frozen F already installed')
     counts, sequence, unknown_mask, provenance = history_for_new_journal(history, source_hashes)
     reserved = counts.copy()
-    addresses = ([0xf000] if f_changed else []) + [0xd000, 0xc000]
-    for address in addresses:
-        index = 24 + (address >> 12)-8
-        require(reserved[index] < MAX_COUNT, f'Erase counter exhausted for B3:{address:04X}')
+    targets = [(0, 0x8000+n*4096) for n in backup_sectors]
+    targets += [(3, a) for a in (([0xf000] if f_changed else []) + [0xd000, 0xc000])]
+    for bank, address in targets:
+        index = bank*8 + (address >> 12)-8
+        require(reserved[index] < MAX_COUNT, f'Erase counter exhausted for B{bank}:{address:04X}')
         reserved[index] += 1
     require(sequence <= 0xfffffffd, 'Journal sequence exhausted')
     final_rows = [snapshot(reserved, sequence+n+1, unknown_mask) for n in range(2)]
-    payloads = ([f_image] if f_changed else []) + [row+b'\xff'*3840 for row in final_rows]
+    payloads = [bytes(banks[3][n*4096:(n+1)*4096]) for n in backup_sectors]
+    payloads += ([f_image] if f_changed else []) + [row+b'\xff'*3840 for row in final_rows]
     state, operations, transfers = list(map(bytearray, banks)), [], []
-    for n, (address, body) in enumerate(zip(addresses, payloads)):
+    for n, ((bank, address), body) in enumerate(zip(targets, payloads)):
         before = bank_hashes(state)
-        source_b3_fnv = fnv(state[3])
-        commit = address+255 if address in (0xc000, 0xd000) else None
+        source_b3_fnv = fnv(state[bank])
+        commit = address+255 if bank == 3 and address in (0xc000, 0xd000) else None
         transfer = bytearray(body)
         if commit is not None:
             transfer[255] = 255
-        state[3][address-0x8000:address-0x7000] = body
-        operations.append(dict(index=n, bank=3, address=address, bytes=4096, erase=True,
-            kind='bootstrap-F' if address == 0xf000 else 'first-SNBT-journal',
+        state[bank][address-0x8000:address-0x7000] = body
+        operation = dict(index=n, bank=bank, address=address, bytes=4096, erase=True,
+            kind='WDC-bank-backup' if bank == 0 else ('bootstrap-F' if address == 0xf000 else 'first-SNBT-journal'),
             commit_address=commit, commit_value=0 if commit is not None else None,
             source_sha256=before, after_sha256=bank_hashes(state),
             data_sha256=sha(body), transfer_sha256=sha(transfer),
             source_b3_fnv=f'{source_b3_fnv:08x}', transfer_fnv=f'{fnv(transfer):08x}',
-            final_b3_fnv=f'{fnv(state[3]):08x}',
-            transfer_file=f'transfer-{n:02d}.bin', final_file=f'final-sector-{n:02d}.bin'))
+            final_b3_fnv=f'{fnv(state[bank]):08x}',
+            transfer_file=f'transfer-{n:02d}.bin', final_file=f'final-sector-{n:02d}.bin')
+        if backup_b0:
+            # NFM2 hashes the selected bank; keep legacy NFM1 plans byte-for-byte compatible.
+            operation['source_bank_fnv'] = operation.pop('source_b3_fnv')
+            operation['final_bank_fnv'] = operation.pop('final_b3_fnv')
+        operations.append(operation)
         transfers.append((bytes(transfer), bytes(body)))
-    require(all(state[n] == banks[n] for n in range(3)) and state[3][:0x4000] == banks[3][:0x4000]
-            and state[3][0x6000:0x7000] == banks[3][0x6000:0x7000], 'Mutation escaped F/C/D')
+    require(state[0] == (banks[3] if backup_b0 else banks[0])
+            and all(state[n] == banks[n] for n in (1, 2)) and state[3][:0x4000] == banks[3][:0x4000]
+            and state[3][0x6000:0x7000] == banks[3][0x6000:0x7000], 'Mutation escaped declared B0 and F/C/D targets')
     require(classify_journal(state[3])['kind'] == 'valid-snbt', 'Expected journal is invalid')
     return dict(journal_before=status, source_sha256=source_hashes, expected_sha256=bank_hashes(state),
                 operations=operations, counts_before=counts, reserved_counts=reserved,
@@ -255,27 +267,35 @@ def derive(banks, f_image, *, source_kind, provision_cd=False, history=None):
 
 
 def engine_plan(plan):
-    """Serialize the RAM engine's 256-byte NFM1 parameter area."""
+    """Serialize NFM1, or NFM2 with an explicit B0 backup prefix."""
     tx = plan['transaction']
     operations = tx['operations']
-    require(1 <= len(operations) <= 3, 'No-op plans do not execute a RAM engine')
-    require([op['address'] for op in operations] in ([0xf000, 0xd000, 0xc000], [0xd000, 0xc000]),
+    prefix = [op for op in operations if op['bank'] == 0]
+    v2 = bool(prefix) or plan.get('wdc_backup', {}).get('choice') in ('b0', 'both')
+    suffix = operations[len(prefix):]
+    require(2 <= len(operations) <= 11, 'No-op plans do not execute a RAM engine')
+    require(len(prefix) <= 8 and operations[:len(prefix)] == prefix
+            and [op['address'] for op in prefix] == sorted(set(op['address'] for op in prefix))
+            and all(op['bank'] == 3 for op in suffix)
+            and [op['address'] for op in suffix] in ([0xf000, 0xd000, 0xc000], [0xd000, 0xc000]),
             'This host checkpoint only renders complete first-journal provisioning')
     require(len(plan['source_bank_fnv']) == 4
             and all(isinstance(value, str) and len(value) == 8
                     and all(char in '0123456789abcdefABCDEF' for char in value)
                     for value in plan['source_bank_fnv']), 'Invalid complete-bank FNV guards')
     row = bytearray(256)
-    row[:8] = b'NFM1'+bytes((1, len(operations), 0, 0))
+    row[:8] = (b'NFM2' if v2 else b'NFM1')+bytes((2 if v2 else 1, len(operations), len(prefix), 0))
     row[8:24] = b''.join(int(value, 16).to_bytes(4, 'little') for value in plan['source_bank_fnv'])
     for index, op in enumerate(operations):
-        require(op['bank'] == 3 and op['erase'] is True and op['address'] in (0xf000, 0xd000, 0xc000),
+        require(op['erase'] is True and ((op['bank'] == 3 and op['address'] in (0xf000, 0xd000, 0xc000))
+                or (v2 and op['bank'] == 0 and op['address'] in range(0x8000, 0x10000, 4096))),
                 'Unsupported RAM operation')
         commit = int(op['commit_address'] is not None)
-        require(commit == int(op['address'] in (0xd000, 0xc000)), 'Missing/unexpected journal commit')
+        require(commit == int(op['bank'] == 3 and op['address'] in (0xd000, 0xc000)), 'Missing/unexpected journal commit')
         offset = 32+index*16
-        row[offset:offset+4] = bytes((op['address'] >> 8, commit, 0, 0))
-        for position, key in ((4, 'source_b3_fnv'), (8, 'transfer_fnv'), (12, 'final_b3_fnv')):
+        row[offset:offset+4] = bytes((op['address'] >> 8, commit, op['bank'] if v2 else 0, 0))
+        for position, key in ((4, 'source_bank_fnv' if v2 else 'source_b3_fnv'),
+                              (8, 'transfer_fnv'), (12, 'final_bank_fnv' if v2 else 'final_b3_fnv')):
             row[offset+position:offset+position+4] = int(op[key], 16).to_bytes(4, 'little')
     return bytes(row)
 
@@ -284,7 +304,8 @@ def s19(image, entry):
     def record(kind, address, body=b''):
         row = bytes((len(body)+3,))+address.to_bytes(2, 'big')+body
         return 'S'+kind+(row+bytes((255-(sum(row)&255),))).hex().upper()
-    rows = [record('0', 0, b'STR8N-F verbose RAM migrator NFM1')]
+    version = b'NFM2' if image[0x1000:0x1004] == b'NFM2' else b'NFM1'
+    rows = [record('0', 0, b'STR8N-F verbose RAM migrator '+version)]
     rows += [record('1', 0x2000+n, image[n:n+32]) for n in range(0, len(image), 32)]
     return ('\n'.join(rows+[record('9', entry)])+'\n').encode('ascii')
 
@@ -304,11 +325,16 @@ def progress_lines(plan):
              'CAPTURE: four complete banks and owner RAM/ZP; repeated bytes agree',
              'F TARGET: 4096 bytes; PR05 SHA-256 '+F_SHA256,
              'JOURNAL: '+tx['journal_before']['kind'],
-             'KEEP: B0/B1/B2 and B3:8/9/A/B/E; no WDC backup copied into user banks']
+             ('KEEP: B1/B2 and B3:8/9/A/B/E; declared WDC copy replaces B0'
+              if plan.get('wdc_backup', {}).get('choice') in ('b0', 'both')
+              else 'KEEP: B0/B1/B2 and B3:8/9/A/B/E; no B0 copy')]
+    if 'wdc_backup' in plan:
+        lines.append('WDC BACKUP: '+plan['wdc_backup']['choice']+
+                     '; mandatory host transaction captures retained for every choice')
     if tx['completed_noop']:
         lines.append('NO-OP: F matches and existing valid journal/settings are preserved')
     for op in tx['operations']:
-        lines.append(f"PLAN {op['index']+1}/{len(tx['operations'])}: erase/program/verify B3:{op['address']:04X}, 4096 bytes"
+        lines.append(f"PLAN {op['index']+1}/{len(tx['operations'])}: erase/program/verify B{op['bank']}:{op['address']:04X}, 4096 bytes"
                      + ('; journal commit byte written last' if op['commit_address'] is not None else ''))
     wear = ('WEAR: existing journal counts and prior-history mask preserved' if tx['completed_noop'] else
             'WEAR: counts are observed/imported lower bounds; prior lifetime remains unknown')
@@ -318,14 +344,30 @@ def progress_lines(plan):
     return lines
 
 
-def prepare(capture, f_file, out, *, cpu, source_kind, provision_cd=False, history_file=None, template_file=None):
+def backup_description(choice, cpu, identity, banks):
+    require(choice in ('host', 'b0', 'both'), 'WDC backup choice must be host, b0 or both')
+    source = bytes(banks[3])
+    return dict(choice=choice, source_bank=3, bytes=len(source), sha256=sha(source),
+                cpu=cpu, board_model=CPU_MODELS[cpu], wdc_info_hex=identity['wdc_info_hex'],
+                reset_vector=f'{int.from_bytes(source[0x7ffc:0x7ffe], "little"):04X}',
+                host_transaction_captures='always retained, independently read twice',
+                standalone_host_file='wdcmonv2-b3-32768.bin' if choice in ('host', 'both') else None,
+                B0_copy_requested=choice in ('b0', 'both'), B0_boot_qualified=False,
+                source_layout='complete B3 bank; relocation/opaque boot not qualified')
+
+
+def prepare(capture, f_file, out, *, cpu, source_kind, provision_cd=False, history_file=None, template_file=None,
+            wdc_backup=None):
     out = Path(out).resolve()
     require(not out.exists(), 'Use a fresh private output directory')
     identity, banks, capture_members = read_capture(capture, cpu, source_kind)
     f_image = Path(f_file).read_bytes()
     history = read_json(history_file) if history_file else None
+    require(wdc_backup is None or source_kind == 'wdcmonv2', 'WDC backup choices do not apply to NF recovery provisioning')
+    backup = backup_description(wdc_backup, cpu, identity, banks) if wdc_backup else None
     tx, transfers, expected = derive(banks, f_image, source_kind=source_kind,
-                                     provision_cd=provision_cd, history=history)
+                                     provision_cd=provision_cd, history=history,
+                                     backup_b0=bool(backup and backup['B0_copy_requested']))
     plan = dict(schema=1, purpose='Unqualified minimal N/F migration preparation',
                 cpu=cpu, board_model=CPU_MODELS[cpu], source_kind=source_kind,
                 source_identity=identity, F_bytes=4096, F_sha256=F_SHA256,
@@ -338,6 +380,11 @@ def prepare(capture, f_file, out, *, cpu, source_kind, provision_cd=False, histo
                 counts_semantics='Conservative erase-attempt reservations; preparation does not update authoritative history',
                 files={})
     members = {'source/'+name: body for name, body in capture_members.items()}
+    if backup:
+        plan['wdc_backup'] = backup
+        members['wdcmonv2-backup.json'] = encoded(backup)
+        if backup['standalone_host_file']:
+            members[backup['standalone_host_file']] = bytes(banks[3])
     members['target-F-4096.bin'] = f_image
     if history is not None:
         members['imported-history.json'] = encoded(history)
@@ -387,8 +434,16 @@ def inspect(root):
     require(plan['source_identity'] == identity and plan['board_model'] == CPU_MODELS[plan['cpu']],
             'Changed source/CPU declaration')
     history = read_json(root/'imported-history.json') if (root/'imported-history.json').exists() else None
+    backup = plan.get('wdc_backup')
+    if backup is not None:
+        require(plan['source_kind'] == 'wdcmonv2'
+                and backup == backup_description(backup['choice'], plan['cpu'], identity, banks)
+                and (root/'wdcmonv2-backup.json').read_bytes() == encoded(backup), 'Changed WDC backup policy')
+        if backup['standalone_host_file']:
+            require((root/backup['standalone_host_file']).read_bytes() == banks[3], 'Changed standalone WDC backup')
     derived, transfers, expected = derive(banks, (root/'target-F-4096.bin').read_bytes(),
-        source_kind=plan['source_kind'], provision_cd=bool(plan['transaction']['operations']), history=history)
+        source_kind=plan['source_kind'], provision_cd=bool(plan['transaction']['operations']), history=history,
+        backup_b0=bool(backup and backup['B0_copy_requested']))
     require(derived == plan['transaction'], 'Changed derived transaction')
     require([f'{fnv(bank):08x}' for bank in banks] == plan['source_bank_fnv'], 'Changed bank FNV guards')
     for n, body in enumerate(expected):
@@ -418,6 +473,8 @@ def main():
     make.add_argument('--provision-cd', action='store_true')
     make.add_argument('--history', type=Path)
     make.add_argument('--template', type=Path)
+    make.add_argument('--wdc-backup', choices=('host', 'b0', 'both'),
+                      help='WDC preservation destination; host capture escrow is always retained')
     show = commands.add_parser('inspect', help='re-derive and check an existing unexecuted private plan')
     show.add_argument('--plan', type=Path, required=True)
     args = parser.parse_args()
@@ -425,7 +482,7 @@ def main():
         if args.command == 'prepare':
             plan = prepare(args.capture, args.f_image, args.out, cpu=args.cpu,
                            source_kind=args.source_kind, provision_cd=args.provision_cd,
-                           history_file=args.history, template_file=args.template)
+                           history_file=args.history, template_file=args.template, wdc_backup=args.wdc_backup)
             print('PRIVATE BACKUP/PLAN:', args.out.resolve())
         else:
             plan = inspect(args.plan)

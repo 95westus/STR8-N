@@ -134,7 +134,11 @@ declared B0/B1 AREA; erased bytes alone do not grant allocation. NO writes no
 record; YES commits a new record. PROGRAM and flash record formats differ.
 PROGRAM has directory/payload CRCs; legacy flash SR01 has no payload CRC.
 
-## Acceptance and remaining work
+## Initial preview acceptance (historical)
+
+The following paragraph records preview1's original qualification boundary.
+The later qualification links above and below supersede its pending status;
+the published archive itself remains unchanged.
 
 2512/65C02 RAM evidence with services g3 covers positive PROGRAM Store/Restore/AUTO, refusal
 cases, AP/02 launch/public return, exact test-byte restoration and the one

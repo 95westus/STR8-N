@@ -1,4 +1,4 @@
-"""Build the unrendered NFM1 RAM template once; never opens a device."""
+"""Build one unrendered NFM1 or optional NFM2 RAM template; never opens a device."""
 import argparse
 import hashlib
 import json
@@ -23,7 +23,7 @@ def long_branches(source):
                    BMI='BPL', BPL='BMI', BVC='BVS', BVS='BVC')
     rows, count = [], 0
     for row in source.splitlines():
-        match = re.fullmatch(r'\s*(BEQ|BNE|BCC|BCS|BMI|BPL|BVC|BVS|BRA)\s+(\w+)\s*', row)
+        match = re.fullmatch(r'\s*(BEQ|BNE|BCC|BCS|BMI|BPL|BVC|BVS|BRA)\s+(\w+)\s*(?:;.*)?', row)
         if not match:
             rows.append(row)
         elif match[1] == 'BRA':
@@ -101,7 +101,7 @@ def recovery_loader(template):
     return result, '\n'.join(rows)+'\n'
 
 
-def build(out, assembler=None, linker=None):
+def build(out, assembler=None, linker=None, *, backup_b0=False):
     out = Path(out).resolve()
     if out.exists():
         raise ValueError('Use a fresh output directory')
@@ -110,7 +110,8 @@ def build(out, assembler=None, linker=None):
     if not assembler or not linker:
         raise RuntimeError('WDC wdc02as and wdcln must be on PATH')
     out.mkdir(parents=True)
-    source = (ROOT/'nf-migrate.asm').read_text()
+    source_file = 'nf-migrate-b0.asm' if backup_b0 else 'nf-migrate.asm'
+    source = (ROOT/source_file).read_text()
     (out/'nf-migrate.asm').write_text(long_branches(source), encoding='ascii', newline='\n')
     logs = []
     for command in ([assembler, '-G', '-L', '-S', '-W', 'nf-migrate.asm'],
@@ -140,6 +141,10 @@ def build(out, assembler=None, linker=None):
     (out/'template-recovery.bin').write_bytes(recovery)
     (out/'template-recovery.s19').write_bytes(s19(recovery, 0x200, start=0x200))
     (out/'template-recovery.asm').write_text(recovery_source, encoding='ascii', newline='\n')
+    if backup_b0:
+        # This candidate is WDC-only; retain inherited wrappers as build artifacts,
+        # never advertise it as the released NF-recovery provisioner.
+        (out/'.gitignore').write_text('*\n!.gitignore\n!template.bin\n!manifest.json\n', encoding='ascii')
     manifest = dict(schema=1, status='unrendered-template-refuses-execution',
         build_passed=True, execution_qualified=False, hardware_access=False,
         serial_access=False, CPU_simulations=0, source_sha256=hashlib.sha256(
@@ -150,8 +155,11 @@ def build(out, assembler=None, linker=None):
         self_hash_algorithm='FNV1a32 little endian over 2000-3FFB',
         staging_start=0x4000, staging_end=0x4fff, scratch_start=0x6000, scratch_end=0x601f,
         zero_page_start=0xe0, zero_page_end=0xe9, stack='emulation page 0100-01FF; native caller 0700 not uploaded',
-        flash_id='SST39SF010A BF/B5', flash_bank=3,
-        allowed_orders=[['F'], ['D', 'C'], ['F', 'D', 'C']],
+        flash_id='SST39SF010A BF/B5', flash_bank=[0, 3] if backup_b0 else 3,
+        source_file=source_file, plan_format='NFM2' if backup_b0 else 'NFM1',
+        max_operations=11 if backup_b0 else 3,
+        allowed_orders=(['ascending B0 copy sectors (0-8)', 'B3:F optional', 'B3:D', 'B3:C'] if backup_b0
+                        else [['F'], ['D', 'C'], ['F', 'D', 'C']]),
         operations_always_erase=True, journal_commit_address='sector start + 00FF, value 00, programmed last',
         console='FT245 USB only', no_implicit_flash_bank_backup=True,
         recovery_loader=dict(bytes=len(recovery), start=0x200, entry=0x200,
@@ -163,7 +171,7 @@ def build(out, assembler=None, linker=None):
         limit='Static build only; no CPU/hardware acceptance or migration authorization')
     (out/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n', encoding='utf-8')
     (out/'symbols.json').write_text(json.dumps(symbols, indent=2)+'\n', encoding='utf-8')
-    print('PASS NFM1 unrendered template build:', manifest['code_bytes'],
+    print('PASS '+manifest['plan_format']+' unrendered template build:', manifest['code_bytes'],
           'code bytes; no execution/hardware qualification', flush=True)
     return manifest
 
@@ -173,5 +181,6 @@ if __name__ == '__main__':
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--assembler')
     parser.add_argument('--linker')
+    parser.add_argument('--backup-b0', action='store_true', help='build the new NFM2 B0-copy candidate; leave released NFM1 unchanged')
     args = parser.parse_args()
-    build(args.out, args.assembler, args.linker)
+    build(args.out, args.assembler, args.linker, backup_b0=args.backup_b0)

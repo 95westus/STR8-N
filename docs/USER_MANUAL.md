@@ -92,6 +92,13 @@ recognized damaged/conflicting history; do not erase it to bypass that refusal.
 
 ### WDC-loadable RAM migration
 
+**Development-source addition:** the current source prompts for WDC backup to
+Host, B0 or Both. Mandatory host transaction captures remain in every case.
+B0 overwrite requires a separate confirmation; its new NFM2 route is not yet
+live-qualified. See [backup destinations](../migration-host/README.md#wdc-backup-destination--new-source-b0-live-qualification-pending).
+The published v0.3.0 kit and the procedure below retain their original NFM1
+host-capture behavior. Neither F nor published downloads changed.
+
 The kit supplies `migrator/payload/archive.bin`, a read-only WDC-loadable RAM
 archiver, and `migrator/payload/template.bin`, the migration-engine template.
 The supplied Python host binds that template to fresh board captures, renders
