@@ -50,10 +50,11 @@ not declarations that the current boards' sectors are erased or disposable.
 Their retained images remain owned until individually backed up and admitted
 for replacement. PROGRAM SPI SRAM contents are separate from this flash budget.
 
-The two monitor slots remain explicit. On 2512 both contain g8; on 2609 only
-MON B is current g8 and A retains legacy firmware whose BASE1 execution is
-unqualified. Completing 2609's full A/B profile needs its own replacement,
-wear/boot-policy review and acceptance; selecting old A is not that test.
+The two monitor slots remain explicit. Both boards now contain MON A/B g8.
+The [2609 MON A installation and acceptance](2609_MON_A_G8_ACCEPTANCE.md)
+passed with one A erase and one D300 wear append, preserving its default S,
+all 19 prior journal records and owner RAM/ZP. Its old PR04 A is archived on
+the host. This completes the listed A/B profile without changing F.
 
 ## WDC is optional, not a hidden runtime dependency
 

@@ -22,7 +22,7 @@ owner images. Optional monitors/tools consume part of that image capacity.
 | Programmer-installed-F provisioning | Included; reviewed 2512 C/D provisioning passed with F golden; the extracted published-kit route remains untested |
 | Python serial terminal | Included; native keys/dialogs on 2512 and core cancel/load checks on 2609 passed |
 | Installation/opaque/default-boot manual | Included; the preserving 2512 CONFIG/opaque/default-boot trial passed |
-| Optional MON/tools | Public preview 1; MON B g8, services g4 and WB2 g5 installed on 2609; this is a separate, scoped feature increment |
+| Optional MON/tools | Public preview 1; MON A/B g8, services g4 and WB2 g5 installed and qualified on 2609; later A acceptance is linked below |
 
 See the [stable release](https://github.com/95westus/STR8N-F/releases/tag/v0.3.0),
 [Foundation manual](USER_MANUAL.md), [Foundation evidence](RELEASE_STATUS.md),
@@ -106,6 +106,12 @@ Current MON/tools evidence:
 | Positive current SP1 SS1 Store/Restore/run and CRC refusal | Passed explicit Store; host scope error exactly repaired | Passed AUTO/explicit Store |
 | Positive AP/02 flash-app launch through current g4 | Earlier g3 receipt; not repeated with g4 | Passed; original WDC restored |
 | Resident ASM/DBG | Deferred; nonblocking | Deferred; nonblocking |
+
+2609's subsequent [permanent MON A g8 acceptance](2609_MON_A_G8_ACCEPTANCE.md)
+closes its matching A/B profile, physical A startup and RTC readmission.
+One A erase and one D300/seq1034 append retained all 19 prior records; default
+S, other images, frozen F and owner RAM/ZP are preserved. The current journal
+has 20 records. This adds no further write permission or published-kit change.
 
 The 2512 positive trial used AUTO preview/NO and explicit payload placement;
 its earlier AUTO and application receipts remain separate historical scopes.
