@@ -26,7 +26,8 @@ M_CLEAR_TEST:
         LDA BQ_MAGIC
         CMP #BQ_ON
         BEQ M_CLEAR_DONE
-        STZ MU_EDU
+        LDA #1
+        STA MU_EDU
 M_CLEAR_DONE:
         LDA #3
         STA M_BANK
@@ -684,75 +685,7 @@ M_LINE_END:
         SEC
         RTS
 
-M_STATUS:
-        LDX #<M_TITLE
-        LDY #>M_TITLE
-        JSR M_PUTS
-        JSR STR8V2_RAM_BOARD_QUERY
-        STX M_CPU
-        JSR STR8V2_RAM_CAPS_QUERY
-        STX M_CAPS
-        LDX #<M_CPU_TEXT
-        LDY #>M_CPU_TEXT
-        JSR M_PUTS
-        LDA M_CPU
-        JSR STR8V2_RAM_HEX_OUT
-        LDX #<M_CAPS_TEXT
-        LDY #>M_CAPS_TEXT
-        JSR M_PUTS
-        LDA M_CAPS
-        JSR STR8V2_RAM_HEX_OUT
-        JSR STR8V2_RAM_NEWLINE
-        LDX #<M_OPTIONAL_TEXT
-        LDY #>M_OPTIONAL_TEXT
-        JSR M_PUTS
-        JSR MR_DISPLAY
-        LDX #<M_BATTERY_TEXT
-        LDY #>M_BATTERY_TEXT
-        JSR M_PUTS
-        JSR M_WEAR
-        LDX #<M_LIMIT_TEXT
-        LDY #>M_LIMIT_TEXT
-        JMP M_PUTS
-M_WEAR:
-        LDX #<M_WEAR_TEXT
-        LDY #>M_WEAR_TEXT
-        JSR M_PUTS
-        JSR M_READ_WEAR
-        BCC M_WEAR_NONE
-        LDA #'B'
-        JSR STR8V2_RAM_PUTC
-        LDA M_MAX_ROW
-        LSR A
-        LSR A
-        LSR A
-        ORA #'0'
-        JSR STR8V2_RAM_PUTC
-        LDA #':'
-        JSR STR8V2_RAM_PUTC
-        LDA M_MAX_ROW
-        AND #7
-        CLC
-        ADC #8
-        TAX
-        LDA M_HEX_DIGITS,X
-        JSR STR8V2_RAM_PUTC
-        LDX #<M_MAX_TEXT
-        LDY #>M_MAX_TEXT
-        JSR M_PUTS
-        LDA M_MAX+2
-        JSR STR8V2_RAM_HEX_OUT
-        LDA M_MAX+1
-        JSR STR8V2_RAM_HEX_OUT
-        LDA M_MAX
-        JSR STR8V2_RAM_HEX_OUT
-        LDA #'*'
-        JSR STR8V2_RAM_PUTC
-        JMP STR8V2_RAM_NEWLINE
-M_WEAR_NONE:
-        LDX #<M_NO_WEAR_TEXT
-        LDY #>M_NO_WEAR_TEXT
-        JMP M_PUTS
+        INCLUDE "status-mon.inc"
 
 M_MESSAGE:
         JSR M_PUTS
@@ -781,24 +714,12 @@ M_LOCK:
         INCLUDE "force.inc"
         INCLUDE "adapter.inc"
 M_RA: DB "RA",1,13
-M_HEX_DIGITS: DB "0123456789ABCDEF"
 M_VERSION_SUFFIX: DB "ERSION"
 M_TIME_SUFFIX: DB "IME"
 M_PROMPT_TEXT: DB "> ",0
 M_TITLE:
         DB 13,10,"STR8-N 0.1.0-dev gMON_GENERATION_TEXT / ",MON_SLOT_LABEL,13,10
         DB "N-F 0.3.0 g00000001 / BASE1 / PR05",13,10,0
-M_CPU_TEXT: DB "CPU $",0
-M_CAPS_TEXT: DB "  caps $",0
-M_OPTIONAL_TEXT:
-        DB "EDU/SSRAM: MAINT",13,10,0
-M_BATTERY_TEXT: DB "Battery: --*",13,10,0
-M_TIME_ERROR_TEXT: DB "RTCC error $",0
-M_WEAR_TEXT: DB "Wear: ",0
-M_MAX_TEXT: DB " max $",0
-M_NO_WEAR_TEXT: DB "--*",13,10,0
-M_LIMIT_TEXT:
-        DB "-- no data; * health/prior wear unverified.",13,10,0
 M_BANK_TEXT: DB "Data bank B",0
 M_BATCH_WORD: DB "BATCH",0
 M_HELP_TEXT:
@@ -813,6 +734,7 @@ M_RANGE_TEXT: DB "REFUSED: range/entry",13,10,0
 M_VERIFY_TEXT: DB "Partial edit; verify failed",13,10,0
 M_BAD_F_TEXT: DB "BASE1/PR05 mismatch",13,10,0
 M_MODULE_TEXT: DB "Services invalid",13,10,0
+M_TIME_ERROR_TEXT: DB "RTCC error $",0
 M_END:
         ENDMOD
         END

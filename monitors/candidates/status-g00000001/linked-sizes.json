@@ -1,0 +1,12 @@
+{
+  "status-core": {
+    "linked_bytes": 1021,
+    "capacity": 1022,
+    "free_bytes": 1
+  },
+  "status-details": {
+    "linked_bytes": 1446,
+    "capacity": 1448,
+    "free_bytes": 2
+  }
+}

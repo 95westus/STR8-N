@@ -65,8 +65,9 @@ def build(out, generation):
     private['MON_F_LOAD'] = 0xf000+f.index(load_pattern)
     crc = binascii.crc_hqx(f,0xffff)
     core_sources=('mona.asm','adapter.inc','layout.inc','rtc-read.inc','force.inc',
-                  'workbench-interface.inc','service-interface.inc','monitor-ui.inc','batch-interface.inc')
-    inputs = {'monitors/src/'+name:sha((ROOT/'monitors/src'/name).read_bytes()) for name in core_sources}
+                  'workbench-interface.inc','service-interface.inc','monitor-ui.inc','batch-interface.inc','status-interface.inc','status-mon.inc')
+    source_paths={name:ROOT/('monitors/status' if name.startswith('status-') else 'monitors/src')/name for name in core_sources}
+    inputs = {path.relative_to(ROOT).as_posix():sha(path.read_bytes()) for path in source_paths.values()}
     out.mkdir(parents=True)
     artifacts = {}
     logs = []
@@ -76,7 +77,7 @@ def build(out, generation):
         stage.mkdir()
         origin = page*256+0x80 if page else 0x0200
         for filename in core_sources:
-            body = (ROOT/'monitors/src'/filename).read_text(encoding='utf-8')
+            body = source_paths[filename].read_text(encoding='utf-8')
             body = body.replace('MON_SLOT_LABEL', '"'+label+'"')
             body = body.replace('MON_GENERATION_TEXT', generation_text)
             if filename != 'layout.inc':
@@ -109,6 +110,9 @@ def build(out, generation):
         body = bytes(memory[address] for address in range(origin,sy['M_END']))
         assert sy['M_RA']-sy['M_EXPECT_ID'] == 40
         assert sy['MF_FLASH_END']-sy['MF_FLASH_IMAGE']<128
+        gate=bytes(memory[a] for a in range(sy['MS_GATE'],sy['MS_GATE_END']))
+        assert len(gate)==20 and ws['V2W_END']==0x7BE8
+        assert gate==bytes.fromhex('DA8D007D2048782008ACA8688D007D2048789860')
         assert len(body) <= (3968 if page else 25344)
         if page:
             assert body[:4] == b'SN\x02\0' and body[4] == body[7] == 0x4c
@@ -169,15 +173,15 @@ def build(out, generation):
                   RAM_modify=dict(max_bytes=8,ranges=['0000-00DF','0200-66FF'],complete_preflight=True,
                     readback=True,RAM_candidate_code_pages_protected=True,flash_writes=False),
                   dump=dict(default_bytes=16,max_bytes='Entire valid non-I/O range',ASCII=True,cancel_between_rows=True),
-                  status_limits='-- no reported data; explicit TIME samples EDU Rev D MCP79411; cached sample has no zone; * no physical battery/prior wear certification',
+                  status_limits='STATUS provider: --* no valid reported data; saved fixed TZ offset; battery age policy and tracked erase attempts do not certify physical health or prior wear',
                   personalities='A and B identical commands; only slot identity differs',
                   monitor_UI=dict(format='UI/1',descriptor_offset='48',vector_offset='20',
                     operations=['VERSION','TIME','retain/status return','RTC sample','RTC display','bypass/quiet return','checked command callback'],
                     admission='MI CRC covers descriptor and vectors; tools validate full MI CRC before calls',
                     Foundation_ABI_changed=False,owner_RAM_or_ZP_borrowed=False,
                     warm_return='Preserves MON state and cached RTC sample; selects tool data bank'),
-                  RTCC_adapter=dict(trigger='Explicit TIME only; V never probes',profile='WDC EDU Rev D / MCP79411 / VIA1 PA0 SCL, PA7 SDA',
-                    automatic_startup=False,RTC_data_writes=False,EEPROM_or_SRAM_access=False,
+                  RTCC_adapter=dict(trigger='Startup and VERSION when EDU session ON; explicit TIME unchanged',profile='WDC EDU Rev D / MCP79411 / VIA1 PA0 SCL, PA7 SDA',
+                    automatic_startup=True,default_EDU_session='ON, configured Rev D profile; presence is established only by admitted reads',RTC_data_writes=False,EEPROM_or_SRAM_access=False,
                     max_snapshot_attempts=3,SCL_wait_polls=255,owner_RAM_borrowed=False),
                   journal_access='Read selected page and verify full record CRC; no writer installed',
                   CPU_simulations=0,hardware_access=False,flashing=False,execution_qualified=False)

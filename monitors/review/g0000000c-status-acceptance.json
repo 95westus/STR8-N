@@ -1,0 +1,31 @@
+{
+  "status": "INSTALLED_STATUS_ACCEPTED_2512_2609",
+  "scope": "MON gC / STATUS g1 only; retained utilities differ",
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "F_rebuilt": false,
+  "published_downloads_changed": false,
+  "document": "docs/MON_STARTUP_STATUS_ROM_ACCEPTANCE.md",
+  "private_board_captures_included": false,
+  "boards": {
+    "2512": {
+      "CPU": "65C02",
+      "default": "B",
+      "sequence": 1097,
+      "valid_records": 20,
+      "owner_RAM_ZP_restored": true,
+      "RTC_native_TIME_admitted": true,
+      "startup_stream_captured": false,
+      "reset_evidence": "Owner-reported RESET; post-reset default observed before selector; RAM/ZP/B3 verified"
+    },
+    "2609": {
+      "CPU": "65C816 emulation",
+      "default": "S",
+      "sequence": 1039,
+      "valid_records": 25,
+      "owner_RAM_ZP_restored": true,
+      "RTC_native_TIME_admitted": true,
+      "startup_stream_captured": false,
+      "reset_evidence": "Owner-reported RESET; post-reset default observed before selector; RAM/ZP/B3 verified"
+    }
+  }
+}

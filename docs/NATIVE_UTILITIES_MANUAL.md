@@ -1,9 +1,14 @@
 # STR8-N native utilities above Foundation
 
-Development candidate: MON A/B g0000000B, services g9, WB2 gB, PROGRAM
-SP/01 g2 and native apps g1/r16. Foundation remains **STR8N-F 0.3.0
+2512 development profile: MON A/B g0000000C + STATUS g1, services g9, WB2 gB,
+PROGRAM SP/01 g2 and native apps g1/r16. Foundation remains **STR8N-F 0.3.0
 g00000001 / BASE1 / PR05**, exactly 4096 bytes. This candidate is separate
 from the published Foundation and preview-1 downloads.
+
+The [startup STATUS update](MON_STARTUP_STATUS.md) restores the richer
+2205/2604-style display and passed on2512 and2609. 2609 has the same MON gC /
+STATUS g1 over its retained older services/workbench profile; the full native
+CLOCK/FLASH suite here is still the2512 profile. No published ZIP was replaced.
 
 ## Start and identify
 

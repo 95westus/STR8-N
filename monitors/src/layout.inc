@@ -2,6 +2,7 @@
         INCLUDE "workbench-interface.inc"
         INCLUDE "service-interface.inc"
         INCLUDE "batch-interface.inc"
+        INCLUDE "status-interface.inc"
 M_STATE EQU $6A00
 M_BANK EQU M_STATE
 M_LEN EQU M_STATE+1

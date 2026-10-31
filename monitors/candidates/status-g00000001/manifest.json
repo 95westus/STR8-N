@@ -1,0 +1,95 @@
+{
+  "component": "Read-only shared startup STATUS",
+  "generation": "00000001",
+  "status": "BUILD_ONLY_NOT_EXECUTION_QUALIFIED",
+  "source_sha256": {
+    "monitors/status/status-core.asm": "1e29e5642e392ae7ce276a82b2a1020dd1950de2a3b9e6afdc991981e4aafcc0",
+    "monitors/status/status-details.asm": "c5f2925e3ae06fe91a01848c96de0675236e844fd6c0d38f85858f941e106651",
+    "monitors/status/status-sram.inc": "5bcbdcff1b12b29de70b25a3cd3aec4a7f04ec33827e42206732f3f27ee6d62e",
+    "monitors/status/status-mon-sram.inc": "9d1d369c5384b0d5f62cec488c1be070bc93527c56040b0215473fb5801387d7",
+    "monitors/status/status-interface.inc": "0811b82ac95ec0a87e5b85b05e9349aebdce1cd3f393482cce5888308fcf1acc"
+  },
+  "artifacts": {
+    "STATUS-text-8040.bin": {
+      "address": "8040",
+      "bytes": 192,
+      "data_bytes": 190,
+      "sha256": "093e1b305b1e1666528a1e424f894c55b135152384b5b83ca0fd6009552f644b"
+    },
+    "STATUS-text-8240.bin": {
+      "address": "8240",
+      "bytes": 192,
+      "data_bytes": 188,
+      "sha256": "a834c44a0a6b6870ebcd70f446c0d28e31c1e75b2c63e511e0c3ab17afc0e7ba"
+    },
+    "STATUS-AC00.bin": {
+      "address": "AC00",
+      "bytes": 1024,
+      "linked_bytes": 1021,
+      "free_bytes": 1,
+      "sha256": "fc6795df23cdf356cb2df5c26519389bfc93a37aaaa07e691f17fc33202c9731"
+    },
+    "STATUS-FA50.bin": {
+      "address": "FA50",
+      "bytes": 1450,
+      "linked_bytes": 1446,
+      "free_bytes": 2,
+      "sha256": "0f718d99144d866d22e337d0eaa4034bae1603e473b7edd4c0e1ccdebca0aa68"
+    }
+  },
+  "linked": {
+    "status-core": {
+      "linked_bytes": 1021,
+      "capacity": 1022,
+      "free_bytes": 1
+    },
+    "status-details": {
+      "linked_bytes": 1446,
+      "capacity": 1448,
+      "free_bytes": 2
+    }
+  },
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "F_rebuilt": false,
+  "CPU_simulations": 0,
+  "hardware_access": false,
+  "build_passes": 1,
+  "gate": "7BE8-7BFB after frozen V2W_END",
+  "scratch": "MON6A; fixed gate; boot frame6700; system ZP E0-FF",
+  "owner_RAM_writes": false,
+  "RTC_writes": false,
+  "flash_writes": false,
+  "SRAM_writes": false,
+  "runtime_qualification": {
+    "status": "INSTALLED_STATUS_ACCEPTED_2512_2609",
+    "scope": "MON gC / STATUS g1 only; retained utilities differ",
+    "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+    "F_rebuilt": false,
+    "published_downloads_changed": false,
+    "document": "docs/MON_STARTUP_STATUS_ROM_ACCEPTANCE.md",
+    "private_board_captures_included": false,
+    "boards": {
+      "2512": {
+        "CPU": "65C02",
+        "default": "B",
+        "sequence": 1097,
+        "valid_records": 20,
+        "owner_RAM_ZP_restored": true,
+        "RTC_native_TIME_admitted": true,
+        "startup_stream_captured": false,
+        "reset_evidence": "Owner-reported RESET; post-reset default observed before selector; RAM/ZP/B3 verified"
+      },
+      "2609": {
+        "CPU": "65C816 emulation",
+        "default": "S",
+        "sequence": 1039,
+        "valid_records": 25,
+        "owner_RAM_ZP_restored": true,
+        "RTC_native_TIME_admitted": true,
+        "startup_stream_captured": false,
+        "reset_evidence": "Owner-reported RESET; post-reset default observed before selector; RAM/ZP/B3 verified"
+      }
+    }
+  },
+  "packaging": "LOCAL_CANDIDATE_ONLY; not a published download or replacement ZIP"
+}
