@@ -1,0 +1,34 @@
+{
+  "status": "FEASIBILITY_ONLY_NOT_RP_IMPLEMENTED_OR_EXECUTION_QUALIFIED",
+  "CPU_simulations": 0,
+  "firmware_builds": 0,
+  "device_access": false,
+  "encoding": "prototype literal/match LZ;128 literals,130 match,16-bit distance",
+  "images": [
+    {
+      "input": "CLOCK-g00000001-RAM.bin",
+      "source_sha256": "f1689d49af668e0c4b16bdc3297b160da758ef145278e21446edaa28a793fb68",
+      "expanded_bytes": 12245,
+      "packed_bytes": 9908,
+      "RP_header_and_seal_bytes": 34,
+      "sectors_if_adopted": 3,
+      "roundtrip_exact": true
+    },
+    {
+      "input": "board-name.bin",
+      "source_sha256": "945a19f80f30b40bac79b570845a70735438e3ff986c1e7a1fd622b56ffe75f0",
+      "expanded_bytes": 10979,
+      "packed_bytes": 9641,
+      "RP_header_and_seal_bytes": 34,
+      "sectors_if_adopted": 3,
+      "roundtrip_exact": true
+    }
+  ],
+  "limits": [
+    "Legacy MAINT still requires BASE1 binding/guard adaptation.",
+    "A bounded 65C02/816-compatible decoder and versioned RP format are not implemented.",
+    "Future port size and loader size require measurement before allocation changes.",
+    "No bank/sector is allocated or declared free by this experiment."
+  ],
+  "decision": "Not selected: both images still require three sectors; no sector saving for the full MAINT replacement."
+}

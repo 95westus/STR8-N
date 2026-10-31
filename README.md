@@ -18,6 +18,9 @@ storage and native-menu commands plus registered PROGRAM/AP/02 handoffs.
 Independent large PROGRAM load/run reaches owner RAM `$0200–$66FF`.
 The [familiar APPS/named-tool workflow](docs/CLASSIC_APPS_PROGRAM_WORKFLOW.md)
 is installed; full SRAM management remains open.
+The [BANK MAINT 2.4 restoration target](docs/BANK_MAINT_RESTORATION.md) now
+spells out the complete BM menu, compact cross-bank Table and richer status.
+The current CONFIG-led R MAINT is an incomplete replacement.
 Read the [operator manual](docs/NATIVE_UTILITIES_MANUAL.md) and
 [BATCH/large PROGRAM acceptance](docs/2512_BATCH_WIDE_ACCEPTANCE.md).
 The [earlier native acceptance](docs/2512_NATIVE_UTILITIES_ACCEPTANCE.md)

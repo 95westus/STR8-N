@@ -123,6 +123,11 @@ On 2512, STATUS, VERSION, calendar rejection and SET cancellation passed.
 A successful SET/ACK/trim write under this new package has **not** been run;
 the ongoing RTC/NTP clock and trim were deliberately retained.
 
+The requested [BANK MAINT 2.4 replacement](BANK_MAINT_RESTORATION.md) is
+still open. Current R MAINT starts with CONFIG branding and the smaller
+FLASH/BOOT command set; it does not yet provide the full BM copy/compare,
+fill/create/CRC, naming and Table interface.
+
 ## FLASH and the sector editor
 
 ```text

@@ -5,6 +5,10 @@ Owner clarification, October 30, 2026: use the familiar 2205/b35 and
 unchanged is not the compatibility target. Preserve those historical branches
 and reference boards. Frozen N-F BASE1/PR05 remains the foundation.
 
+The later [BANK MAINT2.4 transcript](BANK_MAINT_RESTORATION.md) refines this
+contract: full BM operations, compact cross-bank Table and richer status
+are required. The increment accepted below is not that completed port.
+
 ## Operator contract
 
 - APPS is a readable tool catalogue: names, flash locations and launch

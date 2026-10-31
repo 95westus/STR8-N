@@ -30,6 +30,22 @@ S_LINE_COPY:
 S_LINE_READY:
         LDX #0
         JSR S_SKIP
+        CMP #'J'
+        BNE S_NOT_RESTART
+        INX
+        JSR S_SKIP
+        CMP #'3'
+        BNE S_UNHANDLED
+        INX
+        JSR S_END_ARGS
+        BCC S_UNHANDLED
+        ; J3 restarts Foundation, as the former bank3 reset-vector boot did.
+        ; A foreground reset cannot be a returning BATCH operation.
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BEQ S_UNHANDLED
+        JMP STR8V2_RESET
+S_NOT_RESTART:
         CMP #'M'
         BNE S_NOT_MAP
         LDA S_LINE+1,X
@@ -166,7 +182,7 @@ S_MODULE:
         JSR S_CHECK_WB
         BCS S_CALL_WB
         LDA S_LOADER_REQUEST
-        BEQ S_NO_MODULE
+        BEQ S_UNHANDLED
 S_FORCE_LOAD:
         LDX #<S_LOADING_TEXT
         LDY #>S_LOADING_TEXT
@@ -207,12 +223,6 @@ S_CALL_WB:
         LDX #<S_LINE
         LDY #>S_LINE
         JMP WB_COMMAND
-S_NO_MODULE:
-        LDA #WB_REFUSED
-        STA WB_RESULT
-        LDX #<S_NO_MODULE_TEXT
-        LDY #>S_NO_MODULE_TEXT
-        BRA S_MESSAGE
 S_LOAD_FAILED:
         LDA #WB_REFUSED
         STA WB_RESULT
@@ -390,13 +400,12 @@ S_LOAD_WORD: DB "LOAD"
 S_FLASH_WORD: DB "FLASH",0
 S_CLOCK_WORD: DB "CLOCK",0
 S_AUTO_WORDS: DB "S",0,"STORE",0,"T",0,"TABLE",0,"R",0,"RESTORE",0
-        DB "EDU",0,"SRAM",0,"WORK",0,"BATCH",0,"BOOT",0,0
+        DB "EDU",0,"SRAM",0,"WORK",0,"BATCH",0,"BOOT",0,"AREA",0,0
 S_RANGES_TEXT: DB "B0/B1 owner images/records. Erased != free.",13,10
         DB "B2:8-A WB/SP; B-D CLOCK; E-F FLASH/MAINT.",13,10
         DB "B3:8/9 RTC/tools; A/B MON; C/D boot/wear; E services; F frozen.",13,10
         DB "RAM: WB4800-66FF+6B00-77FF; native2000-77FF.",13,10,0
 S_LOADING_TEXT: DB "Loading tools...",13,10,0
-S_NO_MODULE_TEXT: DB "Tools invalid; use MAINT LOAD.",13,10,0
 S_LOAD_FAILED_TEXT: DB "REFUSED: bundle/header/CRC failed; workbench not called",13,10,0
 S_LOAD_IMAGE:
         INCLUDE "service-load-image.inc"

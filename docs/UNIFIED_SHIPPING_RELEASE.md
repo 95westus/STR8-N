@@ -16,6 +16,10 @@ This contract supersedes older preview-completion and soak-next wording in
 [the original A/B plan](MON_AB_PLAN.md). Historical receipts and published
 archives remain evidence for their exact bytes and scopes.
 
+The [BANK MAINT2.4 reference](BANK_MAINT_RESTORATION.md) is authoritative for
+the full maintenance menu, compact Table rows and dynamic startup/status.
+The current CONFIG-led panel is an incomplete replacement.
+
 ## Common operator experience
 
 | Area | Shipping behavior | Current state |
