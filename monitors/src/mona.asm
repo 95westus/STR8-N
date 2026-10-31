@@ -16,7 +16,18 @@ M_START:
 M_CLEAR:
         STA M_STATE,X
         INX
-        BNE M_CLEAR
+        CPX #$20
+        BNE M_CLEAR_TEST
+        LDX #$40
+M_CLEAR_TEST:
+        CPX #$D0
+        BCC M_CLEAR
+        STZ MU_EXTERNAL
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BEQ M_CLEAR_DONE
+        STZ MU_EDU
+M_CLEAR_DONE:
         LDA #3
         STA M_BANK
 ; Only entered by a CRC-admitted UI/1 tool, with monitor state preserved.
@@ -38,6 +49,26 @@ M_RA_CHECK:
         JSR STR8V2_RAM_RX_RESET
         JSR M_STATUS
 M_PROMPT:
+        LDA MU_EXTERNAL
+        BEQ M_BATCH_RESUME
+        STZ MU_EXTERNAL
+        LDA MU_RESULT
+        RTS
+M_BATCH_RESUME:
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE M_INTERACTIVE
+M_BATCH_COMMAND:
+        LDX #5
+M_BATCH_LINE:
+        LDA M_BATCH_WORD,X
+        STA M_LINE,X
+        DEX
+        BPL M_BATCH_LINE
+        LDA BQ_BANK
+        STA M_BANK
+        JMP M_MODULE
+M_INTERACTIVE:
         STZ M_FORCE
         LDA #'B'
         JSR STR8V2_RAM_PUTC
@@ -49,6 +80,8 @@ M_PROMPT:
         JSR M_PUTS
         JSR M_READ_LINE
         BCC M_INPUT_BAD
+M_PARSE_COMMAND:
+        STZ MU_RESULT
         LDX #0
         JSR M_SKIP
         BEQ M_PROMPT
@@ -92,11 +125,20 @@ M_MODULE_FLOOR:
         BCC M_SYNTAX
         STA M_BANK
         JMP M_PROMPT
+M_RUN_COMMAND:
+        STA M_BANK
+        LDA #1
+        STA MU_EXTERNAL
+        STZ M_FORCE
+        JMP M_PARSE_COMMAND
 M_MODULE_MISSING:
+        STZ BQ_MAGIC
         LDX #<M_MODULE_TEXT
         LDY #>M_MODULE_TEXT
         JMP M_MESSAGE
 M_SYNTAX:
+        LDA #1
+        STA MU_RESULT
         LDX #<M_SYNTAX_TEXT
         LDY #>M_SYNTAX_TEXT
         JMP M_MESSAGE
@@ -108,6 +150,8 @@ M_FORCE_NAME:
         INC M_FORCE
         JMP M_MODIFY
 M_INPUT_BAD:
+        LDA #3
+        STA MU_RESULT
         JSR STR8V2_RAM_RX_RESET
         LDX #<M_INPUT_TEXT
         LDY #>M_INPUT_TEXT
@@ -337,11 +381,15 @@ M_DUMP_REMAIN:
         BNE M_DUMP_ROW
         JMP M_PROMPT
 M_DUMP_CANCEL:
+        LDA #3
+        STA MU_RESULT
         JSR STR8V2_RAM_RX_RESET
         LDX #<M_CANCEL_TEXT
         LDY #>M_CANCEL_TEXT
         JMP M_MESSAGE
 M_RANGE:
+        LDA #2
+        STA MU_RESULT
         LDX #<M_RANGE_TEXT
         LDY #>M_RANGE_TEXT
         JMP M_MESSAGE
@@ -450,6 +498,8 @@ M_EDIT_COPY:
         ; Echo independently read bytes, using the normal hex/ASCII row.
         JMP M_HAVE_ROW
 M_EDIT_FAILED:
+        LDA #4
+        STA MU_RESULT
         PLA
         STA F_NMI_HOLD
         LDX #<M_VERIFY_TEXT
@@ -743,25 +793,26 @@ M_CAPS_TEXT: DB "  caps $",0
 M_OPTIONAL_TEXT:
         DB "EDU/SSRAM: MAINT",13,10,0
 M_BATTERY_TEXT: DB "Battery: --*",13,10,0
-M_TIME_ERROR_TEXT: DB "RTCC read refused/failed $",0
+M_TIME_ERROR_TEXT: DB "RTCC error $",0
 M_WEAR_TEXT: DB "Wear: ",0
-M_MAX_TEXT: DB " tracked max $",0
+M_MAX_TEXT: DB " max $",0
 M_NO_WEAR_TEXT: DB "--*",13,10,0
 M_LIMIT_TEXT:
-        DB "-- no data; * Health/prior wear unverified; tracked attempts.",13,10,0
+        DB "-- no data; * health/prior wear unverified.",13,10,0
 M_BANK_TEXT: DB "Data bank B",0
+M_BATCH_WORD: DB "BATCH",0
 M_HELP_TEXT:
-        DB "? VERSION(V) TIME; B0..3; D addr [end]; G addr; L BIN",13,10
-        DB "M/!M addr bytes (1-8); force flash 1->0",13,10
-        DB "B3:C/D/F protected; Q REC",13,10
-        DB "M1-3 W APPS CLOCK MAINT; BATCH S T R EDU SRAM WORK",13,10,0
-M_SYNTAX_TEXT: DB "REFUSED: syntax (use ?)",13,10,0
-M_INPUT_TEXT: DB "Input canceled/rejected",13,10,0
-M_CANCEL_TEXT: DB "Dump cancelled.",13,10,0
+        DB "VERSION TIME B0..3 D M/!M G L Q",13,10
+        DB "M1-3 W APPS APP CLOCK FLASH MAINT",13,10
+        DB "S/T/R EDU SRAM WORK BATCH",13,10
+        DB "B3:C/D/F protected",13,10,0
+M_SYNTAX_TEXT: DB "Syntax; use ?",13,10,0
+M_INPUT_TEXT: DB "Input canceled",13,10,0
+M_CANCEL_TEXT: DB "Canceled.",13,10,0
 M_RANGE_TEXT: DB "REFUSED: range/entry",13,10,0
-M_VERIFY_TEXT: DB "RAM verify failed; partial edit",13,10,0
+M_VERIFY_TEXT: DB "Partial edit; verify failed",13,10,0
 M_BAD_F_TEXT: DB "BASE1/PR05 mismatch",13,10,0
-M_MODULE_TEXT: DB "Services absent/invalid",13,10,0
+M_MODULE_TEXT: DB "Services invalid",13,10,0
 M_END:
         ENDMOD
         END

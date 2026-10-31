@@ -8,12 +8,14 @@
 NL_START:
         DB "NL",1,2,"PR05"
         JMP NL_ENTER
+        DB "NB",1,1 ; external BATCH context is preserved
 NL_ENTER:
         SEI
         CLD
         CMP #2
         BCS NL_FAIL
         STA NL_KIND
+        STA $5B02 ; return context:0=CLOCK,1=FLASH
         LDX #$FF
         TXS
         LDX #0
@@ -30,6 +32,12 @@ NL_SAVE:
         LDA #$90
         STA V2_PTR+1
         LDX #12
+        JSR NL_CRC_PAGES
+        BNE NL_FAIL
+        STZ V2_PTR
+        LDA #$89
+        STA V2_PTR+1
+        LDX #1
         JSR NL_CRC_PAGES
         BNE NL_FAIL
         LDX #0
@@ -183,6 +191,7 @@ NL_RESTORE_FAIL:
         JSR BOOT_PRINT
         JMP $5E00
 NL_FAIL:
+        STZ $7DF9
         JMP BOOT_RECOVERY
 NL_CRC_PAGES:
         ; ROM F is absent while B2 is mapped: every CRC instruction stays RAM.

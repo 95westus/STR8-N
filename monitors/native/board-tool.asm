@@ -6,6 +6,7 @@
         INCLUDE "str8n-v2-public.inc"
         INCLUDE "vectors-symbols.inc"
         INCLUDE "boot-symbols.inc"
+        INCLUDE "batch-interface.inc"
 OI_PTR EQU V2_PTR
 OI_STAGE EQU $6800
         CODE
@@ -27,7 +28,17 @@ FT_MENU:
         LDX #<FT_PROMPT
         LDY #>FT_PROMPT
         JSR CONFIG_PRINT
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE FT_LIVE_LINE
+        LDA #3
+        LDX #<V2_LINE
+        LDY #>V2_LINE
+        JSR BQ_NEXT
+        BCS FT_LINE_READY
+FT_LIVE_LINE:
         JSR BOOT_READ_LINE
+FT_LINE_READY:
         BCC FT_BAD
         LDX #<FT_HELP_WORD
         LDY #>FT_HELP_WORD
@@ -75,6 +86,8 @@ FT_MENU:
         BCS FT_VERSION_COMMAND
         JMP CONFIG_DISPATCH
 FT_BAD:
+        LDA #2
+        STA $5DF5
         LDX #<FT_BAD_TEXT
         LDY #>FT_BAD_TEXT
         JSR CONFIG_PRINT
@@ -355,6 +368,14 @@ FT_BYTE_COMMAND:
         CMP FT_OLD_BYTE
         BEQ FT_BYTE_OK
         STA V2_FLASH_DATA
+        LDY FT_BANK
+        CPY #3
+        BNE FT_BYTE_BATCH_SAFE
+        LDY FT_ADDRESS_VALUE+1
+        CPY #$89
+        BNE FT_BYTE_BATCH_SAFE
+        STZ BQ_MAGIC
+FT_BYTE_BATCH_SAFE:
         LDA #1
         STA V2_NMI_HOLD
         JSR V2W_BYTE+2
@@ -454,6 +475,14 @@ FT_STAGE_CRC:
         BCC FT_JOURNAL_BAD
         ; Invalidate before mutation: a failed rewrite must require READ again.
         STZ FT_VALID
+        LDA FT_BUFFER_BANK
+        CMP #3
+        BNE FT_APPLY
+        LDA FT_BUFFER_PAGE
+        CMP #$80
+        BNE FT_APPLY
+        STZ BQ_MAGIC
+FT_APPLY:
         JMP OI_APPLY
 FT_WRITE_IDENTICAL:
         LDA #3
@@ -470,6 +499,8 @@ FT_JOURNAL_BAD:
         JSR CONFIG_PRINT
         JMP FT_MENU
 FT_CANCEL:
+        LDA #3
+        STA $5DF5
         LDX #<FT_CANCEL_TEXT
         LDY #>FT_CANCEL_TEXT
         JSR CONFIG_PRINT
@@ -503,6 +534,9 @@ FT_CONFIRM:
         BCC FT_NO
         JMP FT_END
 FT_HOST_COMMAND:
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BEQ FT_BAD
         JSR FT_END
         BCC FT_BAD
         STZ FT_VALID
@@ -576,6 +610,9 @@ FT_BOOT_DELAY:
         LDA #7
         JMP CONFIG_CALL
 FT_BOOT_RUN:
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BEQ FT_BAD
         JSR BOOT_API_SKIP
         SEC
         SBC #'0'

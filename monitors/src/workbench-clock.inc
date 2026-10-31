@@ -2,6 +2,13 @@
 WC_MAINT:
         JSR W_END_ARGS
         BCC W_UNHANDLED
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE WC_INTERACTIVE
+        LDA #1
+        STA BQ_PROVIDER
+        JMP W_HANDLED
+WC_INTERACTIVE:
         LDA W_BANK
         JMP W_ENTER_SHELL
 WC_COMMAND:

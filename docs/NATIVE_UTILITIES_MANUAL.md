@@ -1,9 +1,9 @@
 # STR8-N native utilities above Foundation
 
-Development candidate: MON A/B g0000000A, services g6, WB2 g8, native apps g1
-with RAM loader r7 and HOST prompt repair r8. Foundation remains **STR8N-F 0.3.0 g00000001 / BASE1 /
-PR05**, exactly 4096 bytes. This candidate is separate from the published
-Foundation and preview-1 downloads.
+Development candidate: MON A/B g0000000B, services g8, WB2 gA, PROGRAM
+SP/01 g2 and native apps g1/r16. Foundation remains **STR8N-F 0.3.0
+g00000001 / BASE1 / PR05**, exactly 4096 bytes. This candidate is separate
+from the published Foundation and preview-1 downloads.
 
 ## Start and identify
 
@@ -231,12 +231,66 @@ Native Q restores monitor session and owner ZP; it does **not** restore the
 owner RAM displaced by loading an app. The qualification host separately
 restored its saved owner RAM after testing.
 
-Workbench RESTORE destinations currently stop at `$47FF` to prevent executing
-or returning into a self-overwritten loader. Larger legacy apps need the
-independent load/handoff path; the native CLOCK loader supplies that path for
-the named system app. BATCH currently covers returning workbench commands,
-including VERSION/TIME, rather than every b35 app/STORE/RESTORE combination.
-These remain explicit full-b35 shipping gaps. ASM/DBG are follow-on work.
+PROGRAM RESTORE now supports `$0200–$66FF`, subject to the caller's RAM
+floor. Its independent loader stays at `$6B00–$77FF`; after the first owner
+copy it returns from that resident tail instead of returning into displaced
+workbench code. A final load-only returns quietly to MON without reloading
+WB over the payload. The payload CRC is checked before copying and checked
+again during copying. A canceled/failed partial copy is never executed; save
+owner RAM before loading tools or programs. Large STORE sources crossing
+`$4800` still need a separate staging path; this increment closes large
+PROGRAM **load/run**, not that STORE-source ownership issue.
+
+## BATCH and returning applications
+
+`BATCH` accepts up to 34 text bytes, separated by semicolons. Empty segments
+are refused before execution; each command is checked when reached. A later
+error stops the remainder without undoing earlier successful commands.
+
+```text
+B3> BATCH B0;D 3000;B3;VERSION
+B3> BATCH R CLOCK;STATUS;V;Q;V
+B3> BATCH R FLASH;BANK 0;READ 9000;Q
+B3> BATCH MAINT;TABLE P;WORK;Q;V
+B3> BATCH S P AUTO 3000 301F DEMO
+B3> BATCH R P DEMO;V
+B3> BATCH R P LARGE L
+```
+
+Run each line separately. CLOCK/FLASH consume subsequent segments at their
+command prompts. Application Q returns to MON and resumes the remainder.
+MAINT selects the workbench interpreter until its Q. Errors, a declined
+confirmation, Ctrl-C or ESC discard the remainder. YES/NO confirmations
+always require live keyboard input; the queue cannot provide a confirmation.
+`HOST`, `BOOT RUN`, nested BATCH, queued `MAINT LOAD`, raw G/L/reset and force
+`!M` are excluded because their protocol, ownership or uncontrolled return
+cannot be treated as a returning command. Guarded MON M and D are supported.
+BATCH is a foreground command sequence, not an atomic transaction.
+
+A PROGRAM run in BATCH must explicitly register the PR05/public-HOLD return
+contract. Start its entry with these ten bytes:
+
+```text
+80 08 42 54 01 02 50 52 30 35   ; BRA +8; BT/1/2; PR05
+```
+
+Its code follows at entry+10 and returns with `JMP $7E67` (public HOLD), using
+the existing bank/register contract. See `examples/BATCH-DEMO.asm`. A valid
+legacy b35 BT/1/1 record is retained but is not automatically admitted as a
+BASE1 returning PROGRAM. Unbatched execution remains an explicit owner action.
+AP/02 uses its existing PR05/CPU/header/payload CRC admission plus BT/1/1
+entry marker for a returning BATCH application. The two formats are distinct.
+The queue waits for the app's live Q/HOLD; it does not feed keys into the app.
+
+A wide load-only (`R P name L`) must be the final segment: loading WB for a
+later command would overwrite the just-restored payload. A registered wide
+run can return through HOLD and resume the remaining commands. The queue
+lives above owner RAM; FLASH escrows its context outside the sector buffer.
+Reset cancels the volatile queue; F's ABI and binary remain unchanged.
+
+ASM/DBG remain deferred. Successful native CLOCK write-policy trials, factory
+restoration and the remaining full-b35 workflow checks remain release gates. The BATCH/large
+PROGRAM acceptance is separate from older native-utility acceptance.
 
 ## Restore factory firmware
 

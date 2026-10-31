@@ -5,8 +5,8 @@ STR8N has produced the stable **STR8N-F Foundation v0.3.0 g00000001 /
 BASE1 / PR05**. Above it, MON A and MON B use the same source, commands,
 services and application contract. Only their slot identities differ.
 The shipping target is **all b35 capabilities except ASM and DBG**.
-The [native utilities on 2512](2512_NATIVE_UTILITIES_ACCEPTANCE.md) are the current
-development checkpoint; full-b35 shipping gaps remain explicit.
+The [BATCH/large PROGRAM checkpoint](2512_BATCH_WIDE_ACCEPTANCE.md) extends
+the [native utilities checkpoint](2512_NATIVE_UTILITIES_ACCEPTANCE.md); full-b35 shipping gaps remain explicit.
 
 This contract supersedes older preview-completion and soak-next wording in
 [the release path](FOUNDATION_RELEASE_PATH.md),
@@ -20,8 +20,8 @@ archives remain evidence for their exact bytes and scopes.
 | --- | --- | --- |
 | Identity | VERSION, name/version/generation, active A/B, Foundation identity, CPU/board/status and saved boot policy; V remains an alias | Global VERSION/V and concise TIME accepted on MON/workbench/CLOCK; FLASH/MAINT VERSION identifies SXB/EDU profiles |
 | Monitor | b35 Dump/Modify, deliberate force, bank selection, Go, supported loading, cancellation and return | Current D/M/!M/G/B/raw BIN subset qualified; remaining b35 forms need reconciliation |
-| Storage | STORE, TABLE, RESTORE; S/T/R aliases; flash and mounted PROGRAM; AUTO start selection, clear backend/location, checked load/run/return | Existing flash/SS1 workflows qualified; full names and flash-to-PROGRAM copy/verified move/run accepted; large PROGRAM destinations remain limited |
-| Batch | b35 bounded queue, validation, stop/cancel and returning command/app behavior | Returning-command subset qualified; complete b35 behavior remains required |
+| Storage | STORE, TABLE, RESTORE; S/T/R aliases; flash and mounted PROGRAM; AUTO start selection, clear backend/location, checked load/run/return | Existing flash/SS1 workflows qualified; full names and flash-to-PROGRAM copy/verified move/run accepted; independent PROGRAM load/run spans 0200-66FF; large STORE-source staging remains |
+| Batch | b35 bounded queue, validation, stop/cancel and returning command/app behavior | 34-byte queue now covers guarded MON commands, storage, native menus and registered PROGRAM/AP02 return; explicit raw/protocol exclusions are documented |
 | Applications | APPS and APP name; usable native tools and AP/02 images, checked CPU/ABI/CRC, launch and public return | AP/02 previously accepted; native R CLOCK/FLASH/MAINT accepted on 2512 |
 | MAINT | Board status and working maintenance actions; direct access to CONFIG, CLOCK, storage and existing flash operations | Working workbench plus resident FLASH/BOOT tools installed on 2512 |
 | CONFIG | Show/change bank enables, entries, default/delay and A/B preference; preserve boot/wear journal semantics; return coherently to MON | Resident BOOT/CONFIG implemented; default B save accepted; new OFF/DELAY/RUN positive cases remain |

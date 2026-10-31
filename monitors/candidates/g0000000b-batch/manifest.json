@@ -1,0 +1,323 @@
+{
+  "schema": 1,
+  "component": "MON A/B",
+  "version": "0.1.0-dev",
+  "generation": "0000000B",
+  "build_passes": 1,
+  "assembly_tool_invocations": 6,
+  "F_rebuilt": false,
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "F_CRC16": "29ED",
+  "private_adapter": {
+    "MON_F_READ": 30768,
+    "MON_F_EXECUTE": 30760,
+    "MON_F_RECOVERY": 62127,
+    "MON_F_NO_SERVICE": 63139,
+    "MON_F_BOOT_READ": 62735,
+    "MON_F_SELECT": 30792,
+    "MON_F_BYTE": 31588,
+    "MON_F_LOAD": 62549
+  },
+  "foundation": {
+    "repository": "https://github.com/95westus/STR8N-F",
+    "tag": "v0.3.0",
+    "commit": "a5f1d83f6a7017eb30e6268c6e0b1fd12fce6a8d",
+    "product": "STR8N-F",
+    "version": "0.3.0",
+    "generation": "00000001",
+    "profile": "BASE1",
+    "private_contract": "PR05",
+    "public_ABI_major": 2,
+    "F_bytes": 4096,
+    "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+    "F_frozen": true
+  },
+  "source_sha256": {
+    "monitors/src/mona.asm": "5af34139c99edf46b3a8662e98d1d4431bf05106d9d16ce716e442cf7615bed5",
+    "monitors/src/adapter.inc": "73652796bae2a7b595c6b9890d54806f7f30197a7d0d67683cd9b1de1bcafa74",
+    "monitors/src/layout.inc": "079e6d8cc781b5818ce861d522c6d5e381b1f054ca3e3266d7ac208fa8f19d85",
+    "monitors/src/rtc-read.inc": "4d1875acd1f634cdf53a6ba80c9b8c4c65e3bc6a6c37aa02a7f3e064d7a00b05",
+    "monitors/src/force.inc": "fe30913475c3ff4d8e6db63c170431dd6f6448eb8f8b99dde581214dc17ef7b1",
+    "monitors/src/workbench-interface.inc": "eb9293c14ffa08d63085d8518473415fd4b9706f8ae944c25fa3559587ba94a1",
+    "monitors/src/service-interface.inc": "2bcbd5f740ff43ef8f33ceffec3b861b9df8879be75c59c47aabbc262204a820",
+    "monitors/src/monitor-ui.inc": "ace5912c158b1333b32af5572bd9091bd96fc60e44b80c918660656113c30dad",
+    "monitors/src/batch-interface.inc": "7eddb4f63346f541c8fa207be5059c2e5b9511a4f97371c617d0fd1ec925da0c"
+  },
+  "artifacts": {
+    "STR8N-MON-0.1.0-dev-g0000000B-A.bin": {
+      "bytes": 4096,
+      "sha256": "3127844532eb700038b4e0fb708a1bd49a48a522d55b0c6a1c93589f72840eed",
+      "variant": "A",
+      "destination": "B3:A000",
+      "linked_bytes": 3945,
+      "entry": "A084",
+      "linked_end": "AFE9",
+      "status": "NOT_EXECUTION_QUALIFIED"
+    },
+    "STR8N-MON-0.1.0-dev-g0000000B-B.bin": {
+      "bytes": 4096,
+      "sha256": "c87312a058afa7efdaee8d3c686cbd9a9e1c21815f44b6db2ef731199b2d2605",
+      "variant": "B",
+      "destination": "B3:B000",
+      "linked_bytes": 3945,
+      "entry": "B084",
+      "linked_end": "BFE9",
+      "status": "NOT_EXECUTION_QUALIFIED"
+    },
+    "STR8N-MON-0.1.0-dev-g0000000B-RAM.bin": {
+      "bytes": 3936,
+      "sha256": "b0f57b8565149d56e683d940214ea4ea8c8792ac873376329c4a2ae593f27775",
+      "variant": "RAM",
+      "destination": "RAM:0200; smoke candidate borrows owner RAM",
+      "linked_bytes": 3936,
+      "entry": "0200",
+      "linked_end": "1160",
+      "status": "NOT_EXECUTION_QUALIFIED"
+    }
+  },
+  "monitor_RAM": "6A00-6AFF",
+  "owner_RAM_ROM_startup": "0200-66FF unchanged",
+  "prompt": "B0> through B3> follows selected data bank; active A/B remains in banner",
+  "status_rows": [
+    "EDU",
+    "SSRAM",
+    "RTCC",
+    "Battery",
+    "Wear"
+  ],
+  "commands": [
+    "?",
+    "VERSION (V)",
+    "TIME",
+    "B[0-3]",
+    "D addr [end]",
+    "M addr byte...",
+    "!M addr byte...",
+    "G addr",
+    "L",
+    "Q",
+    "MS services: M1/M2/M3/W/APPS/MAINT/FLASH/CLOCK; WB2: BATCH/S/T/R/AREA/HELP/EDU/SRAM/WORK"
+  ],
+  "service_dispatcher": {
+    "interface": "MS/01/10/PR05",
+    "ROM": "B3:E000-EFFF",
+    "RAM": "2000-2FFF",
+    "admission": "Header and zero CRC residue over all4096 bytes",
+    "owner_RAM_M1_W": false
+  },
+  "workbench_bridge": {
+    "interface": "WB2",
+    "module_RAM": "4800-63FF",
+    "state_RAM": "6400-66FF",
+    "admission": "MW/02/1C/PR05 and CRC16 zero residue over all 7168 bytes before every call",
+    "ordinary_Modify_respects_module": true,
+    "force_Modify_may_evict_module": true,
+    "module_required": false,
+    "missing_or_corrupt_module": "refused; core D/M/G/Q remain available",
+    "legacy_WB1_accepted": false,
+    "completion_result": "655F; 0 OK, 1 syntax/unsupported, 2 refused, 3 canceled, 4 partial"
+  },
+  "raw_load": {
+    "ROM_only": true,
+    "tail_entry": "Exact frozen F loader",
+    "framing": "idle-terminated raw bytes",
+    "first_byte_Ctrl_C": "Frozen F semantics; cancellation goes to REC>",
+    "RAM_variant": "L refused"
+  },
+  "branch_layout": {
+    "A/mona.asm": {
+      "short_branches": 82,
+      "expanded_branches": 57,
+      "conservative_bytes": 2267
+    },
+    "A/adapter.inc": {
+      "short_branches": 33,
+      "expanded_branches": 4,
+      "conservative_bytes": 557
+    },
+    "A/rtc-read.inc": {
+      "short_branches": 63,
+      "expanded_branches": 0,
+      "conservative_bytes": 805
+    },
+    "A/force.inc": {
+      "short_branches": 21,
+      "expanded_branches": 2,
+      "conservative_bytes": 344
+    },
+    "A/workbench-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "A/service-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "A/monitor-ui.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "A/batch-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "B/mona.asm": {
+      "short_branches": 82,
+      "expanded_branches": 57,
+      "conservative_bytes": 2267
+    },
+    "B/adapter.inc": {
+      "short_branches": 33,
+      "expanded_branches": 4,
+      "conservative_bytes": 557
+    },
+    "B/rtc-read.inc": {
+      "short_branches": 63,
+      "expanded_branches": 0,
+      "conservative_bytes": 805
+    },
+    "B/force.inc": {
+      "short_branches": 21,
+      "expanded_branches": 2,
+      "conservative_bytes": 344
+    },
+    "B/workbench-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "B/service-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "B/monitor-ui.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "B/batch-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "RAM/mona.asm": {
+      "short_branches": 82,
+      "expanded_branches": 57,
+      "conservative_bytes": 2265
+    },
+    "RAM/adapter.inc": {
+      "short_branches": 33,
+      "expanded_branches": 4,
+      "conservative_bytes": 557
+    },
+    "RAM/rtc-read.inc": {
+      "short_branches": 63,
+      "expanded_branches": 0,
+      "conservative_bytes": 805
+    },
+    "RAM/force.inc": {
+      "short_branches": 21,
+      "expanded_branches": 2,
+      "conservative_bytes": 344
+    },
+    "RAM/workbench-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "RAM/service-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "RAM/monitor-ui.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "RAM/batch-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    }
+  },
+  "install_check": {
+    "offset": 24,
+    "final_byte": "FE",
+    "staging_byte": "FF",
+    "purpose": "Native !M byte-program check after a fresh monitor-sector erase; no extra erase",
+    "excluded_from_F_CRC": true
+  },
+  "force_modify": {
+    "max_bytes": 8,
+    "protected": [
+      "B3:C",
+      "B3:D",
+      "B3:F"
+    ],
+    "erase": false,
+    "flash_preflight": "Whole command must satisfy old AND new == new; identical bytes skipped",
+    "raw_IO_readback": false,
+    "RAM_kernels": [
+      "6B00-6B7F",
+      "6D00-6D2A"
+    ],
+    "may_halt_on_system_edits": true
+  },
+  "RAM_modify": {
+    "max_bytes": 8,
+    "ranges": [
+      "0000-00DF",
+      "0200-66FF"
+    ],
+    "complete_preflight": true,
+    "readback": true,
+    "RAM_candidate_code_pages_protected": true,
+    "flash_writes": false
+  },
+  "dump": {
+    "default_bytes": 16,
+    "max_bytes": "Entire valid non-I/O range",
+    "ASCII": true,
+    "cancel_between_rows": true
+  },
+  "status_limits": "-- no reported data; explicit TIME samples EDU Rev D MCP79411; cached sample has no zone; * no physical battery/prior wear certification",
+  "personalities": "A and B identical commands; only slot identity differs",
+  "monitor_UI": {
+    "format": "UI/1",
+    "descriptor_offset": "48",
+    "vector_offset": "20",
+    "operations": [
+      "VERSION",
+      "TIME",
+      "retain/status return",
+      "RTC sample",
+      "RTC display",
+      "bypass/quiet return"
+    ],
+    "admission": "MI CRC covers descriptor and vectors; tools validate full MI CRC before calls",
+    "Foundation_ABI_changed": false,
+    "owner_RAM_or_ZP_borrowed": false,
+    "warm_return": "Preserves MON state and cached RTC sample; selects tool data bank"
+  },
+  "RTCC_adapter": {
+    "trigger": "Explicit TIME only; V never probes",
+    "profile": "WDC EDU Rev D / MCP79411 / VIA1 PA0 SCL, PA7 SDA",
+    "automatic_startup": false,
+    "RTC_data_writes": false,
+    "EEPROM_or_SRAM_access": false,
+    "max_snapshot_attempts": 3,
+    "SCL_wait_polls": 255,
+    "owner_RAM_borrowed": false
+  },
+  "journal_access": "Read selected page and verify full record CRC; no writer installed",
+  "CPU_simulations": 0,
+  "hardware_access": false,
+  "flashing": false,
+  "execution_qualified": false
+}

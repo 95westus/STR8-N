@@ -111,8 +111,9 @@ W_UI_DESCRIPTOR:
         CPX #3
         BNE W_UI_DESCRIPTOR_BYTE
         LDA (W_PTR),Y
-        CMP #MU_VECTOR_COUNT
+        CMP W_UI_OP
         BCC W_UI_BAD
+        BEQ W_UI_BAD
         BRA W_UI_DESCRIPTOR_NEXT
 W_UI_DESCRIPTOR_BYTE:
         LDA (W_PTR),Y
@@ -211,4 +212,4 @@ WC_DISPLAY:
 W_VERSION_WORD: DB "VERSION",0
 W_UI_MI_MAGIC: DB "MI",1,0,3,1,0,0
 W_UI_MAGIC: DB "UI",1,MU_VECTOR_COUNT,"PR05"
-W_UI_ERROR_TEXT: DB "MON UI/1 unavailable; load matching MON/tools.",13,10,0
+W_UI_ERROR_TEXT: DB "MON UI/1 unavailable; reload MON/tools.",13,10,0

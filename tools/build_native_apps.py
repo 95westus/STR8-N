@@ -60,6 +60,8 @@ def build(out, reuse_from=None):
                 continue
             sources[p.relative_to(ROOT).as_posix()] = sha(p.read_bytes())
             target.write_text(p.read_text(encoding='utf-8-sig'), encoding='utf-8', newline='\n')
+    shutil.copyfile(ROOT/'monitors/src/batch-interface.inc', out/'batch-interface.inc')
+    sources['monitors/src/batch-interface.inc'] = sha((ROOT/'monitors/src/batch-interface.inc').read_bytes())
     shutil.copyfile(ROOT/'monitors/src/monitor-ui.inc', out/'monitor-ui.inc')
     sources['monitors/src/monitor-ui.inc'] = sha((ROOT/'monitors/src/monitor-ui.inc').read_bytes())
     ui = (ROOT/'monitors/src/workbench-monitor-ui.inc').read_text()
@@ -67,6 +69,9 @@ def build(out, reuse_from=None):
     # The caller wrapper/error path are workbench-only; admission is shared.
     a, b = ui.index('W_UI_CALL:'), ui.index('W_UI_CHECK:')
     ui = ui[:a]+ui[b:]
+    # Native CLOCK owns gateway code through6645; its UI scratch belongs in
+    # the reserved5B context, while WB continues using its own6630 state.
+    ui = re.sub(r'EQU \$663([0-8])', r'EQU $5B1\1', ui)
     (out/'native-ui-check.inc').write_text(ui)
     sources['monitors/src/workbench-monitor-ui.inc'] = sha((ROOT/'monitors/src/workbench-monitor-ui.inc').read_bytes())
 
@@ -76,6 +81,7 @@ def build(out, reuse_from=None):
     config = config[:a]+'CONFIG_MENU:\n        JMP FT_MENU\nCONFIG_DISPATCH:\n'+config[b:]
     config = config.replace('JMP $F004', 'JMP $5E00')
     config = config.replace('Restart through F using the saved default', 'Return to the monitor')
+    config = config.replace('CONFIG_BAD:\n','CONFIG_BAD:\n        LDA #2\n        STA $5DF5\n').replace('CONFIG_FAILED:\n','CONFIG_FAILED:\n        LDA #2\n        STA $5DF5\n')
     (out/'board-config.inc').write_text(config)
     opaque = (ROOT/'src/core/ram-installer.asm').read_text()
     opaque = opaque.split('        CODE\n', 1)[1].split('        INCLUDE "prototype-engine.inc"')[0]
@@ -138,6 +144,9 @@ def build(out, reuse_from=None):
     provider = sealed(provider, len(provider)+2)
     assert len(provider) <= 0xA00
     (out/'split-defs.inc').write_text(f'PROVIDER_SIZE EQU ${len(provider):04X}\nPROVIDER_BASE EQU $8000\nPROVIDER_BITS EQU $EE\nPRIVATE_BASE EQU $6669\nPRIVATE_SIZE EQU 57\n')
+    reader, brs = link('batch-reader', 0x8900, 'BR_END_CODE')
+    reader = sealed(reader,256)
+    assert len(provider) <= 0x900
     gate, gs = link('rtc-gateway', 0x6500, 'GATE_END')
     assert gs['GATE_END'] <= 0x6660, 'Gateway code overlaps mutable private state'
     gate = sealed(gate, 512)
@@ -152,7 +161,7 @@ def build(out, reuse_from=None):
     (out/'native-api.inc').write_text(f'NR_CALL EQU ${rs["NR_CALL"]:04X}\n')
     loader, ls = link('native-loader', 0x7000, 'NL_END')
     loader = sealed(loader, 1024)
-    rtc_sector = provider.ljust(0xA00, b'\xff')+gate+loader
+    rtc_sector = provider.ljust(0x900, b'\xff')+reader+gate+loader
     assert len(rtc_sector) == 4096
     clock, cs = link('clock', 0x2000, 'APP_END')
     board, bs = link('board-tool', 0x2000, 'BOARD_END')

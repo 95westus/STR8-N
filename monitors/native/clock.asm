@@ -6,6 +6,7 @@
         INCLUDE "kernel-rtc-api.inc"
         INCLUDE "journal-eq.inc"
         INCLUDE "native-api.inc"
+        INCLUDE "batch-interface.inc"
 TEXT EQU $D0
 PUTC EQU $7E6D
 GETC EQU $7E70
@@ -165,7 +166,7 @@ NO_SERVICE: JSR B29_CLOCK_ERROR
         LDX #<NO_SERVICE_TEXT
         LDY #>NO_SERVICE_TEXT
         JMP MESSAGE
-CANCELED: JSR B29_CLOCK_ERROR
+CANCELED: JSR B29_CLOCK_CANCEL
 
         LDX #<CANCELED_TEXT
         LDY #>CANCELED_TEXT
@@ -322,6 +323,7 @@ SET_REPORT:
         JSR OFFSET_SETUP
         JMP MENU
 ALARMS_ENABLED:
+        JSR B29_CLOCK_ERROR
         LDX #<ALARMS_TEXT
         LDY #>ALARMS_TEXT
         JMP MESSAGE
@@ -555,6 +557,7 @@ FLAG_NO:
         JMP PRINT
 ERROR:
         STA LAST_ERROR
+        JSR B29_CLOCK_ERROR
         LDX #<ERROR_TEXT
         LDY #>ERROR_TEXT
         JSR PRINT
@@ -1009,6 +1012,7 @@ HISTORY_CLEARED:
         JMP MESSAGE
 HISTORY_ERROR:
         PHA
+        JSR B29_CLOCK_ERROR
         LDX #<H_ERROR_TEXT
         LDY #>H_ERROR_TEXT
         JSR PRINT
@@ -1271,6 +1275,7 @@ CLOCK_LONG_1158:
         JSR TRIM_SHOW
         JMP MENU
 TRIM_FAILURE:
+        JSR B29_CLOCK_ERROR
         CMP #6
                         BNE TRIM_OTHER_FAILURE
         LDX #<TRIM_BLOCKED_TEXT
@@ -1569,11 +1574,11 @@ HELP_TEXT DB "TIME/R STATUS/S EUI HISTORY SHOW n",13,10
         DB "SET yyyy-mm-dd hh:mm:ss UTC; OFFSET +/-HH:MM; TRIM -127..+127",13,10
         DB "ACK; ACCEPT EUI; CLEAR n/ALL; HELP/?; Q/QUIT",13,10
         DB "BATTERY [REPLACED | yyyy-mm-dd | LIMITS ww rr]",13,10
-        DB "Limits: 01..99 30-day months, ww < rr. Changes confirmed.",13,10,0
+        DB "Limits 01..99 30-day months; ww<rr; changes confirmed.",13,10,0
 
 UTC_TEXT DB "UTC:   ",0
 CALENDAR_TEXT DB "Calendar (UTC convention): ",0
-BAD_TEXT DB "Invalid command/date. Use SET yyyy-mm-dd hh:mm:ss or HELP.",13,10,0
+BAD_TEXT DB "Invalid command/date. Use HELP.",13,10,0
 NO_SERVICE_TEXT DB "RTCC: Services unavailable.",13,10,0
 CANCELED_TEXT DB "Canceled.",13,10,0
 LATCHED_TEXT DB "Power-fail evidence is latched; S shows details.",13,10,0
@@ -3487,6 +3492,7 @@ BT_FAILED: JSR B29_CLOCK_ERROR
         LDY #>BT_SAVE_ERROR
         JMP MESSAGE
 BT_BAD_CLOCK:
+        JSR B29_CLOCK_ERROR
         LDX #<BT_CLOCK_TEXT
         LDY #>BT_CLOCK_TEXT
         JMP MESSAGE
@@ -3511,10 +3517,32 @@ BT_USAGE DB "BATTERY | BATTERY REPLACED | BATTERY yyyy-mm-dd",13,10
         DB "BATTERY LIMITS ww rr (01..99 months, ww < rr)",13,10,0
 
 B29_CLOCK_LINE:
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE B29_LIVE
+        LDA #2
+        LDX #<LINE
+        LDY #>LINE
+        JSR BQ_NEXT
+        BCC B29_LIVE
+        STY LINE_LENGTH
+        SEC
+        RTS
+B29_LIVE:
         JMP READLINE
 B29_CLOCK_ERROR:
-        RTS
+        PHP
+        PHA
+        LDA #2
+        BRA B29_SET_ERROR
 B29_CLOCK_CANCEL:
+        PHP
+        PHA
+        LDA #3
+B29_SET_ERROR:
+        STA BQ_ERROR
+        PLA
+        PLP
         RTS
 D_MIN DB 0
 D_HOUR DB 0

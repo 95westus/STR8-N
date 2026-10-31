@@ -40,7 +40,7 @@ def build(out, generation, workbench_manifest, monitor_manifest, reuse_support=N
                   SB_F_BOOT_READ=bs['BOOT_READ_RECORD'],SB_F_RECOVERY=bs['BOOT_RECOVERY'],
                   SB_F_CRC_LO=crc&255,SB_F_CRC_HI=crc>>8)
     inputs=('services.asm','service-layout.inc','service-map.inc','service-wear.inc',
-            'service-interface.inc','service-load.asm','service-bundle-boot.asm','workbench-interface.inc','service-apps.inc')
+            'service-interface.inc','service-load.asm','service-bundle-boot.asm','workbench-interface.inc','service-apps.inc','batch-interface.inc')
     sources={'monitors/src/'+name:sha((ROOT/'monitors/src'/name).read_bytes()) for name in inputs}
     sources['src/core/map-wdc-catalog.inc']=sha((ROOT/'src/core/map-wdc-catalog.inc').read_bytes())
     out.mkdir(parents=True);logs=[];layouts={}
@@ -84,7 +84,11 @@ def build(out, generation, workbench_manifest, monitor_manifest, reuse_support=N
             assert sources[key]==previous['source_sha256'][key],key
         old_name,old_info=next((n,a) for n,a in previous['artifacts'].items() if a['variant']=='B2 bundle')
         old_bundle=(previous_path.parent/old_name).read_bytes()
-        assert sha(old_bundle)==old_info['sha256'] and old_bundle[768:776]==module[:8] and old_bundle[7936:11264]==provider
+        assert sha(old_bundle)==old_info['sha256'] and old_bundle[768:776]==module[:8]
+        # Only the loader/prefix are reused. The independently admitted current
+        # provider replaces the former payload; do not require payload equality.
+        assert old_bundle[7936:7944]==provider[:8]
+        assert binascii.crc_hqx(old_bundle[7936:11264],65535)==0
         loader=old_bundle[256:256+old_info['loader_bytes']]
         prefix=old_bundle[:old_info['prefix_bytes']]
         old_raw_name,old_raw_info=next((n,a) for n,a in previous['artifacts'].items() if a['variant']=='Full tool RAM packet')
@@ -130,7 +134,7 @@ def build(out, generation, workbench_manifest, monitor_manifest, reuse_support=N
                 workbench_manifest=str(wbpath.relative_to(ROOT)),monitor_manifest=str(monpath.relative_to(ROOT)),program_manifest=str(pvpath.relative_to(ROOT)),
                 readonly_commands=['M1','M2','M3','W','APPS'],readonly_RAM='6700-69FF; no owner RAM/ZP writes',
                 explicit_workbench_commands=['MAINT','MAINT LOAD','FLASH','CLOCK'],module_RAM='4800-66FF',provider_RAM='6B00-77FF',
-                workbench_cache_admission='Exact WG/generation marker plus MW/02/1C/PR05 and whole-module CRC; stale valid caches reload',
+                workbench_cache_admission='Exact WG/generation and MW/02/1C/PR05 CRC plus SW/1/1 and whole SP CRC; invalid caches reload',
                 CLOCK='R CLOCK routes to the full b35-derived native RAM app; STATUS and canceled SET accepted separately',
                 FLASH='R FLASH/R MAINT route to native sector buffer/editor, guarded BYTE/WRITE/ERASE and BOOT/HOST',
                 BATCH='returning WB2 subset; no loader/flash write/application handoff',

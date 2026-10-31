@@ -5,11 +5,13 @@
         INCLUDE "workbench-interface.inc"
         INCLUDE "service-interface.inc"
         INCLUDE "service-layout.inc"
+        INCLUDE "batch-interface.inc"
         INCLUDE "service-foundation.inc"
         CODE
 S_START:
         DB "MS",SB_FORMAT,SB_PAGES,"PR05"
         JMP S_DISPATCH
+        DB "SB",1,1 ; checked BATCH errors and AP/02 admission
 S_DISPATCH:
         CMP #4
         BCS S_UNHANDLED
@@ -131,6 +133,11 @@ S_MAINT_ARGS:
         STX S_FORCE_END
         JSR S_SKIP
         BEQ S_REQUEST_LOAD
+        ; Forced module replacement is an interactive MON operation: a queued
+        ; WB caller must not return through a deliberately replaced module.
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BEQ S_UNHANDLED
         LDY #0
 S_FORCE_WORD:
         LDA S_LINE,X
@@ -201,10 +208,14 @@ S_CALL_WB:
         LDY #>S_LINE
         JMP WB_COMMAND
 S_NO_MODULE:
+        LDA #WB_REFUSED
+        STA WB_RESULT
         LDX #<S_NO_MODULE_TEXT
         LDY #>S_NO_MODULE_TEXT
         BRA S_MESSAGE
 S_LOAD_FAILED:
+        LDA #WB_REFUSED
+        STA WB_RESULT
         LDX #<S_LOAD_FAILED_TEXT
         LDY #>S_LOAD_FAILED_TEXT
 S_MESSAGE:
@@ -276,8 +287,25 @@ S_WB_ID:
         LDA S_CRC
         ORA S_CRC+1
         BNE S_UNHANDLED
+        ; A raw RAM tool can leave WB intact while displacing SP at6B00.
+        LDX #3
+S_SP_CAP:
+        LDA $6B11,X
+        CMP S_SP_ID,X
+        BNE S_UNHANDLED
+        DEX
+        BPL S_SP_CAP
+        STZ S_PTR
+        LDA #$6B
+        STA S_PTR+1
+        LDX #13
+        JSR S_CRC_PAGES
+        LDA S_CRC
+        ORA S_CRC+1
+        BNE S_UNHANDLED
         SEC
         RTS
+S_SP_ID: DB "SW",1,1
 S_CRC_INIT:
         LDA #$FF
         STA S_CRC
@@ -363,12 +391,12 @@ S_FLASH_WORD: DB "FLASH",0
 S_CLOCK_WORD: DB "CLOCK",0
 S_AUTO_WORDS: DB "S",0,"STORE",0,"T",0,"TABLE",0,"R",0,"RESTORE",0
         DB "EDU",0,"SRAM",0,"WORK",0,"BATCH",0,"BOOT",0,0
-S_RANGES_TEXT: DB "B0/B1: owner images/records retained. Erased != available.",13,10
-        DB "B2:8-A tool bundle; other B2 assets retained; legacy calls disabled.",13,10
-        DB "B3:A/B MON; C/D boot/wear; E services; F frozen recovery.",13,10
-        DB "MAINT LOAD: WB4800-66FF + PROGRAM6B00-77FF.",13,10,0
+S_RANGES_TEXT: DB "B0/B1 owner images/records. Erased != free.",13,10
+        DB "B2:8-A WB/SP; B-D CLOCK; E-F FLASH/MAINT.",13,10
+        DB "B3:8/9 RTC/tools; A/B MON; C/D boot/wear; E services; F frozen.",13,10
+        DB "RAM: WB4800-66FF+6B00-77FF; native2000-77FF.",13,10,0
 S_LOADING_TEXT: DB "Load flash WB2/PROGRAM: 4800-66FF +6B00-77FF",13,10,0
-S_NO_MODULE_TEXT: DB "WB2 absent/invalid. MAINT/CLOCK load the flash bundle.",13,10,0
+S_NO_MODULE_TEXT: DB "Tools invalid; use MAINT LOAD.",13,10,0
 S_LOAD_FAILED_TEXT: DB "REFUSED: bundle/header/CRC failed; workbench not called",13,10,0
 S_LOAD_IMAGE:
         INCLUDE "service-load-image.inc"

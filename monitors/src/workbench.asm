@@ -30,6 +30,8 @@ W_ENTER_SHELL:
         TXS
         PHA
         JSR W_INIT
+        LDA #1
+        STA W_SHELL_ACTIVE
         PLA
         STA W_BANK
         JSR STR8V2_RAM_RX_RESET
@@ -218,6 +220,7 @@ W_QUIT:
         INX
         JSR W_END_ARGS
         BCC W_UNHANDLED
+        STZ W_SHELL_ACTIVE
         SEI
         CLD
         JSR STR8V2_RAM_RX_RESET
@@ -1058,7 +1061,7 @@ W_VERSION_TEXT: DB "STR8-N WORKBENCH WB2 gWB_GENERATION_TEXT / BASE1 PR05",13,10
         DB 0
 W_SHELL_TEXT:
         DB "RAM 0200-47FF; tools 4800-66FF",13,10
-        DB "EDU selection retained; ? help; Q monitor",13,10,0
+        DB "EDU retained; ? help; Q MON",13,10,0
 W_PROMPT_TEXT: DB "WORKBENCH> ",0
 W_SYNTAX_TEXT: DB "REFUSED: syntax/command/input",13,10,0
 W_STORE_WORD: DB "STORE",0
@@ -1068,15 +1071,15 @@ W_HELP_TEXT: DB "B0..3; TABLE [bank|P]; RESTORE [bank|P] name|addr [L]",13,10
         DB "AREA [bank first last]; STORE bank|P addr|AUTO first last [name]",13,10
         DB "EDU ON|OFF; SRAM [PREP|READ half addr]; WORK; Q",13,10
         DB "VERSION/V; TIME; R CLOCK|FLASH|MAINT; BOOT; Q monitor",13,10
-        DB "BATCH cmd;cmd (34 bytes): B TABLE ? HELP EDU SRAM WORK",13,10,0
+        DB "BATCH cmd;cmd; 34 bytes; live YES; ESC stops",13,10,0
 W_BANK_TEXT: DB "Data bank B",0
 W_TABLE_TEXT: DB "SR01 +complete ?pending: addr load size name (hex)",13,10,0
 W_TABLE_END_TEXT: DB "End; SR01 has no payload CRC.",13,10,0
 W_LOADED_TEXT: DB "Loaded; RAM verified.",13,10,0
-W_RANGE_TEXT: DB "REFUSED: record bounds or reserved destination RAM",13,10,0
-W_NOT_FOUND_TEXT: DB "No complete SR01 record at that address/name",13,10,0
+W_RANGE_TEXT: DB "REFUSED: record/destination bounds",13,10,0
+W_NOT_FOUND_TEXT: DB "SR01 record not found",13,10,0
 W_DUPLICATE_TEXT: DB "REFUSED: ambiguous name; select bank/P/address",13,10,0
-W_PARTIAL_TEXT: DB "Stopped: destination RAM may be partially loaded",13,10,0
+W_PARTIAL_TEXT: DB "Partial load; destination RAM changed",13,10,0
 W_CANCELED_TEXT: DB "Canceled; no restore started",13,10,0
 W_CODE_END:
         ENDMOD

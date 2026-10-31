@@ -1,5 +1,6 @@
 ; WB2 borrows owner RAM only while explicitly loaded. No owner ZP allocation.
         INCLUDE "workbench-interface.inc"
+        INCLUDE "batch-interface.inc"
 W_STATE EQU $6400
 W_BANK EQU W_STATE
 W_LEN EQU W_STATE+1
@@ -44,6 +45,7 @@ W_BOUNDARY EQU $654C
 ; Caller declares its lowest legal destination page before a bridged command.
 ; Standalone shell clears this to zero; the absolute minimum remains 0200.
 W_RAM_FLOOR EQU $6550
+W_SHELL_ACTIVE EQU $6565
 W_AREA_ON EQU $6551
 W_AREA_BANK EQU $6552
 W_AREA_FIRST EQU $6553
@@ -55,10 +57,10 @@ W_STORE_INDEX EQU $655D
 W_STORE_GATE EQU $655E
 W_RESULT EQU WB_RESULT
 ; BATCH queue/state are separate from command buffers and device state.
-W_BATCH_ACTIVE EQU $6560
-W_BATCH_SIZE EQU $6561
-W_BATCH_POS EQU $6562
-W_BATCH_QUEUE EQU $6580
+W_BATCH_ACTIVE EQU BQ_MAGIC
+W_BATCH_SIZE EQU BQ_SIZE
+W_BATCH_POS EQU BQ_POS
+W_BATCH_QUEUE EQU BQ_QUEUE
 ; Explicit CLOCK shares the already qualified bounded reader with MON.
 WC_STATE EQU $6600
 WC_ORA EQU WC_STATE

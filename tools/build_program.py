@@ -8,7 +8,7 @@ def build(out):
     out=Path(out).resolve()
     if out.exists():raise ValueError('Fresh output directory required')
     out.mkdir(parents=True);stage=out/'staging';stage.mkdir()
-    files=['program-provider.asm','program-layout.inc','program-layout-check.inc','program-spi.inc','workbench-layout.inc','workbench-interface.inc']
+    files=['program-provider.asm','program-layout.inc','program-layout-check.inc','program-spi.inc','workbench-layout.inc','workbench-interface.inc','batch-interface.inc','monitor-ui.inc']
     sources={}
     for name in files:
         p=ROOT/'monitors/src'/name;sources['monitors/src/'+name]=sha(p.read_bytes())
@@ -32,10 +32,12 @@ def build(out):
     image=body+b'\xff'*(3326-len(body));image+=binascii.crc_hqx(image,65535).to_bytes(2,'big')
     assert binascii.crc_hqx(image,65535)==0
     name='STR8N-PROGRAM-SP1-6B00.bin';(out/name).write_bytes(image)
-    report=dict(component='PROGRAM provider',generation='00000001',status='BUILD_ONLY_NOT_EXECUTION_QUALIFIED',
+    report=dict(component='PROGRAM provider',generation='00000002',status='BUILD_ONLY_NOT_EXECUTION_QUALIFIED',
                 artifact=dict(filename=name,sha256=sha(image),bytes=len(image),linked_bytes=len(body),free_bytes=3326-len(body)),
                 source_sha256=sources,entries={k:f'{symbols[k]:04X}' for k in ['API','SP_READ64','W_SPI_GUARD']},
                 origin='6B00',end_exclusive='7800',F_rebuilt=False,CPU_simulations=0,build_passes=1,assembler_linker_invocations=len(logs),
+                wide_restore='SW/1/1 op6=load-only, op7=run; 0200-66FF; resident tail after copying; pre-copy CRC and per-chunk cancellation',
+                batch_registration='BT/1/2 PR05 entry prefix; public HOLD return; wide load-only must be final',
                 format='SS1/SS2 primary; SP/01 slots, CRC/commit last; no format/delete/reclaim',
                 writes='PROGRAM directory0040-023F or payload0800-boundary only; no mode write or WORKSPACE write')
     (out/'manifest.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report['artifact'],indent=2));return report

@@ -1,0 +1,288 @@
+{
+  "schema": 1,
+  "status": "BUILD_ONLY_NOT_EXECUTION_QUALIFIED",
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "F_rebuilt": false,
+  "hardware_access": false,
+  "CPU_simulations": 0,
+  "source_sha256": {
+    "src/core/app-fixed-symbols.inc": "8bfcd87e9f7bc98cedeb2999b770624b5536bb06060b31923a1fd9b78387ab0c",
+    "src/core/bank-monitor-apply.inc": "c54721726436e38c17f3c3a6480c7a2732a86e042395cc76f7f0fd5b42495d2d",
+    "src/core/bank-monitor-crc.inc": "59970f790de66e22fd7df7454d33eea121396a757c65fda851594f1a2c60e472",
+    "src/core/bank-monitor-entry.asm": "aa30836463289d14efd610fbd9db53d202be2e6b5c90499d12a931781b8a37b7",
+    "src/core/bank-monitor-target.inc": "c71935280f16ba270d343301574de38a2e1c35d4938a9f43242c1bebc4565453",
+    "src/core/bank-monitor.asm": "6158a14b8b6e415c5029a8fa9dae21f6629f93c8ebafa7db395e4688155390e6",
+    "src/core/batch-gate.inc": "b45d6fd982386f0554093544401c27eedb7cc86dd2be7d45275d3454b3b65b1f",
+    "src/core/boot-banner.inc": "8dc02c2c56f75af15bed7869190ddb53c58ba58e708a93d2e5aef986c54c247f",
+    "src/core/boot-identity.inc": "d8afd960e847250ce41ab1cfdc4c7042c9c8457095b9e94c6a540ecbc9b0a98d",
+    "src/core/boot-symbols.inc": "c8675574f76489dff7563dc14395556e167b618168a25551f0235f7ac71d4cc0",
+    "src/core/cd-recovery-lab.inc": "24b2d729c2b0ba729d3ddc65ab83b9635aa923a399abf86043bba49f31d507ed",
+    "src/core/config-engine.inc": "f3075e7c27ff10db08311701ae65d2a47f0165cb8dba823b5ec10e0a2428b12d",
+    "src/core/edu-client-crc.inc": "2a65462e39737a2bb15a22c85df738031055780bf77ddddccf17832c0c953241",
+    "src/core/edu-client-guards.inc": "c0347072f3c60116dcf1063f39b6f3732111d8d0d2e58724eb647bc12ffc673b",
+    "src/core/edu-client-header.inc": "afba668fd3a37372f8ad02750349548de3ba80139cea2ce66ab6f8312bbe14c2",
+    "src/core/edu-client-params.inc": "ba25fb5f3e39b978768a087640bbb47278e001e1970b7c50e582855614170204",
+    "src/core/edu-client.asm": "c32b1cd38107e474e517f48cdd8f287aea515d0b11ba59f97a08672709979922",
+    "src/core/edu-sram-params.inc": "d15a683bee7e214daf2411f2ae14144dd40a45acccd6d843bedbdf725f2bbfbb",
+    "src/core/edu-sram.asm": "f109d0a766e46138f04234b4bf9e77a090d3d7a517990ef1bc3d7b610d06cf0b",
+    "src/core/maint-ro-duplicates.inc": "d646a97a2b1840b232b47e2f52c3c32e708381e5421a79b3ba3a4704176234f5",
+    "src/core/maint-ro-params.inc": "d173db589c25f0c4927625844c267ed9ebbcfba9185316a70c1bd5d8c7f7ef72",
+    "src/core/maint-ro-ram-guards.inc": "884fbfe274074be33a2db666217aba5ba171c1c80dd8f04f1d4a765b6146d4fc",
+    "src/core/map-recognition.inc": "70bded8622b0ab620dee28e57420d54d6a9c7d7c0bc92983d4461cdd95cfcc0b",
+    "src/core/map-wdc-catalog.inc": "a017983e7bf24bbbd90999839b1a3f3acb45e6aee53f2b909e46315633650806",
+    "src/core/mon-absent-service.inc": "f7709f653148d9ccca57dc90aaca4e685bc37ee75821ec6f9704ee6ac7bef140",
+    "src/core/monitor-template.asm": "d2eded4937e4c8cb3d72252613e463818c9bdc57f7fb998397edce57fb7fe623",
+    "src/core/prototype-console.inc": "6de5d09330cd8695fd4ebe51d5dd713584b9e2f1ef94c020dbb1bbb744a1ab4a",
+    "src/core/prototype-engine.inc": "9937fccdc58675555d2b91c4c2ce2839ea0bf1e1802b6695e8cb5bc9eb47924f",
+    "src/core/ram-config.asm": "e604ff4ee023682d3793dee620b099fd64c008b5c44e87d4380ff72c111b1958",
+    "src/core/ram-demo.asm": "16068f73708293928b72cbb3d94efbfe2b659305f5d9e47c11cab6046c119661",
+    "src/core/ram-installer.asm": "1545d6ccc2f82973d14fe1f0470c1bed3a74bb918abf96b083e97f3f012f1cc6",
+    "src/core/ram-maint-ro.asm": "04b85b959dbcda9d9bde43a17871663a1c4f4401ad88574d47835d6719d8401a",
+    "src/core/service-eq.inc": "fce4745cf3a75d1ba20e969414851814289d07192dc60b46c28ec66fd987a214",
+    "src/core/sr-stubs.inc": "4c7678b351d6654875d210422e4e618b276c000d3a870399296742dc6ca93219",
+    "src/core/str8n-v2-boot.asm": "473769c78115e0dea4d840120cc3a85826a882ea6657fe3b6472bf07d2115673",
+    "src/core/str8n-v2-config.inc": "0880d54836bb206dc7e1f5daf08d502b9b27422cea338265b9c0d2c894c1ea69",
+    "src/core/str8n-v2-eq.inc": "a84eb0c8c638b36d8d25c4d4b384b5e298346fca97bab73f37717f3ae8478af4",
+    "src/core/str8n-v2-flash-worker.inc": "f6b11aea5d87e0d4d5425380b8729eb8630da4cb1c1539b74390ffebbb61a24e",
+    "src/core/str8n-v2-flash.inc": "70318221aa20f991f07b3fb46f1846d796f38a2d200bc2597f9fc7d8098929bf",
+    "src/core/str8n-v2-load.inc": "7cadf52f26408d4408ffbdac3e0ef57751b3fa22d790946653575597b4edeffa",
+    "src/core/str8n-v2-monitor.inc": "5ff6ff3551e32a892e2858a8e442f72c31030beaa77b0de0f20cd668bf3f2d38",
+    "src/core/str8n-v2-public.inc": "63eb0928dc7bbcfffd085f1b566ea2e08f44a04b4321c2696121d4d8fa319ad7",
+    "src/core/str8n-v2-ram-console.inc": "82220870e642184a1bc8a40800fdfc081f8eb27b8b0f5d9ff98ee627828f99de",
+    "src/core/str8n-v2-vectors.asm": "80499ac442e41aa076fc21096ca6d01eaa61fab1ca148adad64d1db66831dce5",
+    "src/core/str8n-v2-worker.asm": "bdfbc38d426b465fcbd309f5e037a57ffe4a8327b6da0f710f09bb0fe1759a81",
+    "src/core/text-ids.inc": "13b5e881c51177ffe9188d4563cdbe27e76f855f45f9c86dd8a45f32611ce7a0",
+    "src/core/text-image.inc": "febe2b302858a2d277b03395d8d117498de920ca6c1d0d499e1409f4abf331d2",
+    "src/core/vectors-image.inc": "396c0d0c4883f9eed1df9cf74c286570d1e1fb84dec0b17a732566ece0a76322",
+    "src/core/vectors-symbols.inc": "d2073946203db1f18be93d83cfd72d7db37f7f99c0c98a67e34cb46012c1a782",
+    "src/core/version-caps-client.asm": "46584a120677af6002132cbafabf658f8c2a97b43a3dd9acd344dbb1d4c10069",
+    "src/core/version-caps-e000.asm": "d95c7fc1becefa8944f9ac4541d415f5bb62cf876909200c029e0f2e374ece5b",
+    "src/core/version-caps-identities.inc": "8a927a07fd4afd3044b88ec5e8f9ff9bfb2a13e05c3dc6de6c5c400479ec416c",
+    "src/core/version-caps-mon.inc": "5f039606fac11df0d76c9e32f0f189e5d18d12d6ae31bca6858b6a47885cd4cd",
+    "src/core/version-caps-public.inc": "96a4a7d8e78cb04bf4c41573277f8171d88eddef4d8a432ab047b3502ea8e1ab",
+    "src/core/worker-copy.inc": "e705a84e09d67f3cc939ab0e8a523503bed2d03681a56c50d217d95ddc568ca3",
+    "src/core/worker-image.inc": "5df9c0318079e6b6f1a635b3a0bd6f564a9e462a502c2f661783270c4338cfe6",
+    "src/core/worker-public-symbols.inc": "894a7fe7965d96c446392a544489312f07d14f945d90e0196bed9d12b1afc703",
+    "src/include/service-eq.inc": "253772c24a3f1f303af43b7e010680283dd889c26719bdae4a776bb2da7d17f1",
+    "src/include/str8n-v2-eq.inc": "a7511dd3096267b8f4b34bb9313679f0a823c5fa2b1e6f2dee60aeb23b6f2e44",
+    "src/include/str8n-v2-public.inc": "4901d614976ecb89a1b246da6dfa36b7bc4e715d28bdd99e5227d584379e27dc",
+    "monitors/native/batch-reader.asm": "db7523583140d11c3512ff0cd46ef710a3ae29e0b421ef979d82fcaada404123",
+    "monitors/native/binding.inc": "3b449d91c9a4b4df36615fd7d0c2521b0c482b14a5b53e55aa47f47caa28476f",
+    "monitors/native/board-tool.asm": "99b25e82cc1a754455cb4e1aa43f7d463000c5d402959b115c180e03c54492ec",
+    "monitors/native/clock.asm": "8237beffbe062fd92ffedb253da9c400f84d0e742d953cec37d32abc06aafee4",
+    "monitors/native/eeprom-transfer.inc": "ad26e8ba26b9e522a5846f422a372bc066ce525d9feba93d3791b0e4422c37ca",
+    "monitors/native/i2c-api.inc": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c",
+    "monitors/native/i2c-transport.inc": "4df7bd2d9a994f5b3c36d44eec165edd087e9399977b564e7ef2bdc8d376582c",
+    "monitors/native/journal-eq.inc": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285",
+    "monitors/native/journal.asm": "09de84588b801e6206fb9b7d384b6b82b85b30236267d050adcfa2ca7a8fc896",
+    "monitors/native/kernel-rtc-api.inc": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+    "monitors/native/native-loader.asm": "d9b0352799ef0999b0c234d8bc2c108bc0d11c00a25eaf075e24c155cf346168",
+    "monitors/native/native-return.asm": "b350aec42b900e228a078e8c20e4861f3c28d9f3a3c23af72c4bb6a90494955c",
+    "monitors/native/outage-duration.inc": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f",
+    "monitors/native/outage-format.inc": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a",
+    "monitors/native/rtc-api.inc": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332",
+    "monitors/native/rtc-gateway.asm": "c01599b93d1956abf78c7ee33c78777650ee27af9ae04ef03b28807c72c33eea",
+    "monitors/native/rtc-provider.asm": "fd92c30cc6bd334bd1fc9e0edc48c4fcb8f6cb1f6ad3d5e029725ae78f949e51",
+    "monitors/src/batch-interface.inc": "7eddb4f63346f541c8fa207be5059c2e5b9511a4f97371c617d0fd1ec925da0c",
+    "monitors/src/monitor-ui.inc": "ace5912c158b1333b32af5572bd9091bd96fc60e44b80c918660656113c30dad",
+    "monitors/src/workbench-monitor-ui.inc": "2825409e542860f9feeabfc297a95f0d69d63a332393c03785164aeacff1ae79"
+  },
+  "linked": {
+    "rtc-provider": {
+      "origin": "8000",
+      "end": "88DF",
+      "bytes": 2271,
+      "branches": {
+        "short_branches": 101,
+        "expanded_branches": 1,
+        "conservative_bytes": 1207
+      },
+      "reused_from": "C:\\SRC\\STR8-N\\BUILD\\native-apps-g1-r15"
+    },
+    "batch-reader": {
+      "origin": "8900",
+      "end": "89EA",
+      "bytes": 234,
+      "branches": {
+        "short_branches": 14,
+        "expanded_branches": 0,
+        "conservative_bytes": 245
+      },
+      "reused_from": "C:\\SRC\\STR8-N\\BUILD\\native-apps-g1-r15"
+    },
+    "rtc-gateway": {
+      "origin": "6500",
+      "end": "6646",
+      "bytes": 326,
+      "branches": {
+        "short_branches": 24,
+        "expanded_branches": 0,
+        "conservative_bytes": 326
+      },
+      "reused_from": "C:\\SRC\\STR8-N\\BUILD\\native-apps-g1-r15"
+    },
+    "journal": {
+      "origin": "9000",
+      "end": "9967",
+      "bytes": 2407,
+      "branches": {
+        "short_branches": 129,
+        "expanded_branches": 0,
+        "conservative_bytes": 1716
+      },
+      "reused_from": "C:\\SRC\\STR8-N\\BUILD\\native-apps-g1-r15"
+    },
+    "native-return": {
+      "origin": "5E00",
+      "end": "5FAF",
+      "bytes": 431,
+      "branches": {
+        "short_branches": 9,
+        "expanded_branches": 0,
+        "conservative_bytes": 155
+      },
+      "reused_from": null
+    },
+    "native-loader": {
+      "origin": "7000",
+      "end": "7241",
+      "bytes": 577,
+      "branches": {
+        "short_branches": 21,
+        "expanded_branches": 11,
+        "conservative_bytes": 598
+      },
+      "reused_from": "C:\\SRC\\STR8-N\\BUILD\\native-apps-g1-r15"
+    },
+    "clock": {
+      "origin": "2000",
+      "end": "4FD5",
+      "bytes": 12245,
+      "branches": {
+        "short_branches": 524,
+        "expanded_branches": 0,
+        "conservative_bytes": 11612
+      },
+      "reused_from": "C:\\SRC\\STR8-N\\BUILD\\native-apps-g1-r15"
+    },
+    "board-tool": {
+      "origin": "2000",
+      "end": "3A29",
+      "bytes": 6697,
+      "branches": {
+        "short_branches": 55,
+        "expanded_branches": 52,
+        "conservative_bytes": 2576
+      },
+      "reused_from": "C:\\SRC\\STR8-N\\BUILD\\native-apps-g1-r15"
+    }
+  },
+  "artifacts": {
+    "CLOCK-g00000001-flash.bin": {
+      "bytes": 12288,
+      "sha256": "e41e8e07a0b07370d12c1f954ba471d0a2c77c05ca5d71d06569d8363a43fca7",
+      "sectors": 3,
+      "RAM": "2000-4FD4",
+      "linked_bytes": 12245,
+      "free_bytes": 9
+    },
+    "CLOCK-g00000001-RAM.bin": {
+      "bytes": 12245,
+      "sha256": "f1689d49af668e0c4b16bdc3297b160da758ef145278e21446edaa28a793fb68",
+      "entry": "2000",
+      "requires": "admitted native-loader context; raw entry alone is not self-contained"
+    },
+    "FLASH-MAINT-g00000001-flash.bin": {
+      "bytes": 8192,
+      "sha256": "09d9878ba203c87e9fa442208caaec6930adf2264524d82c6ce67bf525051475",
+      "sectors": 2,
+      "RAM": "2000-3A28",
+      "linked_bytes": 6697,
+      "free_bytes": 1461
+    },
+    "FLASH-MAINT-g00000001-RAM.bin": {
+      "bytes": 6697,
+      "sha256": "b79d38ecfb18834492d62b81f1da94ce76bc64797dc1c115da5682f9a79085d1",
+      "entry": "2000",
+      "requires": "admitted native-loader context; raw entry alone is not self-contained"
+    },
+    "RTC-BASE1-B3-8000.bin": {
+      "bytes": 4096,
+      "sha256": "c4d9b7bafa6d404345fed03ddd0a510bc0fe58410a6b2aef9b91b27d330e8f5f",
+      "allocation": "B3:8; provider + gateway + loader"
+    },
+    "RTC-HISTORY-B3-9000.bin": {
+      "bytes": 4096,
+      "sha256": "b703fe505a72f24d9264365a0f5853799ee93d7ad283f9b083909f8f04d22a0e",
+      "allocation": "B3:9; first 3072 bytes code/seal; final 1024 bytes target-owned metadata"
+    }
+  },
+  "allocation": [
+    "B2:B/C/D CLOCK",
+    "B2:E/F FLASH/MAINT",
+    "B3:8 RTC/gateway/loader",
+    "B3:9 history/code + target metadata"
+  ],
+  "overlay_RAM": [
+    "2000-5AFF code/state",
+    "5B00 CRC scratch",
+    "5C00 owner ZP escrow",
+    "5D00 monitor session escrow",
+    "5E00-5FFF return code",
+    "6500-66FF RTC gateway/state",
+    "6700 boot/wear snapshot",
+    "6800-77FF FLASH sector buffer OR RTC/history scratch"
+  ],
+  "preservation": "Runtime overlays deliberately borrow declared RAM; return restores 00-DF and MON session, invalidates WB cache",
+  "RTC": "b35 SET/status/EUI/trim/history/offset/battery behavior; no RTC changes during build",
+  "protected_flash": [
+    "B3:C",
+    "B3:D",
+    "B3:F"
+  ],
+  "factory_restore": "Separate reviewed host workflow; never bypass normal FLASH guards",
+  "build_passes": 1,
+  "assembler_linker_invocations": 2,
+  "git_source_equivalence": {
+    "monitors/native/binding.inc": {
+      "build_input_sha256": "3b449d91c9a4b4df36615fd7d0c2521b0c482b14a5b53e55aa47f47caa28476f",
+      "Git_LF_source_sha256": "6f6501a3d8416c26827a9312669292b6f1ced9db2c056b46d9dbe83fd61cf18c",
+      "difference": "CRLF-to-LF only; source instructions unchanged"
+    },
+    "monitors/native/eeprom-transfer.inc": {
+      "build_input_sha256": "ad26e8ba26b9e522a5846f422a372bc066ce525d9feba93d3791b0e4422c37ca",
+      "Git_LF_source_sha256": "5c88435b73532b0bf126736966da1e67f9542641b4503f00e135f9ea93cc0dc0",
+      "difference": "CRLF-to-LF only; source instructions unchanged"
+    },
+    "monitors/native/journal.asm": {
+      "build_input_sha256": "09de84588b801e6206fb9b7d384b6b82b85b30236267d050adcfa2ca7a8fc896",
+      "Git_LF_source_sha256": "f9b98fc476e9eda395433d2409586c84587b9f16f319e6d53337a94614bd997d",
+      "difference": "CRLF-to-LF only; source instructions unchanged"
+    },
+    "monitors/native/outage-duration.inc": {
+      "build_input_sha256": "689d3f7a11b5b5420f79b553d2aefa9b311d9eacc783765ea1deb404a73fcc9f",
+      "Git_LF_source_sha256": "79529e3c0c5fb57e54987791b2e0e970a3c81299c0a7e4dc75201dc80aa023da",
+      "difference": "CRLF-to-LF only; source instructions unchanged"
+    },
+    "monitors/native/outage-format.inc": {
+      "build_input_sha256": "79162654344dab09361b0f192fc2246797e4d518cadbbcf7fae66c0c2d12ec2a",
+      "Git_LF_source_sha256": "e704f464e1c9dcab275e5da90df1b3b4efe281a85f6fd98614148d92482b431b",
+      "difference": "CRLF-to-LF only; source instructions unchanged"
+    },
+    "monitors/native/rtc-api.inc": {
+      "build_input_sha256": "311ada2752047afc3430fb7ebd6209d6af96efb5d38d4d7fb8c74823dc656332",
+      "Git_LF_source_sha256": "8b61eca9124ed01bf494d8b2fdeffbbf0546e9a8c7a169bc4fcaf25b584e0f51",
+      "difference": "CRLF-to-LF only; source instructions unchanged"
+    },
+    "monitors/native/rtc-gateway.asm": {
+      "build_input_sha256": "c01599b93d1956abf78c7ee33c78777650ee27af9ae04ef03b28807c72c33eea",
+      "Git_LF_source_sha256": "6a8d95666638f0b10a08744e9fc793eccd7b81606476df5c2a4ea00f72a161dd",
+      "difference": "CRLF-to-LF only; source instructions unchanged"
+    },
+    "monitors/native/rtc-provider.asm": {
+      "build_input_sha256": "fd92c30cc6bd334bd1fc9e0edc48c4fcb8f6cb1f6ad3d5e029725ae78f949e51",
+      "Git_LF_source_sha256": "48babc1f5de67f0d6cd6cb69315ba61924f6822242819898a8ae9099386e6485",
+      "difference": "CRLF-to-LF only; source instructions unchanged"
+    }
+  }
+}

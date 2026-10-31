@@ -11,6 +11,7 @@ AP_SAVED_ENTRY EQU $68EF
 AP_PAYCRC EQU $68F1
 AP_NAME EQU $6828
 AP_LABEL EQU $6834
+AP_SAVED_END EQU $69D0
 AP_LIST:
         STZ AP_MODE
         LDX #<AP_NATIVE_TEXT
@@ -87,6 +88,10 @@ AP_COMPARE:
         BNE AP_NEXT
         DEY
         BPL AP_COMPARE
+        LDA AP_END
+        STA AP_SAVED_END
+        LDA AP_END+1
+        STA AP_SAVED_END+1
         INC AP_FOUND
         LDA AP_BANK
         STA AP_SAVED_BANK
@@ -118,6 +123,34 @@ AP_BANK_NEXT:
         LDA AP_FOUND
         CMP #1
         BNE AP_NO_UNIQUE
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE AP_RUN
+        CLC
+        LDA AP_SAVED_ENTRY
+        ADC #5
+        TAX
+        LDA AP_SAVED_ENTRY+1
+        ADC #0
+        BCS AP_NO_UNIQUE
+        CPX AP_SAVED_END
+        SBC AP_SAVED_END+1
+        BCS AP_NO_UNIQUE
+        LDA AP_SAVED_BANK
+        STA S_READ_BANK
+        LDA AP_SAVED_ENTRY
+        STA S_ADDR
+        LDA AP_SAVED_ENTRY+1
+        STA S_ADDR+1
+        JSR S_READ64
+        LDX #5
+AP_BATCH_ID:
+        LDA S_BUFFER,X
+        CMP AP_BT,X
+        BNE AP_NO_UNIQUE
+        DEX
+        BPL AP_BATCH_ID
+AP_RUN:
         LDA AP_SAVED_ENTRY
         STA $FE
         LDA AP_SAVED_ENTRY+1
@@ -126,6 +159,8 @@ AP_BANK_NEXT:
         STA S_F_SELECTED
         JMP SB_F_EXECUTE
 AP_NO_UNIQUE:
+        LDA #WB_REFUSED
+        STA WB_RESULT
         LDX #<AP_MISSING_TEXT
         LDY #>AP_MISSING_TEXT
         JMP S_MESSAGE
@@ -285,6 +320,7 @@ AP_PAYLOAD_END:
 AP_BAD:
         CLC
         RTS
+AP_BT: DB $80,4,"BT",1,1
 AP_MAGIC: DB "AP",2,32,"PR05"
 AP_NATIVE_TEXT: DB "CLOCK MAINT FLASH (native). APP name: checked AP/02 images.",13,10,0
 AP_MISSING_TEXT: DB "REFUSED: app missing/invalid/duplicate",13,10,0

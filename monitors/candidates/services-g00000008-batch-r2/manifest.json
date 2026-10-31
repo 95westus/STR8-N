@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "component": "BASE1 optional services",
+  "generation": "00000008",
+  "status": "BUILD_ONLY_NOT_EXECUTION_QUALIFIED",
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "source_sha256": {
+    "monitors/src/services.asm": "960e60753b6c342ef66203b81a62989ff645b0df3c86b3244efd70796f0bcb0b",
+    "monitors/src/service-layout.inc": "512aaa5026fde6d9697bbba4b4ec6b9f85f27d276179955d916f747434d495fd",
+    "monitors/src/service-map.inc": "3513dbcbe53838073c084a8ebf7c6303462661a689f3c4b58f323f8664977b8e",
+    "monitors/src/service-wear.inc": "a56a89a7c24c7febc18c689b166ac41c43a3de5f7a0486522a2b77ef4551ce28",
+    "monitors/src/service-interface.inc": "2bcbd5f740ff43ef8f33ceffec3b861b9df8879be75c59c47aabbc262204a820",
+    "monitors/src/service-load.asm": "bd3acf86824ad46a4ce0246bf76a0d1c44889368ae658352728520cc6f102236",
+    "monitors/src/service-bundle-boot.asm": "82450c34fc45136e0e0b564d3aea493f3eb252be2936f29b09a2c40636c1f80b",
+    "monitors/src/workbench-interface.inc": "eb9293c14ffa08d63085d8518473415fd4b9706f8ae944c25fa3559587ba94a1",
+    "monitors/src/service-apps.inc": "3b1e837936c3b0852daf9835d06fdd1faafad1c57d40b2ab26423074ac078ced",
+    "monitors/src/batch-interface.inc": "7eddb4f63346f541c8fa207be5059c2e5b9511a4f97371c617d0fd1ec925da0c",
+    "src/core/map-wdc-catalog.inc": "a017983e7bf24bbbd90999839b1a3f3acb45e6aee53f2b909e46315633650806"
+  },
+  "private_adapter": {
+    "SB_F_SELECT": 30792,
+    "SB_F_READ": 30768,
+    "SB_F_EXECUTE": 30760,
+    "SB_F_BOOT_READ": 62735,
+    "SB_F_RECOVERY": 62127,
+    "SB_F_CRC_LO": 237,
+    "SB_F_CRC_HI": 41
+  },
+  "artifacts": {
+    "STR8N-SERVICES-g00000008-E.bin": {
+      "variant": "E",
+      "bytes": 4096,
+      "sha256": "3a211c461a7ef80f449107d5a14b61057938198a761485741e4947b3b9fa6a7f",
+      "linked_bytes": 4056,
+      "free_bytes": 38,
+      "origin": "E000",
+      "command_entry": "E008"
+    },
+    "STR8N-SERVICES-g00000008-RAM.bin": {
+      "variant": "RAM",
+      "bytes": 4096,
+      "sha256": "ae4f68705d6f86d6d7ce130757be652ceccdfeb68a47ecd21d098990494a0994",
+      "linked_bytes": 4056,
+      "free_bytes": 38,
+      "origin": "2000",
+      "command_entry": "2008"
+    },
+    "STR8N-SERVICES-g00000008-B2-8000.bin": {
+      "variant": "B2 bundle",
+      "bytes": 12288,
+      "sha256": "36417e95a75e693e9993baa1e247796154246d48092f5f52e0257abc051f8edc",
+      "sectors": [
+        "B2:8",
+        "B2:9",
+        "B2:A"
+      ],
+      "module_origin": "8300",
+      "provider_origin": "9F00",
+      "boot_entry": "8000",
+      "loader_bytes": 310,
+      "prefix_bytes": 58,
+      "free_flash_tail_bytes": 1024
+    },
+    "STR8N-TOOLS-WB2-SP1-g00000008-RAM.bin": {
+      "variant": "Full tool RAM packet",
+      "bytes": 11264,
+      "sha256": "b2e869965c62fea1fb15fddf151140493ad564b36410e7e7688f66372e444f96",
+      "load_address": "0200",
+      "module_RAM": "4800-66FF",
+      "provider_RAM": "6B00-77FF",
+      "temporary_6A_saved_restored": true
+    },
+    "STR8N-MON-SERVICES-g0000000B-RAM.bin": {
+      "variant": "RAM trial composite",
+      "bytes": 11776,
+      "sha256": "c71fde3c92dd3c1a70acf00dfb61654d6936034b7f403b37f9875f7a0a9f7eaf",
+      "RAM": "0200-2FFF",
+      "service_origin": "2000",
+      "core_generation": "0000000B"
+    }
+  },
+  "build_passes": 0,
+  "assembler_linker_invocations": 0,
+  "bundle_generation": 8,
+  "workbench_manifest": "monitors\\candidates\\wb2-g0000000a-batch\\manifest.json",
+  "monitor_manifest": "monitors\\candidates\\g0000000b-batch\\manifest.json",
+  "program_manifest": "monitors\\candidates\\program-sp1-g00000002-wide-r5\\manifest.json",
+  "readonly_commands": [
+    "M1",
+    "M2",
+    "M3",
+    "W",
+    "APPS"
+  ],
+  "readonly_RAM": "6700-69FF; no owner RAM/ZP writes",
+  "explicit_workbench_commands": [
+    "MAINT",
+    "MAINT LOAD",
+    "FLASH",
+    "CLOCK"
+  ],
+  "module_RAM": "4800-66FF",
+  "provider_RAM": "6B00-77FF",
+  "workbench_cache_admission": "Exact WG/generation marker plus MW/02/1C/PR05 and whole-module CRC; stale valid caches reload",
+  "CLOCK": "R CLOCK routes to the full b35-derived native RAM app; STATUS and canceled SET accepted separately",
+  "FLASH": "R FLASH/R MAINT route to native sector buffer/editor, guarded BYTE/WRITE/ERASE and BOOT/HOST",
+  "BATCH": "returning WB2 subset; no loader/flash write/application handoff",
+  "F_rebuilt": false,
+  "hardware_access": false,
+  "CPU_simulations": 0,
+  "branch_layout": {},
+  "reused_loader_bundle_from": "monitors\\candidates\\services-g00000006-native-r3\\manifest.json",
+  "reused_service_images_from": "monitors\\candidates\\services-g00000008-batch\\manifest.json",
+  "program_payload_replaced": true
+}

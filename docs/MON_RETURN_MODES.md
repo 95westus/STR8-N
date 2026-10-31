@@ -1,7 +1,8 @@
 # Shared MON/tool return modes
 
-October 30, 2026. MON g0000000A / WB2 g8 / services g6 and native tools are
-[installed on 2512](2512_NATIVE_UTILITIES_ACCEPTANCE.md). Frozen
+October 30, 2026. MON g0000000B / WB2 gA / services g8 / PROGRAM g2 and
+native tools g1/r16 are installed on 2512. The earlier
+[native checkpoint](2512_NATIVE_UTILITIES_ACCEPTANCE.md) remains historical. Frozen
 Foundation v0.3.0 BASE1/PR05 and its public HOLD remain byte-identical.
 
 ## Meaning
@@ -54,6 +55,11 @@ gates are in the [operator manual](NATIVE_UTILITIES_MANUAL.md).
 The MI image's reserved, CRC-covered area holds descriptor `UI 01 count PR05`
 at offset48 hex and a vector table at20 hex. Operations0..5 are VERSION,
 TIME, retain/status return, RTC sample, RTC display and bypass/quiet return.
+MON gB appends operation6: execute a checked MON command and return to its
+caller at M_PROMPT. Its descriptor count is seven. Errors/input cancellation
+return an explicit result, allowing BATCH to stop. Each caller requires a
+count greater than its operation number; older six-vector consumers remain
+compatible.
 An older caller accepts a compatible descriptor with at least its required
 vector count. New operations must not change existing operation meanings.
 
@@ -95,3 +101,21 @@ services build lacked this second guard; that required one corrective build.
 The corrected [candidate](../monitors/candidates/services-g00000005-ui1-r2/README.md)
 is the current build-only artifact. Mode names describe private return entries,
 not new console commands.
+
+## Private BATCH / wide PROGRAM state
+
+The BATCH marker is `$7DF9=$B7`; RESET already clears it through frozen F.
+Queue/session state occupies `$6AD0–$6AF9`, above owner RAM. MON cold/HOLD
+clears ordinary session cache while retaining an admitted queue. FLASH uses
+`$5DD0` escrow because its sector editor borrows `$6800–$77FF`; CLOCK retains
+the queue in the common context. Native UI scratch is `$5B10–$5B18`, outside
+CLOCK's gateway and its CRC/return-kind bytes. Ordinary workbench Q clears
+its origin flag, preventing a later MON BATCH from returning to WORKBENCH.
+
+Services validates both WB generation/CRC and SP capability/whole-image CRC
+before reusing cached tools. Queued fallback requires SB/1/1; native loader
+NB/1/1 is admitted in ROM before overwriting the SP overlay. PROGRAM SW/1/1
+opts into independent load/run operations6/7. State at `$69C5–$69CC` escrows
+profile, bank, return and status before `$6540/$65C0` can be overwritten.
+Once copying begins, wide success/error/cancel never RTS into displaced WB.
+These are private matching-component interfaces above PR05, not changes to F.

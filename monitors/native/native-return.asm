@@ -4,6 +4,7 @@
         INCLUDE "str8n-v2-public.inc"
         INCLUDE "vectors-symbols.inc"
         INCLUDE "monitor-ui.inc"
+        INCLUDE "batch-interface.inc"
         CODE
 NR_START:
         SEI
@@ -17,7 +18,22 @@ NR_MON:
         LDA $5D00,X
         STA $6A00,X
         INX
-        BNE NR_MON
+        CPX #$D0
+        BCC NR_MON
+        LDA $5B02
+        BEQ NR_MON_DONE
+NR_FLASH_CONTEXT:
+        LDA $5D00,X
+        STA $6A00,X
+        INX
+        BNE NR_FLASH_CONTEXT
+NR_MON_DONE:
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE NR_NO_BATCH
+        LDA BQ_PARENT
+        STA BQ_PROVIDER
+NR_NO_BATCH:
         LDX #0
 NR_ZP:
         LDA $5C00,X

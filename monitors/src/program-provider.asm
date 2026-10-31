@@ -5,12 +5,14 @@
         INCLUDE "str8n-v2-public.inc"
         INCLUDE "workbench-layout.inc"
         INCLUDE "program-layout.inc"
+        INCLUDE "monitor-ui.inc"
         CODE
 SP_START:
         DB "SP",1,13,"PR05"
         JMP API
         JMP SP_READ64
         JMP W_SPI_GUARD
+        DB "SW",1,1 ; opt-in independent wide restore/run, op6/7
 ; A/X points to a32-byte request. Foreground, SEI/CLD.
 ; op0=query,1=save,2=restore,3=restore for run,4=lookup,5=preview Store.
 ; bytes 1=0,2..3=start,4..5=inclusive end,6..7=entry (0=restore only),
@@ -34,7 +36,25 @@ API_COPY_LOOP:
         STA REQUEST,Y
         DEY
                         BPL API_COPY_LOOP
+        LDA W_EDU
+        STA SP_PROFILE
+        STZ SP_TAIL
+        LDA REQUEST+26
+        STA SP_RETURN
+        LDA REQUEST+27
+        STA SP_RETURN+1
+        LDA REQUEST+28
+        STA SP_BANK
+        LDA REQUEST+29
+        STA SP_FLOOR
         JSR OPERATION
+        STA SP_STATUS
+        LDA SP_TAIL
+        BEQ SP_API_RESULT
+        LDA COPYING
+        BNE SP_TAIL_FINISH
+SP_API_RESULT:
+        LDA SP_STATUS
         CMP #0
                         BNE API_ERROR
         SEC
@@ -51,7 +71,7 @@ OPERATION:
         LDA REQUEST+1
                         BNE ARG_BAD
         LDA REQUEST
-        CMP #6
+        CMP #8
                         BCS ARG_BAD
         JSR MOUNT
         BNE FINISH
@@ -854,6 +874,11 @@ VERIFY_PAYLOAD:
         JSR LOAD_RECORD
         JSR CRC_INIT
 PAYLOAD_LOOP:
+        JSR STR8V2_RAM_CHECK_CANCEL
+        BCC SP_VERIFY_NEXT
+        LDA #$43
+        RTS
+SP_VERIFY_NEXT:
         JSR BUF_POINTER
         JSR CHUNK
         LDA #1
@@ -889,22 +914,83 @@ RESTORE:
                         BEQ BM_LONG_927
                         JMP SAVE_RETURN
 BM_LONG_927:
+        LDA REQUEST
+        CMP #6
+        BCC SP_NARROW_RESTORE
+        LDA SP_BANK
+        CMP #4
+        BCS ARG_BAD
+        LDA SP_RETURN+1
+        CMP #$7E
+        BNE SP_RETURN_ROM
+        LDA SP_RETURN
+        CMP #$67
+        BEQ SP_RETURN_VALID
+SP_RETURN_ROM:
+        LDA SP_RETURN+1
+        CMP #$A0
+        BCC ARG_BAD
+        CMP #$C0
+        BCS ARG_BAD
+SP_RETURN_VALID:
+        LDA LOAD+1
+        CMP SP_FLOOR
+        BCC ARG_BAD
+        LDA END_ADDR+1
+        CMP #>WB_ORIGIN
+        BCC SP_WIDE_NOT_NEEDED
+        LDA REQUEST
+        STA SP_TAIL
+        CMP #6
+        BNE SP_RESTORE_MODE
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE SP_RESTORE_MODE
+        LDA BQ_POS
+        CMP BQ_SIZE
+        BCC ARG_BAD
+        BRA SP_RESTORE_MODE
+SP_WIDE_NOT_NEEDED:
+        LDA REQUEST
+        SEC
+        SBC #4
+        STA REQUEST
+SP_NARROW_RESTORE:
         JSR SP_CLIENT_RANGE
         BNE SAVE_RETURN
+SP_RESTORE_MODE:
         LDA REQUEST
-        CMP #3
+        AND #1
+        CMP #1
                         BNE RESTORE_BEGIN
         LDA ENTRY
         ORA ENTRY+1
                         BEQ NO_RUN
 RESTORE_BEGIN:
+        LDA REQUEST
+        AND #1
+        BEQ SP_BATCH_ADMITTED
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE SP_BATCH_ADMITTED
+        JSR SP_REGISTERED
+        BNE FINISH
+        JSR LOAD_RECORD
+SP_BATCH_ADMITTED:
         INC COPYING
+        LDA SP_TAIL
+        BEQ SP_COPY_READY
+        LDA #'>' ; admitted wide-copy phase; cancellation remains live
+        JSR STR8V2_RAM_PUTC
+SP_COPY_READY:
         LDA LOAD
         STA BP
         LDA LOAD+1
         STA BP+1
         JSR CRC_INIT
 RESTORE_LOOP:
+        JSR STR8V2_RAM_CHECK_CANCEL
+        BCS PARTIAL
         JSR CHUNK
         LDA #1
         JSR TRANSFER
@@ -1001,6 +1087,111 @@ SP_CLIENT_RANGE:
 SP_CLIENT_BAD:
         LDA #$44
         RTS
+SP_TAIL_FINISH:
+        JSR STR8V2_RAM_RX_RESET ; cancellation mutes text until acknowledged
+        LDA #3
+        JSR $7848
+        LDA SP_BANK
+        AND #3
+        STA MU_BANK
+        LDA SP_STATUS
+        BEQ SP_TAIL_OK
+        LDA #4
+        STA BQ_ERROR
+        LDX #<SP_PARTIAL_TEXT
+        LDY #>SP_PARTIAL_TEXT
+        BRA SP_TAIL_PRINT
+SP_TAIL_OK:
+        LDX #<SP_LOADED_TEXT
+        LDY #>SP_LOADED_TEXT
+SP_TAIL_PRINT:
+        STX PTR
+        STY PTR+1
+        LDY #0
+SP_TAIL_CHAR:
+        LDA (PTR),Y
+        BEQ SP_TAIL_PRINT_END
+        JSR STR8V2_RAM_PUTC
+        INY
+        BRA SP_TAIL_CHAR
+SP_TAIL_PRINT_END:
+        LDA SP_STATUS
+        BNE SP_TAIL_RETURN
+        LDA SP_TAIL
+        CMP #7
+        BEQ SP_TAIL_RUN
+        ; A final wide load-only must remain intact, rather than reloading WB.
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE SP_TAIL_RETURN
+        STZ BQ_MAGIC
+        LDX #<SP_DONE_TEXT
+        LDY #>SP_DONE_TEXT
+        STX PTR
+        STY PTR+1
+        LDY #0
+SP_DONE_CHAR:
+        LDA (PTR),Y
+        BEQ SP_TAIL_RETURN
+        JSR STR8V2_RAM_PUTC
+        INY
+        BRA SP_DONE_CHAR
+SP_TAIL_RUN:
+        LDA ENTRY
+        STA $FE
+        LDA ENTRY+1
+        STA $FF
+        LDA SP_BANK
+        STA $F3
+        JMP $7828
+SP_TAIL_RETURN:
+        LDX #$FF
+        TXS
+        JMP (SP_RETURN)
+SP_REGISTERED:
+        SEC
+        LDA END_ADDR
+        SBC ENTRY
+        TAX
+        LDA END_ADDR+1
+        SBC ENTRY+1
+        BNE SP_REG_ADDRESS
+        CPX #9
+        BCC SP_REG_BAD
+SP_REG_ADDRESS:
+        SEC
+        LDA ENTRY
+        SBC LOAD
+        STA WORD
+        LDA ENTRY+1
+        SBC LOAD+1
+        STA WORD+1
+        CLC
+        LDA WORD
+        ADC ADDR
+        STA ADDR
+        LDA WORD+1
+        ADC ADDR+1
+        STA ADDR+1
+        JSR READ_BLOCK
+        BNE SP_REG_DONE
+        LDX #9
+SP_REG_BYTES:
+        LDA BUF,X
+        CMP SP_BT,X
+        BNE SP_REG_BAD
+        DEX
+        BPL SP_REG_BYTES
+        LDA #0
+SP_REG_DONE:
+        RTS
+SP_REG_BAD:
+        LDA #$47
+        RTS
+SP_BT: DB $80,8,"BT",1,2,"PR05"
+SP_LOADED_TEXT: DB "PROGRAM loaded; CRC OK",13,10,0
+SP_DONE_TEXT: DB "BATCH done",13,10,0
+SP_PARTIAL_TEXT: DB "Partial; not run",13,10,0
         INCLUDE "program-layout-check.inc"
         INCLUDE "program-spi.inc"
 MASKS: DB 1,2,4,8,16,32,64,128

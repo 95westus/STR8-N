@@ -27,6 +27,13 @@ WP_MAGIC_LOOP:
         BNE WP_CHECK_BAD
         DEX
         BPL WP_MAGIC_LOOP
+        LDX #3
+WP_CAP_LOOP:
+        LDA SP_BASE+17,X
+        CMP WP_CAP,X
+        BNE WP_CHECK_BAD
+        DEX
+        BPL WP_CAP_LOOP
         JSR W_CRC_START
         STZ W_PTR
         LDA #>SP_BASE
@@ -85,18 +92,41 @@ WP_LOOKUP:
         LDA #4
         JMP WP_REQUEST
 WP_RESTORE:
-        LDA #3
+        LDA #7
         LDX W_ONLY
         BEQ WP_RESTORE_OP
-        LDA #2
+        LDA #6
 WP_RESTORE_OP:
-        JSR WP_REQUEST
+        JSR WP_INIT_REQUEST
+        LDA #MU_BYPASS
+        JSR W_UI_CHECK
+        BCS WP_RETURN_READY
+        LDA #<STR8V2_RAM_HOLD
+        STA W_UI_TARGET
+        LDA #>STR8V2_RAM_HOLD
+        STA W_UI_TARGET+1
+WP_RETURN_READY:
+        LDA W_UI_TARGET
+        STA REQUEST+26
+        LDA W_UI_TARGET+1
+        STA REQUEST+27
+        LDA W_BANK
+        STA REQUEST+28
+        LDA W_RAM_FLOOR
+        STA REQUEST+29
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE WP_LOAD
+        JSR WB_SAVE
+WP_LOAD:
+        JSR WP_CALL
         BCC WP_ERROR
         LDX #<WP_LOADED_TEXT
         LDY #>WP_LOADED_TEXT
         JSR W_PUTS
         LDA W_ONLY
         BNE W_HANDLED
+WP_RUN:
         LDA ENTRY
         STA W_F_VECTOR
         LDA ENTRY+1
@@ -278,6 +308,7 @@ WP_STORE_OK:
         LDX #<WP_STORED_TEXT
         LDY #>WP_STORED_TEXT
         JMP W_MESSAGE
+WP_CAP: DB "SW",1,1
 WP_MAGIC: DB "SP",1,13,"PR05"
 WP_TARGET_TEXT: DB "Target PROGRAM $",0
 WP_TABLE_TEXT: DB "P:slot/kind#seq (01=data,02=delete)",13,10,0

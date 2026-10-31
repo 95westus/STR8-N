@@ -44,7 +44,7 @@ def build(out, generation=1, reuse_loader=None):
                      'workbench-layout.inc', 'workbench-sram.inc', 'workbench-store.inc',
                      'workbench-batch.inc', 'workbench-clock.inc', 'workbench-native.inc',
                      'workbench-program.inc', 'program-layout.inc',
-                     'workbench-monitor-ui.inc', 'monitor-ui.inc'):
+                     'workbench-monitor-ui.inc', 'monitor-ui.inc', 'batch-interface.inc'):
         path = ROOT/'monitors/src'/filename
         body = path.read_text(encoding='utf-8')
         body = body.replace('WB_GENERATION_TEXT',generation_text)
@@ -127,7 +127,7 @@ def build(out, generation=1, reuse_loader=None):
                   flash_writes='Explicit S into fully erased owner-declared B0/B1 AREA only; no erase',
                   journal_writes=False, SRAM_writes=False,
                   EDU='Explicit session OFF/ON; ON is a wiring selection, not presence proof',
-                  monitor_UI=dict(requires='UI/1 with at least 6 CRC-covered MON vectors',
+                  monitor_UI=dict(requires='UI/1 count > operation: six original vectors; operation6 needs seven',
                     commands=['VERSION','V','TIME','quiet Q'],
                     peripheral_reader='WB TIME reuses MON RTC implementation/cache; native CLOCK has its own full provider',
                     cold_entry='Initializes selected bank to B3',
@@ -145,13 +145,13 @@ def build(out, generation=1, reuse_loader=None):
                                AUTO='Flash append tail after complete/pending SR01 records; no gap reclaim; crossing/corrupt AREA refused; explicit start address retained',
                                run='Explicit R without L; old program ABI not thereby qualified'),
                   batch=dict(text_bytes=34,separator=';',empty_segments='refused before execution',
-                             command_allowlist='checked before execution: VERSION/V, TIME, B, TABLE/T, ?, HELP, EDU, bare SRAM/WORK',
-                             stop_on_error=True,cancel='Ctrl-C/ESC between commands or during Table',
+                             command_allowlist='checked when reached: returning WB commands, STORE/TABLE/RESTORE, guarded MON D/M, maps/W/APPS/APP, native menus and registered PROGRAM runs',
+                             stop_on_error=True,cancel='Ctrl-C/ESC stops remainder; confirmations always use live input',
                              queue_is_console_input=False,nested_batch=False,
-                             completion='returning module commands only; full b35/core/apps parity remains open'),
+                             completion='resident queue resumes after native Q, AP/02 or PR05-registered PROGRAM HOLD; wide load-only must be final'),
                   companion_PROGRAM='SP/01 provider at6B00-77FF required for PROGRAM; full RAM packet supplied by services manifest',
                   native_apps='Reserved R CLOCK/R FLASH/R MAINT and BOOT route to the separately packaged RAM overlays; see native acceptance',
-                  planned=['Full BATCH command/app parity', 'Independent large PROGRAM load/handoff',
+                  planned=['Large STORE-source staging', 'Remaining full-b35 management parity',
                            'Source/ASM/DEBUG', 'WORKSPACE allocation review and separate append-only messages'],
                   build_passes=1, assembler_linker_invocations=len(logs),
                   reused_loader_from=str(Path(reuse_loader).resolve().relative_to(ROOT)) if reuse_loader else None,

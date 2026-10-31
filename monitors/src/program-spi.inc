@@ -20,6 +20,8 @@ SP_BUSY:
         CLC
         RTS
 SP_READ64:
+        LDA W_EDU
+        STA SP_PROFILE
         LDA W_A0
         STA SP_A0
         LDA W_A1
@@ -43,7 +45,7 @@ SP_BUSY_RETURN:
         CLC
         RTS
 SP_TRANSFER:
-        LDA W_EDU
+        LDA SP_PROFILE
         BEQ SP_NO_PROFILE
         LDA SP_COUNT
         BEQ SP_BAD_RANGE

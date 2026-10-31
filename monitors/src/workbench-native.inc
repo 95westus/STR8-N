@@ -21,12 +21,32 @@ W_NATIVE_BOARD:
         LDA #1
 W_NATIVE:
         STA $6639
-        LDA W_BATCH_ACTIVE
-        BNE WN_REFUSED
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE WN_NO_BATCH
+        JSR WB_SAVE
+        LDA BQ_PROVIDER
+        STA BQ_PARENT
+        CLC
+        LDA $6639
+        ADC #2
+        STA BQ_PROVIDER
+WN_NO_BATCH:
         LDA W_BANK
         STA MU_BANK
         LDA #3
         JSR WB_F_SELECT
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE WN_COPY_START
+        LDX #3
+WN_BATCH_CAP:
+        LDA $8C0B,X
+        CMP WN_BATCH_ID,X
+        BNE WN_REFUSED
+        DEX
+        BPL WN_BATCH_CAP
+WN_COPY_START:
         LDX #0
 WN_COPY:
         LDA $8C00,X
@@ -66,9 +86,16 @@ WN_ID:
         LDX #<WN_RAM_TEXT
         LDY #>WN_RAM_TEXT
         JSR W_PUTS
+WN_ENTER:
         LDA $6639
         JMP $7008
 WN_REFUSED:
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE WN_ERROR
+        LDA BQ_PARENT
+        STA BQ_PROVIDER
+WN_ERROR:
         LDA #WB_REFUSED
         STA W_RESULT
         LDX #<WN_BAD_TEXT
@@ -77,6 +104,7 @@ WN_REFUSED:
 WN_R_CLOCK: DB "R CLOCK",0
 WN_R_FLASH: DB "R FLASH",0
 WN_R_MAINT: DB "R MAINT",0
+WN_BATCH_ID: DB "NB",1,1
 WN_MAGIC: DB "NL",1,2,"PR05"
-WN_RAM_TEXT: DB "Native overlay: RAM 2000-73FF; FLASH buffer through77FF; Q MON.",13,10,0
-WN_BAD_TEXT: DB "REFUSED: native loader/active BATCH",13,10,0
+WN_RAM_TEXT: DB "Native RAM 2000-77FF; Q MON.",13,10,0
+WN_BAD_TEXT: DB "REFUSED: native loader",13,10,0

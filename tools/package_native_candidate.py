@@ -7,7 +7,7 @@ import subprocess
 import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
-LABEL='STR8N-native-g0000000A-candidate1'
+LABEL='STR8N-native-g0000000B-candidate2'
 sha=lambda b:hashlib.sha256(b).hexdigest()
 
 
@@ -15,7 +15,7 @@ def package(out):
     out=Path(out).resolve()
     if out.exists():raise ValueError('Use a fresh output directory')
     out.mkdir(parents=True);stage=out/LABEL;stage.mkdir()
-    receipt=json.loads((ROOT/'monitors/validation/2512-native-utilities.json').read_text())
+    receipt=json.loads((ROOT/'monitors/validation/2512-batch-wide.json').read_text())
     assert receipt['passed'] and receipt['F_writes']==0
     original=ROOT/'dist/base1-0.3.0/STR8N-F-BASE1-0.3.0.zip'
     foundation=stage/'foundation'
@@ -29,12 +29,12 @@ def package(out):
     f=(foundation/'firmware/payload/STR8N-F-BOOT-4096.bin').read_bytes()
     freeze=json.loads((ROOT/'F_FREEZE.json').read_text());assert len(f)==4096 and sha(f)==freeze['sha256']
     (stage/'F.bin').write_bytes(f)
-    native=ROOT/'monitors/candidates/native-g00000001-r8'
-    svc=ROOT/'monitors/candidates/services-g00000006-native-r3'
-    mon=ROOT/'monitors/candidates/g0000000a-ui1'
+    native=ROOT/'monitors/candidates/native-g00000001-r16'
+    svc=ROOT/'monitors/candidates/services-g00000008-batch-r2'
+    mon=ROOT/'monitors/candidates/g0000000b-batch'
     payload=stage/'native/payload';payload.mkdir(parents=True)
     catalog=dict(schema=1,F_sha256=sha(f),Foundation='0.3.0 g00000001 BASE1/PR05',
-                 MON='0.1.0-dev g0000000A',native='g1 / loader r7 / HOST r8',targets=[])
+                 MON='0.1.0-dev g0000000B',WB='g0000000A',PROGRAM='g00000002 / cancel r5',services='g00000008',native='g1 / r16',targets=[])
     def target(bank,address,body,**flags):
         name=f'B{bank}-{address:04X}'+('-code3072' if len(body)==3072 else '')+'.bin'
         (payload/name).write_bytes(body)
@@ -53,20 +53,29 @@ def package(out):
     (stage/'NATIVE-COMPONENTS.json').write_text(json.dumps(catalog,indent=2)+'\n',encoding='utf-8')
     tools=stage/'tools';tools.mkdir()
     for name in ('nf_native_images.py','nf_factory_image.py'):(tools/name).write_bytes((ROOT/'tools'/name).read_bytes())
-    for name in ('NATIVE_UTILITIES_MANUAL.md','2512_NATIVE_UTILITIES_ACCEPTANCE.md'):
+    for name in ('NATIVE_UTILITIES_MANUAL.md','2512_NATIVE_UTILITIES_ACCEPTANCE.md','2512_BATCH_WIDE_ACCEPTANCE.md'):
         text=(ROOT/'docs'/name).read_text(encoding='utf-8')
+        if name=='2512_BATCH_WIDE_ACCEPTANCE.md':
+            text=text.replace('../monitors/validation/2512-batch-wide.json','evidence/2512-batch-wide.json')
         if name=='2512_NATIVE_UTILITIES_ACCEPTANCE.md':
             text=text.replace('../monitors/validation/2512-native-utilities.json','evidence/2512-native-utilities.json')
         (stage/name).write_text(text,encoding='utf-8')
     (stage/'LICENSE').write_bytes((ROOT/'LICENSE').read_bytes())
     evidence=stage/'evidence';evidence.mkdir();(evidence/'2512-native-utilities.json').write_bytes((ROOT/'monitors/validation/2512-native-utilities.json').read_bytes())
+    (evidence/'2512-batch-wide.json').write_bytes((ROOT/'monitors/validation/2512-batch-wide.json').read_bytes())
+    ram=stage/'native/RAM';ram.mkdir()
+    for name,a in sm['artifacts'].items():
+        if a['variant']=='Full tool RAM packet':(ram/name).write_bytes((svc/name).read_bytes())
     examples=stage/'examples';examples.mkdir();(examples/'NFCOPY.asm').write_bytes((ROOT/'examples/NFCOPY.asm').read_bytes())
     (examples/'NFCOPY-3000.bin').write_bytes(bytes.fromhex('A9 50 20 6D 7E 4C 67 7E'))
+    (examples/'BATCH-DEMO.asm').write_bytes((ROOT/'examples/BATCH-DEMO.asm').read_bytes())
+    (examples/'BATCH-DEMO-3000.bin').write_bytes(bytes.fromhex('80 08 42 54 01 02 50 52 30 35 A9 53 20 6D 7E A9 0D 20 6D 7E A9 0A 20 6D 7E 4C 67 7E EA EA EA EA'))
     (stage/'README.md').write_text('''# STR8-N native utilities candidate
 
-MON A/B g0000000A above frozen N-F 0.3.0 BASE1/PR05.
+MON A/B g0000000B above frozen N-F 0.3.0 BASE1/PR05.
 
-Read NATIVE_UTILITIES_MANUAL.md and 2512_NATIVE_UTILITIES_ACCEPTANCE.md.
+Read NATIVE_UTILITIES_MANUAL.md and 2512_BATCH_WIDE_ACCEPTANCE.md.
+The previous 2512_NATIVE_UTILITIES_ACCEPTANCE.md remains historical.
 This is a local, unpublished candidate; remaining full-b35 gates are explicit.
 The complete profile reserves B2/B3 (64 KiB including F and C/D).
 
@@ -96,7 +105,7 @@ print('PASS extracted native candidate; frozen F and unchanged Foundation runtim
     head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     source=stage/'source';source.mkdir()
     subprocess.run(['git','archive','--format=zip','--output',str(source/('STR8N-'+head[:7]+'-source.zip')),'HEAD'],cwd=ROOT,check=True)
-    manifest=dict(schema=1,status='LOCAL_NATIVE_UTILITIES_CANDIDATE_2512_ACCEPTED_NOT_FULL_B35_RELEASE',
+    manifest=dict(schema=1,status='LOCAL_BATCH_WIDE_CANDIDATE_2512_ACCEPTED_NOT_FULL_B35_RELEASE',
         source_commit=head,F_sha256=sha(f),F_frozen=True,firmware_builds_for_packaging=0,
         foundation_operator_ZIP_sha256=sha(original.read_bytes()),terminal='Unchanged published Foundation console0.1.0',
         new_factory_flash_qualified=False,new_candidate_migration_tested=False,serial_access=False,published=False,

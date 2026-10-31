@@ -10,16 +10,20 @@ the stable 4 KB F sector beneath those environments; C/D hold its persistent
 boot settings and tracked erase journal. The monitors and tools are optional
 layers above it. The frozen firmware identity remains BASE1 / PR05.
 
-**Current development checkpoint: native utilities are installed on 2512.**
-MON A/B g0000000A and shared tools provide `R CLOCK`, `R FLASH`, `R MAINT`,
-VERSION, BOOT/CONFIG, the sector editor, EDU/SRAM/WORK and STORE/TABLE/RESTORE.
-Flash-to-PROGRAM copy, verified source removal and automatic PROGRAM run passed.
-Read the [native operator manual](docs/NATIVE_UTILITIES_MANUAL.md) and
-[acceptance/remaining gates](docs/2512_NATIVE_UTILITIES_ACCEPTANCE.md).
+**Current development checkpoint: MON A/B g0000000B on 2512.**
+Shared WB2 gA, PROGRAM g2, services g8 and native apps g1/r16 provide
+`R CLOCK`, `R FLASH`, `R MAINT`, VERSION, BOOT/CONFIG, the sector editor,
+EDU/SRAM/WORK and STORE/TABLE/RESTORE. BATCH now spans returning monitor,
+storage and native-menu commands plus registered PROGRAM/AP/02 handoffs.
+Independent large PROGRAM load/run reaches owner RAM `$0200–$66FF`.
+Read the [operator manual](docs/NATIVE_UTILITIES_MANUAL.md) and
+[BATCH/large PROGRAM acceptance](docs/2512_BATCH_WIDE_ACCEPTANCE.md).
+The [earlier native acceptance](docs/2512_NATIVE_UTILITIES_ACCEPTANCE.md)
+remains evidence for its exact prior components and workflows.
 The full profile occupies B2/B3, 64 KiB including F and C/D; B0/B1 remain owner
-space. This local candidate does not replace either published release.
-The [candidate-1 package checkpoint](docs/NATIVE_CANDIDATE1_PACKAGE.md) records
-its source commit, archive identity and extracted preparation checks.
+space. This local development work does not replace published downloads.
+The [candidate-1 package checkpoint](docs/NATIVE_CANDIDATE1_PACKAGE.md)
+remains historical; subsequent candidates use fresh filenames.
 
 **[Download optional MON/tools preview 1](https://github.com/95westus/STR8N-F/releases/tag/mon-g8-tools-preview1):**
 MON B 0.1.0-dev g8, services g4, WB2 g5 and
@@ -32,8 +36,8 @@ Read the [preview manual](docs/MON_FEATURE_PREVIEW.md),
 [release plan](docs/MON_FEATURE_RELEASE_PLAN.md) and
 [full b35 parity checklist](docs/MON_B35_PARITY.md). The following paragraphs
 describe published preview1; the native checkpoint above supersedes its
-read-only CLOCK/FLASH limits. Complete BATCH/large PROGRAM handoff and the
-remaining shipping gates are still explicit open items.
+read-only CLOCK/FLASH limits. The [new BATCH/large PROGRAM work](docs/2512_BATCH_WIDE_ACCEPTANCE.md) extends
+that older subset; remaining shipping gates are still explicit.
 The earlier [2512 services g4 and WB5/SP1 acceptance](docs/2512_SERVICES_G4_INSTALL_ACCEPTANCE.md)
 records that preview's corresponding 65C02 qualification.
 Native maps/wear, CLOCK, forced reload, PROGRAM Table, BATCH and AUTO/NO passed,
