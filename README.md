@@ -22,8 +22,9 @@ The [earlier native acceptance](docs/2512_NATIVE_UTILITIES_ACCEPTANCE.md)
 remains evidence for its exact prior components and workflows.
 The full profile occupies B2/B3, 64 KiB including F and C/D; B0/B1 remain owner
 space. This local development work does not replace published downloads.
-The [candidate-1 package checkpoint](docs/NATIVE_CANDIDATE1_PACKAGE.md)
-remains historical; subsequent candidates use fresh filenames.
+The [local candidate-2 package](docs/NATIVE_CANDIDATE2_PACKAGE.md) includes the
+unchanged Foundation terminal/migrator and passes extracted preparation checks.
+The [candidate-1 checkpoint](docs/NATIVE_CANDIDATE1_PACKAGE.md) remains historical.
 
 **[Download optional MON/tools preview 1](https://github.com/95westus/STR8N-F/releases/tag/mon-g8-tools-preview1):**
 MON B 0.1.0-dev g8, services g4, WB2 g5 and
