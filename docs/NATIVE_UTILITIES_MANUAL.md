@@ -1,6 +1,6 @@
 # STR8-N native utilities above Foundation
 
-Development candidate: MON A/B g0000000B, services g8, WB2 gA, PROGRAM
+Development candidate: MON A/B g0000000B, services g9, WB2 gB, PROGRAM
 SP/01 g2 and native apps g1/r16. Foundation remains **STR8N-F 0.3.0
 g00000001 / BASE1 / PR05**, exactly 4096 bytes. This candidate is separate
 from the published Foundation and preview-1 downloads.
@@ -29,8 +29,16 @@ WORKBENCH> Q
 `R CLOCK`, `R FLASH` and `R MAINT` are reserved native names, independent of
 the selected data bank. `R MAINT` and `FLASH` open the shared board tool;
 `MAINT` opens the storage/EDU workbench, where `BOOT` opens that board tool.
+`R EDU`, `R SRAM` and `R WORK` are named aliases for the existing
+EDU/status/query tools; RESTORE is equivalent to R, including ordinary
+spaces. They do not add a format/delete/reclaim manager. `R EDU ON` enables
+the session profile. Explicit `R P name` or `R bank name` selects a stored
+program whose name collides with a reserved tool.
+
 `APP name` launches a checked owner AP/02 flash image. `APPS` lists both native
-tools and discovered AP/02 images; native tools use the `R` names above.
+tools and discovered AP/02 images; native tools use the `R` names above. The catalogue gives built-in routes
+and flash locations; native image integrity is checked on launch.
+See the [familiar-workflow acceptance](CLASSIC_APPS_PROGRAM_WORKFLOW.md).
 
 Two hardware profiles use the same source and command set: W65C02SXB/65C02
 and W65C816SXB/emulation, optionally with their matching EDU. The current

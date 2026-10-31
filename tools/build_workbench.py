@@ -150,7 +150,7 @@ def build(out, generation=1, reuse_loader=None):
                              queue_is_console_input=False,nested_batch=False,
                              completion='resident queue resumes after native Q, AP/02 or PR05-registered PROGRAM HOLD; wide load-only must be final'),
                   companion_PROGRAM='SP/01 provider at6B00-77FF required for PROGRAM; full RAM packet supplied by services manifest',
-                  native_apps='Reserved R CLOCK/R FLASH/R MAINT and BOOT route to the separately packaged RAM overlays; see native acceptance',
+                  native_apps='R CLOCK/FLASH/MAINT and BOOT launch native overlays; R/RESTORE EDU/SRAM/WORK alias existing commands; reserved argument errors are handled locally',
                   planned=['Large STORE-source staging', 'Remaining full-b35 management parity',
                            'Source/ASM/DEBUG', 'WORKSPACE allocation review and separate append-only messages'],
                   build_passes=1, assembler_linker_invocations=len(logs),

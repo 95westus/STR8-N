@@ -395,7 +395,7 @@ S_RANGES_TEXT: DB "B0/B1 owner images/records. Erased != free.",13,10
         DB "B2:8-A WB/SP; B-D CLOCK; E-F FLASH/MAINT.",13,10
         DB "B3:8/9 RTC/tools; A/B MON; C/D boot/wear; E services; F frozen.",13,10
         DB "RAM: WB4800-66FF+6B00-77FF; native2000-77FF.",13,10,0
-S_LOADING_TEXT: DB "Load flash WB2/PROGRAM: 4800-66FF +6B00-77FF",13,10,0
+S_LOADING_TEXT: DB "Loading tools...",13,10,0
 S_NO_MODULE_TEXT: DB "Tools invalid; use MAINT LOAD.",13,10,0
 S_LOAD_FAILED_TEXT: DB "REFUSED: bundle/header/CRC failed; workbench not called",13,10,0
 S_LOAD_IMAGE:

@@ -417,6 +417,7 @@ W_TABLE_FINISH:
 ; Whole destination must be 0200-47FF: the RAM workbench owns 4800-66FF.
 W_RESTORE_CMD:
         JSR W_NATIVE_RESTORE
+        BCS W_HANDLED
         STZ WP_MODE
         JSR W_PROGRAM_ARGUMENT
         BCC W_RESTORE_FLASH
@@ -1079,7 +1080,7 @@ W_LOADED_TEXT: DB "Loaded; RAM verified.",13,10,0
 W_RANGE_TEXT: DB "REFUSED: record/destination bounds",13,10,0
 W_NOT_FOUND_TEXT: DB "SR01 record not found",13,10,0
 W_DUPLICATE_TEXT: DB "REFUSED: ambiguous name; select bank/P/address",13,10,0
-W_PARTIAL_TEXT: DB "Partial load; destination RAM changed",13,10,0
+W_PARTIAL_TEXT: DB "Partial load; RAM changed",13,10,0
 W_CANCELED_TEXT: DB "Canceled; no restore started",13,10,0
 W_CODE_END:
         ENDMOD

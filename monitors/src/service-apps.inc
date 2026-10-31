@@ -322,5 +322,9 @@ AP_BAD:
         RTS
 AP_BT: DB $80,4,"BT",1,1
 AP_MAGIC: DB "AP",2,32,"PR05"
-AP_NATIVE_TEXT: DB "CLOCK MAINT FLASH (native). APP name: checked AP/02 images.",13,10,0
+AP_NATIVE_TEXT: DB "CLOCK B2:B000  R CLOCK",13,10
+        DB "FLASH B2:E000  R FLASH",13,10
+        DB "MAINT B2:E000  R MAINT",13,10
+        DB "EDU SRAM WORK; R tool",13,10
+        DB "PROGRAMS: T; R name; APP name",13,10,0
 AP_MISSING_TEXT: DB "REFUSED: app missing/invalid/duplicate",13,10,0

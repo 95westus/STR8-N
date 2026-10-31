@@ -1,19 +1,59 @@
 ; Reserved native names are independent of selected owner bank/PROGRAM mount.
 W_NATIVE_RESTORE:
-        LDX #<WN_R_CLOCK
-        LDY #>WN_R_CLOCK
-        JSR W_MATCH
+        LDX #<WC_WORD
+        LDY #>WC_WORD
+        JSR W_R_MATCH
         BCS WC_COMMAND
-        LDX #<WN_R_FLASH
-        LDY #>WN_R_FLASH
-        JSR W_MATCH
+        LDX #<WC_FLASH_WORD
+        LDY #>WC_FLASH_WORD
+        JSR W_R_MATCH
         BCS WC_FLASH
-        LDX #<WN_R_MAINT
-        LDY #>WN_R_MAINT
-        JSR W_MATCH
+        LDX #<WC_MAINT_WORD
+        LDY #>WC_MAINT_WORD
+        JSR W_R_MATCH
         BCS WC_FLASH
+        LDX #<W_SRAM_WORD
+        LDY #>W_SRAM_WORD
+        JSR W_R_MATCH
+        BCS WN_SRAM
+        LDX #<W_WORK_WORD
+        LDY #>W_WORK_WORD
+        JSR W_R_MATCH
+        BCS WN_WORK
+        LDX #<W_EDU_WORD
+        LDY #>W_EDU_WORD
+        JSR W_R_MATCH
+        BCS WN_EDU
         LDX #0
         RTS
+; A reserved name never falls through to stored-program lookup or E dispatch.
+; Print syntax errors locally; preserve the result byte so BATCH stops.
+WN_SRAM:
+        JSR W_SRAM_CMD
+        BRA WN_QUERY_RETURN
+WN_WORK:
+        JSR W_WORK_CMD
+        BRA WN_QUERY_RETURN
+WN_EDU:
+        JSR W_EDU_CMD
+WN_QUERY_RETURN:
+        BCS WN_QUERY_OK
+        LDA #WB_SYNTAX
+        STA W_RESULT
+        LDX #<W_SYNTAX_TEXT
+        LDY #>W_SYNTAX_TEXT
+        JSR W_PUTS
+WN_QUERY_OK:
+        SEC
+        RTS
+; Match after R, accepting its normal spaces, and reuse the command names.
+W_R_MATCH:
+        STX W_PTR
+        STY W_PTR+1
+        LDX #1
+        JSR W_SKIP
+        LDY #0
+        JMP W_MATCH_BYTE
 W_NATIVE_CLOCK:
         LDA #0
         BRA W_NATIVE
@@ -101,10 +141,7 @@ WN_ERROR:
         LDX #<WN_BAD_TEXT
         LDY #>WN_BAD_TEXT
         JMP W_MESSAGE
-WN_R_CLOCK: DB "R CLOCK",0
-WN_R_FLASH: DB "R FLASH",0
-WN_R_MAINT: DB "R MAINT",0
 WN_BATCH_ID: DB "NB",1,1
 WN_MAGIC: DB "NL",1,2,"PR05"
-WN_RAM_TEXT: DB "Native RAM 2000-77FF; Q MON.",13,10,0
+WN_RAM_TEXT: DB "App; Q MON.",13,10,0
 WN_BAD_TEXT: DB "REFUSED: native loader",13,10,0

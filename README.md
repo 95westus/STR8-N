@@ -11,11 +11,13 @@ boot settings and tracked erase journal. The monitors and tools are optional
 layers above it. The frozen firmware identity remains BASE1 / PR05.
 
 **Current development checkpoint: MON A/B g0000000B on 2512.**
-Shared WB2 gA, PROGRAM g2, services g8 and native apps g1/r16 provide
+Shared WB2 gB, PROGRAM g2, services g9 and native apps g1/r16 provide
 `R CLOCK`, `R FLASH`, `R MAINT`, VERSION, BOOT/CONFIG, the sector editor,
 EDU/SRAM/WORK and STORE/TABLE/RESTORE. BATCH now spans returning monitor,
 storage and native-menu commands plus registered PROGRAM/AP/02 handoffs.
 Independent large PROGRAM load/run reaches owner RAM `$0200–$66FF`.
+The [familiar APPS/named-tool workflow](docs/CLASSIC_APPS_PROGRAM_WORKFLOW.md)
+is installed; full SRAM management remains open.
 Read the [operator manual](docs/NATIVE_UTILITIES_MANUAL.md) and
 [BATCH/large PROGRAM acceptance](docs/2512_BATCH_WIDE_ACCEPTANCE.md).
 The [earlier native acceptance](docs/2512_NATIVE_UTILITIES_ACCEPTANCE.md)
@@ -24,6 +26,8 @@ The full profile occupies B2/B3, 64 KiB including F and C/D; B0/B1 remain owner
 space. This local development work does not replace published downloads.
 The [local candidate-2 package](docs/NATIVE_CANDIDATE2_PACKAGE.md) includes the
 unchanged Foundation terminal/migrator and passes extracted preparation checks.
+Candidate2 retains its WB gA/services g8 BATCH snapshot; the newer familiar
+workflow on2512 is source/board work and is not repackaged into that archive.
 The [candidate-1 checkpoint](docs/NATIVE_CANDIDATE1_PACKAGE.md) remains historical.
 
 **[Download optional MON/tools preview 1](https://github.com/95westus/STR8N-F/releases/tag/mon-g8-tools-preview1):**

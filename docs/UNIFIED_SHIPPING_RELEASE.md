@@ -2,7 +2,9 @@
 
 Owner direction, October 30, 2026. **One release and one feature contract.**
 STR8N has produced the stable **STR8N-F Foundation v0.3.0 g00000001 /
-BASE1 / PR05**. Above it, MON A and MON B use the same source, commands,
+BASE1 / PR05**. The [familiar workflow requirement](CLASSIC_APPS_PROGRAM_WORKFLOW.md) restores
+the 2205/2604 operator experience; it does not require unchanged old binaries.
+Above it, MON A and MON B use the same source, commands,
 services and application contract. Only their slot identities differ.
 The shipping target is **all b35 capabilities except ASM and DBG**.
 The [BATCH/large PROGRAM checkpoint](2512_BATCH_WIDE_ACCEPTANCE.md) extends

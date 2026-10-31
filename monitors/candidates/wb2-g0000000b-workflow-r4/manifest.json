@@ -1,0 +1,208 @@
+{
+  "schema": 1,
+  "component": "STR8-N RAM workbench",
+  "interface": "WB2",
+  "generation": "0000000B",
+  "status": "BUILD_ONLY_NOT_EXECUTION_QUALIFIED",
+  "artifact": {
+    "filename": "STR8N-WORKBENCH-WB2-g0000000B-RAM.bin",
+    "bytes": 7424,
+    "sha256": "c1cb658fe2d5958ad15ac84cd4e788f5798672b97c320e86508750408147bcb7"
+  },
+  "module": {
+    "origin": "4800",
+    "filename": "WB2-module-4800.bin",
+    "bytes": 7168,
+    "linked_bytes": 7166,
+    "linked_end": "63FE",
+    "sha256": "404b2b2eefe779185ff27ee74993ac6e780f5490a078723ef35339ba5470b283",
+    "crc": "CCITT FFFF; big-endian trailer; residue zero",
+    "header": "MW 02 1C PR05",
+    "command_entry": "4808",
+    "shell_entry": "480B",
+    "init_entry": "480E"
+  },
+  "bridge_client_RAM_floor": "6550: lowest destination page; RAM monitor declares code end rounded up",
+  "command_result": {
+    "address": "655F",
+    "values": {
+      "0": "OK",
+      "1": "syntax/unsupported",
+      "2": "refused",
+      "3": "canceled",
+      "4": "partial destination"
+    }
+  },
+  "foundation_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "private_adapter": {
+    "WB_F_READ": 30768,
+    "WB_F_EXECUTE": 30760,
+    "WB_F_SELECT": 30792,
+    "WB_F_BYTE": 31588,
+    "WB_F_RECOVERY": 62127,
+    "WB_F_CRC_LO": 237,
+    "WB_F_CRC_HI": 41
+  },
+  "loader_bytes": 163,
+  "sources": {
+    "monitors/src/workbench.asm": "1c859094e4026fbd6f82ea0ecbcd53908cd3dda95ecfafde1fcf6297abfd5c5c",
+    "monitors/src/workbench-loader.asm": "5d7ea8dac80b131f5a4fdee962cbf078ffcf10dc8da4092d75f46dd230aa8937",
+    "monitors/src/workbench-interface.inc": "eb9293c14ffa08d63085d8518473415fd4b9706f8ae944c25fa3559587ba94a1",
+    "monitors/src/workbench-layout.inc": "89cda8ac276cf35d991094a0a3898f9ccef9689b68f7b68839d1b5260fcfc8a7",
+    "monitors/src/workbench-sram.inc": "6b629e48050bf61f70f26876d3241428802d4211192650ff658e3a7e0b4b000d",
+    "monitors/src/workbench-store.inc": "a1e799b60362060353805c35e63e45e5d408bd784796147ac21fe24d7e621142",
+    "monitors/src/workbench-batch.inc": "92df833dc444bdb8f848dfe1f4025c526991318eb98d11390fd442c1ee9f1552",
+    "monitors/src/workbench-clock.inc": "511b2f0dcba22f435aff4aad8a6a2220ac870138fdf5a7eef8cce5fd3948c215",
+    "monitors/src/workbench-native.inc": "681cf35fea5798102535f8df7f9028f5666cb875f21c83e2da8ee8774d507ada",
+    "monitors/src/workbench-program.inc": "2dbedd94272eb74f2237853932d2e088b1cd477d0069c56333868981031f5e07",
+    "monitors/src/program-layout.inc": "92b9cbd78425b1c1258330b7aab80fea533e9ac586a624495b26eddf50e7f7ff",
+    "monitors/src/workbench-monitor-ui.inc": "2825409e542860f9feeabfc297a95f0d69d63a332393c03785164aeacff1ae79",
+    "monitors/src/monitor-ui.inc": "ace5912c158b1333b32af5572bd9091bd96fc60e44b80c918660656113c30dad",
+    "monitors/src/batch-interface.inc": "7eddb4f63346f541c8fa207be5059c2e5b9511a4f97371c617d0fd1ec925da0c"
+  },
+  "RAM_borrowed": [
+    "0200-1EFF transfer staging",
+    "4800-63FF module",
+    "6400-66FF state"
+  ],
+  "application_RAM_while_loaded": "0200-47FF",
+  "system_ZP": [
+    "E0-E1",
+    "E2-E3",
+    "E6-E7",
+    "EA"
+  ],
+  "entry": "REC> L or ROM monitor L raw RAM BIN; g8 uses the matching MS service dispatcher",
+  "return_path": "Q -> CRC-admitted UI/1 quiet MON return; intact legacy MON falls back to HOLD; invalid MI returns to recovery",
+  "monitor_A_B_changed": false,
+  "F_rebuilt": false,
+  "hardware_access": false,
+  "flash_writes": "Explicit S into fully erased owner-declared B0/B1 AREA only; no erase",
+  "journal_writes": false,
+  "SRAM_writes": false,
+  "EDU": "Explicit session OFF/ON; ON is a wiring selection, not presence proof",
+  "monitor_UI": {
+    "requires": "UI/1 count > operation: six original vectors; operation6 needs seven",
+    "commands": [
+      "VERSION",
+      "V",
+      "TIME",
+      "quiet Q"
+    ],
+    "peripheral_reader": "WB TIME reuses MON RTC implementation/cache; native CLOCK has its own full provider",
+    "cold_entry": "Initializes selected bank to B3",
+    "MAINT_entry": "Preserves caller-selected bank through shell initialization",
+    "Q": "Validated quiet MON return preserves selected bank/cache; intact old MON falls back to HOLD; invalid MI returns to REC"
+  },
+  "SPI": {
+    "profile": "EDU Rev D PB0 SCK/PB1 MOSI/PB2 SRAM CS/PB5 MISO; PB3 CS kept high",
+    "opcodes": [
+      "05 RDMR",
+      "03 READ"
+    ],
+    "automatic_probe": false,
+    "layout": "SS/01/08 primary fixed 64KiB zero-generation; SS/02/08 nonzero generation and labelled fallback; CRC/commit/reserved fields required",
+    "PREP": "Explicit disabled-CB flag acknowledgment; not automatic",
+    "prior_input_pin_output_latch": "Unreadable: sampled ORB restoration only"
+  },
+  "records": {
+    "format": "SR/01; no payload checksum",
+    "scan": "bytewise 8000-DFFF, selected bank",
+    "table": true,
+    "restore": true,
+    "restore_names": "unique within selected bank",
+    "command_aliases": {
+      "STORE": "S",
+      "TABLE": "T",
+      "RESTORE": "R"
+    },
+    "store": "S bank flash|AUTO RAMfirst RAMlast [name]; YES; commit last, per-byte readback; AREA window required",
+    "AUTO": "Flash append tail after complete/pending SR01 records; no gap reclaim; crossing/corrupt AREA refused; explicit start address retained",
+    "run": "Explicit R without L; old program ABI not thereby qualified"
+  },
+  "batch": {
+    "text_bytes": 34,
+    "separator": ";",
+    "empty_segments": "refused before execution",
+    "command_allowlist": "checked when reached: returning WB commands, STORE/TABLE/RESTORE, guarded MON D/M, maps/W/APPS/APP, native menus and registered PROGRAM runs",
+    "stop_on_error": true,
+    "cancel": "Ctrl-C/ESC stops remainder; confirmations always use live input",
+    "queue_is_console_input": false,
+    "nested_batch": false,
+    "completion": "resident queue resumes after native Q, AP/02 or PR05-registered PROGRAM HOLD; wide load-only must be final"
+  },
+  "companion_PROGRAM": "SP/01 provider at6B00-77FF required for PROGRAM; full RAM packet supplied by services manifest",
+  "native_apps": "Reserved R CLOCK/R FLASH/R MAINT and BOOT route to the separately packaged RAM overlays; see native acceptance",
+  "planned": [
+    "Large STORE-source staging",
+    "Remaining full-b35 management parity",
+    "Source/ASM/DEBUG",
+    "WORKSPACE allocation review and separate append-only messages"
+  ],
+  "build_passes": 1,
+  "assembler_linker_invocations": 2,
+  "reused_loader_from": "monitors\\candidates\\wb2-g0000000a-batch\\manifest.json",
+  "branch_layout": {
+    "workbench.asm": {
+      "short_branches": 151,
+      "expanded_branches": 50,
+      "conservative_bytes": 2934
+    },
+    "workbench-loader.asm": {
+      "short_branches": 12,
+      "expanded_branches": 0,
+      "conservative_bytes": 172
+    },
+    "workbench-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "workbench-sram.inc": {
+      "short_branches": 12,
+      "expanded_branches": 18,
+      "conservative_bytes": 631
+    },
+    "workbench-store.inc": {
+      "short_branches": 47,
+      "expanded_branches": 38,
+      "conservative_bytes": 1359
+    },
+    "workbench-batch.inc": {
+      "short_branches": 35,
+      "expanded_branches": 5,
+      "conservative_bytes": 576
+    },
+    "workbench-clock.inc": {
+      "short_branches": 1,
+      "expanded_branches": 3,
+      "conservative_bytes": 79
+    },
+    "workbench-native.inc": {
+      "short_branches": 18,
+      "expanded_branches": 3,
+      "conservative_bytes": 344
+    },
+    "workbench-program.inc": {
+      "short_branches": 27,
+      "expanded_branches": 12,
+      "conservative_bytes": 814
+    },
+    "workbench-monitor-ui.inc": {
+      "short_branches": 27,
+      "expanded_branches": 12,
+      "conservative_bytes": 481
+    },
+    "monitor-ui.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    },
+    "batch-interface.inc": {
+      "short_branches": 0,
+      "expanded_branches": 0,
+      "conservative_bytes": 0
+    }
+  },
+  "CPU_simulations": 0
+}

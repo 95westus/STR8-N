@@ -8,6 +8,8 @@ import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 LABEL='STR8N-native-g0000000B-candidate2'
+# Keep this historical recipe coherent as later source/manuals evolve.
+SNAPSHOT_COMMIT='f4fe32d633d8f87fe5e728cee149f3fb6655c836'
 sha=lambda b:hashlib.sha256(b).hexdigest()
 
 
@@ -54,7 +56,7 @@ def package(out):
     tools=stage/'tools';tools.mkdir()
     for name in ('nf_native_images.py','nf_factory_image.py'):(tools/name).write_bytes((ROOT/'tools'/name).read_bytes())
     for name in ('NATIVE_UTILITIES_MANUAL.md','2512_NATIVE_UTILITIES_ACCEPTANCE.md','2512_BATCH_WIDE_ACCEPTANCE.md'):
-        text=(ROOT/'docs'/name).read_text(encoding='utf-8')
+        text=subprocess.check_output(['git','show',SNAPSHOT_COMMIT+':docs/'+name],cwd=ROOT).decode('utf-8')
         if name=='2512_BATCH_WIDE_ACCEPTANCE.md':
             text=text.replace('../monitors/validation/2512-batch-wide.json','evidence/2512-batch-wide.json')
         if name=='2512_NATIVE_UTILITIES_ACCEPTANCE.md':
@@ -102,9 +104,9 @@ assert (root/'F.bin').read_bytes()==(root/'foundation/firmware/payload/STR8N-F-B
 print('PASS extracted native candidate; frozen F and unchanged Foundation runtime verified; no device access')
 '''
     (stage/'verify_candidate.py').write_text(verifier,encoding='utf-8')
-    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+    head=SNAPSHOT_COMMIT
     source=stage/'source';source.mkdir()
-    subprocess.run(['git','archive','--format=zip','--output',str(source/('STR8N-'+head[:7]+'-source.zip')),'HEAD'],cwd=ROOT,check=True)
+    subprocess.run(['git','archive','--format=zip','--output',str(source/('STR8N-'+head[:7]+'-source.zip')),head],cwd=ROOT,check=True)
     manifest=dict(schema=1,status='LOCAL_BATCH_WIDE_CANDIDATE_2512_ACCEPTED_NOT_FULL_B35_RELEASE',
         source_commit=head,F_sha256=sha(f),F_frozen=True,firmware_builds_for_packaging=0,
         foundation_operator_ZIP_sha256=sha(original.read_bytes()),terminal='Unchanged published Foundation console0.1.0',
