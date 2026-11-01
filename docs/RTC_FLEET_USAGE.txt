@@ -1,0 +1,41 @@
+RTC fleet host program (2205, 2512, 2604, 2609)
+
+Run from the repository root with Python and pyserial available.
+  python -X utf8 tools/rtc_fleet.py --collect
+  python -X utf8 tools/rtc_fleet.py --check-interface
+  python -X utf8 tools/rtc_fleet.py --sync --validation <successful-check-folder>/summary.json
+Optional: --board 2512 (repeat for multiple boards).
+
+For measured second-tick alignment use --check-phase followed by
+--align-ticks, as described in docs/RTC_TICK_ALIGNMENT.txt. The --sync
+calendar-setting workflow below is separate from measured tick alignment.
+
+Collection uses the existing qualified read-only campaign transports. The
+hourly automation continues to use rtc_hourly_schedule.py unchanged.
+
+Interface check and synchronization use each installed CLOCK application.
+App RAM 0200-66FF and zero page 00-DF are backed up before loading CLOCK.
+CLOCK remains loaded in app RAM. Original B3/REC prompts are restored;
+backups are evidence, not a claim of byte-for-byte RAM restoration.
+
+Synchronization is explicit and requires successful read-only interface
+checks less than one hour old for all selected boards. Each board is set
+once, sequentially, to its own future UTC second. NIST NTP supplies the
+reference; the final confirmation Enter is released on a performance-clock
+deadline with half the minimum prompt RTT as an estimated serial lead.
+This does not guarantee exact oscillator alignment. USB scheduling and
+board SET execution add latency. Forty subsequent TIME readings intersect
+whole-second bounds, including reference uncertainty and transport time.
+Reports state measured bounds rather than an unsupported precision claim.
+
+The program refuses profile changes, busy workers, alarm enables, latched
+power-fail evidence, uncertain reference, and unvalidated synchronization.
+No automatic SET retry occurs after a possible write. It never issues ACK,
+CLEAR, TRIM, RESET, firmware install, or host-clock changes. Clock SET itself
+clears the chip PF state, so a clear latch is required before confirmation.
+Control/trim and HISTORY are compared before and after the operation.
+
+Every operation saves serial traces, RAM backups, NIST samples, timing and
+verification JSON under output/qualification/rtc-fleet-<UTC>. Synchronization
+records a drift segment boundary before SET, retains old measurements and
+baselines, then collects fresh points for a new per-board baseline.

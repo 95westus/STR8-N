@@ -48,6 +48,14 @@ through `python -B tools/install_current.py`; its verification is offline.
 Obsolete development paths are retired into [a verified, restorable archive](archive/README.md).
 See [the active tool map](tools/README.md) for the retained example and release support.
 
+The [RTC tick alignment paper](docs/RTC_TICK_ALIGNMENT.md) accompanies the
+[host tools and operating notes](docs/RTC_TICK_ALIGNMENT.txt) and
+[temporary board routine](src/rtc-phase/README.md). The saved November 1,
+2026 four-board validation measured all RTC-minus-NIST intervals within
+±100 ms. This is a separate timing tool with offline CPU/model checks;
+the [results summary](docs/RTC_TICK_ALIGNMENT_RESULTS_2026-11-01.md) records
+the hardware evidence and preservation scope.
+
 STR8-N is a monitor, assembler and utility system for WDC SXB boards, using
 one firmware set for **65C02 and 65C816 emulation-mode runtime**.
 

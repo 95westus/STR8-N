@@ -1,0 +1,82 @@
+RTC tick alignment
+
+Paper: docs/RTC_TICK_ALIGNMENT.md
+Saved four-board results: docs/RTC_TICK_ALIGNMENT_RESULTS_2026-11-01.md
+Board source and protocol: src/rtc-phase/phase.asm and src/rtc-phase/README.md
+Host entry points: tools/rtc_fleet.py and tools/rtc_phase_align.py
+
+Offline build and checks, from the repository root:
+  python -B tools/build_rtc_phase.py
+  python -B tools/test_rtc_phase.py
+  python -B tools/test_rtc_phase_host.py
+  python -B tools/rtc_fleet.py --self-test
+
+The builder requires the WDC02AS and WDCLN tools on PATH (or explicit
+--assembler / --linker paths). It builds the complete repository assembly
+source into a fresh BUILD/rtc-phase directory and verifies the qualified
+1077-byte image and symbol map. For another fresh directory use --out, then
+pass --build <directory> to both tests and phase commands. No historical
+BUILD output or temporary source is needed to build or test this routine.
+
+CPU-model checks require py65 1.2.0 and the pinned py65816 dependency used
+by tools/fetch_rc1_debugger_816_model.py. Install py65 into your environment
+or supply --deps-02 <directory>; --deps-816 defaults to BUILD/test-deps-816.
+Fetching that pinned model is a separate explicit network step, not part
+of the offline tests. All 30 CPU/I2C cases must pass before host use.
+
+Live operation requires Windows, pyserial, the registered USB adapters,
+compatible installed monitor entry points, and the owner's admitted RTC
+campaign. The campaign state and device-operation markers under
+output/qualification are required guards; a clean clone does not invent
+them or enroll another board. Existing collection profiles also require
+their qualified local release tools, historical collectors, RAM readers,
+and receipts recorded by campaign dependency hashes. These private
+artifacts remain owner-local. This feature adds phase alignment to that
+existing fleet; it does not initialize a new campaign.
+
+Run from the repository root using Python with pyserial available:
+  python -X utf8 tools/rtc_fleet.py --check-phase
+  python -X utf8 tools/rtc_fleet.py --align-ticks --phase-validation <check-folder>/summary.json
+Repeat --board 2205 etc. to select boards. The default target is a measured
+RTC-minus-NIST interval wholly within -0.100 to +0.100 seconds, including
+reference uncertainty. A successful calendar SET alone does not satisfy it.
+
+--collect and the hourly schedule remain read-only. The original --sync
+mode sets the whole UTC calendar through CLOCK; use --align-ticks to align
+second ticks. If the calendar differs by more than the phase correction
+range, phase mode refuses and requires an explicit calendar SET first.
+
+The new mode temporarily borrows only 2000-2434 CPU RAM, backs it up twice,
+uses eight-byte monitor writes on 2205/2512/2609 and the qualified L/S-record
+loader on 2604, verifies the loaded image, and
+restores and verifies the exact borrowed block and original B3/REC prompt.
+The RAM routine uses no zero-page storage. Normal monitor/console runtime
+and stack state are not claimed to be byte-for-byte snapshots.
+
+NIST NTP requests are separated by at least four seconds. UTC bounds are
+anchored directly to the performance counter, intersected across replies,
+and checked again afterward. An unsynchronized, inconsistent, or imprecise
+reference refuses a correction. No host system clock is changed.
+
+The board streams snapshots after a host handshake, so measured intervals
+exclude monitor launch/checksum time. CPU delay loops are calibrated live.
+An explicit PH key permits only a bounded RTC seconds-register pause and,
+when needed, a guarded one-second addition away from the minute rollover.
+The board restarts timekeeping autonomously after its bounded pause even
+if the host disconnects. Hardware bus failures can still require recovery;
+the program reports errors rather than claiming success.
+
+Each correction is measured again. Feedback estimates stop/restart delay;
+at most five corrections are attempted, with unreasonable responses refused.
+Success requires the requested timing bound, running clock, unchanged trim
+and control, unchanged PF timestamps, exact RAM restoration, and the final
+NIST check. A clear PF latch and disabled alarms are prerequisites.
+
+No ACK, history clear, EEPROM/flash/SRAM-configuration write, firmware
+installation, power cycle, or automatic CPU reset is part of phase mode.
+CPU resets needed for manual recovery are separately owner-authorized and
+logged, never classified as physical-power events.
+
+Reports, serial traces, NIST packets, before/after tick samples, correction
+counts, and RAM backups are saved under output/qualification/rtc-phase-*.
+Old drift points/baselines are retained and new fits start after adjustments.

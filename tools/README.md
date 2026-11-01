@@ -4,6 +4,9 @@
 | --- | --- |
 | Read-only four-board inventory and WDCMONv2 preservation | `inventory_boards_readonly.py`, `summarize_board_inventory.py`; [October 28 inventory](../docs/BOARD_INVENTORY_2026-10-28.md). Monitor reads/bank selection only; no flashing or SRAM formatting. |
 | Current firmware | `build_current.py`, `str8build/`, `src/current/` |
+| Measured RTC tick alignment | `rtc_fleet.py --check-phase` / `--align-ticks`, `rtc_phase_align.py`; [paper](../docs/RTC_TICK_ALIGNMENT.md), [operation](../docs/RTC_TICK_ALIGNMENT.txt), [results](../docs/RTC_TICK_ALIGNMENT_RESULTS_2026-11-01.md) |
+| RTC phase board build and offline checks | `build_rtc_phase.py`, `test_rtc_phase.py`, `test_rtc_phase_host.py`, `rtc_phase_contract.py`, `rtc_phase_bus_model.py`; [complete assembly source](../src/rtc-phase/README.md) |
+| Existing RTC campaign integration | `rtc_drift_campaign.py`, `rtc_drift_statistics.py` and the preserved `rtc_base1_*`, `rtc_mon*`, `rtc_mona_*` collection adapters; live collection requires owner-local qualified campaign artifacts. |
 | Compatibility build alias | `verify_current_sources.py` forwards to the same builder |
 | Profile-driven installer | `install_current.py`, `installer/` |
 | Isolated offline regressions | `test_current_build.py`, `test_current_installer.py` |

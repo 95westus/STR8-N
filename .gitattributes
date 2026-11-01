@@ -119,3 +119,8 @@ tools/test_version_firmware_candidate.py -text whitespace=cr-at-eol,-blank-at-eo
 tools/test_version_firmware_candidate_runtime.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
 tools/verify_current_sources.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
 tools/version_cached_candidate.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+
+# RTC campaign receipts pin source hashes; preserve their original file bytes.
+tools/rtc_*.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+tools/build_rtc_base1.py -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+src/rtc-phase/phase.asm -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
