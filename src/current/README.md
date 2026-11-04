@@ -1,5 +1,10 @@
 # Current STR8-N source
 
+Product display names follow [STR8-N F / MON / UTIL / DEV](../../docs/COMPONENT_NAMING.md).
+The named BASE1 component distribution is generated with
+`tools/build_named_components.py`. The full-system RC1 source/baseline below
+retains its original identity and qualified byte fixtures.
+
 This is the authoritative development source for `fixed-f-flow-size`, derived from `fixed-f-size-recovery` and the established `asm-dev` system:
 monitor/recovery, assembler with EQU/LST/SYMS/diagnostics, DBG1, named source storage,
 MAINT, SRAM, WORK, EDU, CLOCK, providers and UCHESS. Its fresh full-system

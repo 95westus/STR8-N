@@ -1,4 +1,10 @@
-# STR8N-F v0.3.0 — BASE1 / PR05
+# STR8-N F v0.3.0 — BASE1 / PR05
+
+Current component names are **STR8-N F**, **STR8-N MON**, **STR8-N UTIL**
+(CONFIG, FLASH, CLOCK, MAINT, MEMORY), and **STR8-N DEV** (ASM, DBG).
+Commands stay short. See the [naming scheme and current named-component build](docs/COMPONENT_NAMING.md).
+The [repository/release consolidation plan](docs/REPOSITORY_CONSOLIDATION_PLAN.md)
+is a proposal; repository names, visibility and releases have not been migrated.
 
 **[Download N-F v0.3.0 — BASE1 / PR05](https://github.com/95westus/STR8N-F/releases/tag/v0.3.0)**
 

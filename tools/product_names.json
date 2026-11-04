@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "family": "STR8-N",
+  "copyright": "Copyright (c) 2026 95west.us/wlp1963; MIT",
+  "copyright_compact": "(c)2026 95west.us/wlp1963; MIT",
+  "profile": "BASE1/PR05",
+  "components": {
+    "F": {"display": "STR8-N F", "version": "0.3.0", "stem": "str8n-f-0.3.0-base1-pr05"},
+    "MON": {"display": "STR8-N MON", "version": "0.1.0-dev", "generation": 16, "stem": "str8n-mon-0.1.0-dev-g00000010"},
+    "CONFIG": {"display": "STR8-N UTIL CONFIG", "version": "0.3.0", "command": "CONFIG", "stem": "str8n-util-config-0.3.0-base1-pr05"},
+    "FLASH": {"display": "STR8-N UTIL FLASH", "generation": 2, "command": "FLASH", "stem": "str8n-util-flash-g00000002"},
+    "CLOCK": {"display": "STR8-N UTIL CLOCK", "version": "1.10", "generation": 1, "command": "CLOCK", "stem": "str8n-util-clock-1.10"},
+    "MAINT": {"display": "STR8-N UTIL MAINT", "version": "2.4", "command": "MAINT", "stem": "str8n-util-maint-2.4"},
+    "MEMORY": {"display": "STR8-N UTIL MEMORY", "version": "0.1.0", "command": "MEMORY", "stem": "str8n-util-memory-0.1.0"},
+    "ASM": {"display": "STR8-N DEV ASM", "version": "0.6-dev", "generation": 2, "command": "ASM", "stem": "str8n-dev-asm-0.6-dev-g00000002"},
+    "DBG": {"display": "STR8-N DEV DBG", "generation": 2, "command": "DBG", "stem": "str8n-dev-dbg-g00000002"},
+    "OPAQUE": {"display": "STR8-N UTIL OPAQUE", "version": "0.3.0", "command": "OPAQUE", "stem": "str8n-util-opaque-0.3.0-base1-pr05"},
+    "MAP": {"display": "STR8-N UTIL MAP", "version": "0.3.0", "command": "MAP", "stem": "str8n-util-map-0.3.0-base1-pr05"},
+    "READBACK": {"display": "STR8-N UTIL READBACK", "version": "0.3.0", "command": "READBACK", "stem": "str8n-util-readback-0.3.0-base1-pr05"},
+    "DEMO": {"display": "STR8-N UTIL DEMO", "version": "0.3.0", "command": "DEMO", "stem": "str8n-util-demo-0.3.0-base1-pr05"}
+  },
+  "rules": {
+    "monitor_slot": "A/B identify monitor slots, not separate products",
+    "bank": "B0-B3 and address suffixes describe placement, not product identity",
+    "commands": "Keep existing commands, aliases, prompts and wire-protocol markers short",
+    "versions": "Retain component versions/generations; do not assign one family version to every component",
+    "history": "Published artifacts and qualification/source snapshots retain their original names and hashes"
+  }
+}

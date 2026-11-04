@@ -2,6 +2,8 @@
 
 | Purpose | Entry or implementation |
 | --- | --- |
+| STR8-N F / MON / UTIL / DEV names, banners and canonical payload filenames | `product_names.json`, `build_named_components.py`, `package_named_components.py`, `test_product_names.py`, `str8n-terminal.py`; [naming scheme](../docs/COMPONENT_NAMING.md) |
+| Unified PC memory backup/restore/import/export (2512 full-image round trip passed) | `memory_tool.py`, `build_memory_agent.py`, `test_memory_tool.py`, `trial_memory_2512.py`; [commands and limits](../docs/MEMORY_UTILITY.md), [2512 hardware acceptance](../docs/MEMORY_2512_ACCEPTANCE.md) |
 | Read-only four-board inventory and WDCMONv2 preservation | `inventory_boards_readonly.py`, `summarize_board_inventory.py`; [October 28 inventory](../docs/BOARD_INVENTORY_2026-10-28.md). Monitor reads/bank selection only; no flashing or SRAM formatting. |
 | Current firmware | `build_current.py`, `str8build/`, `src/current/` |
 | Measured RTC tick alignment | `rtc_fleet.py --check-phase` / `--align-ticks`, `rtc_phase_align.py`; [paper](../docs/RTC_TICK_ALIGNMENT.md), [operation](../docs/RTC_TICK_ALIGNMENT.txt), [results](../docs/RTC_TICK_ALIGNMENT_RESULTS_2026-11-01.md) |
