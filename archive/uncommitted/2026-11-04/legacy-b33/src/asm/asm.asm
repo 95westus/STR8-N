@@ -1,0 +1,31 @@
+; ROM-resident foreground W65C02 assembler, STR8-N named-app host ABI 1.
+ MODULE ASM_APP
+ XDEF APP_END
+ INCLUDE "str8n-v2-public.inc"
+ INCLUDE "layout.inc"
+ CODE
+ DB "AP",$01,$01
+ DW $0000,APP_START,OUTPUT_START,STATE_END-1
+ DB $00,$3F
+ DW $0000
+APP_START:
+ SEI
+ CLD
+ LDA #>SOURCE_START
+ STA SRC_END+1
+ STZ SRC_END
+ STZ RESULT_VALID
+ STZ SKIP_LF
+ STZ PASTE_MODE
+ LDX #<BANNER
+ LDY #>BANNER
+ JSR PRINT
+ JMP SHELL
+ INCLUDE "shell.inc"
+ INCLUDE "editor.inc"
+ INCLUDE "core.inc"
+ INCLUDE "expression.inc"
+OP_TABLE:
+ INCLUDE "opcodes.inc"
+OP_END:
+APP_END:

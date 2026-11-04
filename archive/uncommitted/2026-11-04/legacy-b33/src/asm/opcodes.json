@@ -1,0 +1,1062 @@
+[
+  {
+    "name": "ADC",
+    "mode": "abs",
+    "opcode": 109
+  },
+  {
+    "name": "ADC",
+    "mode": "abx",
+    "opcode": 125
+  },
+  {
+    "name": "ADC",
+    "mode": "aby",
+    "opcode": 121
+  },
+  {
+    "name": "ADC",
+    "mode": "imm",
+    "opcode": 105
+  },
+  {
+    "name": "ADC",
+    "mode": "inx",
+    "opcode": 97
+  },
+  {
+    "name": "ADC",
+    "mode": "iny",
+    "opcode": 113
+  },
+  {
+    "name": "ADC",
+    "mode": "zpg",
+    "opcode": 101
+  },
+  {
+    "name": "ADC",
+    "mode": "zpi",
+    "opcode": 114
+  },
+  {
+    "name": "ADC",
+    "mode": "zpx",
+    "opcode": 117
+  },
+  {
+    "name": "AND",
+    "mode": "abs",
+    "opcode": 45
+  },
+  {
+    "name": "AND",
+    "mode": "abx",
+    "opcode": 61
+  },
+  {
+    "name": "AND",
+    "mode": "aby",
+    "opcode": 57
+  },
+  {
+    "name": "AND",
+    "mode": "imm",
+    "opcode": 41
+  },
+  {
+    "name": "AND",
+    "mode": "inx",
+    "opcode": 33
+  },
+  {
+    "name": "AND",
+    "mode": "iny",
+    "opcode": 49
+  },
+  {
+    "name": "AND",
+    "mode": "zpg",
+    "opcode": 37
+  },
+  {
+    "name": "AND",
+    "mode": "zpi",
+    "opcode": 50
+  },
+  {
+    "name": "AND",
+    "mode": "zpx",
+    "opcode": 53
+  },
+  {
+    "name": "ASL",
+    "mode": "abs",
+    "opcode": 14
+  },
+  {
+    "name": "ASL",
+    "mode": "abx",
+    "opcode": 30
+  },
+  {
+    "name": "ASL",
+    "mode": "acc",
+    "opcode": 10
+  },
+  {
+    "name": "ASL",
+    "mode": "zpg",
+    "opcode": 6
+  },
+  {
+    "name": "ASL",
+    "mode": "zpx",
+    "opcode": 22
+  },
+  {
+    "name": "BBR0",
+    "mode": "zpr",
+    "opcode": 15
+  },
+  {
+    "name": "BBR1",
+    "mode": "zpr",
+    "opcode": 31
+  },
+  {
+    "name": "BBR2",
+    "mode": "zpr",
+    "opcode": 47
+  },
+  {
+    "name": "BBR3",
+    "mode": "zpr",
+    "opcode": 63
+  },
+  {
+    "name": "BBR4",
+    "mode": "zpr",
+    "opcode": 79
+  },
+  {
+    "name": "BBR5",
+    "mode": "zpr",
+    "opcode": 95
+  },
+  {
+    "name": "BBR6",
+    "mode": "zpr",
+    "opcode": 111
+  },
+  {
+    "name": "BBR7",
+    "mode": "zpr",
+    "opcode": 127
+  },
+  {
+    "name": "BBS0",
+    "mode": "zpr",
+    "opcode": 143
+  },
+  {
+    "name": "BBS1",
+    "mode": "zpr",
+    "opcode": 159
+  },
+  {
+    "name": "BBS2",
+    "mode": "zpr",
+    "opcode": 175
+  },
+  {
+    "name": "BBS3",
+    "mode": "zpr",
+    "opcode": 191
+  },
+  {
+    "name": "BBS4",
+    "mode": "zpr",
+    "opcode": 207
+  },
+  {
+    "name": "BBS5",
+    "mode": "zpr",
+    "opcode": 223
+  },
+  {
+    "name": "BBS6",
+    "mode": "zpr",
+    "opcode": 239
+  },
+  {
+    "name": "BBS7",
+    "mode": "zpr",
+    "opcode": 255
+  },
+  {
+    "name": "BCC",
+    "mode": "rel",
+    "opcode": 144
+  },
+  {
+    "name": "BCS",
+    "mode": "rel",
+    "opcode": 176
+  },
+  {
+    "name": "BEQ",
+    "mode": "rel",
+    "opcode": 240
+  },
+  {
+    "name": "BIT",
+    "mode": "abs",
+    "opcode": 44
+  },
+  {
+    "name": "BIT",
+    "mode": "abx",
+    "opcode": 60
+  },
+  {
+    "name": "BIT",
+    "mode": "imm",
+    "opcode": 137
+  },
+  {
+    "name": "BIT",
+    "mode": "zpg",
+    "opcode": 36
+  },
+  {
+    "name": "BIT",
+    "mode": "zpx",
+    "opcode": 52
+  },
+  {
+    "name": "BMI",
+    "mode": "rel",
+    "opcode": 48
+  },
+  {
+    "name": "BNE",
+    "mode": "rel",
+    "opcode": 208
+  },
+  {
+    "name": "BPL",
+    "mode": "rel",
+    "opcode": 16
+  },
+  {
+    "name": "BRA",
+    "mode": "rel",
+    "opcode": 128
+  },
+  {
+    "name": "BRK",
+    "mode": "imp",
+    "opcode": 0
+  },
+  {
+    "name": "BVC",
+    "mode": "rel",
+    "opcode": 80
+  },
+  {
+    "name": "BVS",
+    "mode": "rel",
+    "opcode": 112
+  },
+  {
+    "name": "CLC",
+    "mode": "imp",
+    "opcode": 24
+  },
+  {
+    "name": "CLD",
+    "mode": "imp",
+    "opcode": 216
+  },
+  {
+    "name": "CLI",
+    "mode": "imp",
+    "opcode": 88
+  },
+  {
+    "name": "CLV",
+    "mode": "imp",
+    "opcode": 184
+  },
+  {
+    "name": "CMP",
+    "mode": "abs",
+    "opcode": 205
+  },
+  {
+    "name": "CMP",
+    "mode": "abx",
+    "opcode": 221
+  },
+  {
+    "name": "CMP",
+    "mode": "aby",
+    "opcode": 217
+  },
+  {
+    "name": "CMP",
+    "mode": "imm",
+    "opcode": 201
+  },
+  {
+    "name": "CMP",
+    "mode": "inx",
+    "opcode": 193
+  },
+  {
+    "name": "CMP",
+    "mode": "iny",
+    "opcode": 209
+  },
+  {
+    "name": "CMP",
+    "mode": "zpg",
+    "opcode": 197
+  },
+  {
+    "name": "CMP",
+    "mode": "zpi",
+    "opcode": 210
+  },
+  {
+    "name": "CMP",
+    "mode": "zpx",
+    "opcode": 213
+  },
+  {
+    "name": "CPX",
+    "mode": "abs",
+    "opcode": 236
+  },
+  {
+    "name": "CPX",
+    "mode": "imm",
+    "opcode": 224
+  },
+  {
+    "name": "CPX",
+    "mode": "zpg",
+    "opcode": 228
+  },
+  {
+    "name": "CPY",
+    "mode": "abs",
+    "opcode": 204
+  },
+  {
+    "name": "CPY",
+    "mode": "imm",
+    "opcode": 192
+  },
+  {
+    "name": "CPY",
+    "mode": "zpg",
+    "opcode": 196
+  },
+  {
+    "name": "DEC",
+    "mode": "abs",
+    "opcode": 206
+  },
+  {
+    "name": "DEC",
+    "mode": "abx",
+    "opcode": 222
+  },
+  {
+    "name": "DEC",
+    "mode": "acc",
+    "opcode": 58
+  },
+  {
+    "name": "DEC",
+    "mode": "zpg",
+    "opcode": 198
+  },
+  {
+    "name": "DEC",
+    "mode": "zpx",
+    "opcode": 214
+  },
+  {
+    "name": "DEX",
+    "mode": "imp",
+    "opcode": 202
+  },
+  {
+    "name": "DEY",
+    "mode": "imp",
+    "opcode": 136
+  },
+  {
+    "name": "EOR",
+    "mode": "abs",
+    "opcode": 77
+  },
+  {
+    "name": "EOR",
+    "mode": "abx",
+    "opcode": 93
+  },
+  {
+    "name": "EOR",
+    "mode": "aby",
+    "opcode": 89
+  },
+  {
+    "name": "EOR",
+    "mode": "imm",
+    "opcode": 73
+  },
+  {
+    "name": "EOR",
+    "mode": "inx",
+    "opcode": 65
+  },
+  {
+    "name": "EOR",
+    "mode": "iny",
+    "opcode": 81
+  },
+  {
+    "name": "EOR",
+    "mode": "zpg",
+    "opcode": 69
+  },
+  {
+    "name": "EOR",
+    "mode": "zpi",
+    "opcode": 82
+  },
+  {
+    "name": "EOR",
+    "mode": "zpx",
+    "opcode": 85
+  },
+  {
+    "name": "INC",
+    "mode": "abs",
+    "opcode": 238
+  },
+  {
+    "name": "INC",
+    "mode": "abx",
+    "opcode": 254
+  },
+  {
+    "name": "INC",
+    "mode": "acc",
+    "opcode": 26
+  },
+  {
+    "name": "INC",
+    "mode": "zpg",
+    "opcode": 230
+  },
+  {
+    "name": "INC",
+    "mode": "zpx",
+    "opcode": 246
+  },
+  {
+    "name": "INX",
+    "mode": "imp",
+    "opcode": 232
+  },
+  {
+    "name": "INY",
+    "mode": "imp",
+    "opcode": 200
+  },
+  {
+    "name": "JMP",
+    "mode": "abs",
+    "opcode": 76
+  },
+  {
+    "name": "JMP",
+    "mode": "iax",
+    "opcode": 124
+  },
+  {
+    "name": "JMP",
+    "mode": "ind",
+    "opcode": 108
+  },
+  {
+    "name": "JSR",
+    "mode": "abs",
+    "opcode": 32
+  },
+  {
+    "name": "LDA",
+    "mode": "abs",
+    "opcode": 173
+  },
+  {
+    "name": "LDA",
+    "mode": "abx",
+    "opcode": 189
+  },
+  {
+    "name": "LDA",
+    "mode": "aby",
+    "opcode": 185
+  },
+  {
+    "name": "LDA",
+    "mode": "imm",
+    "opcode": 169
+  },
+  {
+    "name": "LDA",
+    "mode": "inx",
+    "opcode": 161
+  },
+  {
+    "name": "LDA",
+    "mode": "iny",
+    "opcode": 177
+  },
+  {
+    "name": "LDA",
+    "mode": "zpg",
+    "opcode": 165
+  },
+  {
+    "name": "LDA",
+    "mode": "zpi",
+    "opcode": 178
+  },
+  {
+    "name": "LDA",
+    "mode": "zpx",
+    "opcode": 181
+  },
+  {
+    "name": "LDX",
+    "mode": "abs",
+    "opcode": 174
+  },
+  {
+    "name": "LDX",
+    "mode": "aby",
+    "opcode": 190
+  },
+  {
+    "name": "LDX",
+    "mode": "imm",
+    "opcode": 162
+  },
+  {
+    "name": "LDX",
+    "mode": "zpg",
+    "opcode": 166
+  },
+  {
+    "name": "LDX",
+    "mode": "zpy",
+    "opcode": 182
+  },
+  {
+    "name": "LDY",
+    "mode": "abs",
+    "opcode": 172
+  },
+  {
+    "name": "LDY",
+    "mode": "abx",
+    "opcode": 188
+  },
+  {
+    "name": "LDY",
+    "mode": "imm",
+    "opcode": 160
+  },
+  {
+    "name": "LDY",
+    "mode": "zpg",
+    "opcode": 164
+  },
+  {
+    "name": "LDY",
+    "mode": "zpx",
+    "opcode": 180
+  },
+  {
+    "name": "LSR",
+    "mode": "abs",
+    "opcode": 78
+  },
+  {
+    "name": "LSR",
+    "mode": "abx",
+    "opcode": 94
+  },
+  {
+    "name": "LSR",
+    "mode": "acc",
+    "opcode": 74
+  },
+  {
+    "name": "LSR",
+    "mode": "zpg",
+    "opcode": 70
+  },
+  {
+    "name": "LSR",
+    "mode": "zpx",
+    "opcode": 86
+  },
+  {
+    "name": "NOP",
+    "mode": "imp",
+    "opcode": 234
+  },
+  {
+    "name": "ORA",
+    "mode": "abs",
+    "opcode": 13
+  },
+  {
+    "name": "ORA",
+    "mode": "abx",
+    "opcode": 29
+  },
+  {
+    "name": "ORA",
+    "mode": "aby",
+    "opcode": 25
+  },
+  {
+    "name": "ORA",
+    "mode": "imm",
+    "opcode": 9
+  },
+  {
+    "name": "ORA",
+    "mode": "inx",
+    "opcode": 1
+  },
+  {
+    "name": "ORA",
+    "mode": "iny",
+    "opcode": 17
+  },
+  {
+    "name": "ORA",
+    "mode": "zpg",
+    "opcode": 5
+  },
+  {
+    "name": "ORA",
+    "mode": "zpi",
+    "opcode": 18
+  },
+  {
+    "name": "ORA",
+    "mode": "zpx",
+    "opcode": 21
+  },
+  {
+    "name": "PHA",
+    "mode": "imp",
+    "opcode": 72
+  },
+  {
+    "name": "PHP",
+    "mode": "imp",
+    "opcode": 8
+  },
+  {
+    "name": "PHX",
+    "mode": "imp",
+    "opcode": 218
+  },
+  {
+    "name": "PHY",
+    "mode": "imp",
+    "opcode": 90
+  },
+  {
+    "name": "PLA",
+    "mode": "imp",
+    "opcode": 104
+  },
+  {
+    "name": "PLP",
+    "mode": "imp",
+    "opcode": 40
+  },
+  {
+    "name": "PLX",
+    "mode": "imp",
+    "opcode": 250
+  },
+  {
+    "name": "PLY",
+    "mode": "imp",
+    "opcode": 122
+  },
+  {
+    "name": "RMB0",
+    "mode": "zpg",
+    "opcode": 7
+  },
+  {
+    "name": "RMB1",
+    "mode": "zpg",
+    "opcode": 23
+  },
+  {
+    "name": "RMB2",
+    "mode": "zpg",
+    "opcode": 39
+  },
+  {
+    "name": "RMB3",
+    "mode": "zpg",
+    "opcode": 55
+  },
+  {
+    "name": "RMB4",
+    "mode": "zpg",
+    "opcode": 71
+  },
+  {
+    "name": "RMB5",
+    "mode": "zpg",
+    "opcode": 87
+  },
+  {
+    "name": "RMB6",
+    "mode": "zpg",
+    "opcode": 103
+  },
+  {
+    "name": "RMB7",
+    "mode": "zpg",
+    "opcode": 119
+  },
+  {
+    "name": "ROL",
+    "mode": "abs",
+    "opcode": 46
+  },
+  {
+    "name": "ROL",
+    "mode": "abx",
+    "opcode": 62
+  },
+  {
+    "name": "ROL",
+    "mode": "acc",
+    "opcode": 42
+  },
+  {
+    "name": "ROL",
+    "mode": "zpg",
+    "opcode": 38
+  },
+  {
+    "name": "ROL",
+    "mode": "zpx",
+    "opcode": 54
+  },
+  {
+    "name": "ROR",
+    "mode": "abs",
+    "opcode": 110
+  },
+  {
+    "name": "ROR",
+    "mode": "abx",
+    "opcode": 126
+  },
+  {
+    "name": "ROR",
+    "mode": "acc",
+    "opcode": 106
+  },
+  {
+    "name": "ROR",
+    "mode": "zpg",
+    "opcode": 102
+  },
+  {
+    "name": "ROR",
+    "mode": "zpx",
+    "opcode": 118
+  },
+  {
+    "name": "RTI",
+    "mode": "imp",
+    "opcode": 64
+  },
+  {
+    "name": "RTS",
+    "mode": "imp",
+    "opcode": 96
+  },
+  {
+    "name": "SBC",
+    "mode": "abs",
+    "opcode": 237
+  },
+  {
+    "name": "SBC",
+    "mode": "abx",
+    "opcode": 253
+  },
+  {
+    "name": "SBC",
+    "mode": "aby",
+    "opcode": 249
+  },
+  {
+    "name": "SBC",
+    "mode": "imm",
+    "opcode": 233
+  },
+  {
+    "name": "SBC",
+    "mode": "inx",
+    "opcode": 225
+  },
+  {
+    "name": "SBC",
+    "mode": "iny",
+    "opcode": 241
+  },
+  {
+    "name": "SBC",
+    "mode": "zpg",
+    "opcode": 229
+  },
+  {
+    "name": "SBC",
+    "mode": "zpi",
+    "opcode": 242
+  },
+  {
+    "name": "SBC",
+    "mode": "zpx",
+    "opcode": 245
+  },
+  {
+    "name": "SEC",
+    "mode": "imp",
+    "opcode": 56
+  },
+  {
+    "name": "SED",
+    "mode": "imp",
+    "opcode": 248
+  },
+  {
+    "name": "SEI",
+    "mode": "imp",
+    "opcode": 120
+  },
+  {
+    "name": "SMB0",
+    "mode": "zpg",
+    "opcode": 135
+  },
+  {
+    "name": "SMB1",
+    "mode": "zpg",
+    "opcode": 151
+  },
+  {
+    "name": "SMB2",
+    "mode": "zpg",
+    "opcode": 167
+  },
+  {
+    "name": "SMB3",
+    "mode": "zpg",
+    "opcode": 183
+  },
+  {
+    "name": "SMB4",
+    "mode": "zpg",
+    "opcode": 199
+  },
+  {
+    "name": "SMB5",
+    "mode": "zpg",
+    "opcode": 215
+  },
+  {
+    "name": "SMB6",
+    "mode": "zpg",
+    "opcode": 231
+  },
+  {
+    "name": "SMB7",
+    "mode": "zpg",
+    "opcode": 247
+  },
+  {
+    "name": "STA",
+    "mode": "abs",
+    "opcode": 141
+  },
+  {
+    "name": "STA",
+    "mode": "abx",
+    "opcode": 157
+  },
+  {
+    "name": "STA",
+    "mode": "aby",
+    "opcode": 153
+  },
+  {
+    "name": "STA",
+    "mode": "inx",
+    "opcode": 129
+  },
+  {
+    "name": "STA",
+    "mode": "iny",
+    "opcode": 145
+  },
+  {
+    "name": "STA",
+    "mode": "zpg",
+    "opcode": 133
+  },
+  {
+    "name": "STA",
+    "mode": "zpi",
+    "opcode": 146
+  },
+  {
+    "name": "STA",
+    "mode": "zpx",
+    "opcode": 149
+  },
+  {
+    "name": "STP",
+    "mode": "imp",
+    "opcode": 219
+  },
+  {
+    "name": "STX",
+    "mode": "abs",
+    "opcode": 142
+  },
+  {
+    "name": "STX",
+    "mode": "zpg",
+    "opcode": 134
+  },
+  {
+    "name": "STX",
+    "mode": "zpy",
+    "opcode": 150
+  },
+  {
+    "name": "STY",
+    "mode": "abs",
+    "opcode": 140
+  },
+  {
+    "name": "STY",
+    "mode": "zpg",
+    "opcode": 132
+  },
+  {
+    "name": "STY",
+    "mode": "zpx",
+    "opcode": 148
+  },
+  {
+    "name": "STZ",
+    "mode": "abs",
+    "opcode": 156
+  },
+  {
+    "name": "STZ",
+    "mode": "abx",
+    "opcode": 158
+  },
+  {
+    "name": "STZ",
+    "mode": "zpg",
+    "opcode": 100
+  },
+  {
+    "name": "STZ",
+    "mode": "zpx",
+    "opcode": 116
+  },
+  {
+    "name": "TAX",
+    "mode": "imp",
+    "opcode": 170
+  },
+  {
+    "name": "TAY",
+    "mode": "imp",
+    "opcode": 168
+  },
+  {
+    "name": "TRB",
+    "mode": "abs",
+    "opcode": 28
+  },
+  {
+    "name": "TRB",
+    "mode": "zpg",
+    "opcode": 20
+  },
+  {
+    "name": "TSB",
+    "mode": "abs",
+    "opcode": 12
+  },
+  {
+    "name": "TSB",
+    "mode": "zpg",
+    "opcode": 4
+  },
+  {
+    "name": "TSX",
+    "mode": "imp",
+    "opcode": 186
+  },
+  {
+    "name": "TXA",
+    "mode": "imp",
+    "opcode": 138
+  },
+  {
+    "name": "TXS",
+    "mode": "imp",
+    "opcode": 154
+  },
+  {
+    "name": "TYA",
+    "mode": "imp",
+    "opcode": 152
+  },
+  {
+    "name": "WAI",
+    "mode": "imp",
+    "opcode": 203
+  }
+]

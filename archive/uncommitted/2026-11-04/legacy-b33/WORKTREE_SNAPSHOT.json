@@ -1,0 +1,241 @@
+{
+  "label": "legacy-b33",
+  "original_branch": "codex/v2-beta33-asm",
+  "original_base_commit": "e97d785bf8f86a8f703c7dd02f58397d525873a7",
+  "original_worktree": "tmp/b33",
+  "files": [
+    {
+      "original_path": "Makefile",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/Makefile",
+      "bytes": 41137,
+      "sha256": "9478ba758b66ac83ba0aa131bac6b1035ad3d1ee9d0404868a03c15cf93ac88d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "README.md",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/README.md",
+      "bytes": 28386,
+      "sha256": "d118eec29ecdf0bba86ab15fee3dbce86a67e95c77b23deaca483b53709b312a",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/STR8N_ASM.md",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/docs/STR8N_ASM.md",
+      "bytes": 2477,
+      "sha256": "1667d40df0a2fd6da8d318c84e1065c51e0d3fa45de5f6de0bb1c7a666c322b8",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/STR8N_ASM_USER_GUIDE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/docs/STR8N_ASM_USER_GUIDE.md",
+      "bytes": 4961,
+      "sha256": "b672aaac19538c92b1fdc886c5031c3bfb3dc26a1ba17e5ade890f46cc2b4d74",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/STR8N_V2_BETA32_SOAK_STOP_2026-10-16.md",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/docs/STR8N_V2_BETA32_SOAK_STOP_2026-10-16.md",
+      "bytes": 2064,
+      "sha256": "7a56a2aa1bd6dc273bdcb7a9849e52f3d84bd6b589de647cd00b37782ca0482f",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/STR8N_V2_BETA33_2512_2026-10-16.md",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/docs/STR8N_V2_BETA33_2512_2026-10-16.md",
+      "bytes": 4927,
+      "sha256": "57cd6c1a82e958eb305245dd3e1778fcbb4e88187715bb6d49e37a330e9589fe",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/STR8N_V2_BETA33_CANDIDATE_2026-10-16.md",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/docs/STR8N_V2_BETA33_CANDIDATE_2026-10-16.md",
+      "bytes": 5568,
+      "sha256": "a19fe040f51d64c05cd4aff0c99abee187f9e70393f017550ed5f30da6243727",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "examples/beta33/README.md",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/examples/beta33/README.md",
+      "bytes": 2944,
+      "sha256": "fec26fa48bebb87ed98990d192fc0a450c41e5f465c26cbba3e1e535181a11d1",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "examples/beta33/hello.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/examples/beta33/hello.asm",
+      "bytes": 265,
+      "sha256": "f97af7fc19779e0c81bd344f75299dda8c0dff86c5964abb51efa8efa375855a",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "examples/beta33/microchess/LICENSE.txt",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/examples/beta33/microchess/LICENSE.txt",
+      "bytes": 1646,
+      "sha256": "3779740261caa144ea57d9d30ed9fce26561f1e28e6e8e3764577d9fb74b030b",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "examples/beta33/microchess/Microchess6502-upstream.txt",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/examples/beta33/microchess/Microchess6502-upstream.txt",
+      "bytes": 22564,
+      "sha256": "0dd323338f8ed4f233a1f2c9012ef124030b8940fadf04f48c957b695cf81f31",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "examples/beta33/microchess/README.md",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/examples/beta33/microchess/README.md",
+      "bytes": 4359,
+      "sha256": "2b4f8cd9843ef585a2784320d9aa0739564023a908e5b500f8e62c7dd2af3807",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "examples/beta33/microchess/microchess-readable.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/examples/beta33/microchess/microchess-readable.asm",
+      "bytes": 8090,
+      "sha256": "6b749c444282f5fe43de4048313eca34b387213caf602d8aef09843b1736aae1",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "examples/beta33/microchess/microchess.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/examples/beta33/microchess/microchess.asm",
+      "bytes": 5818,
+      "sha256": "807a653f91d87c3a9c87e8b3e9051567e88fddeea1c3605ba799b44e708e7ecf",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "examples/beta33/ram-counter.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/examples/beta33/ram-counter.asm",
+      "bytes": 231,
+      "sha256": "82fc11db6310d56adb0b185b399b5794eb40ceb1bc7593d5c4beda21a0cfd1ea",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "src/asm/asm.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/src/asm/asm.asm",
+      "bytes": 551,
+      "sha256": "e5bd2275cb28a0c4d9a76f8d14f7d27679ef77bdf86b91531387d228bac09701",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "src/asm/core.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/src/asm/core.inc",
+      "bytes": 12285,
+      "sha256": "4ddf4c2ca77c6bdca422dd8052a163d100540dda26cb89a64aa301945c54e89b",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "src/asm/editor.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/src/asm/editor.inc",
+      "bytes": 6229,
+      "sha256": "3677318b752cf003674ad8d53dca294e6ed80a3c9fd2c39eca6a9b0aa48d78f9",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "src/asm/expression.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/src/asm/expression.inc",
+      "bytes": 6074,
+      "sha256": "ec95cd314f3e8ebae1862a95de5ad0010b965580a55c3f987f1f10227cff05f8",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "src/asm/hello.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/src/asm/hello.asm",
+      "bytes": 115,
+      "sha256": "15de73bf96325308e64556a65866a89d6e4757ea19e5a51ea73b7948480cd87c",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "src/asm/layout.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/src/asm/layout.inc",
+      "bytes": 1699,
+      "sha256": "f3aa85f02c2d0e7d98c5d0cd2b1798ef842ab8ee255a8860c9faf38966f0504d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "src/asm/opcodes.json",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/src/asm/opcodes.json",
+      "bytes": 13727,
+      "sha256": "8d709592fd943945e6a11cc1d9036881512a79c0a4bf36b4a23319bb2854168f",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "src/asm/shell.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/src/asm/shell.inc",
+      "bytes": 7416,
+      "sha256": "7c8535c55a00756e12e42407b933f47e24db800fd9b7d15a0bf840a1284da3d9",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_asm.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/build_asm.py",
+      "bytes": 3461,
+      "sha256": "42f8a9b0727273314098ec1188f1878688cdc7e449a28c5719b5919a25fcee81",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_microchess_asm04.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/build_microchess_asm04.py",
+      "bytes": 5897,
+      "sha256": "95ff0d58b27dc7427cc93fe71a00ad14014241a8b78083ec8578263372c3f624",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_v2_beta33.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/build_v2_beta33.py",
+      "bytes": 9877,
+      "sha256": "dadd1808041385810bd19aba94f4c9d7d39cba7126f50952bbcf99f9ffa88f78",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/deploy_v2_beta33_2512.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/deploy_v2_beta33_2512.py",
+      "bytes": 21842,
+      "sha256": "692ea0fcfc13c8dbd38e753eaa84502f8b9e75f91a064f1481ce32ce307b700e",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/finish_v2_beta33_2512.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/finish_v2_beta33_2512.py",
+      "bytes": 7469,
+      "sha256": "1289b604f24062fb67c0d3b40f714a862351e2cfc6e0a73457888a2cc528f140",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/report_v2_beta33.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/report_v2_beta33.py",
+      "bytes": 3895,
+      "sha256": "37ee66e2a77751f8ae4f13771ce34d5764ef92486fcb0ad565315df7af51d02d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/test_asm.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/test_asm.py",
+      "bytes": 18520,
+      "sha256": "205a424dcd694ad7ea0678c84c52b92394436a51a1c8cd7a3672cee6c3ccadaf",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/test_microchess_asm04.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/test_microchess_asm04.py",
+      "bytes": 5671,
+      "sha256": "e6ea43a46b1f31a915e25745558e54d134d14bab6f7eb6aa15caea5de28929e5",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/test_v2_beta33.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/test_v2_beta33.py",
+      "bytes": 5465,
+      "sha256": "07726fcf554d673996293598cecd6f80d14c40de849262bfeb7b3c5c83eb1703",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/test_v2_beta33_batch.py",
+      "stored_path": "archive/uncommitted/2026-11-04/legacy-b33/tools/test_v2_beta33_batch.py",
+      "bytes": 1920,
+      "sha256": "0766bd7697297c0fcb8afca8fbb9fe66144d4765e74322c7851342b68cb76b69",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    }
+  ],
+  "excluded_entries": 1,
+  "exclusion_policy": "BUILD/generated binaries/capture data/results/private inventories are not committed"
+}
