@@ -1,0 +1,2017 @@
+{
+  "schema": 1,
+  "publication_approved": false,
+  "files": [
+    {
+      "path": "docs/ASM_DBG_BASE1_RAM.md",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "21c3413f399bb9d9e2101ffb3063b6121c7edd44256a5087378d681c7b072f69",
+      "final_candidate_sha256": "21c3413f399bb9d9e2101ffb3063b6121c7edd44256a5087378d681c7b072f69",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "docs/ASM_FLASH_SOURCE_INCREMENT.md",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "584915e5ac9af827a4db4f8f78b6c0c50e54dba26e80867f43d98f90f7942e0b",
+      "final_candidate_sha256": "3d2ab7b86d30476f496b2fd0f9821e29e0e367ec159de7eebda9b8c58b5acd57",
+      "adapted_during_consolidation": true,
+      "pre_sanitization_sha256": "584915e5ac9af827a4db4f8f78b6c0c50e54dba26e80867f43d98f90f7942e0b",
+      "pre_git_staging_sha256": "05df0556038d78a4df3c309c81e0be1c84043bfdf18accaf558ecae5face76ba"
+    },
+    {
+      "path": "docs/BUILD.md",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "c4c2da2046480162ec9a196c6e9f1f86d97d726cce982d14ddc195b3593f7375",
+      "final_candidate_sha256": "c4c2da2046480162ec9a196c6e9f1f86d97d726cce982d14ddc195b3593f7375",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "docs/DEVELOPER_MANUAL.md",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e5170eda18316e86baf823243a371399ab2994b2e816a125bad456b403adbba5",
+      "final_candidate_sha256": "e5170eda18316e86baf823243a371399ab2994b2e816a125bad456b403adbba5",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "docs/NATIVE_UTILITIES_MANUAL.md",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a42869f8df4a815aeb9078aef03e9cfe0c9435c8340b8988444108f11fbce55e",
+      "final_candidate_sha256": "b08142a5c290403c7f61d1dffdf9337dd1cdb0b8ea265143ffb9766ed86aafa9",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "a42869f8df4a815aeb9078aef03e9cfe0c9435c8340b8988444108f11fbce55e"
+    },
+    {
+      "path": "monitors/base1-dependency.json",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "9e58440ab5ebdcbcf14a1284b1a484a8668fab1234a881e70b241387dc79cb05",
+      "final_candidate_sha256": "9e58440ab5ebdcbcf14a1284b1a484a8668fab1234a881e70b241387dc79cb05",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/devtools/base1/assembler/asm-app.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e39b035477da8c0d55f8fcf3214aaea4bc50b1936e2a49db824dbe7c63b85389",
+      "final_candidate_sha256": "6febdc3bbbab56f075c637a01c1159b47483cb7fccd53f9a9883d3379e475adb",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "e39b035477da8c0d55f8fcf3214aaea4bc50b1936e2a49db824dbe7c63b85389"
+    },
+    {
+      "path": "monitors/devtools/base1/assembler/flash-provider.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "d33d1eca70de83713ea2a06a345f425e99d56f2b9a1b7aabefb1b4434ef19d06",
+      "final_candidate_sha256": "cc5f39932be01df4b60be10d80c90f823acdf7bd05902208ffa0a795daae216f",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "d33d1eca70de83713ea2a06a345f425e99d56f2b9a1b7aabefb1b4434ef19d06"
+    },
+    {
+      "path": "monitors/devtools/base1/assembler/layout.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a68841ad1fe5e2b0ae8191916b9a0cbb8e48335e2bd6a0786d8e8f1da6517e62",
+      "final_candidate_sha256": "9f49d92093cd82cb1a8ea7997bc44c7691611f2b72e9d0310f906af49fcb5daa",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "a68841ad1fe5e2b0ae8191916b9a0cbb8e48335e2bd6a0786d8e8f1da6517e62"
+    },
+    {
+      "path": "monitors/devtools/base1/assembler/source-equ.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "ade841948c052a0e867011aa00a5ae8f4e539c53aca0b3c67215049c67239804",
+      "final_candidate_sha256": "a8b65222b58f29c39d5db94d065e8095c330a4b02d2e7bea68cb74de72ce33dc",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "ade841948c052a0e867011aa00a5ae8f4e539c53aca0b3c67215049c67239804"
+    },
+    {
+      "path": "monitors/devtools/base1/assembler/source.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "46b203d68da68857b7aa182520506361e42af81e94beab56726fae78c104e124",
+      "final_candidate_sha256": "d823b81430d3b52a83855135b3d3f1b1359d36f196ba49853e4450f3090315ae",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "46b203d68da68857b7aa182520506361e42af81e94beab56726fae78c104e124"
+    },
+    {
+      "path": "monitors/devtools/base1/assembler/state.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "93dbac62a2edff81eca51412d5b2ef8b6593dcb1f14662bbeddb097df8b3429e",
+      "final_candidate_sha256": "c962bba8615493639d8b8a7a270a0a6fd8cb1563e69e7db940928194a273a67d",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "93dbac62a2edff81eca51412d5b2ef8b6593dcb1f14662bbeddb097df8b3429e"
+    },
+    {
+      "path": "monitors/devtools/base1/debugger/debugger.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "31237592affabc7220b9e56ec7fcf76519ad93c456b9fb3c1332a6aa5df19dc5",
+      "final_candidate_sha256": "93cf4b0c3bdd128b8b8ac47e25792e89a108d061dd27dfb12ed6fcb76e1d0381",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "31237592affabc7220b9e56ec7fcf76519ad93c456b9fb3c1332a6aa5df19dc5"
+    },
+    {
+      "path": "monitors/devtools/base1/debugger/disasm.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "3697da1b905af1f7b4145f60f5028b6ab35d351510731b0011827676bc6c9d7d",
+      "final_candidate_sha256": "d27c8649d31bdda4fd82e569c511334aa24ec8bc0c242b4fe32fbff16ebd34b2",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "3697da1b905af1f7b4145f60f5028b6ab35d351510731b0011827676bc6c9d7d"
+    },
+    {
+      "path": "monitors/devtools/base1/debugger/layout.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "55a8198d09fa59b6aaf9ecf4df78c9c009750b45197e4f25abc52cbac3552112",
+      "final_candidate_sha256": "b0c252ffa3714d67fcd656c40b5bcf546c91475c9ab6f72580f3b6935b2e2fef",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "55a8198d09fa59b6aaf9ecf4df78c9c009750b45197e4f25abc52cbac3552112"
+    },
+    {
+      "path": "monitors/devtools/base1/debugger/step-flow.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e11ba85ee8c3deabfa6f5c2a695919058626e236313eff1549b14561e3c3c9ef",
+      "final_candidate_sha256": "7f6f4fc8151ce63a255779fb87e0b4789ee502830437589a44832650c168cae3",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "e11ba85ee8c3deabfa6f5c2a695919058626e236313eff1549b14561e3c3c9ef"
+    },
+    {
+      "path": "monitors/native/auto-reload.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "8e7e0967c04a6023eb1d7b6af0cae8f46f3d189bc4f58b92cce9456168ec8b96",
+      "final_candidate_sha256": "8e7e0967c04a6023eb1d7b6af0cae8f46f3d189bc4f58b92cce9456168ec8b96",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/bank-compact.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "d9eb2c6c1052b0ea1f5b3d585911a300b2c59c4929a50f9f2a5ec65219963762",
+      "final_candidate_sha256": "d9eb2c6c1052b0ea1f5b3d585911a300b2c59c4929a50f9f2a5ec65219963762",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/bank-maint-base1.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "6328be71ad79e6d0258281562da310c789710d21a9df81895f792283af9bc26c",
+      "final_candidate_sha256": "6328be71ad79e6d0258281562da310c789710d21a9df81895f792283af9bc26c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/bank-maint-classic.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "7d60c8fc168545d3754d4199d9ed2fa150eccb191fd9733301ea56b17538c675",
+      "final_candidate_sha256": "7d60c8fc168545d3754d4199d9ed2fa150eccb191fd9733301ea56b17538c675",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/bank-maint-edu.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "1ef0628e1caf1350e8cf69e8bafe3fb86000e1d3289d78d1202249c5102141c0",
+      "final_candidate_sha256": "1ef0628e1caf1350e8cf69e8bafe3fb86000e1d3289d78d1202249c5102141c0",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/bank-maint-table.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f2958308a3031e006c221354f3a4e6e6fa718687fdabd2a83281bf80b980a896",
+      "final_candidate_sha256": "f2958308a3031e006c221354f3a4e6e6fa718687fdabd2a83281bf80b980a896",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/bank-maint-transfer.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f30cc7a67d286d8cd80ed9f6bcba6ca116b9c0f568909cfa9ce7a7f514597691",
+      "final_candidate_sha256": "6627c982d816a235d610c98fa067a78bf80d4a3aa79790c0fcfea0d9882e5b25",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "f30cc7a67d286d8cd80ed9f6bcba6ca116b9c0f568909cfa9ce7a7f514597691"
+    },
+    {
+      "path": "monitors/native/bank-maint.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f8dd31a30baeb070f9a95002a4aa1f582a4f71961d7673beccb3b413c54a248c",
+      "final_candidate_sha256": "f8dd31a30baeb070f9a95002a4aa1f582a4f71961d7673beccb3b413c54a248c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/bank-transfer-alloc.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "33026be3991f98b33be53698b0ca188e25b0660b5c13ca5c95dff9797b996292",
+      "final_candidate_sha256": "33026be3991f98b33be53698b0ca188e25b0660b5c13ca5c95dff9797b996292",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/bank-transfer-handoff.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "692bd50a953b9d15d8ae08e7bbe48434553aad176e83217aea73e6e334a7e646",
+      "final_candidate_sha256": "692bd50a953b9d15d8ae08e7bbe48434553aad176e83217aea73e6e334a7e646",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/batch-reader.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "bc2549ff9cfade9c914f13706f5b9ffad17869bef22b1d6fc56c453e1cd0b89a",
+      "final_candidate_sha256": "bc2549ff9cfade9c914f13706f5b9ffad17869bef22b1d6fc56c453e1cd0b89a",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/binding.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "6f6501a3d8416c26827a9312669292b6f1ced9db2c056b46d9dbe83fd61cf18c",
+      "final_candidate_sha256": "6f6501a3d8416c26827a9312669292b6f1ced9db2c056b46d9dbe83fd61cf18c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/board-tool.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "24088a7dcb43d741277b855cc0559248d3f5d510816691fb806f8cdde517333d",
+      "final_candidate_sha256": "24088a7dcb43d741277b855cc0559248d3f5d510816691fb806f8cdde517333d",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/clock.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "8237beffbe062fd92ffedb253da9c400f84d0e742d953cec37d32abc06aafee4",
+      "final_candidate_sha256": "8237beffbe062fd92ffedb253da9c400f84d0e742d953cec37d32abc06aafee4",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/compact-decode.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "c4092f590370d817eb03928b194597a70e24ccaeb5377e34ffc302de7b65ecc1",
+      "final_candidate_sha256": "c4092f590370d817eb03928b194597a70e24ccaeb5377e34ffc302de7b65ecc1",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/edu-settings.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f577732b8342c9158d9c6cd9f54c85a4fb59361335334e6b3007a6e67a7731e5",
+      "final_candidate_sha256": "f577732b8342c9158d9c6cd9f54c85a4fb59361335334e6b3007a6e67a7731e5",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/eeprom-transfer.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "5c88435b73532b0bf126736966da1e67f9542641b4503f00e135f9ea93cc0dc0",
+      "final_candidate_sha256": "5c88435b73532b0bf126736966da1e67f9542641b4503f00e135f9ea93cc0dc0",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/flash-auto.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "5450a967693db62752b14dcbfd8852011d3b4496dca4aa4e465e77cdbaa6615a",
+      "final_candidate_sha256": "5450a967693db62752b14dcbfd8852011d3b4496dca4aa4e465e77cdbaa6615a",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/flash-record.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "86b44252df5c8ff3acca91726126d5a484a29103b3693ce8699286d813a34f81",
+      "final_candidate_sha256": "86b44252df5c8ff3acca91726126d5a484a29103b3693ce8699286d813a34f81",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/flash-s19-load.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "b394c894e3202e63d078a66086ddc78b738bff89dc8c7bb6055a6531250750b8",
+      "final_candidate_sha256": "b394c894e3202e63d078a66086ddc78b738bff89dc8c7bb6055a6531250750b8",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/flash-s19.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "8f298b687f2c080d54a5272298c99524ca1358d4b684f4b6b9023b0047b2f501",
+      "final_candidate_sha256": "8f298b687f2c080d54a5272298c99524ca1358d4b684f4b6b9023b0047b2f501",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/flash-transfer-gate.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "267420db4578c7c1332cfc870d11276d93527f1af2295c312184dcf58e1ba254",
+      "final_candidate_sha256": "267420db4578c7c1332cfc870d11276d93527f1af2295c312184dcf58e1ba254",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/i2c-api.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c",
+      "final_candidate_sha256": "1d1beaa7131079557f330bc1ffaa61a1f6e91b1ea6ed0de35f43b176257cfd0c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/i2c-transport.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "4df7bd2d9a994f5b3c36d44eec165edd087e9399977b564e7ef2bdc8d376582c",
+      "final_candidate_sha256": "4df7bd2d9a994f5b3c36d44eec165edd087e9399977b564e7ef2bdc8d376582c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/journal-eq.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285",
+      "final_candidate_sha256": "14c7dcd5a81d94d0c9a362a1f5400f36fa1cca7893d47172605a77d2740ec285",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/journal.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f9b98fc476e9eda395433d2409586c84587b9f16f319e6d53337a94614bd997d",
+      "final_candidate_sha256": "f9b98fc476e9eda395433d2409586c84587b9f16f319e6d53337a94614bd997d",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/kernel-rtc-api.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+      "final_candidate_sha256": "8a78a6b36d44b8d8e41f6cfe79e5b9953572f6761742103a428cc361e6cf447e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/native-handoff.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e571dd2038435801139e0e19d3ec33f807cc5dc3a4c490ec58fbdf8d264b4915",
+      "final_candidate_sha256": "e571dd2038435801139e0e19d3ec33f807cc5dc3a4c490ec58fbdf8d264b4915",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/native-loader.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "910c551713c20b732f70db9ecba488f257186cebda13925ceead55676b067c78",
+      "final_candidate_sha256": "910c551713c20b732f70db9ecba488f257186cebda13925ceead55676b067c78",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/native-return.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "b350aec42b900e228a078e8c20e4861f3c28d9f3a3c23af72c4bb6a90494955c",
+      "final_candidate_sha256": "b350aec42b900e228a078e8c20e4861f3c28d9f3a3c23af72c4bb6a90494955c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/outage-duration.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "79529e3c0c5fb57e54987791b2e0e970a3c81299c0a7e4dc75201dc80aa023da",
+      "final_candidate_sha256": "79529e3c0c5fb57e54987791b2e0e970a3c81299c0a7e4dc75201dc80aa023da",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/outage-format.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e704f464e1c9dcab275e5da90df1b3b4efe281a85f6fd98614148d92482b431b",
+      "final_candidate_sha256": "e704f464e1c9dcab275e5da90df1b3b4efe281a85f6fd98614148d92482b431b",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/rtc-api.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "8b61eca9124ed01bf494d8b2fdeffbbf0546e9a8c7a169bc4fcaf25b584e0f51",
+      "final_candidate_sha256": "8b61eca9124ed01bf494d8b2fdeffbbf0546e9a8c7a169bc4fcaf25b584e0f51",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/rtc-gateway.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "6a8d95666638f0b10a08744e9fc793eccd7b81606476df5c2a4ea00f72a161dd",
+      "final_candidate_sha256": "6a8d95666638f0b10a08744e9fc793eccd7b81606476df5c2a4ea00f72a161dd",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/rtc-provider.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "48babc1f5de67f0d6cd6cb69315ba61924f6822242819898a8ae9099386e6485",
+      "final_candidate_sha256": "48babc1f5de67f0d6cd6cb69315ba61924f6822242819898a8ae9099386e6485",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/s19-loader.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e4774993ac7c7c9581f4981afc760a0388723d708a2d9bb01787de941248de18",
+      "final_candidate_sha256": "e4774993ac7c7c9581f4981afc760a0388723d708a2d9bb01787de941248de18",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/sram-work-classic.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "db47e725c1bf67194e1a7d8959d348e9ea231c6b1389acb2954e83d278e3fafa",
+      "final_candidate_sha256": "db47e725c1bf67194e1a7d8959d348e9ea231c6b1389acb2954e83d278e3fafa",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/sram-work-spi.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "b1bde41035d0f4dc762353c8f7e6f411a456a217bacb7c49bcf6252b82b975ee",
+      "final_candidate_sha256": "b1bde41035d0f4dc762353c8f7e6f411a456a217bacb7c49bcf6252b82b975ee",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/sram-work.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "4d335363f33de2f22173566b3a2a10ab52a1a90a1907f6714ea8af52a02c8a17",
+      "final_candidate_sha256": "4d335363f33de2f22173566b3a2a10ab52a1a90a1907f6714ea8af52a02c8a17",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/storage-batch.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "32b6ad0e507db3b087748fd3b03ad2de73504fb6746b7afbcae5ca97fe44f90f",
+      "final_candidate_sha256": "32b6ad0e507db3b087748fd3b03ad2de73504fb6746b7afbcae5ca97fe44f90f",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/store-front.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "41607eb03602e45f80c306bd77910a3334ee7acaf68354605b601eb38581345f",
+      "final_candidate_sha256": "41607eb03602e45f80c306bd77910a3334ee7acaf68354605b601eb38581345f",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/native/store-loader.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "10fa06a13b0c26bee9bcbb664cdd5dc1a39de09b04a5ba0b8a5992b96849c100",
+      "final_candidate_sha256": "10fa06a13b0c26bee9bcbb664cdd5dc1a39de09b04a5ba0b8a5992b96849c100",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/adapter.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "62bafc2d3a3a4700cff10add943676312ac7c880d3e5c6be2662f9cad5a2b227",
+      "final_candidate_sha256": "62bafc2d3a3a4700cff10add943676312ac7c880d3e5c6be2662f9cad5a2b227",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/batch-interface.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "7eddb4f63346f541c8fa207be5059c2e5b9511a4f97371c617d0fd1ec925da0c",
+      "final_candidate_sha256": "7eddb4f63346f541c8fa207be5059c2e5b9511a4f97371c617d0fd1ec925da0c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/edu-read.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "48d4cdd4b35f70df0533e763fe4ea95373b6c677d4e8b7b5107d1397e5c3369c",
+      "final_candidate_sha256": "48d4cdd4b35f70df0533e763fe4ea95373b6c677d4e8b7b5107d1397e5c3369c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/force.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "fe30913475c3ff4d8e6db63c170431dd6f6448eb8f8b99dde581214dc17ef7b1",
+      "final_candidate_sha256": "fe30913475c3ff4d8e6db63c170431dd6f6448eb8f8b99dde581214dc17ef7b1",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/layout.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "bf7a5b2b2ac861a0755207ad21a91c1c2ade6c7f7497ae365428b5165c3b0afa",
+      "final_candidate_sha256": "bf7a5b2b2ac861a0755207ad21a91c1c2ade6c7f7497ae365428b5165c3b0afa",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/mona.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "1dc446d06019d7cb7c32ba8f5b8b9745dbbfa85fd1335a89e31da584388f20bb",
+      "final_candidate_sha256": "1dc446d06019d7cb7c32ba8f5b8b9745dbbfa85fd1335a89e31da584388f20bb",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/monitor-ui.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a912132463622ce74efb83862ae02de0d8d87950df5ddfbf99b85f7d06a9b8eb",
+      "final_candidate_sha256": "a912132463622ce74efb83862ae02de0d8d87950df5ddfbf99b85f7d06a9b8eb",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/program-layout-check.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f284c2c1c8fcc9c8dc101a9d4c13c2c9f4cf3fd736696047fe3a946dc0bd1dda",
+      "final_candidate_sha256": "f284c2c1c8fcc9c8dc101a9d4c13c2c9f4cf3fd736696047fe3a946dc0bd1dda",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/program-layout.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a7062d19e91c0d4717cf6defa0c33beea6e60b2b5b23c0de03d4c3b8fe400ec1",
+      "final_candidate_sha256": "a7062d19e91c0d4717cf6defa0c33beea6e60b2b5b23c0de03d4c3b8fe400ec1",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/program-provider.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "6d42364ed00981d6e7d4a46a5184cdfa431da0b97852994fb822bc29f7fad099",
+      "final_candidate_sha256": "6d42364ed00981d6e7d4a46a5184cdfa431da0b97852994fb822bc29f7fad099",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/program-spi.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "6d92a6280c9982793f04d0bc5accd8f333b2f2c1a680ed6080f8dddec0580d5b",
+      "final_candidate_sha256": "6d92a6280c9982793f04d0bc5accd8f333b2f2c1a680ed6080f8dddec0580d5b",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/rtc-read.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "10804aa1f46b950ea3a8b00bbc45c77e49b51fe2c45e9c61a06adeb6ebd5ad2c",
+      "final_candidate_sha256": "10804aa1f46b950ea3a8b00bbc45c77e49b51fe2c45e9c61a06adeb6ebd5ad2c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-apps.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "87768c169d0d5515bbe8e0ce43bc1721b66e1e2234715a8ec8a34154c092d9ac",
+      "final_candidate_sha256": "87768c169d0d5515bbe8e0ce43bc1721b66e1e2234715a8ec8a34154c092d9ac",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-bundle-boot.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "82450c34fc45136e0e0b564d3aea493f3eb252be2936f29b09a2c40636c1f80b",
+      "final_candidate_sha256": "82450c34fc45136e0e0b564d3aea493f3eb252be2936f29b09a2c40636c1f80b",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-flash-transfer.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "cb864f2e8066eabf8f2b05403c720ee3280b5a22b84a0277c41d7a5b124fbf75",
+      "final_candidate_sha256": "cb864f2e8066eabf8f2b05403c720ee3280b5a22b84a0277c41d7a5b124fbf75",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-interface.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "2bcbd5f740ff43ef8f33ceffec3b861b9df8879be75c59c47aabbc262204a820",
+      "final_candidate_sha256": "2bcbd5f740ff43ef8f33ceffec3b861b9df8879be75c59c47aabbc262204a820",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-layout.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "512aaa5026fde6d9697bbba4b4ec6b9f85f27d276179955d916f747434d495fd",
+      "final_candidate_sha256": "512aaa5026fde6d9697bbba4b4ec6b9f85f27d276179955d916f747434d495fd",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-load.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "bd3acf86824ad46a4ce0246bf76a0d1c44889368ae658352728520cc6f102236",
+      "final_candidate_sha256": "bd3acf86824ad46a4ce0246bf76a0d1c44889368ae658352728520cc6f102236",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-map.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "fface96ef27b09be894757222a84d71adee26bdf5e25ed8a59633a12c8aa75cd",
+      "final_candidate_sha256": "fface96ef27b09be894757222a84d71adee26bdf5e25ed8a59633a12c8aa75cd",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-transfer.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "bd458b0cb043f5761ad021f53a8d5471f4f9715c85b333c68ef0225e02fe6cf2",
+      "final_candidate_sha256": "bd458b0cb043f5761ad021f53a8d5471f4f9715c85b333c68ef0225e02fe6cf2",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/service-wear.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a56a89a7c24c7febc18c689b166ac41c43a3de5f7a0486522a2b77ef4551ce28",
+      "final_candidate_sha256": "a56a89a7c24c7febc18c689b166ac41c43a3de5f7a0486522a2b77ef4551ce28",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/services.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "de4edd1f9d7c10fcf9cc301067fcbf818959f8e845b5a641182e8817b6b92c5b",
+      "final_candidate_sha256": "de4edd1f9d7c10fcf9cc301067fcbf818959f8e845b5a641182e8817b6b92c5b",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-batch.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "92df833dc444bdb8f848dfe1f4025c526991318eb98d11390fd442c1ee9f1552",
+      "final_candidate_sha256": "92df833dc444bdb8f848dfe1f4025c526991318eb98d11390fd442c1ee9f1552",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-clock.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "fbfb365b5cf865c5e685ea22ce996419d3b153028bf30171b8b3974cf3f50800",
+      "final_candidate_sha256": "fbfb365b5cf865c5e685ea22ce996419d3b153028bf30171b8b3974cf3f50800",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-interface.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "eb9293c14ffa08d63085d8518473415fd4b9706f8ae944c25fa3559587ba94a1",
+      "final_candidate_sha256": "eb9293c14ffa08d63085d8518473415fd4b9706f8ae944c25fa3559587ba94a1",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-layout.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "89cda8ac276cf35d991094a0a3898f9ccef9689b68f7b68839d1b5260fcfc8a7",
+      "final_candidate_sha256": "89cda8ac276cf35d991094a0a3898f9ccef9689b68f7b68839d1b5260fcfc8a7",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-loader.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "5d7ea8dac80b131f5a4fdee962cbf078ffcf10dc8da4092d75f46dd230aa8937",
+      "final_candidate_sha256": "5d7ea8dac80b131f5a4fdee962cbf078ffcf10dc8da4092d75f46dd230aa8937",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-monitor-ui.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "2825409e542860f9feeabfc297a95f0d69d63a332393c03785164aeacff1ae79",
+      "final_candidate_sha256": "2825409e542860f9feeabfc297a95f0d69d63a332393c03785164aeacff1ae79",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-native.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "dac8fc8bc7478ead167322fb45d6265f520e6fcaf7275f0786f696f7ac6c3928",
+      "final_candidate_sha256": "dac8fc8bc7478ead167322fb45d6265f520e6fcaf7275f0786f696f7ac6c3928",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-program.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "2dbedd94272eb74f2237853932d2e088b1cd477d0069c56333868981031f5e07",
+      "final_candidate_sha256": "2dbedd94272eb74f2237853932d2e088b1cd477d0069c56333868981031f5e07",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-sram.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "6b629e48050bf61f70f26876d3241428802d4211192650ff658e3a7e0b4b000d",
+      "final_candidate_sha256": "6b629e48050bf61f70f26876d3241428802d4211192650ff658e3a7e0b4b000d",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench-store.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "270040cad48089cab0b9a84c1e673b5a07137da60a0f38a34e436d8e2330b545",
+      "final_candidate_sha256": "270040cad48089cab0b9a84c1e673b5a07137da60a0f38a34e436d8e2330b545",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/src/workbench.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a3ef444654a9e8c0acb31c6317c595f0ae3b0d808003f0b204ec8ebc495ead84",
+      "final_candidate_sha256": "a3ef444654a9e8c0acb31c6317c595f0ae3b0d808003f0b204ec8ebc495ead84",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/status/status-core.asm",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "0824f411c410fb78c64e40e7c4b0cd1a49789727f99a3bc591fd7822db26de8d",
+      "final_candidate_sha256": "0824f411c410fb78c64e40e7c4b0cd1a49789727f99a3bc591fd7822db26de8d",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/status/status-details.asm",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "c5f2925e3ae06fe91a01848c96de0675236e844fd6c0d38f85858f941e106651",
+      "final_candidate_sha256": "c5f2925e3ae06fe91a01848c96de0675236e844fd6c0d38f85858f941e106651",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/status/status-interface.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "0811b82ac95ec0a87e5b85b05e9349aebdce1cd3f393482cce5888308fcf1acc",
+      "final_candidate_sha256": "0811b82ac95ec0a87e5b85b05e9349aebdce1cd3f393482cce5888308fcf1acc",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/status/status-mon-sram.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "3ae966eaafbf608b616f7a7aecdb9de4d365d50208f84c5516b71e1b0d697b27",
+      "final_candidate_sha256": "3ae966eaafbf608b616f7a7aecdb9de4d365d50208f84c5516b71e1b0d697b27",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/status/status-mon.inc",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e32a64d1cc4c20a8cb13fa577a9dc680ec31f3a947ec22df2797bcd76533f9da",
+      "final_candidate_sha256": "e32a64d1cc4c20a8cb13fa577a9dc680ec31f3a947ec22df2797bcd76533f9da",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "monitors/status/status-sram.inc",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "5bcbdcff1b12b29de70b25a3cd3aec4a7f04ec33827e42206732f3f27ee6d62e",
+      "final_candidate_sha256": "5bcbdcff1b12b29de70b25a3cd3aec4a7f04ec33827e42206732f3f27ee6d62e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/console_tk_smoke.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "5908dedd3ce6fb38b32ef47cf07883d5fb3400cbbd49338c94d2d2db789546f0",
+      "final_candidate_sha256": "ab7d28301c88b57cbbf86f3b55d9ceeebc3224494d93b1626eb5a2bb044faefb",
+      "adapted_during_consolidation": true,
+      "pre_sanitization_sha256": "5908dedd3ce6fb38b32ef47cf07883d5fb3400cbbd49338c94d2d2db789546f0",
+      "export_sanitization": "Local derived edition; original source/archive preserved.",
+      "pre_git_staging_sha256": "fc06c84f7bf08af0188be7b70fbaf2b64a9dccc3f15b2347d01e1e1808d72d10"
+    },
+    {
+      "path": "tests/flash_model.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "3a7cdaa8e2be562c0a9a3ba9b3a51c1f2188939a40c4c12accf54fc29d2eb982",
+      "final_candidate_sha256": "3a7cdaa8e2be562c0a9a3ba9b3a51c1f2188939a40c4c12accf54fc29d2eb982",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_boot_and_opaque.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "70fba61c423c2ccdee3034d7805bb8777c1ba67513bbd17a9e152a8ea0c9a69f",
+      "final_candidate_sha256": "70fba61c423c2ccdee3034d7805bb8777c1ba67513bbd17a9e152a8ea0c9a69f",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_boot_identity.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "d07ed3ceb618106aee6d8a1e202db2be3a15317f86476c24b7d67fe3ec99814e",
+      "final_candidate_sha256": "d07ed3ceb618106aee6d8a1e202db2be3a15317f86476c24b7d67fe3ec99814e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_console.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "0eaccdfbce81be1b27f0e4c22c5348f40b0487e341be564ad2a2ca2c8fb6623d",
+      "final_candidate_sha256": "0eaccdfbce81be1b27f0e4c22c5348f40b0487e341be564ad2a2ca2c8fb6623d",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_factory_image.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "d7654ac275f0aa507c9582975406f44aaccef7bcff3abacbe8391cc8afc61416",
+      "final_candidate_sha256": "d7654ac275f0aa507c9582975406f44aaccef7bcff3abacbe8391cc8afc61416",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_map_catalog.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "b4e26aab5b7d57bc948280f2e9d4e1fa8a34c6f099f7771eb2bf8cda1e119dc9",
+      "final_candidate_sha256": "b4e26aab5b7d57bc948280f2e9d4e1fa8a34c6f099f7771eb2bf8cda1e119dc9",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_minimal_policy.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "4060e24db0c880641ad58b590a00579c2a7687d0599292dda05bdc941039766f",
+      "final_candidate_sha256": "4060e24db0c880641ad58b590a00579c2a7687d0599292dda05bdc941039766f",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_nf_opaque_host.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "2af5620dd706d3803f7cfa21f052fb34d5f6bacc70fa5c8b16ae6beda6814613",
+      "final_candidate_sha256": "2af5620dd706d3803f7cfa21f052fb34d5f6bacc70fa5c8b16ae6beda6814613",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_nf_recovery_host.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a6f3abfef7e22ed6d66152aa8f552d3b3e7b32a76c4e591669e43c56414273d5",
+      "final_candidate_sha256": "a6f3abfef7e22ed6d66152aa8f552d3b3e7b32a76c4e591669e43c56414273d5",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/test_system.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "3c6745512135978eabd7fdbe3175d0b3c2e76d6f0fd18ddce24541f89929c23a",
+      "final_candidate_sha256": "3c6745512135978eabd7fdbe3175d0b3c2e76d6f0fd18ddce24541f89929c23a",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65/__init__.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "final_candidate_sha256": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65/devices/__init__.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "final_candidate_sha256": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65/devices/mpu6502.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "15d93835b4f279b702270d9a0b417938291347ec57cc12d9e0307cd344d381fe",
+      "final_candidate_sha256": "15d93835b4f279b702270d9a0b417938291347ec57cc12d9e0307cd344d381fe",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65/devices/mpu65c02.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "dfc5adcd63b82aaa95e5a4ae2a000af1c19fe7188575f41d70212542ec7694fb",
+      "final_candidate_sha256": "dfc5adcd63b82aaa95e5a4ae2a000af1c19fe7188575f41d70212542ec7694fb",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65/utils/__init__.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "final_candidate_sha256": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65/utils/conversions.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "448b8aa2cc59aa71a6a644a5dd93051ab4b2def2ae720c4991c0e54f31a4eaa9",
+      "final_candidate_sha256": "448b8aa2cc59aa71a6a644a5dd93051ab4b2def2ae720c4991c0e54f31a4eaa9",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65/utils/devices.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "fca3864bebcf1db7dbc13014487ad7091499d85c8cb14ca7288c5fdc63de6a0e",
+      "final_candidate_sha256": "fca3864bebcf1db7dbc13014487ad7091499d85c8cb14ca7288c5fdc63de6a0e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65816/__init__.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "final_candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65816/devices/__init__.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "final_candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tests/vendor/py65816/devices/mpu65c816.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a94fc4c40f3a252b0c5197252ce0ea35310b6f5ada986c40eae16c649d5bfc02",
+      "final_candidate_sha256": "a94fc4c40f3a252b0c5197252ce0ea35310b6f5ada986c40eae16c649d5bfc02",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/boot_identity.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e99abd87af4fae63990f9562ba6cff6964f8683071b9feb53678eaec1b236b42",
+      "final_candidate_sha256": "e99abd87af4fae63990f9562ba6cff6964f8683071b9feb53678eaec1b236b42",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "afd285e54c98fc68ee1e03160fb1b1105682abf8b09bc6555c664e10abb21e5f",
+      "final_candidate_sha256": "afd285e54c98fc68ee1e03160fb1b1105682abf8b09bc6555c664e10abb21e5f",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_2512_policy_restore.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "e3ab0520a2a46be199e5fc85e23d41f19e96dee59d3ffe0d502be0b29536859a",
+      "final_candidate_sha256": "e3ab0520a2a46be199e5fc85e23d41f19e96dee59d3ffe0d502be0b29536859a",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_app_example.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "fc8462f279b0696d6fc30df8ab7052d53e34a2f77fedbfaefd39e5b8ceb2cf25",
+      "final_candidate_sha256": "fc8462f279b0696d6fc30df8ab7052d53e34a2f77fedbfaefd39e5b8ceb2cf25",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_b0_acceptance.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "1e4a3f44fbb60a71c30df5ab59533fa1170da851393014117ca3bcee3032f9a7",
+      "final_candidate_sha256": "1e4a3f44fbb60a71c30df5ab59533fa1170da851393014117ca3bcee3032f9a7",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_bank_features.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "b3259eb06069632063c188e6bc0c1a68ccf47cd6d025815afa07b0361db91324",
+      "final_candidate_sha256": "b3259eb06069632063c188e6bc0c1a68ccf47cd6d025815afa07b0361db91324",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_base1.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "7df66cbab22db8b5f94db93d054b9e3ed46d75a077a20cc14e7b930ad8dc9c33",
+      "final_candidate_sha256": "7df66cbab22db8b5f94db93d054b9e3ed46d75a077a20cc14e7b930ad8dc9c33",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_cd_provisioning_lab.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "ec89004fe4dff16648b85c97b74f1a43eedca311fd4c9f64031b9b085992caaa",
+      "final_candidate_sha256": "ec89004fe4dff16648b85c97b74f1a43eedca311fd4c9f64031b9b085992caaa",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_cd_recovery_lab.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "aa58969e0c3700ddf2b02e1c71eb2b024cc0ef314831e2275b3658f4ab0ec29e",
+      "final_candidate_sha256": "aa58969e0c3700ddf2b02e1c71eb2b024cc0ef314831e2275b3658f4ab0ec29e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_edu_settings.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "6cbddf5dc4ad0334ec7b7f530dd6586fde8c51dc2e51591c525816cac0bdb20c",
+      "final_candidate_sha256": "6cbddf5dc4ad0334ec7b7f530dd6586fde8c51dc2e51591c525816cac0bdb20c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_flash_dispatch.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "5bd0a4bbb0bf526d0c7ea5007123437be4ea40166816de9239cd874bd1912399",
+      "final_candidate_sha256": "5bd0a4bbb0bf526d0c7ea5007123437be4ea40166816de9239cd874bd1912399",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_flash_status_correction.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f5adee30a226f1075a9f8552e5ce374fe655ec5abb4fa5bf5d565496ec9395bd",
+      "final_candidate_sha256": "f5adee30a226f1075a9f8552e5ce374fe655ec5abb4fa5bf5d565496ec9395bd",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_flash_transfer.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "3cbc118d1af0ed6c367dc47773e312a9f261b5f757a53cc68a0310a71288f42d",
+      "final_candidate_sha256": "3cbc118d1af0ed6c367dc47773e312a9f261b5f757a53cc68a0310a71288f42d",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_migration_policy_restore.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f0df4716cb5f1402172ae6fd4fafba124275b0465ae05ca01037c9575aa4f108",
+      "final_candidate_sha256": "f0df4716cb5f1402172ae6fd4fafba124275b0465ae05ca01037c9575aa4f108",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_minimal.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "935a466f92afe6e6c279e399eea4d4c7c39ba494ae049d4b797c3775978f2f9f",
+      "final_candidate_sha256": "935a466f92afe6e6c279e399eea4d4c7c39ba494ae049d4b797c3775978f2f9f",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_mona.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "1a8256191456b3b1f6ab99f056dcfbf4723f264e73511605129fdf0f27a8a0be",
+      "final_candidate_sha256": "1a8256191456b3b1f6ab99f056dcfbf4723f264e73511605129fdf0f27a8a0be",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_named_edu.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "bcd925b87d5ff40b74102d8953116be12aabfad5de572ea522ff045793edced9",
+      "final_candidate_sha256": "bcd925b87d5ff40b74102d8953116be12aabfad5de572ea522ff045793edced9",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_native_apps.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "468615304e98e9099911984b096f8fbb79541c20e9b19a0948f6662c240e0d31",
+      "final_candidate_sha256": "c1d0d91ab5517bfc3e59004bf736bbb68cb54cab7ed58946bf8ba5fac7dbf393",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "898b0f181cc0a7525e1bb83c223a8a062a59f1e7bb1ca62db811d6a89064e247"
+    },
+    {
+      "path": "tools/build_powercut_fixture.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "459b6b566a6b60385615d6bdfd221cfd00587d6cf68dca10f9ca48b7a7d1980c",
+      "final_candidate_sha256": "459b6b566a6b60385615d6bdfd221cfd00587d6cf68dca10f9ca48b7a7d1980c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_program.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "ad48a917937ba64dd98287c6272b7f34149b0c181f576ed4c2c1ad73f3c846ba",
+      "final_candidate_sha256": "ad48a917937ba64dd98287c6272b7f34149b0c181f576ed4c2c1ad73f3c846ba",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_readback_minimal.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "0ef22c86571cfd312893f485275db4d770140efa1b3017591cd24558b6d02a2e",
+      "final_candidate_sha256": "0ef22c86571cfd312893f485275db4d770140efa1b3017591cd24558b6d02a2e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_s19_loader.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "3e4e8d945b40c936e0917cc37cb45e1ae32c84a96eb62ae98e9647a3911bbae0",
+      "final_candidate_sha256": "3e4e8d945b40c936e0917cc37cb45e1ae32c84a96eb62ae98e9647a3911bbae0",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_services.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "53797bff303c3ad4c044541f815e4541ccd7676df5950b69472d2dc1d07bf483",
+      "final_candidate_sha256": "53797bff303c3ad4c044541f815e4541ccd7676df5950b69472d2dc1d07bf483",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_sram_bench.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "d653411fcac66ec62a4b96580de55b281f55ef8f9866a6a039e1a8ee02a26cba",
+      "final_candidate_sha256": "d653411fcac66ec62a4b96580de55b281f55ef8f9866a6a039e1a8ee02a26cba",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_sram_work.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "914be798ff31a712eb8e92d65bdcc79efcaadab9b4ccafcc60ef41ec453961d4",
+      "final_candidate_sha256": "6539a19fd8701e7b4b3c32a885d888f603fe0bd3031b6a3f408ed24e6a0fb3d5",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "d6e71ade9883da1c9abfa9b83229a93a9293a39b75151e4a80853d58350ff398"
+    },
+    {
+      "path": "tools/build_startup_presentation.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a50eeec4de538188fbe24555f51e49bbc96c474907c512f106457b4eb9fdca2b",
+      "final_candidate_sha256": "a50eeec4de538188fbe24555f51e49bbc96c474907c512f106457b4eb9fdca2b",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_status.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "1cfdc063e6f109915fc11ff12d57ce0dd8c2229ad0fd88849a576f7690d407dd",
+      "final_candidate_sha256": "1cfdc063e6f109915fc11ff12d57ce0dd8c2229ad0fd88849a576f7690d407dd",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_status_ram_trial.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "5b8cb6c3a277aa0f3fb3f4b3d2a99b6a889ecb6ce5457fb7aa332f14f26d9a26",
+      "final_candidate_sha256": "5b8cb6c3a277aa0f3fb3f4b3d2a99b6a889ecb6ce5457fb7aa332f14f26d9a26",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_storage_batch.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "039200521b74e8060c3593fb3ff8863f2b87201b346262e130d2e90d4f4653bb",
+      "final_candidate_sha256": "039200521b74e8060c3593fb3ff8863f2b87201b346262e130d2e90d4f4653bb",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_storage_install.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "23cbf1ea1339022a7965eba98e1f829b112385a91882df6995dd8b389baf7f91",
+      "final_candidate_sha256": "23cbf1ea1339022a7965eba98e1f829b112385a91882df6995dd8b389baf7f91",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_storage_loader.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "3fa385da5716eee828754ea05ab670bdcea9d8aed97ec5e5c4842d233d3eb333",
+      "final_candidate_sha256": "3fa385da5716eee828754ea05ab670bdcea9d8aed97ec5e5c4842d233d3eb333",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_store_front.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a294681062ea6149dc9b439e877dc63e3d57d91d000a087e5ba3a444a9b8230c",
+      "final_candidate_sha256": "a294681062ea6149dc9b439e877dc63e3d57d91d000a087e5ba3a444a9b8230c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_system.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "6fb0d570252752c833a3e6b011cc1cbfd5c19501c24eed2cfa70dd62fdc39583",
+      "final_candidate_sha256": "6fb0d570252752c833a3e6b011cc1cbfd5c19501c24eed2cfa70dd62fdc39583",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_wdc_fixture.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "838b67cf8b0560293f33a64b211e213b70889ec5898529c1df0141754320cc30",
+      "final_candidate_sha256": "838b67cf8b0560293f33a64b211e213b70889ec5898529c1df0141754320cc30",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_workbench.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a6288e0218016065bf65ced50207b1549cdc0080340c194543ea5480281d3333",
+      "final_candidate_sha256": "a6288e0218016065bf65ced50207b1549cdc0080340c194543ea5480281d3333",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/check_fcompact.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "314a91986654f78fc181c397586f9b2bfaaefb8cb7b4dcdf48eac4b3108e8b93",
+      "final_candidate_sha256": "314a91986654f78fc181c397586f9b2bfaaefb8cb7b4dcdf48eac4b3108e8b93",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/compose_status.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "117771c9c8c3999d16dc930dec29bdccfa3889e14c477d46f841191d35ba1f3e",
+      "final_candidate_sha256": "117771c9c8c3999d16dc930dec29bdccfa3889e14c477d46f841191d35ba1f3e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/console_core.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "ec011501205671265b1448739c7afa2dfcd1f1e9251f8f477abd26251d30e04a",
+      "final_candidate_sha256": "ec011501205671265b1448739c7afa2dfcd1f1e9251f8f477abd26251d30e04a",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/journal_rotation_plan.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "5c5391c1e7f92a956806aae0c5f5f4f660e033f24e1c8034a7a53e36fde23db9",
+      "final_candidate_sha256": "5c5391c1e7f92a956806aae0c5f5f4f660e033f24e1c8034a7a53e36fde23db9",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/make_release.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a2e76aaed166f3886ed9c84bc1518c6bbe08613ad89da335ae2f14077f49de29",
+      "final_candidate_sha256": "a2e76aaed166f3886ed9c84bc1518c6bbe08613ad89da335ae2f14077f49de29",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/map_catalog.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "79062badf1b781ecb70b615391e6d76156ad2d8f4dfa9ec65378142edf0d71f1",
+      "final_candidate_sha256": "79062badf1b781ecb70b615391e6d76156ad2d8f4dfa9ec65378142edf0d71f1",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/mona_branches.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "ea64194aec6263940c66123b8639c0497ab4ffda4ed6b0e6c089da6947a1789d",
+      "final_candidate_sha256": "ea64194aec6263940c66123b8639c0497ab4ffda4ed6b0e6c089da6947a1789d",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/monitor_space.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "3f0b797f4413638ef35afb3132f016ad20598481c0abf58970d7985c396002a8",
+      "final_candidate_sha256": "3f0b797f4413638ef35afb3132f016ad20598481c0abf58970d7985c396002a8",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/named_transfer_source.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "72f512ffdb31b9d1424f6a802dab422b956163ac0141dc4ce03fe85e86227a8c",
+      "final_candidate_sha256": "72f512ffdb31b9d1424f6a802dab422b956163ac0141dc4ce03fe85e86227a8c",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/native_journal_room.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "2b7547d0e141dec932fa88a54c5667cf1b2d420465748e269d0214a6586d055e",
+      "final_candidate_sha256": "2b7547d0e141dec932fa88a54c5667cf1b2d420465748e269d0214a6586d055e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/nf_compact_images.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "23fb2ec28ec679a7dfb33a015ae5ed20f9b3818f9ccd423ac6cbaa4706861175",
+      "final_candidate_sha256": "23fb2ec28ec679a7dfb33a015ae5ed20f9b3818f9ccd423ac6cbaa4706861175",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/nf_console.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "87fc69068c142520744b6d7ceb96e68092e7ee8f59d5077b987cdf3f9fc32dcd",
+      "final_candidate_sha256": "759a70a84d1f482ebe795dabac7c2dbfd37c116468d867774b0b3ae9c9e115d2",
+      "adapted_during_consolidation": true,
+      "pre_sanitization_sha256": "87fc69068c142520744b6d7ceb96e68092e7ee8f59d5077b987cdf3f9fc32dcd",
+      "export_sanitization": "Local derived edition; original source/archive preserved.",
+      "pre_git_staging_sha256": "f9064cf2af31cc9a75a63e697eb5842b1cdf8f55f379a8cc3d169217ac6d23e8"
+    },
+    {
+      "path": "tools/nf_factory_image.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "c5f28f062e604e11958c76aab63049a1d95056896698c642e9d921a2b09fb3c6",
+      "final_candidate_sha256": "c5f28f062e604e11958c76aab63049a1d95056896698c642e9d921a2b09fb3c6",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/nf_native_images.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "2d4096840c097a1565afc94b6b28bb9f8a9da1d78b14a96d2bffeec10b1c97ea",
+      "final_candidate_sha256": "2d4096840c097a1565afc94b6b28bb9f8a9da1d78b14a96d2bffeec10b1c97ea",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/nf_opaque.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "12284c224bca7bdadc6da992d56fce5048d3d8738dc06347844f133cf17f7490",
+      "final_candidate_sha256": "12284c224bca7bdadc6da992d56fce5048d3d8738dc06347844f133cf17f7490",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/nf_recovery.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "441e17ed66efc5378098f6a0a557556d783f3642ac88e178a227bc50782677fb",
+      "final_candidate_sha256": "441e17ed66efc5378098f6a0a557556d783f3642ac88e178a227bc50782677fb",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/oip.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "b7ea2a114c83da0861a34db6024657024b2f4a586e8ce3fdb50681906aba4c69",
+      "final_candidate_sha256": "b7ea2a114c83da0861a34db6024657024b2f4a586e8ce3fdb50681906aba4c69",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/pack_transfer_artifacts.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "1ea69f093794e1ef449350c045249d7c1b83d7d09b97ea110f672aa720caaa96",
+      "final_candidate_sha256": "1ea69f093794e1ef449350c045249d7c1b83d7d09b97ea110f672aa720caaa96",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/package.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "567e4a9fdd554099cd071a214ab70884058d0f08c1286cfa5e6ebd7b1a3f4e79",
+      "final_candidate_sha256": "567e4a9fdd554099cd071a214ab70884058d0f08c1286cfa5e6ebd7b1a3f4e79",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/package_base1.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "799605fca00bdc59c1f49444a648dadcdade0f8f7dfa799a793fd74f4a6ab050",
+      "final_candidate_sha256": "799605fca00bdc59c1f49444a648dadcdade0f8f7dfa799a793fd74f4a6ab050",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/package_compact_candidate.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "ca25a41522aff3028030faa3fcb061f872f01abd0092e36eea61ca1956ba9d15",
+      "final_candidate_sha256": "ca25a41522aff3028030faa3fcb061f872f01abd0092e36eea61ca1956ba9d15",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/package_minimal.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "b140feb99167dcd610276f13e09e25e90226c2cbe9347671dffea0f80cb128ae",
+      "final_candidate_sha256": "b140feb99167dcd610276f13e09e25e90226c2cbe9347671dffea0f80cb128ae",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/package_mon_feature_preview.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "0595db9e44dee88f3c5267addcd59f05011c1365bad4d349c9881719a329d815",
+      "final_candidate_sha256": "0595db9e44dee88f3c5267addcd59f05011c1365bad4d349c9881719a329d815",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/package_native_candidate.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "faf09dfeecd06b399b03cb91f033d3a6b8bb225450ed295e2e7c5ff9433cb9ee",
+      "final_candidate_sha256": "faf09dfeecd06b399b03cb91f033d3a6b8bb225450ed295e2e7c5ff9433cb9ee",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/package_release_candidate.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "271bbda2d2a63a76aacbb103830a95febdee14e938de8074c2c573c0162480ef",
+      "final_candidate_sha256": "271bbda2d2a63a76aacbb103830a95febdee14e938de8074c2c573c0162480ef",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/port_bank_maint.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "2b3609609144fb3e51208ee8df8a333010e1821f7959d3bfc67312b955700925",
+      "final_candidate_sha256": "2b3609609144fb3e51208ee8df8a333010e1821f7959d3bfc67312b955700925",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/port_sram_work.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "9ede0788251e2208c635abf267e441734fe2539a2786c1bed23b6fc19ccacc67",
+      "final_candidate_sha256": "838be00aee8c661edcf4c1907af79fdd030deb48ca795aba36a2a0ec5a92a345",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "aafe56ce98c681da3a6e3d9dc97f9ceac333718252dcea58d824265b094f777a"
+    },
+    {
+      "path": "tools/program_format.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "f99d33d360be0f5906e4dd2e9f321db856e435425a8e0021cf39696a635b08f9",
+      "final_candidate_sha256": "f99d33d360be0f5906e4dd2e9f321db856e435425a8e0021cf39696a635b08f9",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/qualify_system.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "8992aebf6a218b21eeb09e5bbf64b06a8c85264083e83f209031b32156a2e63f",
+      "final_candidate_sha256": "8992aebf6a218b21eeb09e5bbf64b06a8c85264083e83f209031b32156a2e63f",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/review_mon_ab_dependencies.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "409a08b4c63dbcb54f2c3bc04667ec3686882fd7d5ff2410b5ecf4a3a1b1af5f",
+      "final_candidate_sha256": "409a08b4c63dbcb54f2c3bc04667ec3686882fd7d5ff2410b5ecf4a3a1b1af5f",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/sram_named_source.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "a4a81800095ea63c1da756e36c6c37d7e6ca10cec2fb3e94d1cf9425568f07d7",
+      "final_candidate_sha256": "a4a81800095ea63c1da756e36c6c37d7e6ca10cec2fb3e94d1cf9425568f07d7",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/status_extents.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "4875d07a1b099b6ad8528fa2c91d4333468f27065a57089b7ef1a426fc13b621",
+      "final_candidate_sha256": "4875d07a1b099b6ad8528fa2c91d4333468f27065a57089b7ef1a426fc13b621",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/storage_compact.py",
+      "source": "release-development-working-snapshot",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "38c9dece3433c3bda2fbdc139ccaba05a1b27f78b42e52517372f53cd39d2b44",
+      "final_candidate_sha256": "38c9dece3433c3bda2fbdc139ccaba05a1b27f78b42e52517372f53cd39d2b44",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/time_samples.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "1f54949f679299010dfc9aa2b37eb03fc93f76a58d3b28ee3f9beee3d36bddda",
+      "final_candidate_sha256": "1f54949f679299010dfc9aa2b37eb03fc93f76a58d3b28ee3f9beee3d36bddda",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/verify.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "89ba5a0b04b012b27806f03696de5a090f9ebf31ad704cabb87ad1a5f2483107",
+      "final_candidate_sha256": "89ba5a0b04b012b27806f03696de5a090f9ebf31ad704cabb87ad1a5f2483107",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/verify_base1.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "7107d4520ba3e98a2cc8cd47e4874b4d6c2ef687107157585f3e2e67fe6c3f0d",
+      "final_candidate_sha256": "7107d4520ba3e98a2cc8cd47e4874b4d6c2ef687107157585f3e2e67fe6c3f0d",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/verify_package.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "102c87eabd9129e8caa7b6a0671695de169d51a246a83a1718f8fd9afd482b6e",
+      "final_candidate_sha256": "102c87eabd9129e8caa7b6a0671695de169d51a246a83a1718f8fd9afd482b6e",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/verify_release_kit.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "299c468341a626d249b2008520c403dc2139c535e4c2dcb9799535c1f3883958",
+      "final_candidate_sha256": "299c468341a626d249b2008520c403dc2139c535e4c2dcb9799535c1f3883958",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/verify_system.py",
+      "source": "release-development-commit",
+      "source_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "publication_approved": false,
+      "exported_source_sha256": "845d0765a12ecefa821735ab47633212f0c6ba36902708ee228587301b5f107a",
+      "final_candidate_sha256": "845d0765a12ecefa821735ab47633212f0c6ba36902708ee228587301b5f107a",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/build_memory_agent.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "397943c1dca90e0b95fc8cc069fcddc288b38e209706e6f5efe1f13422ba82f4",
+      "final_candidate_sha256": "b81a5ae27d502c2f28dc123c2f8c65f7f8a3ad210d3af9713a484416e7766705",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "cf2a9a11c94c7517f6dd1d9e9f0f89554b37b9772e31bd96d5440a508c8e1eac"
+    },
+    {
+      "path": "tools/build_named_components.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "0617fe51a59d947b734021c4808fec104f03c217c0e5f24d1f9fb928c60a8c35",
+      "final_candidate_sha256": "45a2f6307d22a98cb4a456b877944600974f46b64a642387c7191b7050286085",
+      "adapted_during_consolidation": true,
+      "pre_sanitization_sha256": "afcf315dcdcfd698272a140262a2ef47cb04dbf69b8af0ef7274b3d28259714e",
+      "export_sanitization": "Local derived edition; original source/archive preserved.",
+      "pre_git_staging_sha256": "02d3a69687a7acc5ade4a3c3f21cea6c76bcbc3d1de6ec9ff1492c692a7c8762"
+    },
+    {
+      "path": "tools/package_named_components.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "c1200e48fec69799de821476354187005f390bbc1aac0c5b47bfbe92059d6afb",
+      "final_candidate_sha256": "6734d16fde4f1c976b7d8159b70dcadcc98483205902f3bcd2a6117d54e1caab",
+      "adapted_during_consolidation": true,
+      "pre_sanitization_sha256": "d834f844b4170ba12517354bb0114474842205e78842b93fdb15a8ac44d8526f",
+      "pre_git_staging_sha256": "25a3f9ab4180055cb74fae24583071bcc2cd155f63974d4f9928d199a203d4ee"
+    },
+    {
+      "path": "tools/memory_tool.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "a980eaf12651eec4cfd3180f4385c91cc7b0510caad0312938b3a0ac549c91e8",
+      "final_candidate_sha256": "a980eaf12651eec4cfd3180f4385c91cc7b0510caad0312938b3a0ac549c91e8",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/product_names.json",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "f1a3405f8f94774c6bcd7991cd63e899e9524803bb5245df784a6100e434e65a",
+      "final_candidate_sha256": "f1a3405f8f94774c6bcd7991cd63e899e9524803bb5245df784a6100e434e65a",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/str8n-util-memory.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "384586bbf3ed47d50f64e60989c5cf2fff3d021473528dd85bf97efa8f4bef67",
+      "final_candidate_sha256": "384586bbf3ed47d50f64e60989c5cf2fff3d021473528dd85bf97efa8f4bef67",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/str8n-terminal.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "ee1433b239ac7eb1765e446712c03aa512960707febd234a119c88dcb3532418",
+      "final_candidate_sha256": "ee1433b239ac7eb1765e446712c03aa512960707febd234a119c88dcb3532418",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/test_memory_tool.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "8815afb29dd5befd1b2c9173b707076321c5e962aa7e7875e0b3e39b8cb6b7e6",
+      "final_candidate_sha256": "8815afb29dd5befd1b2c9173b707076321c5e962aa7e7875e0b3e39b8cb6b7e6",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/test_product_names.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "971242dc18ee23f255e70b16f2788584ab46ccd15aa843614c5893627bf53e76",
+      "final_candidate_sha256": "0ba549148106ab9ea78f8c5766e911295e4aa5a7bf5fb3b8bdc3236bd3c2ab56",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "c51629a4ff3b293eee3341fa148316ff779a2506e174f8f1d96ea97186d0812d"
+    },
+    {
+      "path": "tools/serial_test_coordination.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "b5ac6ab1a1ba1b14acd4db9f6798cfa58e04feddb05a2cfca128965aa1593fd6",
+      "final_candidate_sha256": "b5ac6ab1a1ba1b14acd4db9f6798cfa58e04feddb05a2cfca128965aa1593fd6",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "tools/installer/__init__.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "a695a93f054b8d064c1b28640ec1553a9808edd5e1b3bc44d99532be3e653641",
+      "final_candidate_sha256": "5a07badb0e9c9be086b9d7f18ef76e678a729cac1ca5eeb767900a3c3eef2a6d",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "a695a93f054b8d064c1b28640ec1553a9808edd5e1b3bc44d99532be3e653641"
+    },
+    {
+      "path": "tools/installer/engine/__init__.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "00dc0924abdf0477b7a80aff9c442ef6288ae3065cf86ede2a316c46e004eb56",
+      "final_candidate_sha256": "dd0295759dabdcea3f193964d705834a45c9fbfef1cb09be393280c815223b01",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "00dc0924abdf0477b7a80aff9c442ef6288ae3065cf86ede2a316c46e004eb56"
+    },
+    {
+      "path": "tools/installer/engine/legacy_transport.py",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "ed09adaa8bc64fb9e03747d8a758424cd06bf505890e808da7f2b3b4dee6029d",
+      "final_candidate_sha256": "74502a19e5404b4bc349248e80cadeb2e4c3130b6668c582c68daf882f8d0a7f",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "ed09adaa8bc64fb9e03747d8a758424cd06bf505890e808da7f2b3b4dee6029d"
+    },
+    {
+      "path": "firmware/memory-agent/agent.asm",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "81863368362a1db86663980ea1df9cf29f5da078ff999a58c42c3cd2cdd7c73b",
+      "final_candidate_sha256": "81863368362a1db86663980ea1df9cf29f5da078ff999a58c42c3cd2cdd7c73b",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "firmware/memory-agent/profile.example.json",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "09a8920b85797477eaedcdf88e6ca10d2415b38378eaa2b48331c388ed496c54",
+      "final_candidate_sha256": "09a8920b85797477eaedcdf88e6ca10d2415b38378eaa2b48331c388ed496c54",
+      "adapted_during_consolidation": false
+    },
+    {
+      "path": "src/current/provider/rtc-provider.asm",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "13a01514f98f81ab0deb2feb331bab341724fb56ef9c509c14e7adb6dcc6fde6",
+      "final_candidate_sha256": "49c9ee259fd510ec1dcc2d71c3537faf4bc051762150e4b0f6ae65c623dccb19",
+      "adapted_during_consolidation": true,
+      "pre_git_staging_sha256": "13a01514f98f81ab0deb2feb331bab341724fb56ef9c509c14e7adb6dcc6fde6"
+    },
+    {
+      "path": "docs/COMPONENT_NAMING.md",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "4dfd4d4d66872114fa5063af28094b83ad41b7e692c879964c602a925a59ca64",
+      "final_candidate_sha256": "df5d8dab9ed33f11df2756be11b3e96fe5f4a828950c5127aff3cb208f604a5f",
+      "adapted_during_consolidation": false,
+      "pre_consolidation_sha256": "4dfd4d4d66872114fa5063af28094b83ad41b7e692c879964c602a925a59ca64"
+    },
+    {
+      "path": "docs/MEMORY_UTILITY.md",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "0132ecd3897aebf93b7bd549ce78b638d8e1432c197bb51782d3364f71861ac6",
+      "final_candidate_sha256": "c1befe68a71c70f87b9654b9284b7af9e804f310f0c7894669cf13cbe3348ffe",
+      "adapted_during_consolidation": true,
+      "pre_sanitization_sha256": "0132ecd3897aebf93b7bd549ce78b638d8e1432c197bb51782d3364f71861ac6",
+      "export_sanitization": "Local derived edition; original source/archive preserved.",
+      "pre_git_staging_sha256": "ec65ec85e98502b2015a935ba70aacd5f0c03f538c9b483afa6204b905df4bf5"
+    },
+    {
+      "path": "docs/REPOSITORY_CONSOLIDATION_PLAN.md",
+      "source": "private-checkpoint-selected-file",
+      "source_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "publication_approved": false,
+      "exported_source_sha256": "b6f6d3ad154004523e1a4ca54713ef893bbc9c5b5bbd39a99ffb612c80f2ca55",
+      "final_candidate_sha256": "ec0fd2e662a68dbd8d2af3269358811d97ed5509b2fdf0c1a9fe9ab528d5dec2",
+      "adapted_during_consolidation": false,
+      "pre_consolidation_sha256": "b6f6d3ad154004523e1a4ca54713ef893bbc9c5b5bbd39a99ffb612c80f2ca55"
+    }
+  ],
+  "generated_additions": [
+    "tools/verify_component_inputs.py",
+    "components/inputs/LOCK.json",
+    "components/inputs/README.md",
+    "docs/CONSOLIDATION_SOURCE_REVIEW.md",
+    "tools/rebuild_component_inputs.py",
+    "tools/rebuild_mon_services.py",
+    "tools/rebuild_utilities.py",
+    "tools/rebuild_devtools.py",
+    "tools/rebuild_storage.py",
+    "tools/rebuild_util_dev_inputs.py"
+  ],
+  "input_provenance": "components/inputs/LOCK.json",
+  "source_closure": {
+    "reconstructed_inputs": 32,
+    "removed_clock_staging_files": 62,
+    "remaining_binary_seeds": 1,
+    "all_non_foundation_binary_inputs_rebuilt": true,
+    "only_stored_binary": "Frozen F"
+  },
+  "runtime_service_recipe_provenance": [
+    {
+      "source": "tools/build_devtools_flash_apps.py",
+      "purpose": "ASM/DBG R aliases and native-app help width"
+    },
+    {
+      "source": "tools/manage_2512_ram_utilities.py",
+      "purpose": "REC-cleanup help fields and retained shared gate/record composition"
+    },
+    {
+      "source": "tools/build_storage_install.py",
+      "purpose": "Shared native loader/storage BATCH bindings; no capture-based assembly used"
+    }
+  ],
+  "additional_sources": [
+    {
+      "path": "monitors/reference/bank-maint-2.4.inc",
+      "backup": "STR8N-F-release-development",
+      "sha256": "b5ca6a53c0284aba7a6b85c6829159d3648d5d153b0eab4b0bd11dda223e8911",
+      "publication_approved": false
+    },
+    {
+      "path": "monitors/reference/sram-work-b35.inc",
+      "backup": "STR8N-F-release-development",
+      "sha256": "9e45a8908b47a6122c165e929801098853257118fa05cfbe370f0838a59f4d3d",
+      "publication_approved": false
+    },
+    {
+      "path": "tools/build_loadable_maint.py",
+      "backup": "STR8-N",
+      "sha256": "ad34a7da5da6620abe9ae4beac8b526d8dc06e38d03a7cc49aa2b2615dd44fe9",
+      "publication_approved": false
+    }
+  ],
+  "sanitized_export": {
+    "publication_approved": false,
+    "original_source_archive_sha256": "7d5fc408a96df85f82d65fb6909c1761910a1c473e8cefdcd4b4c2743c3f4dff",
+    "omitted_board_evidence_files": 23,
+    "host_inventory_external": true
+  },
+  "git_staging": {
+    "source_archive_sha256": "f97eeadab90142ad6bbd2f16012794428acc8f85b285923c04fc1af17434f7bb",
+    "text_policy": "Existing .gitattributes LF policy; normalized CRLF text without changing code logic",
+    "normalization_only_files": 57,
+    "original_accepted_manifest_changed": false,
+    "frozen_F_changed": false,
+    "publication_approved": false
+  },
+  "current_consolidation": {
+    "canonical_repository": "95westus/STR8-N",
+    "user_authorized": true,
+    "note": "Per-file approval/status fields above record earlier review snapshots, not current runtime settings or a new GitHub approval gate."
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "ref": "refs/tags/mon-g8-tools-preview1",
+    "node_id": "REF_kwDOVZ-S0b9yZWZzL3RhZ3MvbW9uLWc4LXRvb2xzLXByZXZpZXcx",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/tags/mon-g8-tools-preview1",
+    "object": {
+      "sha": "94ef0696dbaa3cb8d66f6355db480fba093b3d60",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/94ef0696dbaa3cb8d66f6355db480fba093b3d60"
+    }
+  },
+  {
+    "ref": "refs/tags/v0.1.0-preview.1",
+    "node_id": "REF_kwDOVZ-S0bpyZWZzL3RhZ3MvdjAuMS4wLXByZXZpZXcuMQ",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/tags/v0.1.0-preview.1",
+    "object": {
+      "sha": "5beb513db4d11be1cfae5791277cfd6202d15a14",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/5beb513db4d11be1cfae5791277cfd6202d15a14"
+    }
+  },
+  {
+    "ref": "refs/tags/v0.2.0",
+    "node_id": "REF_kwDOVZ-S0bByZWZzL3RhZ3MvdjAuMi4w",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/tags/v0.2.0",
+    "object": {
+      "sha": "650b2ba715832074a996f61d44cb690c244fede0",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/650b2ba715832074a996f61d44cb690c244fede0"
+    }
+  },
+  {
+    "ref": "refs/tags/v0.3.0",
+    "node_id": "REF_kwDOVZ-S0bByZWZzL3RhZ3MvdjAuMy4w",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/tags/v0.3.0",
+    "object": {
+      "sha": "3f20a35ab1cc1a4415926ab577d42ae011246b8a",
+      "type": "tag",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/tags/3f20a35ab1cc1a4415926ab577d42ae011246b8a"
+    }
+  }
+]

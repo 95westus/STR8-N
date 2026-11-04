@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "passed": true,
+  "source_commit": "a5f1d83f6a7017eb30e6268c6e0b1fd12fce6a8d",
+  "toolkit_version": "0.3.0",
+  "assets": {
+    "STR8N-F-BASE1-0.3.0.zip": {
+      "bytes": 243843,
+      "sha256": "3c3631ec8de5dfead44e3b54a8e885a82c3d508f90b04f7d3d18ce70a91a7a4f"
+    },
+    "STR8N-F-BASE1-0.3.0-source.zip": {
+      "bytes": 529511,
+      "sha256": "128b5d74ace51aa61083112cfaf0c1ab03049b4fad4ecfc21d4d0a81e332e3aa"
+    },
+    "STR8N-F-BOOT-4096.bin": {
+      "bytes": 4096,
+      "sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1"
+    }
+  },
+  "fresh_extraction_commands": [
+    {
+      "kit": "STR8N-F-BASE1-0.3.0",
+      "command": [
+        "tools/verify_release_kit.py",
+        "."
+      ],
+      "returncode": 0
+    },
+    {
+      "kit": "STR8N-F-BASE1-0.3.0",
+      "command": [
+        "tools/verify_base1.py"
+      ],
+      "returncode": 0
+    },
+    {
+      "kit": "STR8N-F-BASE1-0.3.0",
+      "command": [
+        "tools/nf_console.py",
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "kit": "STR8N-F-BASE1-0.3.0",
+      "command": [
+        "migration-host/nf_migrate.py",
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "kit": "STR8N-F-BASE1-0.3.0",
+      "command": [
+        "migration-host/nf_migrate_live.py",
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "kit": "STR8N-F-BASE1-0.3.0",
+      "command": [
+        "migration-host/nf_provision_live.py",
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "kit": "STR8N-F-BASE1-0.3.0",
+      "command": [
+        "migration-host/nf_upgrade.py",
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "kit": "STR8N-F-BASE1-0.3.0-source",
+      "command": [
+        "tools/verify_release_kit.py",
+        "."
+      ],
+      "returncode": 0
+    },
+    {
+      "kit": "STR8N-F-BASE1-0.3.0-source",
+      "command": [
+        "tools/verify_base1.py"
+      ],
+      "returncode": 0
+    }
+  ],
+  "exact_rc1_runtime_files": 54,
+  "firmware_builds": 0,
+  "CPU_simulations": 0,
+  "board_access": false,
+  "published": false,
+  "Python_serial_terminal_included": true,
+  "final_ZIP_live_trial": "NOT_RUN",
+  "rc1_existing_SNBT_trial": "PASSED_2609",
+  "other_packaged_routes": "NOT_RUN; see scoped release notes"
+}

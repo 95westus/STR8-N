@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "profile": "BASE1",
+  "scope": "Host/fake transport only; no target instructions or devices",
+  "unique_checks": 17,
+  "CPU_simulations": 0,
+  "hardware_access": false,
+  "execution_qualified": false,
+  "files": {
+    "nf_migrate.py": "df1649f648a35d8592d3be035abf61abe1c53111c128d78512e97c09ed45885f",
+    "test_nf_migrate.py": "27a5f9890e3a36549092cdf4fab71ba5a37210f941665fd1e58b5ec74084819f",
+    "README.md": "e83aaba19081268d1e2352efe57780e2c5b6b69367ac47142aeb80faf3db2a61"
+  }
+}

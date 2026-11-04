@@ -1,0 +1,336 @@
+{
+  "passed": true,
+  "hardware": false,
+  "serial_access": false,
+  "identity": "Unified STR8N-F b15 source/build",
+  "generation": "8000000F",
+  "core_manifest_sha256": "daa4159885fd409b52bc5af79939fa29a9b52bc241264c94778c736d2d64818e",
+  "profiles": {
+    "format": 1,
+    "shared": {
+      "generation": "8000000F",
+      "bootstrap": "STR8N-F-BOOT-4096.bin",
+      "config": "STR8N-F-CONFIG-RAM.bin",
+      "opaque_installer": "STR8N-F-OPAQUE-RAM.bin",
+      "maintenance": "STR8N-F-MAINT-RO-RAM.bin",
+      "readback": "STR8N-F-READBACK-RAM.bin",
+      "boot_records": "SNBT C/D; preserve existing records and wear history",
+      "installation": "Inventory and verify existing components; write only an admitted changed target",
+      "saved_boot_policy": "Preserve; never manufacture settings from a board profile",
+      "RAM": "Fresh escrow before tools; restore and independently verify afterward"
+    },
+    "boards": {
+      "2512": {
+        "cpu": "65c02",
+        "monitor_flavor": "BASE",
+        "installed_components": {
+          "B3:F": "STR8N-F-BOOT-4096.bin",
+          "B3:A": "STR8N-F-MON-BASE-A.bin",
+          "B3:B": "STR8N-F-MON-BASE-B.bin",
+          "B0:8": "STR8N-F-FLASH-8000.bin"
+        },
+        "preserve": [
+          "All opaque sectors",
+          "B0:9 owner erase",
+          "Boot policy",
+          "RAM",
+          "Wear history"
+        ],
+        "optional_components": [
+          "VX1",
+          "ES1"
+        ],
+        "FLASH_installed": true
+      },
+      "2609": {
+        "cpu": "65c816-e",
+        "monitor_flavor": "VX1",
+        "installed_components": {
+          "B3:F": "STR8N-F-BOOT-4096.bin",
+          "B3:A": "STR8N-F-MON-VX1-A.bin",
+          "B3:B": "STR8N-F-MON-VX1-B.bin",
+          "B3:E": "STR8N-F-VX1-E.bin",
+          "B3:8": "STR8N-F-ES1-8.bin"
+        },
+        "preserve": [
+          "Entire B0 WDC backup",
+          "All opaque sectors",
+          "VX1",
+          "ES1",
+          "External SRAM",
+          "Boot policy",
+          "RAM",
+          "Wear history"
+        ],
+        "optional_components": [
+          "FLASH at an explicitly assigned location"
+        ],
+        "FLASH_installed": false
+      }
+    }
+  },
+  "artifacts": {
+    "STR8N-F-MON-BASE-A.bin": {
+      "bytes": 4096,
+      "sha256": "27b273ad66562d150071c058fa20ded2a5f307588ed73d6deeec0670c0b00474",
+      "address": "A000",
+      "entry": "A084",
+      "role": "Optional monitor sector"
+    },
+    "STR8N-F-MON-BASE-B.bin": {
+      "bytes": 4096,
+      "sha256": "4d3fe3ad2ad301c610daefcb257823d6c919ca1df4c4e959ec2b0a33e0684b3d",
+      "address": "B000",
+      "entry": "B084",
+      "role": "Optional monitor sector"
+    },
+    "STR8N-F-MON-VX1-A.bin": {
+      "bytes": 4096,
+      "sha256": "0cbaa80b6d9d168775cb25c737271f9eb104aa760402a7ec3fd1fae0fae89c04",
+      "address": "A000",
+      "entry": "A084",
+      "role": "Optional monitor sector"
+    },
+    "STR8N-F-MON-VX1-B.bin": {
+      "bytes": 4096,
+      "sha256": "e9b765c31b6c5fc3b67b58e0251a2205bec46dc2d6fa48c45c67db59820632b7",
+      "address": "B000",
+      "entry": "B084",
+      "role": "Optional monitor sector"
+    },
+    "STR8N-F-VX1-E.bin": {
+      "bytes": 4096,
+      "sha256": "2948c4c7019a6e9f5a3b6407ecf414035360354cff36f1641cc065fcd8beeef3",
+      "address": "E000",
+      "entry": "E040",
+      "role": "Optional VERSION/CAPS sector"
+    },
+    "STR8N-F-VERSION-RAM.bin": {
+      "bytes": 417,
+      "sha256": "09977db9f7052bd03fd4f47f455a031dae960acb4626c5146127b7ebf2e7626b",
+      "address": "0200",
+      "entry": "0200",
+      "role": "RAM tool"
+    },
+    "STR8N-F-MAINT-RO-RAM.bin": {
+      "bytes": 3572,
+      "sha256": "453e753370c04a3a16a0f2a80dabd0f9c43dba0d85b2bb4ff4c5de5d9850aa8f",
+      "address": "0200",
+      "entry": "0200",
+      "role": "RAM tool"
+    },
+    "STR8N-F-ES1-8.bin": {
+      "bytes": 4096,
+      "sha256": "b5b2664deb0e3ed8d8038a18b6057f09da73f0e258cf50c07b94d2f8f99a6e3b",
+      "address": "8000",
+      "entry": "8040",
+      "role": "Optional EDU/SRAM provider sector"
+    },
+    "STR8N-F-EDU-SRAM-RAM.bin": {
+      "bytes": 1349,
+      "sha256": "8cddb6eb8c85a9c958e84bca3c45ec8c9fa3fa3d4ed862a8044f8edbaaf1a138",
+      "address": "0200",
+      "entry": "0200",
+      "role": "RAM tool"
+    },
+    "STR8N-F-FLASH-8000.bin": {
+      "bytes": 4096,
+      "sha256": "3ec86d34bbcdbb4bef12074e263ffcd850e04f974981b1f7f237e4f77c941c79",
+      "address": "8000",
+      "entry": "8000",
+      "role": "Optional opaque application"
+    },
+    "STR8N-F-FLASH-8000-RAM.bin": {
+      "bytes": 3204,
+      "sha256": "8ffcc03d95a1606eac2327027903b7a0c765a37800e9f439677adaaebc6283ef",
+      "address": "0200",
+      "entry": "0200",
+      "role": "RAM tool"
+    },
+    "STR8N-F-FLASH-9000.bin": {
+      "bytes": 8192,
+      "sha256": "1974289f6bada03eeba3b3fccc0de349a77b298a31de8bed877a465754a4b948",
+      "address": "9000",
+      "entry": "9000",
+      "role": "Optional opaque application"
+    },
+    "STR8N-F-FLASH-9000-RAM.bin": {
+      "bytes": 3204,
+      "sha256": "e1860950f12245703b1357bfb8fb43df032d5ea44164f198fe20df406c14f3e3",
+      "address": "0200",
+      "entry": "0200",
+      "role": "RAM tool"
+    },
+    "STR8N-F-READBACK-RAM.bin": {
+      "bytes": 2476,
+      "sha256": "6833aae9c7eca2d343ac86cec7e6de8ced8464a3e27c6f5880fe621c43c57975",
+      "address": "0200",
+      "entry": "0200",
+      "role": "RAM tool"
+    }
+  },
+  "compiled": [
+    {
+      "module": "monitor-base-a0",
+      "bytes": 3830,
+      "sha256": "0df39d21666a6f479d8a9fb8e88be80e45c6b1f753bf9e2c65f23b96b2974d48"
+    },
+    {
+      "module": "monitor-base-b0",
+      "bytes": 3830,
+      "sha256": "4f14a3cba768898074aff9fdf5b8a706217e9ffe8fbac123bc99f5d2858df072"
+    },
+    {
+      "module": "monitor-vx1-a0",
+      "bytes": 3965,
+      "sha256": "16ee1d5e4fce2fb59aa8226e7359883419ba8b85a59a643615ed57d1f5c54a7d"
+    },
+    {
+      "module": "monitor-vx1-a0",
+      "bytes": 3911,
+      "sha256": "8537daf1264c6e0cfbdb1410918f495ebedb669a7fc4dc6e90304b1e02874a15"
+    },
+    {
+      "module": "monitor-vx1-a0",
+      "bytes": 3902,
+      "sha256": "24ea4bae8904a9f44a7d2ce49548e2f408893b68c69e5c1b74afab393f07851d"
+    },
+    {
+      "module": "monitor-vx1-a0",
+      "bytes": 3896,
+      "sha256": "e1ae4184064237983347cbdc0829228b244f35f1262f742278ce54430579ffe6"
+    },
+    {
+      "module": "monitor-vx1-b0",
+      "bytes": 3965,
+      "sha256": "8df58c2e449a85a3f294d4d53792b05f3024f8d4fa37e731740e8440890c6ad5"
+    },
+    {
+      "module": "monitor-vx1-b0",
+      "bytes": 3911,
+      "sha256": "93f5b3f74d50238d16ad6fedd1169365826ba5ba38c98ce2c0617a125d8095de"
+    },
+    {
+      "module": "monitor-vx1-b0",
+      "bytes": 3902,
+      "sha256": "4ac2c31316cf37a9414f1a5175bd7445257a9c4fc6b263e2b26e4d493f5ded53"
+    },
+    {
+      "module": "monitor-vx1-b0",
+      "bytes": 3896,
+      "sha256": "cbd0693c7af1f7fd9bb0e9e3027c503003867d1282ed0c4501d2e7cc8331390b"
+    },
+    {
+      "module": "vx1",
+      "bytes": 4096,
+      "sha256": "b00803bb8404bbfa23b69a5cdbe1cce3a1d6661cdf38834cc0948a7d2cbf91dc"
+    },
+    {
+      "module": "vx1-client",
+      "bytes": 417,
+      "sha256": "09977db9f7052bd03fd4f47f455a031dae960acb4626c5146127b7ebf2e7626b"
+    },
+    {
+      "module": "maint",
+      "bytes": 3572,
+      "sha256": "69c0f39324902ae15f8d87eaf037051bb30f79d78bff4cad827a2a2b501cfed9"
+    },
+    {
+      "module": "es1",
+      "bytes": 961,
+      "sha256": "fa9574ae6e683a9be1b522d10d6d996f25d0d560d4e8fe1226b5b8d87718c695"
+    },
+    {
+      "module": "es1-client",
+      "bytes": 1349,
+      "sha256": "5a122d12acf93bae17975ff8180d9a4ec8f93106de14a76206586e60719f836f"
+    },
+    {
+      "module": "flash-8000",
+      "bytes": 3204,
+      "sha256": "d05c522fcc5c3527fd0ca6ebefded66968ea872bccec34072e1aab250277c546"
+    },
+    {
+      "module": "flash-8000-entry",
+      "bytes": 62,
+      "sha256": "bb5041390551809bb9b07d6b8c00a31971e8acf99a91c968a8ab226909cc7baa"
+    },
+    {
+      "module": "flash-9000",
+      "bytes": 3204,
+      "sha256": "fb56e6176ea035758134c56e6efe6e0c4a77b1ee48141337cdb0c4728159e443"
+    },
+    {
+      "module": "flash-9000-entry",
+      "bytes": 62,
+      "sha256": "bfb7d2c6e633e7b5b037061e97b69c768fbfe4e0ee2fe54324e4fa90ffef66e5"
+    },
+    {
+      "module": "readback-service",
+      "bytes": 353,
+      "sha256": "9f74898f634ab514e87ce2e8dff6272ac2c5409ed5030a0153be69f4eb79e872"
+    },
+    {
+      "module": "readback-loader",
+      "bytes": 2476,
+      "sha256": "6833aae9c7eca2d343ac86cec7e6de8ced8464a3e27c6f5880fe621c43c57975"
+    }
+  ],
+  "sources": {
+    "src/core/app-fixed-symbols.inc": "d11c77a50ecc9b24d326390e14aacb3d04435ddeaab5336abf1abbfbcb73efc0",
+    "src/core/bank-monitor-apply.inc": "c54721726436e38c17f3c3a6480c7a2732a86e042395cc76f7f0fd5b42495d2d",
+    "src/core/bank-monitor-crc.inc": "59970f790de66e22fd7df7454d33eea121396a757c65fda851594f1a2c60e472",
+    "src/core/bank-monitor-entry.asm": "aa30836463289d14efd610fbd9db53d202be2e6b5c90499d12a931781b8a37b7",
+    "src/core/bank-monitor-target.inc": "c71935280f16ba270d343301574de38a2e1c35d4938a9f43242c1bebc4565453",
+    "src/core/bank-monitor.asm": "940f3964b3e3862a1e1e05b3d61cd6f1a0bee2cccc972e55f34f63f8a8d49621",
+    "src/core/batch-gate.inc": "b45d6fd982386f0554093544401c27eedb7cc86dd2be7d45275d3454b3b65b1f",
+    "src/core/boot-symbols.inc": "4b5b14ac042fb7604977a06037b902e57eaad1183961acef652f54cd51131d3a",
+    "src/core/config-engine.inc": "f3075e7c27ff10db08311701ae65d2a47f0165cb8dba823b5ec10e0a2428b12d",
+    "src/core/edu-client-crc.inc": "2a65462e39737a2bb15a22c85df738031055780bf77ddddccf17832c0c953241",
+    "src/core/edu-client-guards.inc": "c0347072f3c60116dcf1063f39b6f3732111d8d0d2e58724eb647bc12ffc673b",
+    "src/core/edu-client-header.inc": "afba668fd3a37372f8ad02750349548de3ba80139cea2ce66ab6f8312bbe14c2",
+    "src/core/edu-client-params.inc": "0c993536451282af2771312734980bd7ee9141e550469ccae3aea969bd0156b4",
+    "src/core/edu-client.asm": "f9ebf7b13fe80dd2ccc6a82fa48d94e1f430c2c34ec7feea46d4efc4a5f91295",
+    "src/core/edu-sram-params.inc": "8342903dbf79db93572c4f498937ef2dedffab6db3b7d34b7268947a39a5c94b",
+    "src/core/edu-sram.asm": "f109d0a766e46138f04234b4bf9e77a090d3d7a517990ef1bc3d7b610d06cf0b",
+    "src/core/maint-ro-duplicates.inc": "d646a97a2b1840b232b47e2f52c3c32e708381e5421a79b3ba3a4704176234f5",
+    "src/core/maint-ro-params.inc": "beb58731d081a0322f9978f27f62b6e13e23172338be72a8b0eda82e28003ffa",
+    "src/core/maint-ro-ram-guards.inc": "884fbfe274074be33a2db666217aba5ba171c1c80dd8f04f1d4a765b6146d4fc",
+    "src/core/mon-absent-service.inc": "886779ba71e05359867d0a521cf164a1997608ff7c23f228429e295c1ff4e560",
+    "src/core/monitor-template.asm": "d2eded4937e4c8cb3d72252613e463818c9bdc57f7fb998397edce57fb7fe623",
+    "src/core/prototype-console.inc": "6de5d09330cd8695fd4ebe51d5dd713584b9e2f1ef94c020dbb1bbb744a1ab4a",
+    "src/core/prototype-engine.inc": "9937fccdc58675555d2b91c4c2ce2839ea0bf1e1802b6695e8cb5bc9eb47924f",
+    "src/core/ram-config.asm": "dd53c2f54c6a9b2cff72371ad290cf7d30565d145921286d1abaf369f477d14b",
+    "src/core/ram-demo.asm": "9766f7bfef93e46495aa13a8ea55c5ba911fbd3061c843b01a0ad44a4f64f837",
+    "src/core/ram-installer.asm": "031322a0604f570af28269e7c4e9c5121686baddbf25c84076a02e3dd3264d9e",
+    "src/core/ram-maint-ro.asm": "e3093d1fd16fde1c9b86bd2f57822345fa1eb46d65da1d725b79320eff1865ba",
+    "src/core/service-eq.inc": "fce4745cf3a75d1ba20e969414851814289d07192dc60b46c28ec66fd987a214",
+    "src/core/sr-stubs.inc": "4c7678b351d6654875d210422e4e618b276c000d3a870399296742dc6ca93219",
+    "src/core/str8n-v2-boot.asm": "0fd220b6acd2618123d6ddc4f801485a874e616e102cb7aa3aaaab388fdc7db2",
+    "src/core/str8n-v2-config.inc": "0880d54836bb206dc7e1f5daf08d502b9b27422cea338265b9c0d2c894c1ea69",
+    "src/core/str8n-v2-eq.inc": "a84eb0c8c638b36d8d25c4d4b384b5e298346fca97bab73f37717f3ae8478af4",
+    "src/core/str8n-v2-flash-worker.inc": "f6b11aea5d87e0d4d5425380b8729eb8630da4cb1c1539b74390ffebbb61a24e",
+    "src/core/str8n-v2-flash.inc": "70318221aa20f991f07b3fb46f1846d796f38a2d200bc2597f9fc7d8098929bf",
+    "src/core/str8n-v2-load.inc": "7cadf52f26408d4408ffbdac3e0ef57751b3fa22d790946653575597b4edeffa",
+    "src/core/str8n-v2-monitor.inc": "5ff6ff3551e32a892e2858a8e442f72c31030beaa77b0de0f20cd668bf3f2d38",
+    "src/core/str8n-v2-public.inc": "63eb0928dc7bbcfffd085f1b566ea2e08f44a04b4321c2696121d4d8fa319ad7",
+    "src/core/str8n-v2-ram-console.inc": "82220870e642184a1bc8a40800fdfc081f8eb27b8b0f5d9ff98ee627828f99de",
+    "src/core/str8n-v2-vectors.asm": "80499ac442e41aa076fc21096ca6d01eaa61fab1ca148adad64d1db66831dce5",
+    "src/core/str8n-v2-worker.asm": "bdfbc38d426b465fcbd309f5e037a57ffe4a8327b6da0f710f09bb0fe1759a81",
+    "src/core/text-ids.inc": "13b5e881c51177ffe9188d4563cdbe27e76f855f45f9c86dd8a45f32611ce7a0",
+    "src/core/text-image.inc": "fa76841da79e64b9f50ce2543d13d27054c964de4140ba6dc3e26b0f7234c9ae",
+    "src/core/vectors-image.inc": "396c0d0c4883f9eed1df9cf74c286570d1e1fb84dec0b17a732566ece0a76322",
+    "src/core/vectors-symbols.inc": "d2073946203db1f18be93d83cfd72d7db37f7f99c0c98a67e34cb46012c1a782",
+    "src/core/version-caps-client.asm": "46584a120677af6002132cbafabf658f8c2a97b43a3dd9acd344dbb1d4c10069",
+    "src/core/version-caps-e000.asm": "d95c7fc1becefa8944f9ac4541d415f5bb62cf876909200c029e0f2e374ece5b",
+    "src/core/version-caps-identities.inc": "f0f6efbb996b75a1aa90b6ec086ef79c9b43e3427068aad86b825395096cd42e",
+    "src/core/version-caps-mon.inc": "5f039606fac11df0d76c9e32f0f189e5d18d12d6ae31bca6858b6a47885cd4cd",
+    "src/core/version-caps-public.inc": "96a4a7d8e78cb04bf4c41573277f8171d88eddef4d8a432ab047b3502ea8e1ab",
+    "src/core/worker-copy.inc": "e705a84e09d67f3cc939ab0e8a523503bed2d03681a56c50d217d95ddc568ca3",
+    "src/core/worker-image.inc": "5df9c0318079e6b6f1a635b3a0bd6f564a9e462a502c2f661783270c4338cfe6",
+    "src/core/worker-public-symbols.inc": "894a7fe7965d96c446392a544489312f07d14f945d90e0196bed9d12b1afc703",
+    "src/include/service-eq.inc": "253772c24a3f1f303af43b7e010680283dd889c26719bdae4a776bb2da7d17f1",
+    "src/include/str8n-v2-eq.inc": "a7511dd3096267b8f4b34bb9313679f0a823c5fa2b1e6f2dee60aeb23b6f2e44",
+    "src/include/str8n-v2-public.inc": "1c251d5e552f134446bd8cd220dca64fd4002c52690ad3040cd76f1c99da78cb"
+  }
+}

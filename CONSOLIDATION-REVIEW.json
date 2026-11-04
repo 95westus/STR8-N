@@ -1,0 +1,39 @@
+{
+  "status": "CONSOLIDATED_FOUNDATION_BASED_MAIN_F_FROZEN",
+  "public_base": "4f19e7fcc8fc2e2e54a47fe91e2b9a3058aaca37",
+  "private_history_imported": false,
+  "selected_file_provenance": "CONSOLIDATION-SOURCES.json",
+  "memory_builder_change": "Resolve frozen Foundation inputs from this public-base tree, not a nested external clone.",
+  "reproduction_instructions": "docs/CONSOLIDATION_SOURCE_REVIEW.md",
+  "source_closure": {
+    "recipe": "tools/rebuild_component_inputs.py",
+    "reconstructed_inputs": 32,
+    "remaining_pinned_inputs": 5,
+    "complete_source_only_build": false,
+    "runtime_service_recipe": "tools/rebuild_mon_services.py",
+    "all_non_foundation_binary_inputs_rebuilt": true,
+    "frozen_F_reused": true,
+    "note": "F intentionally remains a frozen binary platform input; all non-F payload inputs rebuild from source."
+  },
+  "sanitized_export": {
+    "host_source_changed": true,
+    "firmware_expected_hashes_changed": false,
+    "original_accepted_manifest_changed": false,
+    "board_specific_evidence_omitted": 23,
+    "ownership_review": "Provenance and notices reviewed; no independent ownership certification or publication approval."
+  },
+  "git_staging": {
+    "text_policy": "LF",
+    "sanitized_host_source_pin_updated": true,
+    "firmware_expected_hashes_changed": false,
+    "original_accepted_manifest_changed": false,
+    "source_archive_sha256_before_staging": "f97eeadab90142ad6bbd2f16012794428acc8f85b285923c04fc1af17434f7bb",
+    "publication_approved": false
+  },
+  "canonical_repository": "95westus/STR8-N",
+  "consolidation_authorized_by": "User instruction to merge everything into STR8-N and keep Foundation/ASM/DBG organized on main",
+  "published_histories_preserved": {
+    "95westus/STR8-N": "d0e9235fe629ce5c908d2049f040cb9397a588ff",
+    "95westus/STR8N-F": "4f19e7fcc8fc2e2e54a47fe91e2b9a3058aaca37"
+  }
+}

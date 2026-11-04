@@ -1,0 +1,260 @@
+{
+  "schema": 3,
+  "profile": "Compact unified MON/ASM/DBG with REC utilities",
+  "Foundation": "0.3.0 g00000001 BASE1/PR05",
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "MON": "0.1.0-dev g00000010",
+  "WB": "g0000000E",
+  "PROGRAM": "g3",
+  "SRAM_WORK": "g4",
+  "ASM_DBG": "g2",
+  "startup": "Traditional",
+  "profile_allocated_KiB": 92,
+  "erased_sector_KiB_on_reference_boards": 36,
+  "REC_utilities": {
+    "MAINT": {
+      "file": "rec/MAINT.bin",
+      "load": "0200",
+      "entry": "0200",
+      "bytes": 19168,
+      "sha256": "cdd53f213ed8995b512f42d169cb5ff25b6d5fd39f659ae4baf38555f12575ba",
+      "end": "4CDF",
+      "MON_required": false,
+      "SPI_required": false
+    },
+    "FLASH": {
+      "file": "rec/FLASH.bin",
+      "load": "0200",
+      "entry": "0200",
+      "bytes": 17221,
+      "sha256": "28eabc8fc8158f1df88e8426d2566b021440f83514c9dbb5c76b4096eaa93e85",
+      "end": "4544",
+      "MON_required": false,
+      "SPI_required": false
+    }
+  },
+  "targets": [
+    {
+      "bank": 0,
+      "address": "A000",
+      "role": "ASM AP/02 and helper",
+      "variants": {
+        "65c02": {
+          "file": "native/payload/B0-A000-65c02.bin",
+          "sha256": "f547601a5f610ac11806e72f2daf8d4ce4cf69050bbcfbf12f23792b73bf98ba"
+        },
+        "65c816e": {
+          "file": "native/payload/B0-A000-65c816e.bin",
+          "sha256": "221c788d49e36fc107a3e073f6601b24e40b78f8e7021cf16589c768efb191b5"
+        }
+      }
+    },
+    {
+      "bank": 0,
+      "address": "B000",
+      "role": "ASM AP/02 and helper",
+      "file": "native/payload/B0-B000.bin",
+      "sha256": "a534113647273420ce278c944cb93cd9ca5f6e3cc15950e4f7ad3a83c75d142e"
+    },
+    {
+      "bank": 0,
+      "address": "C000",
+      "role": "DBG AP/02 and paired SF/1 provider",
+      "variants": {
+        "65c02": {
+          "file": "native/payload/B0-C000-65c02.bin",
+          "sha256": "ec33eb23438ae674ed8b5f01b59047a94895f4a3d1948c7369412cd0bd9a363e"
+        },
+        "65c816e": {
+          "file": "native/payload/B0-C000-65c816e.bin",
+          "sha256": "3ddafb5dee8780ce0c914bc1d06d493607ecc5ddd5bc9d2324783835a911a35e"
+        }
+      }
+    },
+    {
+      "bank": 0,
+      "address": "D000",
+      "role": "DBG AP/02 and paired SF/1 provider",
+      "file": "native/payload/B0-D000.bin",
+      "sha256": "7e5c0d1541ba7c4b20360319e0400f8f197f5e4d3ce5a8444e5b5434557099dd"
+    },
+    {
+      "bank": 1,
+      "address": "A000",
+      "role": "Shared transfer",
+      "file": "native/payload/B1-A000.bin",
+      "sha256": "40923ba134d4e19f935a50dc2116335ac50542cc05d82a1389ecdd4598a1f184"
+    },
+    {
+      "bank": 1,
+      "address": "B000",
+      "role": "SRAM/WORK",
+      "file": "native/payload/B1-B000.bin",
+      "sha256": "0015350fb9069b55e04f3317793aa19efa9945b5f7c21487fa9bbdb8b4aac59b"
+    },
+    {
+      "bank": 1,
+      "address": "C000",
+      "role": "SRAM/WORK",
+      "file": "native/payload/B1-C000.bin",
+      "sha256": "01eac7703a7d43c679ee6cf65f84d85670e2fafcf615d0af567754e1ba88b085"
+    },
+    {
+      "bank": 1,
+      "address": "D000",
+      "role": "SRAM/WORK",
+      "file": "native/payload/B1-D000.bin",
+      "sha256": "7965b99473662112bfca993fa782a3fef3c20323405cecd7bc254dc60abc4412"
+    },
+    {
+      "bank": 2,
+      "address": "8000",
+      "role": "WB/PROGRAM/loaders",
+      "file": "native/payload/B2-8000.bin",
+      "sha256": "639b53dddc896dc538fcdc88cf0ad4baa47d29b16e962bf292f663d09d3f43c7"
+    },
+    {
+      "bank": 2,
+      "address": "9000",
+      "role": "WB/PROGRAM/loaders",
+      "file": "native/payload/B2-9000.bin",
+      "sha256": "1ae593ac95554c2acf5bbf5321928072d787dd25dfcfd5ff3c0332b6c7f443bd"
+    },
+    {
+      "bank": 2,
+      "address": "A000",
+      "role": "WB/PROGRAM/loaders",
+      "file": "native/payload/B2-A000.bin",
+      "sha256": "bf5db69da02079b0143985581956bc82ad97e84f28418f54b149c8dda2615f64"
+    },
+    {
+      "bank": 2,
+      "address": "B000",
+      "role": "CLOCK",
+      "file": "native/payload/B2-B000.bin",
+      "sha256": "766d75cc85cb64a83dc3350237d879e0c963f2da48b2b38a49abb572ec285f80"
+    },
+    {
+      "bank": 2,
+      "address": "C000",
+      "role": "CLOCK",
+      "file": "native/payload/B2-C000.bin",
+      "sha256": "33b279139472e5fe022abc7bbeba184ee28d2836514e74ddf0d1703bbd13b839"
+    },
+    {
+      "bank": 2,
+      "address": "D000",
+      "role": "CLOCK",
+      "file": "native/payload/B2-D000.bin",
+      "sha256": "dbffdb50da2e06c1028d8682588168b6d54375139892765db6decf54346bdc4a"
+    },
+    {
+      "bank": 2,
+      "address": "F000",
+      "role": "STATUS",
+      "file": "native/payload/B2-F000.bin",
+      "sha256": "78f9e5b45a0be3eeb7a22bfb2f8c95eb54f3a0fb2f1487cf2be7288ad763ce33"
+    },
+    {
+      "bank": 3,
+      "address": "8000",
+      "role": "RTC/I2C",
+      "file": "native/payload/B3-8000.bin",
+      "sha256": "041b94f558f80061ecddc0cce63127631838d819ef698f6af0b9ae9e822d99d8"
+    },
+    {
+      "bank": 3,
+      "address": "9000",
+      "role": "RTC history code; retain final1KiB metadata",
+      "preserve_RTC_metadata": true,
+      "file": "native/payload/B3-9000.bin",
+      "sha256": "523e1af75b2ae349130d40cc8b62a02ad1df7f4cd29ab9bc45f51980f5a16c26"
+    },
+    {
+      "bank": 3,
+      "address": "A000",
+      "role": "MON A g10",
+      "file": "native/payload/B3-A000.bin",
+      "sha256": "85e63ecb57c49d6998e2209670be3194fb671f679fa849bbadc798104a9546e6"
+    },
+    {
+      "bank": 3,
+      "address": "B000",
+      "role": "MON B g10",
+      "file": "native/payload/B3-B000.bin",
+      "sha256": "6eb847ed47cac9a7b4c876eb792309c741be71a94d53f770caab78d67fd0ffd9"
+    },
+    {
+      "bank": 3,
+      "address": "E000",
+      "role": "Shared dispatcher/maps/APPS",
+      "file": "native/payload/B3-E000.bin",
+      "sha256": "67e773b346ade183b5a28adc91436b82c686a82d014b128c5db1cc9e8ab45b11"
+    }
+  ],
+  "retirement_targets": [
+    {
+      "bank": 0,
+      "address": "8000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    {
+      "bank": 0,
+      "address": "9000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    {
+      "bank": 0,
+      "address": "E000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    {
+      "bank": 0,
+      "address": "F000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    {
+      "bank": 1,
+      "address": "8000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    {
+      "bank": 1,
+      "address": "9000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    {
+      "bank": 1,
+      "address": "E000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    {
+      "bank": 1,
+      "address": "F000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    {
+      "bank": 2,
+      "address": "E000",
+      "role": "Explicitly reviewed obsolete/owner image retirement",
+      "file": "native/payload/ERASED-4096.bin",
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    }
+  ]
+}

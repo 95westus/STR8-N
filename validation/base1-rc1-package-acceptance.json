@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "passed": true,
+  "source_commit": "1f5db7a94a176c4ad50f47c39653943590d97a21",
+  "assets": {
+    "STR8N-F-BASE1-0.3.0-rc1.zip": {
+      "bytes": 221946,
+      "sha256": "ed9e87ef34323b0504c355bd6b35e0a5095ecd0665d6e67166bd9178c29bddb2"
+    },
+    "STR8N-F-BASE1-0.3.0-rc1-source.zip": {
+      "bytes": 508531,
+      "sha256": "fb0fb6ed6e87faf8883d6b53a4afab77866b897b4eb4c5663f681f8946ab1a09"
+    },
+    "STR8N-F-BOOT-4096.bin": {
+      "bytes": 4096,
+      "sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1"
+    }
+  },
+  "archive_CRC_and_member_paths_verified": true,
+  "fresh_operator_and_source_extraction": true,
+  "manifest_dependencies_links_and_F_identity_verified": true,
+  "operator_CLI_help_passed": true,
+  "cold_imports_and_runtime_wrapper_dependency_verified": true,
+  "development_checkout_fallback": false,
+  "Python_serial_terminal_included": true,
+  "existing_kit_assets_unchanged": true,
+  "packaged_migration_test": "NOT_RUN",
+  "firmware_builds": 0,
+  "CPU_simulations": 0,
+  "serial_access": false,
+  "board_2205_accessed": false,
+  "published": false,
+  "checks": [
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1",
+      "args": [
+        "tools/verify_release_kit.py",
+        "."
+      ],
+      "passed": true,
+      "stdout_sha256": "7eb2c5fc6f5bbf36aaafdabc28fca4293b2c90dce8980de92de8bd750b1e3f5c",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1",
+      "args": [
+        "tools/verify_base1.py"
+      ],
+      "passed": true,
+      "stdout_sha256": "d7da4fc2d98e9cc26602ec49d092872480d7dce1b4eb71f6dc3a9781bcc35b59",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1-source",
+      "args": [
+        "tools/verify_release_kit.py",
+        "."
+      ],
+      "passed": true,
+      "stdout_sha256": "63da49f51b3aec45e506718009a4902bc1d342b07f023c39cfbb1a7b09bc80ce",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1-source",
+      "args": [
+        "tools/verify_base1.py"
+      ],
+      "passed": true,
+      "stdout_sha256": "d7da4fc2d98e9cc26602ec49d092872480d7dce1b4eb71f6dc3a9781bcc35b59",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1",
+      "args": [
+        "tools/nf_console.py",
+        "--help"
+      ],
+      "passed": true,
+      "stdout_sha256": "9b1ada7184b80f537900b08ebdb713e2d36450afc2c6dafa2bb3e5b2cdcf46f9",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1",
+      "args": [
+        "migration-host/nf_migrate.py",
+        "--help"
+      ],
+      "passed": true,
+      "stdout_sha256": "12638dacbe8e00cd74d02c8651cd8e473164e3fa832a6fa6780f30aed34c0e64",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1",
+      "args": [
+        "migration-host/nf_migrate_live.py",
+        "--help"
+      ],
+      "passed": true,
+      "stdout_sha256": "ea520ebbe34da7c164401655a07a42b02066b2009f92abca298ec0ca44084866",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1",
+      "args": [
+        "migration-host/nf_provision_live.py",
+        "--help"
+      ],
+      "passed": true,
+      "stdout_sha256": "f77e2a3506b32ffacce65edd34dcebe3e741ba347342cd32a67bb939921c0a11",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1",
+      "args": [
+        "migration-host/nf_upgrade.py",
+        "--help"
+      ],
+      "passed": true,
+      "stdout_sha256": "0c68139f4b4fbfa48c75e84eb5dc2fb7b19c18648ab0991ddf83ab187dca299f",
+      "stderr": ""
+    },
+    {
+      "artifact": "STR8N-F-BASE1-0.3.0-rc1",
+      "args": [
+        "runtime imports / matching binary inputs / pure wrapper probe"
+      ],
+      "passed": true,
+      "stdout_sha256": "badc54a6dd85cb48064525ce5a14c9ee93190c31aaf87fd4b61836d4b425b2e3",
+      "stderr": ""
+    }
+  ],
+  "package_receipt_sha256": "5d17a72176628217f60c2d1a77a8771595729142fdb3385c471d4737a5b47caf",
+  "extraction_receipt_sha256": "6ee789adfbc4115d28078548fd9c591b0599473e56fdd42a5902a55c8d428f91",
+  "package_assembly_passes": 1,
+  "post_package_record_only": true
+}

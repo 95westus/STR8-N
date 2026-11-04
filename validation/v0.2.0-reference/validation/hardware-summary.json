@@ -1,0 +1,57 @@
+{
+  "passed": true,
+  "kind": "sanitized inherited hardware evidence",
+  "firmware_sha256": "1a1db354d49d8a9a555be1100b74f3e4b0ed14d3156f3a333086853a845717b8",
+  "config_shipped_sha256": "3b661b867a7bd36f2aa4ec4e2e67e2e0b11c04c55b501233a87d4a87b9964914",
+  "config_2609_predecessor_sha256": "9d98ce51026f1a2f88f4ee1a34ab5a6d853d17371a98d34035b6923ee98e921d",
+  "config_change": "Same-length generic STR8 banner replaces 2609; instructions and addresses unchanged",
+  "receipts": [
+    {
+      "id": "65c02-F-cancel-and-normal-BIN",
+      "cpu": "65C02",
+      "console": "USB/FT245",
+      "scope": "F installation; first-byte Ctrl-C cancellation; normal BIN load",
+      "private_receipt_sha256": "89afe452c53a51339d380aca01ba42448c7a707f3f15ba960668858dc9f1f26f"
+    },
+    {
+      "id": "65c816-F-only-onboarding",
+      "cpu": "65C816 emulation",
+      "console": "USB/FT245",
+      "scope": "Exact F installation and recovery; does not claim every 2512 cancellation case on this CPU",
+      "private_receipt_sha256": "2fc97b85226775183d3fc508a399254d84c9b80ba3fb6f1b3c743f9b7df2edf1"
+    },
+    {
+      "id": "65c816-CONFIG-save-restore",
+      "cpu": "65C816 emulation",
+      "console": "USB/FT245",
+      "scope": "CONFIG predecessor saved A, automatic A boot, restored S, automatic REC; preserved owner data",
+      "private_receipt_sha256": "fb65de4360e7a8f146e07bbc48a1999a1cfbd30fef86216dd342722875866a67"
+    },
+    {
+      "id": "65c02-opaque-image-install-restore",
+      "cpu": "65C02",
+      "console": "USB/FT245",
+      "scope": "OIP1 image installation/readback; FLASH RAM/flash editing; restoration with actual wear retained",
+      "private_receipt_sha256": "ca199998c42b0a271f919c53f5ea9f9de84296603c2e7fd9c20071d3a9e29dca"
+    },
+    {
+      "id": "65c02-common-CONFIG-and-readback",
+      "cpu": "65C02",
+      "console": "USB/FT245",
+      "scope": "Shipped common CONFIG inspection; independently checked RAM; READBACK export/restoration; flash/settings preserved",
+      "private_receipt_sha256": "2e6506ad30635e1f8469a81b74ef032ff29436255aa99bf6c61ea43e9ecbf232"
+    }
+  ],
+  "release_preparation": {
+    "assembly_builds": 0,
+    "CPU_simulations": 0,
+    "board_access": false,
+    "board_2205_modified": false
+  },
+  "limits": [
+    "USB physical evidence only; ACIA is not physically qualified",
+    "No new generic factory migration or automatic host-installer acceptance",
+    "Private receipts and captures are not distributed",
+    "No physical power-cut or native-816 acceptance claim"
+  ]
+}

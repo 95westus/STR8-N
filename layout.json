@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "profile": "BASE1",
+  "private_F_compatibility": "PR05",
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "sector_bytes": 4096,
+  "opaque_sectors": {
+    "B0": [
+      "8",
+      "9",
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "B1": [
+      "8",
+      "9",
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "B2": [
+      "8",
+      "9",
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "B3": [
+      "8",
+      "9",
+      "A",
+      "B",
+      "E"
+    ]
+  },
+  "journal_sectors": [
+    "B3:C",
+    "B3:D"
+  ],
+  "recovery_sector": "B3:F",
+  "opaque_bytes": 118784,
+  "requires_MON": false,
+  "requires_EDU": false,
+  "opaque_policy": "Explicit target and verified preimage; usable does not imply erased or unowned",
+  "factory_default": "S",
+  "factory_enabled_banks": "00",
+  "existing_owner_policy": "Preserve images, settings and history; no automatic reformat or B0 backup copy",
+  "F_generation": "00000001",
+  "SNBT_monitor_generation": "8000000F"
+}

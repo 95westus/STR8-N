@@ -1,0 +1,7 @@
+; Private optional service dispatcher; frozen BASE1/F ABI is unchanged.
+SB_CLIENT_FLOOR EQU $69FF
+SB_ENTRY_MODE EQU $69FE
+SB_LOAD_RAM EQU $6900
+SB_MODULE_SOURCE EQU $8300
+SB_FORMAT EQU 1
+SB_PAGES EQU $10

@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "canonical_repository": "95westus/STR8-N",
+  "source_repository": "95westus/STR8N-F",
+  "source_repository_deleted": false,
+  "main_basis": "Foundation F / MON / UTIL / DEV",
+  "merge_parents": [
+    "d0e9235fe629ce5c908d2049f040cb9397a588ff",
+    "4f19e7fcc8fc2e2e54a47fe91e2b9a3058aaca37"
+  ],
+  "original_main_saved_as": "archive/str8-n/main-before-foundation-20261104",
+  "preserved_refs": [
+    {
+      "source_repository": "95westus/STR8-N",
+      "original_ref": "refs/heads/main",
+      "sha": "d0e9235fe629ce5c908d2049f040cb9397a588ff",
+      "destination_ref": "refs/heads/archive/str8-n/main-before-foundation-20261104",
+      "kind": "saved-main"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/heads/codex/identify-sxb-edu",
+      "sha": "d2800ab11e7c268e9c422cde925289a819fd32d2",
+      "destination_ref": "refs/heads/archive/str8n-f/codex/identify-sxb-edu",
+      "kind": "source-branch"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/heads/codex/mona-monb",
+      "sha": "5ae5aa30ac103f664073a93187e1f40a5b2ff80e",
+      "destination_ref": "refs/heads/archive/str8n-f/codex/mona-monb",
+      "kind": "source-branch"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/heads/codex/nf-v0.2.0",
+      "sha": "06a58a29c318b0a8093c267eaf30cc3d80c7d626",
+      "destination_ref": "refs/heads/archive/str8n-f/codex/nf-v0.2.0",
+      "kind": "source-branch"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/heads/codex/nf030-readme-label",
+      "sha": "254cea04ceb0e000178b17195a6f40690789ee82",
+      "destination_ref": "refs/heads/archive/str8n-f/codex/nf030-readme-label",
+      "kind": "source-branch"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/heads/codex/str8nf-base1",
+      "sha": "88764d295c768d9dc0c11c2366b179be1d3fecbe",
+      "destination_ref": "refs/heads/archive/str8n-f/codex/str8nf-base1",
+      "kind": "source-branch"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/heads/main",
+      "sha": "4f19e7fcc8fc2e2e54a47fe91e2b9a3058aaca37",
+      "destination_ref": "refs/heads/archive/str8n-f/main",
+      "kind": "source-branch"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/tags/mon-g8-tools-preview1",
+      "sha": "94ef0696dbaa3cb8d66f6355db480fba093b3d60",
+      "destination_ref": "refs/tags/mon-g8-tools-preview1",
+      "kind": "source-tag"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/tags/v0.1.0-preview.1",
+      "sha": "5beb513db4d11be1cfae5791277cfd6202d15a14",
+      "destination_ref": "refs/tags/v0.1.0-preview.1",
+      "kind": "source-tag"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/tags/v0.2.0",
+      "sha": "650b2ba715832074a996f61d44cb690c244fede0",
+      "destination_ref": "refs/tags/v0.2.0",
+      "kind": "source-tag"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/tags/v0.3.0",
+      "sha": "3f20a35ab1cc1a4415926ab577d42ae011246b8a",
+      "destination_ref": "refs/tags/v0.3.0",
+      "kind": "source-tag"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/pull/1/head",
+      "sha": "06a58a29c318b0a8093c267eaf30cc3d80c7d626",
+      "destination_ref": "refs/heads/archive/str8n-f/pull-1/head",
+      "kind": "pull-request-ref"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/pull/2/head",
+      "sha": "88764d295c768d9dc0c11c2366b179be1d3fecbe",
+      "destination_ref": "refs/heads/archive/str8n-f/pull-2/head",
+      "kind": "pull-request-ref"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/pull/3/head",
+      "sha": "d2800ab11e7c268e9c422cde925289a819fd32d2",
+      "destination_ref": "refs/heads/archive/str8n-f/pull-3/head",
+      "kind": "pull-request-ref"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/pull/4/head",
+      "sha": "254cea04ceb0e000178b17195a6f40690789ee82",
+      "destination_ref": "refs/heads/archive/str8n-f/pull-4/head",
+      "kind": "pull-request-ref"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/pull/5/head",
+      "sha": "5ae5aa30ac103f664073a93187e1f40a5b2ff80e",
+      "destination_ref": "refs/heads/archive/str8n-f/pull-5/head",
+      "kind": "pull-request-ref"
+    },
+    {
+      "source_repository": "95westus/STR8N-F",
+      "original_ref": "refs/pull/5/merge",
+      "sha": "08d3b9f956e79987e0bbe2d61bd452f8d543e755",
+      "destination_ref": "refs/heads/archive/str8n-f/pull-5/merge",
+      "kind": "pull-request-ref"
+    }
+  ],
+  "original_release_count": 12,
+  "original_asset_count": 47,
+  "supplemental_notice_asset_count": 9,
+  "F_rebuilt": false,
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1"
+}

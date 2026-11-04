@@ -1,0 +1,39 @@
+{
+  "feature": "Existing clean SNBT b15 F to frozen BASE1 upgrade",
+  "implemented_source": true,
+  "hardware_qualified": false,
+  "host_checks_passed": 10,
+  "check_command": "python -m unittest discover -s migration-host -p test_nf_upgrade.py -v",
+  "RAM_engine_assemblies": 1,
+  "F_rebuilds": 0,
+  "CPU_simulations": 0,
+  "flash_models": 0,
+  "serial_ports_opened": 0,
+  "board_2205_accessed": false,
+  "release_kit_updated": false,
+  "existing_kit_assets_verified_unchanged": true,
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "factory_NFM1_unchanged": true,
+  "NFU1_sha256": "137a73923af1661a6af03d8dc9351e1b1f650f4c6e3381669ae3cf020f8c6b62",
+  "NFU1_code_bytes": 3582,
+  "metadata_followup": "Normalized manifest paths and tool hashes; no binary or assembly rerun",
+  "files": {
+    "migrator/upgrade/build.py": "96d367c86feb5acd44267d9f08595ab7cf05ac59ab6ceea3a4bf8c14a56b6a52",
+    "migrator/upgrade/reserve.inc": "8bb6fa92dda40bb05b65b80f55e8f79a6287e6f75c7e138fc38fba7315438369",
+    "migrator/upgrade/payload/template.bin": "137a73923af1661a6af03d8dc9351e1b1f650f4c6e3381669ae3cf020f8c6b62",
+    "migrator/upgrade/payload/engine-manifest.json": "3e29a1cd5f00c757421381879716a2b0ddcea6e80ef333c823b7ae1112f3de2f",
+    "migration-host/nf_upgrade.py": "a39e4697e29a9c9f0ab8b03e031e44a1abac980fe1fd6727464a7f0a49af4d7a",
+    "migration-host/test_nf_upgrade.py": "f9f61ca18c670f3336ecef2347c7e60bd111ab4df4a0ef55514800dacdab37bd",
+    "migration-host/README.md": "db5fd29f0f211afd80c4a43511bc3ae287e51536ccf41454b3e238301552d8a2",
+    "docs/JOURNAL_F_UPGRADE.md": "95544ec1794e6ecb41a55d6f2fb088eda34bb93215c3bced31e129ecf4383e5d",
+    "docs/RELEASE_STATUS.md": "278c18f2b0a5a5bd3dc1badd137994c3a1cbf234c653a373991822ca7139230d",
+    "docs/ISSUES_RESOLVED.md": "f40ff5b82513f287ce92221ebe2a946484288fdeb219c45690d7575f2fc5a6b0"
+  },
+  "scope": [
+    "Clone existing newest record; append+commit F reservation before F erase",
+    "Only known b15 source F or already matching BASE1 no-op",
+    "Never erase C/D; refuse full/damaged/exhausted journal",
+    "Original pre-helper owner escrow required",
+    "Physical BASE1 and migrator acceptance remain pending"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "status": "unrendered-template-refuses-execution",
+  "build_passed": true,
+  "execution_qualified": false,
+  "hardware_access": false,
+  "serial_access": false,
+  "CPU_simulations": 0,
+  "source_sha256": "fcf5e95c345bd24ad6cb83336a092e65aff0714216e635aa99038f82239a5414",
+  "template_sha256": "794cc2cb3dc3ea514b4994b4661317cce4e6cb7e9d5dc6a77485a5d3dc682728",
+  "bytes": 8192,
+  "code_bytes": 3198,
+  "load_start": 8192,
+  "load_end": 16383,
+  "entry_65c02": 8192,
+  "entry_65c816": 8208,
+  "plan_address": 12288,
+  "plan_bytes": 256,
+  "self_hash_address": 16380,
+  "self_hash_algorithm": "FNV1a32 little endian over 2000-3FFB",
+  "staging_start": 16384,
+  "staging_end": 20479,
+  "scratch_start": 24576,
+  "scratch_end": 24607,
+  "zero_page_start": 224,
+  "zero_page_end": 233,
+  "stack": "emulation page 0100-01FF; native caller 0700 not uploaded",
+  "flash_id": "SST39SF010A BF/B5",
+  "flash_bank": 3,
+  "allowed_orders": [
+    [
+      "F"
+    ],
+    [
+      "D",
+      "C"
+    ],
+    [
+      "F",
+      "D",
+      "C"
+    ]
+  ],
+  "operations_always_erase": true,
+  "journal_commit_address": "sector start + 00FF, value 00, programmed last",
+  "console": "FT245 USB only",
+  "no_implicit_flash_bank_backup": true,
+  "recovery_loader": {
+    "bytes": 8611,
+    "start": 512,
+    "entry": 512,
+    "destination_start": 8192,
+    "destination_end": 16383,
+    "copy_order": "32 descending pages, X=FF down through 00 per page",
+    "sha256": "2da3261d4da679df2d72faa0e4b3c0baccfbd85db7c10de7e5b9e878f709da4c",
+    "structural_address_check": true,
+    "CPU_simulations": 0,
+    "unrendered_template_refuses": true
+  },
+  "limit": "Static build only; no CPU/hardware acceptance or migration authorization"
+}

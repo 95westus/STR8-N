@@ -1,0 +1,165 @@
+{
+  "passed": true,
+  "checks": 26,
+  "hardware": false,
+  "serial_access": false,
+  "cases": [
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "saved-default-boots-B0"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "manual-selection-boots-B0"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "saved-default-boots-B1"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "manual-selection-boots-B1"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "saved-default-boots-B2"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "manual-selection-boots-B2"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "saved-default-boots-B3"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "manual-selection-boots-B3"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "F-only-no-journal-no-MON-recovery-and-Ctrl-C"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "CONFIG-enable-entry-default-without-erase-or-wear-reset"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "opaque-install-read-noop-restore-durable-wear-and-unrelated-banks"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "host-protected-B3-AB-CD-F-targets-refused"
+    },
+    {
+      "passed": true,
+      "cpu": "65c02",
+      "case": "device-protected-journal-header-refuses-before-mutation"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "saved-default-boots-B0"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "manual-selection-boots-B0"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "saved-default-boots-B1"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "manual-selection-boots-B1"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "saved-default-boots-B2"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "manual-selection-boots-B2"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "saved-default-boots-B3"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "manual-selection-boots-B3"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "F-only-no-journal-no-MON-recovery-and-Ctrl-C"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "CONFIG-enable-entry-default-without-erase-or-wear-reset"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "opaque-install-read-noop-restore-durable-wear-and-unrelated-banks"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "host-protected-B3-AB-CD-F-targets-refused"
+    },
+    {
+      "passed": true,
+      "cpu": "65c816-e",
+      "case": "device-protected-journal-header-refuses-before-mutation"
+    }
+  ],
+  "limits": [
+    "Synthetic banks/counters only",
+    "USB model; polling/delay and CRC shortcuts; no new timing/physical claim",
+    "No new stable-release acceptance claim"
+  ],
+  "artifacts": {
+    "STR8N-F-BOOT-4096.bin": "1a1db354d49d8a9a555be1100b74f3e4b0ed14d3156f3a333086853a845717b8",
+    "STR8N-F-CONFIG-RAM.bin": "3b661b867a7bd36f2aa4ec4e2e67e2e0b11c04c55b501233a87d4a87b9964914",
+    "STR8N-F-OPAQUE-RAM.bin": "0bc4e1a897b098d0a199b759265ae6f800cdf44287e3f797f0df1fa11dfccdb2",
+    "STR8N-F-DEMO-RAM.bin": "81c1a70350175f9028600130db230b2a36e25197171ec5215da06f0d2ec789ee"
+  },
+  "test_sources": {
+    "tests/test_boot_and_opaque.py": "70fba61c423c2ccdee3034d7805bb8777c1ba67513bbd17a9e152a8ea0c9a69f",
+    "tests/flash_model.py": "3a7cdaa8e2be562c0a9a3ba9b3a51c1f2188939a40c4c12accf54fc29d2eb982",
+    "tools/oip.py": "6287380227815b3e725a6ee1c9bc1559208f9d24db506a738578d0ef3771f0cc",
+    "tests/vendor/py65/__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+    "tests/vendor/py65/devices/__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+    "tests/vendor/py65/devices/mpu6502.py": "15d93835b4f279b702270d9a0b417938291347ec57cc12d9e0307cd344d381fe",
+    "tests/vendor/py65/devices/mpu65c02.py": "dfc5adcd63b82aaa95e5a4ae2a000af1c19fe7188575f41d70212542ec7694fb",
+    "tests/vendor/py65/utils/__init__.py": "4f6a41c619e2f0d6fc48eaf9fbc9ca31729365888c26df8c7750cf4c571ee8fc",
+    "tests/vendor/py65/utils/conversions.py": "448b8aa2cc59aa71a6a644a5dd93051ab4b2def2ae720c4991c0e54f31a4eaa9",
+    "tests/vendor/py65/utils/devices.py": "fca3864bebcf1db7dbc13014487ad7091499d85c8cb14ca7288c5fdc63de6a0e",
+    "tests/vendor/py65816/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/vendor/py65816/devices/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/vendor/py65816/devices/mpu65c816.py": "a94fc4c40f3a252b0c5197252ce0ea35310b6f5ada986c40eae16c649d5bfc02"
+  },
+  "text_normalization": "All public text normalized to LF; compiled BINs unchanged"
+}

@@ -1,0 +1,9 @@
+{
+  "passed": false,
+  "status": "not-qualified-for-this-candidate",
+  "execution_qualified": false,
+  "hardware": false,
+  "serial_access": false,
+  "CPU_simulations": 0,
+  "previous_evidence": "v0.2.0-reference/validation/system-qualification.json"
+}

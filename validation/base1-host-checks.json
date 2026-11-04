@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "scope": "Static identity/freeze checks and host/fake-transport tests only",
+  "CPU_simulations": 0,
+  "hardware_access": false,
+  "serial_ports_opened": 0,
+  "tests": {
+    "boot_identity": 4,
+    "WDC_catalogue": 7,
+    "opaque_policy": 4,
+    "opaque_host": 9,
+    "recovery_host": 4,
+    "migration_admission": 17,
+    "migration_protocol": 10
+  },
+  "total": 55,
+  "compiled_RAM_followup": "MAP compact/spaced syntax only; F reused unchanged",
+  "hardware_qualified": false
+}

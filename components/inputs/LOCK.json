@@ -1,0 +1,348 @@
+{
+  "schema": 1,
+  "status": "SOURCE_REBUILT_ALL_NON_FOUNDATION_PAYLOADS_FROZEN_F_INPUT_ONLY",
+  "inputs": [
+    {
+      "path": "components/inputs/accepted-base1/F.bin",
+      "bytes": 4096,
+      "sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/F.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false
+    },
+    {
+      "path": "components/inputs/accepted-base1/NATIVE-COMPONENTS.json",
+      "bytes": 8209,
+      "sha256": "12f86498fde74e0f8d49c1829f1022ff9a048ce5324ee5a258a8d05d9af488c7",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/NATIVE-COMPONENTS.json",
+      "kind": "ACCEPTED_MANIFEST_OR_HOST_SOURCE",
+      "publication_approved": false
+    },
+    {
+      "path": "components/inputs/accepted-base1/terminal/nf_console.py",
+      "bytes": 19851,
+      "sha256": "759a70a84d1f482ebe795dabac7c2dbfd37c116468d867774b0b3ae9c9e115d2",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/terminal/nf_console.py",
+      "kind": "SANITIZED_HOST_SOURCE",
+      "publication_approved": false,
+      "original_accepted_sha256": "87fc69068c142520744b6d7ceb96e68092e7ee8f59d5077b987cdf3f9fc32dcd",
+      "derivation": "Optional explicit board profiles replace the embedded owner inventory; firmware unchanged. Canonical LF bytes preserve the repository Git text policy.",
+      "pre_git_normalization_sha256": "f9064cf2af31cc9a75a63e697eb5842b1cdf8f55f379a8cc3d169217ac6d23e8"
+    },
+    {
+      "path": "components/inputs/accepted-base1/terminal/console_core.py",
+      "bytes": 14136,
+      "sha256": "ec011501205671265b1448739c7afa2dfcd1f1e9251f8f477abd26251d30e04a",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/terminal/console_core.py",
+      "kind": "ACCEPTED_MANIFEST_OR_HOST_SOURCE",
+      "publication_approved": false
+    },
+    {
+      "path": "components/inputs/accepted-base1/CANDIDATE-MANIFEST.json",
+      "bytes": 99255,
+      "sha256": "1cab3fbf44abf267d6f4edc0e9930b1ad0a60ed2fd689ac5ef78e54a0e52708d",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/CANDIDATE-MANIFEST.json",
+      "kind": "ORIGINAL_ACCEPTED_MANIFEST",
+      "publication_approved": false
+    }
+  ],
+  "qualified_reference": "str8n-copyright-r2",
+  "qualification_reference_manifest_sha256": "eb887491ffcb80302615d562c6bc192a294464b1595d189f6435187e22d7fe77",
+  "reconstructed_inputs": [
+    {
+      "path": "components/inputs/accepted-base1/foundation/firmware/payload/STR8N-F-CONFIG-RAM.bin",
+      "bytes": 2740,
+      "sha256": "34a1c736838e9da4267c591711e8462ffdc807fe29b78e0f9998df7d1b8a4472",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/foundation/firmware/payload/STR8N-F-CONFIG-RAM.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_component_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/foundation/firmware/payload/STR8N-F-OPAQUE-RAM.bin",
+      "bytes": 2412,
+      "sha256": "4550ec2ad154730f0cd1225cb1875347fdd8a6c50d302de7959a5d35d920b69e",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/foundation/firmware/payload/STR8N-F-OPAQUE-RAM.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_component_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/foundation/firmware/payload/STR8N-F-MAP-RAM.bin",
+      "bytes": 4472,
+      "sha256": "63ca93828a2e5b31150cf4a72fa7453916b3c3f2597197886f31823ed055c41b",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/foundation/firmware/payload/STR8N-F-MAP-RAM.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_component_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/foundation/firmware/payload/STR8N-F-READBACK-RAM.bin",
+      "bytes": 3078,
+      "sha256": "0c04b65ed2354e564d5cec6e2bc113d58934889b35b076586ef14c466fb3a774",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/foundation/firmware/payload/STR8N-F-READBACK-RAM.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_component_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/foundation/firmware/payload/STR8N-F-DEMO-RAM.bin",
+      "bytes": 487,
+      "sha256": "635c569a7fe5ba5c1643ba78b63f9256eaa2c57ba4f0d657070132195fdad4cd",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/foundation/firmware/payload/STR8N-F-DEMO-RAM.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_component_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B2-B000.bin",
+      "bytes": 4096,
+      "sha256": "766d75cc85cb64a83dc3350237d879e0c963f2da48b2b38a49abb572ec285f80",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B2-B000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_component_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B2-C000.bin",
+      "bytes": 4096,
+      "sha256": "33b279139472e5fe022abc7bbeba184ee28d2836514e74ddf0d1703bbd13b839",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B2-C000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_component_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B2-D000.bin",
+      "bytes": 4096,
+      "sha256": "dbffdb50da2e06c1028d8682588168b6d54375139892765db6decf54346bdc4a",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B2-D000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_component_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B1-A000.bin",
+      "bytes": 4096,
+      "sha256": "40923ba134d4e19f935a50dc2116335ac50542cc05d82a1389ecdd4598a1f184",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B1-A000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B2-8000.bin",
+      "bytes": 4096,
+      "sha256": "639b53dddc896dc538fcdc88cf0ad4baa47d29b16e962bf292f663d09d3f43c7",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B2-8000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B2-9000.bin",
+      "bytes": 4096,
+      "sha256": "1ae593ac95554c2acf5bbf5321928072d787dd25dfcfd5ff3c0332b6c7f443bd",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B2-9000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B2-A000.bin",
+      "bytes": 4096,
+      "sha256": "bf5db69da02079b0143985581956bc82ad97e84f28418f54b149c8dda2615f64",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B2-A000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B2-F000.bin",
+      "bytes": 4096,
+      "sha256": "78f9e5b45a0be3eeb7a22bfb2f8c95eb54f3a0fb2f1487cf2be7288ad763ce33",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B2-F000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B3-8000.bin",
+      "bytes": 4096,
+      "sha256": "041b94f558f80061ecddc0cce63127631838d819ef698f6af0b9ae9e822d99d8",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B3-8000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B3-9000.bin",
+      "bytes": 3072,
+      "sha256": "523e1af75b2ae349130d40cc8b62a02ad1df7f4cd29ab9bc45f51980f5a16c26",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B3-9000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B3-A000.bin",
+      "bytes": 4096,
+      "sha256": "85e63ecb57c49d6998e2209670be3194fb671f679fa849bbadc798104a9546e6",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B3-A000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B3-B000.bin",
+      "bytes": 4096,
+      "sha256": "6eb847ed47cac9a7b4c876eb792309c741be71a94d53f770caab78d67fd0ffd9",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B3-B000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B3-E000.bin",
+      "bytes": 4096,
+      "sha256": "67e773b346ade183b5a28adc91436b82c686a82d014b128c5db1cc9e8ab45b11",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B3-E000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_mon_services.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/rec/FLASH.bin",
+      "bytes": 17221,
+      "sha256": "28eabc8fc8158f1df88e8426d2566b021440f83514c9dbb5c76b4096eaa93e85",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/rec/FLASH.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/rec/MAINT.bin",
+      "bytes": 19168,
+      "sha256": "cdd53f213ed8995b512f42d169cb5ff25b6d5fd39f659ae4baf38555f12575ba",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/rec/MAINT.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/developer/ASM-RAM.bin",
+      "bytes": 25016,
+      "sha256": "29abbb05864f4560bb83a310101538a8a0acaa8725a090ca3db66880bdbd7cff",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/developer/ASM-RAM.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/developer/DBG-RAM.bin",
+      "bytes": 25096,
+      "sha256": "2a211945747088a4697b42d0a3c4c51591be1c535648d9117a240449ebf0d5f9",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/developer/DBG-RAM.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B0-B000.bin",
+      "bytes": 4096,
+      "sha256": "a534113647273420ce278c944cb93cd9ca5f6e3cc15950e4f7ad3a83c75d142e",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B0-B000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B0-D000.bin",
+      "bytes": 4096,
+      "sha256": "7e5c0d1541ba7c4b20360319e0400f8f197f5e4d3ce5a8444e5b5434557099dd",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B0-D000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B1-B000.bin",
+      "bytes": 4096,
+      "sha256": "0015350fb9069b55e04f3317793aa19efa9945b5f7c21487fa9bbdb8b4aac59b",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B1-B000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B1-C000.bin",
+      "bytes": 4096,
+      "sha256": "01eac7703a7d43c679ee6cf65f84d85670e2fafcf615d0af567754e1ba88b085",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B1-C000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B1-D000.bin",
+      "bytes": 4096,
+      "sha256": "7965b99473662112bfca993fa782a3fef3c20323405cecd7bc254dc60abc4412",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B1-D000.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B0-A000-65c02.bin",
+      "bytes": 4096,
+      "sha256": "f547601a5f610ac11806e72f2daf8d4ce4cf69050bbcfbf12f23792b73bf98ba",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B0-A000-65c02.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B0-A000-65c816e.bin",
+      "bytes": 4096,
+      "sha256": "221c788d49e36fc107a3e073f6601b24e40b78f8e7021cf16589c768efb191b5",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B0-A000-65c816e.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B0-C000-65c02.bin",
+      "bytes": 4096,
+      "sha256": "ec33eb23438ae674ed8b5f01b59047a94895f4a3d1948c7369412cd0bd9a363e",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B0-C000-65c02.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/B0-C000-65c816e.bin",
+      "bytes": 4096,
+      "sha256": "3ddafb5dee8780ce0c914bc1d06d493607ecc5ddd5bc9d2324783835a911a35e",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/B0-C000-65c816e.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    },
+    {
+      "path": "components/inputs/accepted-base1/native/payload/ERASED-4096.bin",
+      "bytes": 4096,
+      "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "origin": "BUILD/unified-g10-candidate4-20261102-r1/STR8N-UNIFIED-MON-g00000010-ASMDBG-g2-candidate4/native/payload/ERASED-4096.bin",
+      "kind": "ACCEPTED_BINARY_SEED",
+      "publication_approved": false,
+      "rebuild_recipe": "tools/rebuild_util_dev_inputs.py"
+    }
+  ],
+  "generated_maps_and_loader_templates_rebuilt": true,
+  "host_source_overrides": {
+    "terminal/nf_console.py": {
+      "path": "components/inputs/accepted-base1/terminal/nf_console.py",
+      "sha256": "759a70a84d1f482ebe795dabac7c2dbfd37c116468d867774b0b3ae9c9e115d2"
+    }
+  }
+}

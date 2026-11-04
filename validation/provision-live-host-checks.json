@@ -1,0 +1,66 @@
+{
+  "feature": "Live C/D provisioning after programmer-installed frozen F",
+  "status": "implemented-source-only-hardware-unqualified",
+  "passed": true,
+  "distinct_host_checks_passed": 19,
+  "test_method": "Targeted host admission/ordering checks and canned split-frame BASE1 client integration; no CPU or flash model",
+  "invocations": [
+    {
+      "selection": "initial provision host checks",
+      "passed": 14
+    },
+    {
+      "selection": "changed repeat, protocol failure, imported lower bounds",
+      "passed": 3
+    },
+    {
+      "selection": "real BASE1 client with split canned frames",
+      "passed": 1
+    },
+    {
+      "selection": "USB mismatch before serial construction",
+      "passed": 1
+    }
+  ],
+  "tests": [
+    "test_USB_mismatch_is_rejected_before_constructing_serial_port",
+    "test_actual_F_mismatch_refused_before_engine",
+    "test_bad_escrow_rejected_before_any_transport_action",
+    "test_changed_repeat_prevents_confirmation_and_restores_escrow",
+    "test_cli_missing_original_escrow_never_opens_port_even_with_flags",
+    "test_damaged_history_refused_without_write_and_with_restoration",
+    "test_execute_only_D_C_and_restore_after_independent_readback",
+    "test_existing_nondefault_history_is_noop_even_with_execute",
+    "test_explicit_reinitialize_of_existing_history_refused_and_RAM_restored",
+    "test_final_mismatch_never_claims_or_attempts_restoration",
+    "test_imported_lower_bounds_retained_without_recording_an_F_erase",
+    "test_missing_conversion_flag_refused_before_engine",
+    "test_missing_preflight_never_sends_confirmation",
+    "test_preview_double_captures_and_restores_without_engine_or_Y",
+    "test_protocol_failure_stops_without_blind_restore_or_retry",
+    "test_real_recovery_client_handles_split_frames_and_exact_escrow_restoration",
+    "test_short_confirmation_is_logged_as_possible_mutation_without_retry",
+    "test_unqualified_cli_does_not_open_port",
+    "test_wrong_startup_face_prevents_first_helper"
+  ],
+  "source_sha256": {
+    "migration-host/nf_provision_live.py": "6bf56212fb6d1c0aa41bf0e6cfc4fed52270408929bf4362598515259c33ccb8",
+    "migration-host/test_nf_provision_live.py": "4aba3713f41f6477b70d964d55310a5d3dab3a92d95fc4111d6503fb49e63f4f"
+  },
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "F_sources_unchanged": true,
+  "firmware_builds": 0,
+  "CPU_simulations": 0,
+  "flash_models": 0,
+  "serial_ports_opened": 0,
+  "board_2205_accessed": false,
+  "existing_release_assets_verified_unchanged": true,
+  "release_kit_updated": false,
+  "hardware_qualified": false,
+  "remaining": [
+    "Hardware acceptance on authorized supported boards",
+    "Qualified interrupted-provisioning recovery",
+    "Future release-kit integration when requested"
+  ],
+  "operator_escrow_limitation": "Original timing is an operator declaration; restore/readback verifies supplied escrow, not a fresh pre-helper RAM read"
+}

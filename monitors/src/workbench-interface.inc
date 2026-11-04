@@ -1,0 +1,15 @@
+; Private MON/WB2 contract; no change to frozen F or its public ABI.
+WB_FORMAT EQU $02
+WB_ORIGIN EQU $4800
+WB_PAGES EQU $1C
+WB_COMMAND EQU WB_ORIGIN+8
+WB_SHELL EQU WB_ORIGIN+11
+WB_INIT EQU WB_ORIGIN+14
+WB_CLIENT_FLOOR EQU $6550
+WB_RESULT EQU $655F
+; C reports recognized/accepted dispatch; RESULT reports command completion.
+WB_OK EQU 0
+WB_SYNTAX EQU 1
+WB_REFUSED EQU 2
+WB_CANCELED EQU 3
+WB_PARTIAL EQU 4

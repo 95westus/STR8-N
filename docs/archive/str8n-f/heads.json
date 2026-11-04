@@ -1,0 +1,62 @@
+[
+  {
+    "ref": "refs/heads/codex/identify-sxb-edu",
+    "node_id": "REF_kwDOVZ-S0doAIXJlZnMvaGVhZHMvY29kZXgvaWRlbnRpZnktc3hiLWVkdQ",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/heads/codex/identify-sxb-edu",
+    "object": {
+      "sha": "d2800ab11e7c268e9c422cde925289a819fd32d2",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/d2800ab11e7c268e9c422cde925289a819fd32d2"
+    }
+  },
+  {
+    "ref": "refs/heads/codex/mona-monb",
+    "node_id": "REF_kwDOVZ-S0bpyZWZzL2hlYWRzL2NvZGV4L21vbmEtbW9uYg",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/heads/codex/mona-monb",
+    "object": {
+      "sha": "5ae5aa30ac103f664073a93187e1f40a5b2ff80e",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/5ae5aa30ac103f664073a93187e1f40a5b2ff80e"
+    }
+  },
+  {
+    "ref": "refs/heads/codex/nf-v0.2.0",
+    "node_id": "REF_kwDOVZ-S0bpyZWZzL2hlYWRzL2NvZGV4L25mLXYwLjIuMA",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/heads/codex/nf-v0.2.0",
+    "object": {
+      "sha": "06a58a29c318b0a8093c267eaf30cc3d80c7d626",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/06a58a29c318b0a8093c267eaf30cc3d80c7d626"
+    }
+  },
+  {
+    "ref": "refs/heads/codex/nf030-readme-label",
+    "node_id": "REF_kwDOVZ-S0doAI3JlZnMvaGVhZHMvY29kZXgvbmYwMzAtcmVhZG1lLWxhYmVs",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/heads/codex/nf030-readme-label",
+    "object": {
+      "sha": "254cea04ceb0e000178b17195a6f40690789ee82",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/254cea04ceb0e000178b17195a6f40690789ee82"
+    }
+  },
+  {
+    "ref": "refs/heads/codex/str8nf-base1",
+    "node_id": "REF_kwDOVZ-S0b1yZWZzL2hlYWRzL2NvZGV4L3N0cjhuZi1iYXNlMQ",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/heads/codex/str8nf-base1",
+    "object": {
+      "sha": "88764d295c768d9dc0c11c2366b179be1d3fecbe",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/88764d295c768d9dc0c11c2366b179be1d3fecbe"
+    }
+  },
+  {
+    "ref": "refs/heads/main",
+    "node_id": "REF_kwDOVZ-S0a9yZWZzL2hlYWRzL21haW4",
+    "url": "https://api.github.com/repos/95westus/STR8N-F/git/refs/heads/main",
+    "object": {
+      "sha": "4f19e7fcc8fc2e2e54a47fe91e2b9a3058aaca37",
+      "type": "commit",
+      "url": "https://api.github.com/repos/95westus/STR8N-F/git/commits/4f19e7fcc8fc2e2e54a47fe91e2b9a3058aaca37"
+    }
+  }
+]

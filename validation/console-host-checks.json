@@ -1,0 +1,28 @@
+{
+  "console_version": "0.1.0",
+  "date_utc": "2026-10-28T22:57:18.470005+00:00",
+  "passed": true,
+  "host_tests": 19,
+  "host_test_command": "python -m unittest tests.test_console",
+  "tk_smoke": {
+    "passed": true,
+    "check": "hidden Tk widgets, key routing, MAP preset and ROM refusal",
+    "physical_ports_opened": 0
+  },
+  "tk_smoke_method": "Equivalent inline execution of tests/console_tk_smoke.py",
+  "python": "3.12.14",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "firmware_builds": 0,
+  "CPU_simulations": 0,
+  "physical_ports_opened": 0,
+  "boards_modified": [],
+  "hardware_qualified": false,
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "files": {
+    "requirements-console.txt": "0b81718d1cbe8a7696e45a9388c9205272b5e345cd79d0cf1ccfb7a9fd1925e9",
+    "tools/nf_console.py": "5305d55735f4a6fe5de4e8ab0e6ae11bb10df2abd580b3db8743b6ab1d5972e0",
+    "tools/console_core.py": "e1046d869b5f74abcc8b9c2eed924f4dd056fb91599de0e23e5ad02a477718bd",
+    "tests/test_console.py": "58ddaba49964abfd2b687fd69e47be5db33ae97b74b5dce67494470d5167c20f",
+    "tests/console_tk_smoke.py": "2c6ff55f2c8a41cdbc66218d1668f3eaccb3729857b3cd86b57fb933b753423e"
+  }
+}

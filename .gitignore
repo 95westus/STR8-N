@@ -1,46 +1,23 @@
-# BUILD is disposable compiler output. The current release ZIP is tracked
-# under output/release; qualification evidence remains owner-local.
-BUILD/**
-__pycache__/
-
-# Generated books are archived in a separate local Git repository, without a remote.
-/local-books/
-/output/*
-!/output/release/
-/output/release/*
-!/output/release/str8n-v2-a24c1-board-test.zip
-!/output/release/str8n-v2-b4.zip
-!/output/release/str8n-v2-b4.sha256
-/tmp/
-
-# Raw board evidence and recovery images stay owner-local, never in Git.
-/docs/evidence/
+/build/
+/dist/
+/private/
 /backups/
-/board-backups/
-**/prior-b[0-3].bin
-**/final-b[0-3].bin
-**/baseline-b[0-3].bin
-**/*-readback.bin
-**/*-backup.bin
+__pycache__/
+*.pyc
+*.obj
+*.lst
+*.map
+*.sym
+*.log.json
+.env
+.env.*
+*.partial
+/logs/
+*.jsonl
 
-# Also protect raw board images if copied outside their usual local folders.
-**/board-backups/
-**/backups/
-**/qualification/
-**/b[0-3].bin
-**/b[0-3]-repeat.bin
-**/b[0-3].s19
-**/all-banks.bin
-**/all-banks.s19
-**/full-flash.bin
-**/before-b[0-3].bin
-**/after-b[0-3].bin
-**/installed-b[0-3].bin
-**/expected-b[0-3].bin
-**/*-readback.s19
-**/*-backup.s19
+# Pinned input maps belong to the local consolidation review capsule.
+!/components/inputs/maps/*.map
 
-# Qualification helper assembly is source, not captured qualification data.
-!/tools/qualification/
-/tools/qualification/*
-!/tools/qualification/*.asm
+# Local build products, captures and qualification evidence.
+/BUILD/
+/output/

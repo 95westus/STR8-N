@@ -1,0 +1,482 @@
+{
+  "schema": 1,
+  "canonical_repository": "95westus/STR8-N",
+  "source_repository": "95westus/STR8N-F",
+  "original_releases": 12,
+  "original_assets": 47,
+  "records": [
+    {
+      "origin_repository": "95westus/STR8-N",
+      "origin_release_id": 427487584,
+      "tag": "nf-v0.3.0",
+      "title": "N-F v0.3.0 - BASE1/PR05",
+      "origin_created_at": "2026-10-29T05:02:52Z",
+      "origin_published_at": "2026-10-29T05:09:06Z",
+      "original_body_sha256": "d20284225f78462349fd510478580d3d8f58d290dbdb976ec0f8705e1ae5bc3b",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/nf-v0.3.0",
+      "assets": []
+    },
+    {
+      "origin_repository": "95westus/STR8-N",
+      "origin_release_id": 419064567,
+      "tag": "v2.0rc1-v1g-r9",
+      "title": "STR8-N 2.0rc1 v1g r9 \u2014 Uniform upgrade and component maps",
+      "origin_created_at": "2026-10-21T02:04:14Z",
+      "origin_published_at": "2026-10-21T02:05:48Z",
+      "original_body_sha256": "5cf984f50349cb627e9797ceec925cf033e678dbe67c12b1199b2569fa050ce6",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v2.0rc1-v1g-r9",
+      "assets": [
+        {
+          "origin_asset_id": 661075031,
+          "name": "str8n-v2.0rc1-dbg1-v1g-r9.zip",
+          "bytes": 1350534,
+          "sha256": "2efc8bca8d6dd44d912c4145023e030061415588b824cd307384ca44cdcfd77b",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0rc1-v1g-r9/str8n-v2.0rc1-dbg1-v1g-r9.zip"
+        },
+        {
+          "origin_asset_id": 661075029,
+          "name": "str8n-v2.0rc1-dbg1-v1g-r9.zip.sha256",
+          "bytes": 97,
+          "sha256": "826f2092baaab01c84f50dcd6d47286734026dbf520e0c8feba488e77d772d6e",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0rc1-v1g-r9/str8n-v2.0rc1-dbg1-v1g-r9.zip.sha256"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8-N",
+      "origin_release_id": 418989984,
+      "tag": "v2.0rc1-v1g-r8",
+      "title": "STR8-N 2.0rc1 v1g r8 (DBG1 generation 50)",
+      "origin_created_at": "2026-10-20T23:44:38Z",
+      "origin_published_at": "2026-10-20T23:45:45Z",
+      "original_body_sha256": "2058fc7d1f5d8638da306f28f517f2c0aeca9cb966f1f56f72d649c8ce870782",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v2.0rc1-v1g-r8",
+      "assets": [
+        {
+          "origin_asset_id": 660809228,
+          "name": "str8n-v2.0rc1-dbg1-v1g-r8.zip",
+          "bytes": 826219,
+          "sha256": "82b22179267e90c2a484106861dc4b98c9697b19614b7f18f878e35760cd5bbb",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0rc1-v1g-r8/str8n-v2.0rc1-dbg1-v1g-r8.zip"
+        },
+        {
+          "origin_asset_id": 660809227,
+          "name": "str8n-v2.0rc1-dbg1-v1g-r8.zip.sha256",
+          "bytes": 97,
+          "sha256": "59311322eab1e357dcc4d750fe565bba4a9bd6f6b92a7930d91875731794e890",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0rc1-v1g-r8/str8n-v2.0rc1-dbg1-v1g-r8.zip.sha256"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8-N",
+      "origin_release_id": 416227620,
+      "tag": "v2.0rc1",
+      "title": "STR8-N v2.0rc1 \u2014 complete release candidate",
+      "origin_created_at": "2026-10-18T04:18:34Z",
+      "origin_published_at": "2026-10-18T04:19:09Z",
+      "original_body_sha256": "81db6041c187381fd09b7485f391f80d723e1e9a32c7dadb9de41a22f2f0e9ef",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v2.0rc1",
+      "assets": [
+        {
+          "origin_asset_id": 652508868,
+          "name": "str8n-v2.0rc1-release.zip",
+          "bytes": 244965,
+          "sha256": "b728b6bc0650c622213a99251f235d131c83b82127c65c77bfe6def4bb2b4a9f",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0rc1/str8n-v2.0rc1-release.zip"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8-N",
+      "origin_release_id": 416090350,
+      "tag": "v2.0bf1",
+      "title": "STR8-N 2.0bf1 \u2014 scoped prerelease",
+      "origin_created_at": "2026-10-17T22:08:01Z",
+      "origin_published_at": "2026-10-18T03:39:26Z",
+      "original_body_sha256": "bd6e701e4f4231433068b799a61684cee364b6b8dcdda1870217c75e3bf9a3af",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v2.0bf1",
+      "assets": [
+        {
+          "origin_asset_id": 652380742,
+          "name": "str8n-2.0bf1-all-assets-SHA256SUMS.txt",
+          "bytes": 971,
+          "sha256": "e3bcc0cbe8935a6e7c83bc9563f4e94d4512bcdbd2c12a303e7758911b47327e",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-all-assets-SHA256SUMS.txt"
+        },
+        {
+          "origin_asset_id": 652374165,
+          "name": "str8n-2.0bf1-apps-str8n-only.bin",
+          "bytes": 98304,
+          "sha256": "f20b53793563acd5685cca1ed987f67118f7340fa8f1551955b135830f5e672a",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-apps-str8n-only.bin"
+        },
+        {
+          "origin_asset_id": 652374206,
+          "name": "str8n-2.0bf1-b3-f000-ffff.bin",
+          "bytes": 4096,
+          "sha256": "aff5874806721137ec7677beb2e80c0db7c3f563f8027967db4b898554a34028",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-b3-f000-ffff.bin"
+        },
+        {
+          "origin_asset_id": 652380683,
+          "name": "str8n-2.0bf1-boot-core-b3.bin",
+          "bytes": 32768,
+          "sha256": "74c408a262016b5a0aefe783c012321663fa2a448db03c94126cd21393371ff5",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-boot-core-b3.bin"
+        },
+        {
+          "origin_asset_id": 652380714,
+          "name": "str8n-2.0bf1-docs.zip",
+          "bytes": 67076,
+          "sha256": "eba2eaa9b035d95253585aa8e311f73d492ad9fe030b3b59124b9547b212a68c",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-docs.zip"
+        },
+        {
+          "origin_asset_id": 652374135,
+          "name": "str8n-2.0bf1-linux-migration.tar.gz",
+          "bytes": 182926,
+          "sha256": "60c0ac351b4e439cb2bfe0c20ae9aab04d7a011892692d2bf2485e817d9e32d9",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-linux-migration.tar.gz"
+        },
+        {
+          "origin_asset_id": 652374107,
+          "name": "str8n-2.0bf1-linux-migration.zip",
+          "bytes": 216709,
+          "sha256": "e767e48e67b37daf8163f7621b9c2083d332a1ddc5f7b1fa72326716da8e676a",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-linux-migration.zip"
+        },
+        {
+          "origin_asset_id": 652380636,
+          "name": "str8n-2.0bf1-monitor-a.bin",
+          "bytes": 4096,
+          "sha256": "2a5b758544afde7ccfd7069b27eda052fe3c35668e5a81fded98f0a5527be9ae",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-monitor-a.bin"
+        },
+        {
+          "origin_asset_id": 652380661,
+          "name": "str8n-2.0bf1-monitor-b.bin",
+          "bytes": 4096,
+          "sha256": "02296e92d43e696eacfb98747b27eecbdf89afac9a26dc103c02b7df31fb611f",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-monitor-b.bin"
+        },
+        {
+          "origin_asset_id": 652412106,
+          "name": "str8n-2.0bf1-release-r2.zip",
+          "bytes": 244286,
+          "sha256": "dff97efb11a514a1ccc044f01338956b49edd0d5f0f993cfbde88b6b570b8574",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-release-r2.zip"
+        },
+        {
+          "origin_asset_id": 652387185,
+          "name": "str8n-2.0bf1-release.zip",
+          "bytes": 239759,
+          "sha256": "8304baa112a348bd3cffb729881c1b090c38263e89a02439b06e299896742bb9",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-release.zip"
+        },
+        {
+          "origin_asset_id": 652374248,
+          "name": "str8n-2.0bf1-SHA256SUMS.txt",
+          "bytes": 502,
+          "sha256": "aabd46fc145dd2bc5c2938d7303cbba2b90e350ed04b77e058e6de80cc39d1e3",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-SHA256SUMS.txt"
+        },
+        {
+          "origin_asset_id": 652374065,
+          "name": "str8n-2.0bf1-windows-migration.zip",
+          "bytes": 216938,
+          "sha256": "b0e2e89f2ad094894054833ac61abcccaeb12f08122fbba3ead8ce57a32d5675",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0bf1/str8n-2.0bf1-windows-migration.zip"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8-N",
+      "origin_release_id": 405263886,
+      "tag": "v2.0b4",
+      "title": "STR8-N 2.0 beta 4",
+      "origin_created_at": "2026-10-07T00:58:30Z",
+      "origin_published_at": "2026-10-07T00:58:54Z",
+      "original_body_sha256": "0b86ae76ec971795cd812bf4be3d993246d66109c2607c9f37e3cacfd793353f",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v2.0b4",
+      "assets": [
+        {
+          "origin_asset_id": 617123828,
+          "name": "str8n-v2-b4.sha256",
+          "bytes": 83,
+          "sha256": "5be4dea914cb0377a730678a413e6af07da062e20c7513f0f78a29d96ee6934b",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0b4/str8n-v2-b4.sha256"
+        },
+        {
+          "origin_asset_id": 617123829,
+          "name": "str8n-v2-b4.zip",
+          "bytes": 170778,
+          "sha256": "4c25bc576cbc32efd04aeea4fe80c68544a50b80685d12bfcf1e44122bacbc14",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0b4/str8n-v2-b4.zip"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8-N",
+      "origin_release_id": 402668684,
+      "tag": "v2.0b1",
+      "title": "STR8-N 2.0 beta 1 (qualified a24c1 firmware)",
+      "origin_created_at": "2026-10-03T19:56:28Z",
+      "origin_published_at": "2026-10-03T19:56:52Z",
+      "original_body_sha256": "2e36864a81a36b89ed36dfacceff597d4565eb4840804cfa762be40ee0072368",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v2.0b1",
+      "assets": [
+        {
+          "origin_asset_id": 608436033,
+          "name": "str8n-v2-b1.sha256",
+          "bytes": 83,
+          "sha256": "25af8e4fca0a956f655f62fc571d2900d7faab67276ef5284fa895aa1a44521d",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0b1/str8n-v2-b1.sha256"
+        },
+        {
+          "origin_asset_id": 608436028,
+          "name": "str8n-v2-b1.zip",
+          "bytes": 129215,
+          "sha256": "924b28a4d364d19f812ced9c362a23f63da1598014ea48fa66734db22fea7db8",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0b1/str8n-v2-b1.zip"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8-N",
+      "origin_release_id": 402307211,
+      "tag": "v2.0a24c1",
+      "title": "STR8-N 2.0a24c1 board-test package",
+      "origin_created_at": "2026-10-03T03:36:10Z",
+      "origin_published_at": "2026-10-03T03:36:15Z",
+      "original_body_sha256": "9a60a7766599c26fbd341e2856388f9815dba679006c1179988e32283f32e240",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v2.0a24c1",
+      "assets": [
+        {
+          "origin_asset_id": 607061918,
+          "name": "str8n-v2-a24c1-board-test.zip",
+          "bytes": 114654,
+          "sha256": "b0ddecf3d1752364c315ad4978ca9b377e3e67aa449293ef9019015660218677",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v2.0a24c1/str8n-v2-a24c1-board-test.zip"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8N-F",
+      "origin_release_id": 429101746,
+      "tag": "mon-g8-tools-preview1",
+      "title": "STR8-N MON g8 / tools preview 1 - N-F 0.3.0 BASE1/PR05",
+      "origin_created_at": "2026-10-30T13:52:21Z",
+      "origin_published_at": "2026-10-30T14:02:24Z",
+      "original_body_sha256": "383c1e47c9344a731fbd5ceb5a47fb4ff2ebea894b98f2b38127837a410c78c6",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/mon-g8-tools-preview1",
+      "assets": [
+        {
+          "origin_asset_id": 692300413,
+          "name": "MONITOR-MANUAL.md",
+          "bytes": 6771,
+          "sha256": "22c3750fe3235371d127782825ad205727944fed4caa2f7696838528e0ffdde9",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/mon-g8-tools-preview1/MONITOR-MANUAL.md"
+        },
+        {
+          "origin_asset_id": 692300409,
+          "name": "SHA256SUMS.txt",
+          "bytes": 277,
+          "sha256": "248d7e70a8a0a70d214b5525dd462e3fccc6feae0e7716b6e86bf09a074b5a07",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/mon-g8-tools-preview1/SHA256SUMS.txt"
+        },
+        {
+          "origin_asset_id": 692300411,
+          "name": "STR8N-MON-94ef069-source.zip",
+          "bytes": 1159143,
+          "sha256": "923f7022a0a84e2da2f5c55cf3953e41d1359aba5b81112cb8cab22a7ef7c848",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/mon-g8-tools-preview1/STR8N-MON-94ef069-source.zip"
+        },
+        {
+          "origin_asset_id": 692300410,
+          "name": "STR8N-MON-g8-tools-preview1.zip",
+          "bytes": 1340150,
+          "sha256": "7060d12593215ff9bef9c5425cba298d0042b8a7fa9e1eb89f056f58524591cf",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/mon-g8-tools-preview1/STR8N-MON-g8-tools-preview1.zip"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8N-F",
+      "origin_release_id": 427470043,
+      "tag": "v0.3.0",
+      "title": "STR8N-F v0.3.0 - BASE1 / PR05 - g00000001",
+      "origin_created_at": "2026-10-29T04:34:55Z",
+      "origin_published_at": "2026-10-29T04:35:49Z",
+      "original_body_sha256": "c5d0e5f9137209376af55bdc0e07e4bd5842de95aca14eb4b6eebfc5eb938f26",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v0.3.0",
+      "assets": [
+        {
+          "origin_asset_id": 687359010,
+          "name": "EXTRACTION_RECEIPT.json",
+          "bytes": 2300,
+          "sha256": "e6ddadc1d28931716ab63ded41377cc2251d75946932fdb7541fc3492066e19b",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/EXTRACTION_RECEIPT.json"
+        },
+        {
+          "origin_asset_id": 687372428,
+          "name": "F.bin",
+          "bytes": 4096,
+          "sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/F.bin"
+        },
+        {
+          "origin_asset_id": 687359007,
+          "name": "PACKAGE_RECEIPT.json",
+          "bytes": 1115,
+          "sha256": "f50a6b15ccf4a945349c1436f65bbdf23ca906bb8c5ffac166025714423f4f3f",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/PACKAGE_RECEIPT.json"
+        },
+        {
+          "origin_asset_id": 687358989,
+          "name": "SHA256SUMS.txt",
+          "bytes": 278,
+          "sha256": "9f7fd01b5b92444e5d8a6b2dec1679f540c0655c1e0a59b6acb1f99a75cd2fc0",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/SHA256SUMS.txt"
+        },
+        {
+          "origin_asset_id": 687372418,
+          "name": "START_HERE_SHA256SUMS.txt",
+          "bytes": 162,
+          "sha256": "56300f7743bcb127b755e573defcced5eac42c08808b02ad13e39494571d1b87",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/START_HERE_SHA256SUMS.txt"
+        },
+        {
+          "origin_asset_id": 687372419,
+          "name": "STR8N-F-0.3.0-MANUAL.md",
+          "bytes": 13695,
+          "sha256": "fae55202515db0362164a0a8983e9f3269a3e7615bf3570a4323c7d3ba056f5d",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-0.3.0-MANUAL.md"
+        },
+        {
+          "origin_asset_id": 687358990,
+          "name": "STR8N-F-BASE1-0.3.0-source.zip",
+          "bytes": 529511,
+          "sha256": "128b5d74ace51aa61083112cfaf0c1ab03049b4fad4ecfc21d4d0a81e332e3aa",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0-source.zip"
+        },
+        {
+          "origin_asset_id": 687359002,
+          "name": "STR8N-F-BASE1-0.3.0-source.zip.sha256",
+          "bytes": 98,
+          "sha256": "ffdf2fbe771f2ca52d2c9af94d7b84475b9c8ee78ff5a9be3a0239ebf4e46cb4",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0-source.zip.sha256"
+        },
+        {
+          "origin_asset_id": 687358991,
+          "name": "STR8N-F-BASE1-0.3.0.zip",
+          "bytes": 243843,
+          "sha256": "3c3631ec8de5dfead44e3b54a8e885a82c3d508f90b04f7d3d18ce70a91a7a4f",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0.zip"
+        },
+        {
+          "origin_asset_id": 687358993,
+          "name": "STR8N-F-BASE1-0.3.0.zip.sha256",
+          "bytes": 91,
+          "sha256": "ff5998a387fa7fe4097fa39a09589327f1b4688af05b3277b927d85cd04bbb82",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0.zip.sha256"
+        },
+        {
+          "origin_asset_id": 687358995,
+          "name": "STR8N-F-BOOT-4096.bin",
+          "bytes": 4096,
+          "sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BOOT-4096.bin"
+        },
+        {
+          "origin_asset_id": 687359006,
+          "name": "STR8N-F-BOOT-4096.bin.sha256",
+          "bytes": 89,
+          "sha256": "f01fd291e13153fe12f8c3dbab59b13695cbffc01cbd2e80e9f477e27a70e76b",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BOOT-4096.bin.sha256"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8N-F",
+      "origin_release_id": 426448510,
+      "tag": "v0.2.0",
+      "title": "STR8N-F v0.2.0 \u2014 Boot & Recovery Toolkit",
+      "origin_created_at": "2026-10-28T09:05:11Z",
+      "origin_published_at": "2026-10-28T09:08:12Z",
+      "original_body_sha256": "e3ce268c1ea53c9020dd65f1aff7e408ef6099ef301d28097409f129f0e0c76f",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v0.2.0",
+      "assets": [
+        {
+          "origin_asset_id": 684428494,
+          "name": "RELEASE-MANIFEST.json",
+          "bytes": 2477,
+          "sha256": "85de2e99f06daed97c5c8c490ec00cd4c93129856278e2bcecd8b9c6017d681a",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.2.0/RELEASE-MANIFEST.json"
+        },
+        {
+          "origin_asset_id": 684428490,
+          "name": "STR8N-F-v0.2.0-source.zip",
+          "bytes": 307350,
+          "sha256": "f8ab1dd7faea3e59db1eeba0061d7c4de8593e20445bdcc9d050dd8d0c7d883a",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.2.0/STR8N-F-v0.2.0-source.zip"
+        },
+        {
+          "origin_asset_id": 684428491,
+          "name": "STR8N-F-v0.2.0-source.zip.sha256",
+          "bytes": 93,
+          "sha256": "93f3a94d9d76c0cc462c23c637a2ba55393be0da8fb437a81a0cc9a43d64e4b0",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.2.0/STR8N-F-v0.2.0-source.zip.sha256"
+        },
+        {
+          "origin_asset_id": 684428496,
+          "name": "STR8N-F-v0.2.0.zip",
+          "bytes": 34423,
+          "sha256": "198ffe2ba00a3d4d598c8a9fcac148337a3092187e3e282a4b993437ea767d69",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.2.0/STR8N-F-v0.2.0.zip"
+        },
+        {
+          "origin_asset_id": 684428493,
+          "name": "STR8N-F-v0.2.0.zip.sha256",
+          "bytes": 86,
+          "sha256": "98bc0cd501dd8b2dc49beec2c6766a537be19e459a1867e5e1062c05a6e9d584",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.2.0/STR8N-F-v0.2.0.zip.sha256"
+        }
+      ]
+    },
+    {
+      "origin_repository": "95westus/STR8N-F",
+      "origin_release_id": 426206959,
+      "tag": "v0.1.0-preview.1",
+      "title": "STR8N-F v0.1.0-preview.1 \u2014 boot and opaque source preview",
+      "origin_created_at": "2026-10-28T02:42:09Z",
+      "origin_published_at": "2026-10-28T02:43:28Z",
+      "original_body_sha256": "31df2818450fd0d7feed8d27bc58db007e9cf6b04b043873297e6728c805a40d",
+      "destination_release_url": "https://github.com/95westus/STR8-N/releases/tag/v0.1.0-preview.1",
+      "assets": [
+        {
+          "origin_asset_id": 683600729,
+          "name": "PACKAGE-MANIFEST.json",
+          "bytes": 6957,
+          "sha256": "5b65c2667906abab136c8441ed331ffd3d5ce36e12d8ea68d5495e263869e327",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.1.0-preview.1/PACKAGE-MANIFEST.json"
+        },
+        {
+          "origin_asset_id": 683600730,
+          "name": "STR8N-F-v0.1.0-preview.1.zip",
+          "bytes": 123779,
+          "sha256": "6c1060dcbe5bbb3439e322b0e06744f467c60aae217d982d041977f7f780662a",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.1.0-preview.1/STR8N-F-v0.1.0-preview.1.zip"
+        },
+        {
+          "origin_asset_id": 683600728,
+          "name": "STR8N-F-v0.1.0-preview.1.zip.sha256",
+          "bytes": 96,
+          "sha256": "d7dbae7fb42db691143c454bc24f3e5d847e7e0947262b05d52a1edd0ebea903",
+          "destination_download_url": "https://github.com/95westus/STR8-N/releases/download/v0.1.0-preview.1/STR8N-F-v0.1.0-preview.1.zip.sha256"
+        }
+      ]
+    }
+  ],
+  "identity_policy": "Original IDs/dates remain origin metadata. GitHub assigns new record IDs/timestamps to the four copied releases."
+}

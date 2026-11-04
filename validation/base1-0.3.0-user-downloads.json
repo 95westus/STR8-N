@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "passed": true,
+  "published": true,
+  "release_url": "https://github.com/95westus/STR8N-F/releases/tag/v0.3.0",
+  "manual_source_commit": "9da1990205278c64217af5fd630cf94b4d269f6a",
+  "assets": {
+    "F.bin": {
+      "bytes": 4096,
+      "sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1"
+    },
+    "STR8N-F-0.3.0-MANUAL.md": {
+      "bytes": 13695,
+      "sha256": "fae55202515db0362164a0a8983e9f3269a3e7615bf3570a4323c7d3ba056f5d"
+    },
+    "START_HERE_SHA256SUMS.txt": {
+      "bytes": 162,
+      "sha256": "56300f7743bcb127b755e573defcced5eac42c08808b02ad13e39494571d1b87"
+    }
+  },
+  "all_twelve_GitHub_asset_SHA256_verified": true,
+  "old_assets_unchanged": true,
+  "board_access": false,
+  "firmware_rebuilt": false,
+  "final_ZIP_live_trial": "NOT_RUN; additive manual is documentation only"
+}

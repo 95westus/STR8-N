@@ -1,0 +1,9 @@
+{
+  "board": "REPLACE_BOARD_ID",
+  "cpu": "65c02",
+  "port": "REPLACE_COM_PORT",
+  "usb_serial": "REPLACE_FTDI_SERIAL",
+  "layout": "wdc-sxb-edu-revd-base1",
+  "foundation_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "regions": ["flash", "spi-sram", "spi-mode", "eeprom", "cpu-ram", "zero-page"]
+}

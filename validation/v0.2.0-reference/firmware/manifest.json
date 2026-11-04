@@ -1,0 +1,133 @@
+{
+  "passed": true,
+  "offline": true,
+  "hardware_access": false,
+  "identity": "b15 direct-source extraction",
+  "artifacts": {
+    "STR8N-F-BOOT-4096.bin": {
+      "bytes": 4096,
+      "sha256": "1a1db354d49d8a9a555be1100b74f3e4b0ed14d3156f3a333086853a845717b8",
+      "address": "F000",
+      "entry": "F004"
+    },
+    "STR8N-F-CONFIG-RAM.bin": {
+      "bytes": 2728,
+      "sha256": "3b661b867a7bd36f2aa4ec4e2e67e2e0b11c04c55b501233a87d4a87b9964914",
+      "address": "0200",
+      "entry": "0200"
+    },
+    "STR8N-F-OPAQUE-RAM.bin": {
+      "bytes": 2412,
+      "sha256": "0bc4e1a897b098d0a199b759265ae6f800cdf44287e3f797f0df1fa11dfccdb2",
+      "address": "0200",
+      "entry": "0200"
+    },
+    "STR8N-F-DEMO-RAM.bin": {
+      "bytes": 485,
+      "sha256": "81c1a70350175f9028600130db230b2a36e25197171ec5215da06f0d2ec789ee",
+      "address": "0200",
+      "entry": "0200"
+    }
+  },
+  "compiled": [
+    {
+      "module": "worker",
+      "start": 30720,
+      "end": 31720,
+      "bytes": 1000,
+      "sha256": "0831ee6e918769bfc291ed8fd90000d374ffa46992439b7ff93db443bfe9a708"
+    },
+    {
+      "module": "vectors",
+      "start": 32288,
+      "end": 32484,
+      "bytes": 196,
+      "sha256": "18f0e13158ed6408c98f6c45d6d9f7d4830191d3f18690d8d0b8c655f29f76bc"
+    },
+    {
+      "module": "boot",
+      "start": 61440,
+      "end": 65109,
+      "bytes": 3669,
+      "sha256": "33e0969da32d3acd266fcece264df3b6bff2149eeb795f81dfe6a62d8f26cac8"
+    },
+    {
+      "module": "config",
+      "start": 512,
+      "end": 3240,
+      "bytes": 2728,
+      "sha256": "3b661b867a7bd36f2aa4ec4e2e67e2e0b11c04c55b501233a87d4a87b9964914"
+    },
+    {
+      "module": "opaque",
+      "start": 512,
+      "end": 2924,
+      "bytes": 2412,
+      "sha256": "0bc4e1a897b098d0a199b759265ae6f800cdf44287e3f797f0df1fa11dfccdb2"
+    },
+    {
+      "module": "demo",
+      "start": 512,
+      "end": 997,
+      "bytes": 485,
+      "sha256": "81c1a70350175f9028600130db230b2a36e25197171ec5215da06f0d2ec789ee"
+    }
+  ],
+  "source": {
+    "src/core/app-fixed-symbols.inc": "d11c77a50ecc9b24d326390e14aacb3d04435ddeaab5336abf1abbfbcb73efc0",
+    "src/core/bank-monitor-apply.inc": "c54721726436e38c17f3c3a6480c7a2732a86e042395cc76f7f0fd5b42495d2d",
+    "src/core/bank-monitor-crc.inc": "59970f790de66e22fd7df7454d33eea121396a757c65fda851594f1a2c60e472",
+    "src/core/bank-monitor-entry.asm": "aa30836463289d14efd610fbd9db53d202be2e6b5c90499d12a931781b8a37b7",
+    "src/core/bank-monitor-target.inc": "c71935280f16ba270d343301574de38a2e1c35d4938a9f43242c1bebc4565453",
+    "src/core/bank-monitor.asm": "940f3964b3e3862a1e1e05b3d61cd6f1a0bee2cccc972e55f34f63f8a8d49621",
+    "src/core/batch-gate.inc": "b45d6fd982386f0554093544401c27eedb7cc86dd2be7d45275d3454b3b65b1f",
+    "src/core/boot-symbols.inc": "4b5b14ac042fb7604977a06037b902e57eaad1183961acef652f54cd51131d3a",
+    "src/core/config-engine.inc": "f3075e7c27ff10db08311701ae65d2a47f0165cb8dba823b5ec10e0a2428b12d",
+    "src/core/edu-client-crc.inc": "2a65462e39737a2bb15a22c85df738031055780bf77ddddccf17832c0c953241",
+    "src/core/edu-client-guards.inc": "c0347072f3c60116dcf1063f39b6f3732111d8d0d2e58724eb647bc12ffc673b",
+    "src/core/edu-client-header.inc": "afba668fd3a37372f8ad02750349548de3ba80139cea2ce66ab6f8312bbe14c2",
+    "src/core/edu-client-params.inc": "0c993536451282af2771312734980bd7ee9141e550469ccae3aea969bd0156b4",
+    "src/core/edu-client.asm": "f9ebf7b13fe80dd2ccc6a82fa48d94e1f430c2c34ec7feea46d4efc4a5f91295",
+    "src/core/edu-sram-params.inc": "8342903dbf79db93572c4f498937ef2dedffab6db3b7d34b7268947a39a5c94b",
+    "src/core/edu-sram.asm": "f109d0a766e46138f04234b4bf9e77a090d3d7a517990ef1bc3d7b610d06cf0b",
+    "src/core/maint-ro-duplicates.inc": "d646a97a2b1840b232b47e2f52c3c32e708381e5421a79b3ba3a4704176234f5",
+    "src/core/maint-ro-params.inc": "beb58731d081a0322f9978f27f62b6e13e23172338be72a8b0eda82e28003ffa",
+    "src/core/maint-ro-ram-guards.inc": "884fbfe274074be33a2db666217aba5ba171c1c80dd8f04f1d4a765b6146d4fc",
+    "src/core/mon-absent-service.inc": "886779ba71e05359867d0a521cf164a1997608ff7c23f228429e295c1ff4e560",
+    "src/core/monitor-template.asm": "d2eded4937e4c8cb3d72252613e463818c9bdc57f7fb998397edce57fb7fe623",
+    "src/core/prototype-console.inc": "6de5d09330cd8695fd4ebe51d5dd713584b9e2f1ef94c020dbb1bbb744a1ab4a",
+    "src/core/prototype-engine.inc": "9937fccdc58675555d2b91c4c2ce2839ea0bf1e1802b6695e8cb5bc9eb47924f",
+    "src/core/ram-config.asm": "dd53c2f54c6a9b2cff72371ad290cf7d30565d145921286d1abaf369f477d14b",
+    "src/core/ram-demo.asm": "9766f7bfef93e46495aa13a8ea55c5ba911fbd3061c843b01a0ad44a4f64f837",
+    "src/core/ram-installer.asm": "031322a0604f570af28269e7c4e9c5121686baddbf25c84076a02e3dd3264d9e",
+    "src/core/ram-maint-ro.asm": "e3093d1fd16fde1c9b86bd2f57822345fa1eb46d65da1d725b79320eff1865ba",
+    "src/core/service-eq.inc": "fce4745cf3a75d1ba20e969414851814289d07192dc60b46c28ec66fd987a214",
+    "src/core/sr-stubs.inc": "4c7678b351d6654875d210422e4e618b276c000d3a870399296742dc6ca93219",
+    "src/core/str8n-v2-boot.asm": "0fd220b6acd2618123d6ddc4f801485a874e616e102cb7aa3aaaab388fdc7db2",
+    "src/core/str8n-v2-config.inc": "0880d54836bb206dc7e1f5daf08d502b9b27422cea338265b9c0d2c894c1ea69",
+    "src/core/str8n-v2-eq.inc": "a84eb0c8c638b36d8d25c4d4b384b5e298346fca97bab73f37717f3ae8478af4",
+    "src/core/str8n-v2-flash-worker.inc": "f6b11aea5d87e0d4d5425380b8729eb8630da4cb1c1539b74390ffebbb61a24e",
+    "src/core/str8n-v2-flash.inc": "70318221aa20f991f07b3fb46f1846d796f38a2d200bc2597f9fc7d8098929bf",
+    "src/core/str8n-v2-load.inc": "7cadf52f26408d4408ffbdac3e0ef57751b3fa22d790946653575597b4edeffa",
+    "src/core/str8n-v2-monitor.inc": "5ff6ff3551e32a892e2858a8e442f72c31030beaa77b0de0f20cd668bf3f2d38",
+    "src/core/str8n-v2-public.inc": "63eb0928dc7bbcfffd085f1b566ea2e08f44a04b4321c2696121d4d8fa319ad7",
+    "src/core/str8n-v2-ram-console.inc": "82220870e642184a1bc8a40800fdfc081f8eb27b8b0f5d9ff98ee627828f99de",
+    "src/core/str8n-v2-vectors.asm": "80499ac442e41aa076fc21096ca6d01eaa61fab1ca148adad64d1db66831dce5",
+    "src/core/str8n-v2-worker.asm": "bdfbc38d426b465fcbd309f5e037a57ffe4a8327b6da0f710f09bb0fe1759a81",
+    "src/core/text-ids.inc": "13b5e881c51177ffe9188d4563cdbe27e76f855f45f9c86dd8a45f32611ce7a0",
+    "src/core/text-image.inc": "fa76841da79e64b9f50ce2543d13d27054c964de4140ba6dc3e26b0f7234c9ae",
+    "src/core/vectors-image.inc": "396c0d0c4883f9eed1df9cf74c286570d1e1fb84dec0b17a732566ece0a76322",
+    "src/core/vectors-symbols.inc": "d2073946203db1f18be93d83cfd72d7db37f7f99c0c98a67e34cb46012c1a782",
+    "src/core/version-caps-client.asm": "46584a120677af6002132cbafabf658f8c2a97b43a3dd9acd344dbb1d4c10069",
+    "src/core/version-caps-e000.asm": "d95c7fc1becefa8944f9ac4541d415f5bb62cf876909200c029e0f2e374ece5b",
+    "src/core/version-caps-identities.inc": "f0f6efbb996b75a1aa90b6ec086ef79c9b43e3427068aad86b825395096cd42e",
+    "src/core/version-caps-mon.inc": "5f039606fac11df0d76c9e32f0f189e5d18d12d6ae31bca6858b6a47885cd4cd",
+    "src/core/version-caps-public.inc": "96a4a7d8e78cb04bf4c41573277f8171d88eddef4d8a432ab047b3502ea8e1ab",
+    "src/core/worker-copy.inc": "e705a84e09d67f3cc939ab0e8a523503bed2d03681a56c50d217d95ddc568ca3",
+    "src/core/worker-image.inc": "5df9c0318079e6b6f1a635b3a0bd6f564a9e462a502c2f661783270c4338cfe6",
+    "src/core/worker-public-symbols.inc": "894a7fe7965d96c446392a544489312f07d14f945d90e0196bed9d12b1afc703",
+    "src/include/service-eq.inc": "253772c24a3f1f303af43b7e010680283dd889c26719bdae4a776bb2da7d17f1",
+    "src/include/str8n-v2-eq.inc": "a7511dd3096267b8f4b34bb9313679f0a823c5fa2b1e6f2dee60aeb23b6f2e44",
+    "src/include/str8n-v2-public.inc": "1c251d5e552f134446bd8cd220dca64fd4002c52690ad3040cd76f1c99da78cb"
+  }
+}
