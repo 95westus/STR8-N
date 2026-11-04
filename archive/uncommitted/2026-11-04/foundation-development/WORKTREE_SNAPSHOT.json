@@ -1,0 +1,1466 @@
+{
+  "label": "foundation-development",
+  "original_branch": "codex/mona-monb",
+  "original_base_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+  "original_worktree": "release/str8nf-v0.2.0",
+  "files": [
+    {
+      "original_path": "README.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/README.md",
+      "bytes": 4074,
+      "sha256": "8d3409ebbb1eb57d73faf9b1d18e19a8c4424fafcb40f17a2bc0d638b147a43a",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2205_CURRENT_INVENTORY.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2205_CURRENT_INVENTORY.md",
+      "bytes": 2381,
+      "sha256": "8dd6703f12aa49a26aa56b347237a2f663e7fa53a012523cf6482430f1b6dcb0",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2205_FOUNDATION_ROLLOUT_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2205_FOUNDATION_ROLLOUT_ACCEPTANCE.md",
+      "bytes": 5352,
+      "sha256": "0827d46290fdca29adc0923f1fd52c8c6924abf8c22126d1d0c15b8d74f9f1ee",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2512_DBG_G2_FLASH_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2512_DBG_G2_FLASH_SCOPE.md",
+      "bytes": 2801,
+      "sha256": "711dff4e5511b6ee6e92157b902d8c4fb09a9c8a9c6f8f88547c3ecbcb135013",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2604_CURRENT_INVENTORY.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2604_CURRENT_INVENTORY.md",
+      "bytes": 2669,
+      "sha256": "84a5ba340b822a86ff5ba2b0d29177ebbcb778267b8440a6ea79b0cf01c75e37",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2604_FOUNDATION_ROLLOUT_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2604_FOUNDATION_ROLLOUT_ACCEPTANCE.md",
+      "bytes": 4183,
+      "sha256": "c110da9db072a7aed44f0edaf5c55c361e27380b807b4f4e04d5ad515f8df3c5",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2609_CANDIDATE3_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2609_CANDIDATE3_SCOPE.md",
+      "bytes": 2606,
+      "sha256": "08e32a7569eb3e628fe35fb3022541a49ce162d19ce9873aaeeaa9a6bed1bebd",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2609_CLOCK_NATIVE_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2609_CLOCK_NATIVE_SCOPE.md",
+      "bytes": 4107,
+      "sha256": "04509f2e28c640f3bdca39ae4012782da63d2be8b2b9f8753f5176bc3f87f9c4",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2609_CURRENT_INVENTORY.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2609_CURRENT_INVENTORY.md",
+      "bytes": 14317,
+      "sha256": "a31e77269bb7795dafd4bd6a0bc07315906a20edfc3e13feb268b4c8c675ec42",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2609_DEVTOOLS_FLASH_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2609_DEVTOOLS_FLASH_SCOPE.md",
+      "bytes": 5491,
+      "sha256": "6c0818ee1152674a778abcb4d0f08eb5b75305b96350634b1edd79d21c891ee8",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/2609_DEVTOOLS_INSTALLED_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/2609_DEVTOOLS_INSTALLED_ACCEPTANCE.md",
+      "bytes": 4569,
+      "sha256": "7de48ac8e4df403bf98fda61dccf77c1f584cd256c6c7729c60f08f14121f8f5",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/ASM_AS1_PROGRAM_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/ASM_AS1_PROGRAM_ACCEPTANCE.md",
+      "bytes": 3318,
+      "sha256": "454531f91705e42dd16cf040a262c11adec8a5a650b721e7bd67b26b0d4064bc",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/ASM_AS1_PROGRAM_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/ASM_AS1_PROGRAM_SCOPE.md",
+      "bytes": 2573,
+      "sha256": "ed8d71dbe6689ff7778ddc85ecbeb53dc8061bc196b86342a38908329c520526",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/ASM_DBG_2512_RAM_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/ASM_DBG_2512_RAM_ACCEPTANCE.md",
+      "bytes": 4862,
+      "sha256": "97989011d9061628b7114935dea17d779f9839731d22dc17b2a8543e30107ade",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/ASM_DBG_BASE1_RAM.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/ASM_DBG_BASE1_RAM.md",
+      "bytes": 4847,
+      "sha256": "21c3413f399bb9d9e2101ffb3063b6121c7edd44256a5087378d681c7b072f69",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/ASM_DBG_FLASH_PREVIEW.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/ASM_DBG_FLASH_PREVIEW.md",
+      "bytes": 5841,
+      "sha256": "8803edf1714f437dcedecf400f5fe4f9a236d3d100f910861f8a555814449803",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/ASM_FLASH_SOURCE_INCREMENT.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/ASM_FLASH_SOURCE_INCREMENT.md",
+      "bytes": 5636,
+      "sha256": "584915e5ac9af827a4db4f8f78b6c0c50e54dba26e80867f43d98f90f7942e0b",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/BANK_MAINT_2512_2609_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/BANK_MAINT_2512_2609_SCOPE.md",
+      "bytes": 7263,
+      "sha256": "f21b2f8da9e1dccde419bef2a32e6497cd46f14fe877b42d92a2bf7f981242ea",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/BANK_MAINT_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/BANK_MAINT_ACCEPTANCE.md",
+      "bytes": 3948,
+      "sha256": "23e1aed9e39a99bee08f10cad6759ad994510a4283128a59cfe86f8c2c180d24",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/BANK_MAINT_BASE1.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/BANK_MAINT_BASE1.md",
+      "bytes": 5022,
+      "sha256": "b357272353af2e3dfd7052b52dd7447716fe0f2b727e6bb19b21762f8b333faf",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/BANK_MAINT_RESTORATION.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/BANK_MAINT_RESTORATION.md",
+      "bytes": 6264,
+      "sha256": "c97538208144704bef6633d12ed8f787f13ae3406f5d9cdac9330c3068e6f99b",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/BOOT_CLOCK_2512_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/BOOT_CLOCK_2512_ACCEPTANCE.md",
+      "bytes": 4475,
+      "sha256": "c064265c5216949fdcc7deaf755a847807fb53536e275481f8dd22029de6f538",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/BOOT_CLOCK_2512_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/BOOT_CLOCK_2512_SCOPE.md",
+      "bytes": 3679,
+      "sha256": "f4b1fd6ff1c5d808d7c832975ccc14e10ff159c4fb532651bb8a3ddb28697892",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/CANDIDATE3_2512_ACCEPTANCE_PLAN.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/CANDIDATE3_2512_ACCEPTANCE_PLAN.md",
+      "bytes": 3250,
+      "sha256": "b369f1f7bc66b3cfe447430ce103839f7ae4c656e4f6c3e2e0c57ca922358b09",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/CANDIDATE3_2512_LIVE_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/CANDIDATE3_2512_LIVE_ACCEPTANCE.md",
+      "bytes": 3417,
+      "sha256": "11ef99a19c00e3ff5d1a6b34bcbe524241be569a72b13e5f731291ac50406989",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/CANDIDATE3_2609_LIVE_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/CANDIDATE3_2609_LIVE_ACCEPTANCE.md",
+      "bytes": 4177,
+      "sha256": "629df6598c9dcb06cad51c06275014df33c7dbf1b67cc47a3e182820d25e38e3",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/CLASSIC_APPS_PROGRAM_WORKFLOW.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/CLASSIC_APPS_PROGRAM_WORKFLOW.md",
+      "bytes": 5469,
+      "sha256": "d27935a9a5fa01e224367b264ff501e6a87568660759c1f3e40f967fe5f6f857",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/CLOCK_2205_EQUIVALENCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/CLOCK_2205_EQUIVALENCE.md",
+      "bytes": 5319,
+      "sha256": "d765348759d8f0fe71cc1fefe5c93d086ce809e48654605a457968b5fe77c678",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/CLOCK_FAULT_RAM_2512_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/CLOCK_FAULT_RAM_2512_ACCEPTANCE.md",
+      "bytes": 4700,
+      "sha256": "de856c90eae5bfe0b2d7bd9382e3c701533a85e3ff50d659a04efa814e081da6",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/DBG_BROAD_2512_RAM.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/DBG_BROAD_2512_RAM.md",
+      "bytes": 4745,
+      "sha256": "7eda9165ad31157395d0f0fa2ef4a0afd080bbacf7ce48cb7d8e778b013a13e3",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/DBG_G2_2512_INSTALLED_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/DBG_G2_2512_INSTALLED_ACCEPTANCE.md",
+      "bytes": 3041,
+      "sha256": "dade9804fd54ac21f6567ddd9cac4c5f7070051e94e1e6d1f8832690637aba14",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/DEVELOPER_MANUAL.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/DEVELOPER_MANUAL.md",
+      "bytes": 5907,
+      "sha256": "e5170eda18316e86baf823243a371399ab2994b2e816a125bad456b403adbba5",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/DEVTOOLS_2609_EMULATION_RAM_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/DEVTOOLS_2609_EMULATION_RAM_ACCEPTANCE.md",
+      "bytes": 4106,
+      "sha256": "f3fa2590826577e2be1f3a0015eee7e557391a9a8196f4053fe30ab1c2eaa3e7",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/DEVTOOLS_2609_EMULATION_RAM_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/DEVTOOLS_2609_EMULATION_RAM_SCOPE.md",
+      "bytes": 2783,
+      "sha256": "be88f9c6903be7c231af1f541bf5a02d71bd00dbecd2a873a25d20a13ca22c5b",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/DEVTOOLS_G2_CANDIDATE1.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/DEVTOOLS_G2_CANDIDATE1.md",
+      "bytes": 2913,
+      "sha256": "a1b6b80a0dec82319e4ad82c8652ec3558344ce2c02c7779c293c6804f3529d8",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/DEVTOOLS_G2_EXTRACTED_2512_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/DEVTOOLS_G2_EXTRACTED_2512_ACCEPTANCE.md",
+      "bytes": 4229,
+      "sha256": "cd0db838060bf0aee603216b3e9a85456c563ce24fa16ee47908dcc70ffb0518",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/EDU_SETTINGS_RAM_CHECKPOINT.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/EDU_SETTINGS_RAM_CHECKPOINT.md",
+      "bytes": 4788,
+      "sha256": "1d1292afe4f422e3f1b1148264dfab51c79b1cf4407526ed2ba0ed8893682697",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/FLASH_HELP_PROVENANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/FLASH_HELP_PROVENANCE.md",
+      "bytes": 1375,
+      "sha256": "ec6572275c71f92d20b985839b7cc2cf6d426e55e34ecb7e4dbb274377b472f7",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/FLASH_STATUS_CORRECTION_2512_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/FLASH_STATUS_CORRECTION_2512_SCOPE.md",
+      "bytes": 5130,
+      "sha256": "0883f653ebff7871f6d9a4efe07ee7224e9c3be90259b851761a1fa9346e3bf3",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/FLASH_TRANSFER_2512_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/FLASH_TRANSFER_2512_ACCEPTANCE.md",
+      "bytes": 6136,
+      "sha256": "dc7f8cd2262442396d5a6ce98c5d9da4c748bd37ed4e8ffa545e21e52c5e0387",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/FLASH_TRANSFER_2512_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/FLASH_TRANSFER_2512_SCOPE.md",
+      "bytes": 7210,
+      "sha256": "9181058266f275dd4b3f413dc118b5e26b8ded526260ffe3889938e8eaab54d1",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/MON_ASM_DBG_RELEASE_GATE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/MON_ASM_DBG_RELEASE_GATE.md",
+      "bytes": 9348,
+      "sha256": "49d160ea0d2c8545886473dc2519b7c9584a3c90edd7b8ae8bd757226c286329",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/MON_B35_PARITY.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/MON_B35_PARITY.md",
+      "bytes": 12503,
+      "sha256": "bd0d0f9ab13be4db17ad7066bed9989e91398ba84fa9928877ba42c661ce4413",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/MON_STARTUP_STATUS.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/MON_STARTUP_STATUS.md",
+      "bytes": 12307,
+      "sha256": "7df1de136939bd3f561efe0c45913113b1689d1540def08e1c6896011a52839b",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/MON_STARTUP_STATUS_ROM_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/MON_STARTUP_STATUS_ROM_ACCEPTANCE.md",
+      "bytes": 4236,
+      "sha256": "2bb024530431f2bb4eb8685483e682aecae93748d8f16251a0b6c45c7036345c",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/MON_TIME_TRIM.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/MON_TIME_TRIM.md",
+      "bytes": 2810,
+      "sha256": "3c0085dd66f4eb522589f80bf8ad2faaf46bf166acc5a3ef84cf6cfcb60b5841",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/MON_TIME_TRIM_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/MON_TIME_TRIM_SCOPE.md",
+      "bytes": 5568,
+      "sha256": "6f4122f0a0c13a97da4007a7f4fafaa25f1f87e8f96d78cc8b9b74a527b8a3ad",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/MON_TRADITIONAL_RAM_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/MON_TRADITIONAL_RAM_ACCEPTANCE.md",
+      "bytes": 3368,
+      "sha256": "ec8909615a705f204e580bdc25431e8ce33a9c73ceb5521d2c4ef76f4ababa27",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/MON_TRADITIONAL_ROM_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/MON_TRADITIONAL_ROM_ACCEPTANCE.md",
+      "bytes": 2889,
+      "sha256": "72d51979aa8d9db5d20e1ea6f49600b775bfcedccd81d3e39015ae252d7abc19",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/NAMED_EDU_2512_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/NAMED_EDU_2512_ACCEPTANCE.md",
+      "bytes": 4611,
+      "sha256": "76126b276cb05d50d94b79581f295207fc39a32c3566a8a9caba17ec41ab3256",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/NAMED_EDU_2512_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/NAMED_EDU_2512_SCOPE.md",
+      "bytes": 8222,
+      "sha256": "4de2654b52efe48e7bd9b922150fd2a0b5dcd040469afafde85d314ecf655bcc",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/NATIVE_UTILITIES_MANUAL.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/NATIVE_UTILITIES_MANUAL.md",
+      "bytes": 19823,
+      "sha256": "a42869f8df4a815aeb9078aef03e9cfe0c9435c8340b8988444108f11fbce55e",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/REFERENCE_FEATURE_PARITY_2026-11-01.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/REFERENCE_FEATURE_PARITY_2026-11-01.md",
+      "bytes": 14475,
+      "sha256": "6c920bd8aa1a922178eae00ea74813e2427a74292a6b06e50602355b6b3f642d",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/RELEASE_GATE_CHECKPOINT_2026-11-01.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/RELEASE_GATE_CHECKPOINT_2026-11-01.md",
+      "bytes": 2944,
+      "sha256": "3a07878ce884f9d31818f7b35256a11336297903da433cdeb51e87913231a0f4",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/SERIAL_CONSOLE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/SERIAL_CONSOLE.md",
+      "bytes": 4727,
+      "sha256": "fca2fb16c1b059a78545321c66a143eb858c292874d192ba2a4532b1e6548fc7",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/SRAM_WORK_NATIVE_INTEGRATION.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/SRAM_WORK_NATIVE_INTEGRATION.md",
+      "bytes": 3600,
+      "sha256": "f595470ef3e64af0d8fb20a0509c07a19db70bb48a6bc19ca3aa83390e895305",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/SRAM_WORK_POSITIVE_RAM_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/SRAM_WORK_POSITIVE_RAM_SCOPE.md",
+      "bytes": 2510,
+      "sha256": "9ec034c8cfc9b809743f6ca0a3a6560c6f2e8aba4c9d06c83602771cf2b66eea",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/SRAM_WORK_RAM_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/SRAM_WORK_RAM_ACCEPTANCE.md",
+      "bytes": 6703,
+      "sha256": "8890e564f3a46e7d8388bf4b983bc98785f267a4622b42436083de74fb73e013",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/SRAM_WORK_RAM_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/SRAM_WORK_RAM_SCOPE.md",
+      "bytes": 4574,
+      "sha256": "f59871f5a1e05d81a74362269a298d6fbd725b9333420de444ab500942014895",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/STORAGE_NATIVE_2512_2609_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/STORAGE_NATIVE_2512_2609_SCOPE.md",
+      "bytes": 5329,
+      "sha256": "87ec5d6917f6d3e584a4c6bdf7d8931348854f61fe0f7ca22ed0d606b1c21d88",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/STORAGE_NATIVE_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/STORAGE_NATIVE_ACCEPTANCE.md",
+      "bytes": 8589,
+      "sha256": "621006e2d7d3d7b962cc1e10be98724f71a60f721ace456c6fdbc4ad65193a17",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/STORAGE_NATIVE_G2_RAM_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/STORAGE_NATIVE_G2_RAM_SCOPE.md",
+      "bytes": 2075,
+      "sha256": "60b50f5b39e83ed9bcf162ccc9acb85e181161e86062be4f6d7e29ab7ff1b3b0",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/TIME_PREP_2512_ACCEPTANCE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/TIME_PREP_2512_ACCEPTANCE.md",
+      "bytes": 4143,
+      "sha256": "713f55ffd061939ed5724c0ea623ccc4689755bbc28e52dbfa0cf103eebffdd4",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/TIME_PREP_2512_FLASH_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/TIME_PREP_2512_FLASH_SCOPE.md",
+      "bytes": 5129,
+      "sha256": "f0378691e95c675d8d91781e570c90a64638bd4eb13f4e038679067e48cd56ec",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/TIME_PREP_2512_RAM_CHECKPOINT.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/TIME_PREP_2512_RAM_CHECKPOINT.md",
+      "bytes": 3632,
+      "sha256": "50b09fe73c9dc35aa5183bfe70b996596151a0f8eb2f3959295c627f73c6ff58",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/TRANSFER_2512_2609_SCOPE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/TRANSFER_2512_2609_SCOPE.md",
+      "bytes": 4701,
+      "sha256": "b380cb83ba032f7942e112b2328bf6fb82b2e2a0161ae769a30fcf8566b0492b",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/TRANSFER_GAPS_2026-11-01.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/TRANSFER_GAPS_2026-11-01.md",
+      "bytes": 9307,
+      "sha256": "4833a4a5ff5afbf27c42fef31fd0722aa7fb767492a7e3ad618f9f8a9aee37d3",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/UNIFIED_CANDIDATE3_PACKAGE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/UNIFIED_CANDIDATE3_PACKAGE.md",
+      "bytes": 3800,
+      "sha256": "a1707ec53813e99b9e1e068c067fe14406f5273895083c8d34ec15476b3f9f3d",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/UNIFIED_CANDIDATE_STATUS.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/UNIFIED_CANDIDATE_STATUS.md",
+      "bytes": 6785,
+      "sha256": "6e4378d6cfa117ab70e751a8f147073fa8436882386b3da91a66d2c1ba230af7",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/UNIFIED_ENVIRONMENT_REMAINING.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/UNIFIED_ENVIRONMENT_REMAINING.md",
+      "bytes": 1745,
+      "sha256": "62b9a11267ec17d2e7c4d0208979f0921e2986a460231d51dabb3b356a285b6f",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "docs/UNIFIED_SHIPPING_RELEASE.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/docs/UNIFIED_SHIPPING_RELEASE.md",
+      "bytes": 2074,
+      "sha256": "ba0848b26298f0ff3298690676c27513a4726fc43320f1a5550b4198d4906c4d",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "monitors/candidates/native-g00000001-r13/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/native-g00000001-r13/manifest.json",
+      "bytes": 13472,
+      "sha256": "436e8baa0b866eec602ff970d2103d3997c550740553ece33469d1a290af8ee4",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/native-g00000001-r14/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/native-g00000001-r14/manifest.json",
+      "bytes": 13472,
+      "sha256": "e3a3b1e60e791b0bc532607e76e5649af2cf26c607aff05b5f20efc739c37366",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/native-g00000001-r15/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/native-g00000001-r15/manifest.json",
+      "bytes": 13472,
+      "sha256": "acfc6d56422a13ce101322b408b8b0d88fd7dc9657291302007df5befe733931",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/native-g00000001-r9/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/native-g00000001-r9/manifest.json",
+      "bytes": 13310,
+      "sha256": "1c78d0c18d8f05cba8a74ca6f7f06e1e64481c223dd9714cb40cd546ebf9afd8",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/program-sp1-g00000001-r2/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/program-sp1-g00000001-r2/manifest.json",
+      "bytes": 1477,
+      "sha256": "5df36cd2d1cdb31acfc3ffce9cd75d01693d72b4cbf72f9c6d4d5d6565cc3ce9",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/program-sp1-g00000001-r3/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/program-sp1-g00000001-r3/manifest.json",
+      "bytes": 1477,
+      "sha256": "970b2b15f2587050ed25c19bc582abe1894c6fdfe77645715a52db4f8de042b5",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/program-sp1-g00000002-wide-r2/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/program-sp1-g00000002-wide-r2/manifest.json",
+      "bytes": 1689,
+      "sha256": "39a658168c724d7da4b6e05939088bb213173c4a0e302ba061f0e4ba6662a80b",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/program-sp1-g00000002-wide-r3/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/program-sp1-g00000002-wide-r3/manifest.json",
+      "bytes": 1689,
+      "sha256": "194014f2358f9e861123cc64036e9c4333df788485c68839bb1d5b3e24c207d1",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/program-sp1-g00000002-wide-r4/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/program-sp1-g00000002-wide-r4/manifest.json",
+      "bytes": 1688,
+      "sha256": "3937b731f5b4b47114817cfe88735a56d994bb2239b4aecf61032640a2f9a728",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/program-sp1-g00000002-wide/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/program-sp1-g00000002-wide/manifest.json",
+      "bytes": 1689,
+      "sha256": "4d1bf12de48e56415c2c008dd4753558ed4b69baaf44af0ec98c7244812f80d1",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000003-r2/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000003-r2/manifest.json",
+      "bytes": 5770,
+      "sha256": "023750f037c908755de5153669a760e8b0ad64dd7bfc9a675a5516363d229bd2",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000003-r3/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000003-r3/manifest.json",
+      "bytes": 4493,
+      "sha256": "480900e160d84a0e6995a3206472e808b0765fa4241bf39833662bf794af8749",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000003-r4/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000003-r4/manifest.json",
+      "bytes": 5774,
+      "sha256": "f875dfd7dfdcf65277e42d59b21833c93be18cf729c9cc7c22d3213deb6834bc",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000003/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000003/manifest.json",
+      "bytes": 8052,
+      "sha256": "2470794e88b1b85433090fe2bf8240b826b5f1190cb3229733cceaec7003b128",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000006-native-r2/INCOMPLETE.txt",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000006-native-r2/INCOMPLETE.txt",
+      "bytes": 141,
+      "sha256": "ebc2538dc863ee47d42eddc0c3ca236a2fd75417ec095c5464f33ff9a2727200",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r10/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r10/manifest.json",
+      "bytes": 6065,
+      "sha256": "89471bab97ebb2387411fdb922ae3e09282204226bc55b0226a2beecc8d93971",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r2/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r2/manifest.json",
+      "bytes": 6061,
+      "sha256": "963e360f0a9254bbdd021e11970e3d19c007f6a3b6618ee0290457ff46df3ad1",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r3/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r3/manifest.json",
+      "bytes": 4792,
+      "sha256": "885e236962944a4f9dbcc6e741414666ac919a4033e1b14cc99b4b5892e8b9dd",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r4/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r4/manifest.json",
+      "bytes": 4832,
+      "sha256": "7dcb08d56d04421942322764a31b21cdb6b551f5cd634378de68a64fbdd77d8f",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r5/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r5/manifest.json",
+      "bytes": 4832,
+      "sha256": "7f09c26a7caff9eb0e867301ce37aeb4d6af197c75019964718b4d02a4c4b856",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r6/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r6/manifest.json",
+      "bytes": 4832,
+      "sha256": "d7a3305bc7a4a76da995c87039b6924adfb22ddd0b4574a8cb59c4dc526040d7",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r7/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r7/manifest.json",
+      "bytes": 6067,
+      "sha256": "17721e4133f3bde32b2af7aa75c18eacb86107405557a63af23a94f3c1423eac",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r8/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r8/manifest.json",
+      "bytes": 6067,
+      "sha256": "a0927e69e56828012a6aee3c873af5abfa3b897fa94fce162006054403d74151",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000007-batch-r9/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000007-batch-r9/manifest.json",
+      "bytes": 4796,
+      "sha256": "c94bbef422107841420f24f3554f5329e5f6bcb29ad46f5d3c21877e1b57d7bb",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000008-batch/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000008-batch/manifest.json",
+      "bytes": 6064,
+      "sha256": "5b025b60df42a52b83339a4d690c89c8f18d83b02423b8b85a64757195df79a6",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000009-workflow-r1/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000009-workflow-r1/manifest.json",
+      "bytes": 6064,
+      "sha256": "45ec9cece11aa96d0d08e12366525aab81c0b0569aa4df251e83c4d7c99a51a5",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000009-workflow-r2/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000009-workflow-r2/manifest.json",
+      "bytes": 4798,
+      "sha256": "7e588947e2eae1c1e8f6f1bc548f56f500f53757998c0a277561a4af3e308a27",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/services-g00000009-workflow-r3/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/services-g00000009-workflow-r3/manifest.json",
+      "bytes": 4798,
+      "sha256": "eb1355d961916df950513135831dd50d8630bd19bc3ecc1b4ad4abfccd484dab",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g00000005-r2/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g00000005-r2/manifest.json",
+      "bytes": 6447,
+      "sha256": "17cb62b52884788d0b81ab224c3cf1738aa36cf724634ccd5997d93ceac9cefd",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g00000005/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g00000005/manifest.json",
+      "bytes": 6447,
+      "sha256": "31fa0009555111b0e790bb61fd6c0433f06018185df7c3543af81b81128080f3",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g00000009-batch-r2/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g00000009-batch-r2/manifest.json",
+      "bytes": 7875,
+      "sha256": "99658ac0bbed11a5cb7975ba830f0c7c13c7f0d99d77524a384f2bde2e46d0c0",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g00000009-batch-r3/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g00000009-batch-r3/manifest.json",
+      "bytes": 7875,
+      "sha256": "37ce38d35b757980d80c7dfcf98a253f49414dadeb7accfb7ff8d8c3254ab859",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g00000009-batch-r4/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g00000009-batch-r4/manifest.json",
+      "bytes": 7876,
+      "sha256": "4ce5030cf401481b5e7dd3a04613659e358393a7fd83ed6b20e1d39b9935875b",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g00000009-batch/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g00000009-batch/manifest.json",
+      "bytes": 7875,
+      "sha256": "f8ae72b30be95b3dbb0ed13c003553a690b86538a1cda844c22a6eff8db774e4",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g0000000b-workflow-r2/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g0000000b-workflow-r2/manifest.json",
+      "bytes": 8062,
+      "sha256": "55e83e8fb35e1316fc83a5ab39f2ad480b963e0aef776783b217a772899fc3be",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g0000000b-workflow-r3/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g0000000b-workflow-r3/manifest.json",
+      "bytes": 8062,
+      "sha256": "117dccbd0b9c71ca6be9b3208614b0b1746dd910311226d512777d483ebc059f",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/candidates/wb2-g0000000b-workflow/manifest.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/candidates/wb2-g0000000b-workflow/manifest.json",
+      "bytes": 8062,
+      "sha256": "06d657f0c9dc5956d5ba3c926c9a5c2cb073b6176cbe5877948a6947c6e5064e",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/devtools/base1/assembler/asm-app.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/assembler/asm-app.asm",
+      "bytes": 60836,
+      "sha256": "e39b035477da8c0d55f8fcf3214aaea4bc50b1936e2a49db824dbe7c63b85389",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/assembler/flash-provider.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/assembler/flash-provider.asm",
+      "bytes": 13942,
+      "sha256": "d33d1eca70de83713ea2a06a345f425e99d56f2b9a1b7aabefb1b4434ef19d06",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/assembler/layout.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/assembler/layout.inc",
+      "bytes": 1787,
+      "sha256": "a68841ad1fe5e2b0ae8191916b9a0cbb8e48335e2bd6a0786d8e8f1da6517e62",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/assembler/provenance.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/assembler/provenance.json",
+      "bytes": 485,
+      "sha256": "46ee25055c11f8aa879bb4f31a307d8e999fb83bc5ecaa347918e08a21c19c71",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/devtools/base1/assembler/source-equ.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/assembler/source-equ.inc",
+      "bytes": 61,
+      "sha256": "ade841948c052a0e867011aa00a5ae8f4e539c53aca0b3c67215049c67239804",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/assembler/source.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/assembler/source.asm",
+      "bytes": 17571,
+      "sha256": "46b203d68da68857b7aa182520506361e42af81e94beab56726fae78c104e124",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/assembler/state.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/assembler/state.inc",
+      "bytes": 756,
+      "sha256": "93dbac62a2edff81eca51412d5b2ef8b6593dcb1f14662bbeddb097df8b3429e",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/debugger/debugger.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/debugger/debugger.asm",
+      "bytes": 23667,
+      "sha256": "31237592affabc7220b9e56ec7fcf76519ad93c456b9fb3c1332a6aa5df19dc5",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/debugger/disasm.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/debugger/disasm.inc",
+      "bytes": 3606,
+      "sha256": "3697da1b905af1f7b4145f60f5028b6ab35d351510731b0011827676bc6c9d7d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/debugger/layout.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/debugger/layout.inc",
+      "bytes": 1180,
+      "sha256": "55a8198d09fa59b6aaf9ecf4df78c9c009750b45197e4f25abc52cbac3552112",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/devtools/base1/debugger/provenance.json",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/debugger/provenance.json",
+      "bytes": 529,
+      "sha256": "156a6fb3153394e9abddea31144e1d5fecb75555012f324f31f85f9293b3e13d",
+      "kind": "SOURCE_OR_DOCUMENTATION_METADATA"
+    },
+    {
+      "original_path": "monitors/devtools/base1/debugger/step-flow.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/devtools/base1/debugger/step-flow.inc",
+      "bytes": 4097,
+      "sha256": "e11ba85ee8c3deabfa6f5c2a695919058626e236313eff1549b14561e3c3c9ef",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/auto-reload.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/auto-reload.asm",
+      "bytes": 1601,
+      "sha256": "8e7e0967c04a6023eb1d7b6af0cae8f46f3d189bc4f58b92cce9456168ec8b96",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-compact.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-compact.inc",
+      "bytes": 1235,
+      "sha256": "d9eb2c6c1052b0ea1f5b3d585911a300b2c59c4929a50f9f2a5ec65219963762",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-maint-base1.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-maint-base1.inc",
+      "bytes": 4771,
+      "sha256": "6328be71ad79e6d0258281562da310c789710d21a9df81895f792283af9bc26c",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-maint-classic.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-maint-classic.inc",
+      "bytes": 49557,
+      "sha256": "7d60c8fc168545d3754d4199d9ed2fa150eccb191fd9733301ea56b17538c675",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-maint-edu.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-maint-edu.inc",
+      "bytes": 4528,
+      "sha256": "1ef0628e1caf1350e8cf69e8bafe3fb86000e1d3289d78d1202249c5102141c0",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-maint-table.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-maint-table.inc",
+      "bytes": 7055,
+      "sha256": "f2958308a3031e006c221354f3a4e6e6fa718687fdabd2a83281bf80b980a896",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-maint-transfer.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-maint-transfer.inc",
+      "bytes": 18955,
+      "sha256": "f30cc7a67d286d8cd80ed9f6bcba6ca116b9c0f568909cfa9ce7a7f514597691",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-maint.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-maint.asm",
+      "bytes": 3000,
+      "sha256": "f8dd31a30baeb070f9a95002a4aa1f582a4f71961d7673beccb3b413c54a248c",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-transfer-alloc.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-transfer-alloc.inc",
+      "bytes": 1586,
+      "sha256": "33026be3991f98b33be53698b0ca188e25b0660b5c13ca5c95dff9797b996292",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/bank-transfer-handoff.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/bank-transfer-handoff.inc",
+      "bytes": 847,
+      "sha256": "692bd50a953b9d15d8ae08e7bbe48434553aad176e83217aea73e6e334a7e646",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/batch-reader.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/batch-reader.asm",
+      "bytes": 2797,
+      "sha256": "bc2549ff9cfade9c914f13706f5b9ffad17869bef22b1d6fc56c453e1cd0b89a",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/board-tool.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/board-tool.asm",
+      "bytes": 17468,
+      "sha256": "24088a7dcb43d741277b855cc0559248d3f5d510816691fb806f8cdde517333d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/compact-decode.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/compact-decode.asm",
+      "bytes": 3320,
+      "sha256": "c4092f590370d817eb03928b194597a70e24ccaeb5377e34ffc302de7b65ecc1",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/edu-settings.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/edu-settings.asm",
+      "bytes": 2739,
+      "sha256": "f577732b8342c9158d9c6cd9f54c85a4fb59361335334e6b3007a6e67a7731e5",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/flash-auto.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/flash-auto.inc",
+      "bytes": 1823,
+      "sha256": "5450a967693db62752b14dcbfd8852011d3b4496dca4aa4e465e77cdbaa6615a",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/flash-record.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/flash-record.asm",
+      "bytes": 15915,
+      "sha256": "86b44252df5c8ff3acca91726126d5a484a29103b3693ce8699286d813a34f81",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/flash-s19-load.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/flash-s19-load.inc",
+      "bytes": 1914,
+      "sha256": "b394c894e3202e63d078a66086ddc78b738bff89dc8c7bb6055a6531250750b8",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/flash-s19.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/flash-s19.inc",
+      "bytes": 5457,
+      "sha256": "8f298b687f2c080d54a5272298c99524ca1358d4b684f4b6b9023b0047b2f501",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/flash-transfer-gate.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/flash-transfer-gate.asm",
+      "bytes": 5283,
+      "sha256": "267420db4578c7c1332cfc870d11276d93527f1af2295c312184dcf58e1ba254",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/native-handoff.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/native-handoff.asm",
+      "bytes": 938,
+      "sha256": "e571dd2038435801139e0e19d3ec33f807cc5dc3a4c490ec58fbdf8d264b4915",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/native-loader.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/native-loader.asm",
+      "bytes": 6634,
+      "sha256": "910c551713c20b732f70db9ecba488f257186cebda13925ceead55676b067c78",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/s19-loader.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/s19-loader.asm",
+      "bytes": 5159,
+      "sha256": "e4774993ac7c7c9581f4981afc760a0388723d708a2d9bb01787de941248de18",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/sram-work-classic.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/sram-work-classic.inc",
+      "bytes": 88406,
+      "sha256": "db47e725c1bf67194e1a7d8959d348e9ea231c6b1389acb2954e83d278e3fafa",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/sram-work-spi.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/sram-work-spi.inc",
+      "bytes": 2771,
+      "sha256": "b1bde41035d0f4dc762353c8f7e6f411a456a217bacb7c49bcf6252b82b975ee",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/sram-work.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/sram-work.asm",
+      "bytes": 8853,
+      "sha256": "4d335363f33de2f22173566b3a2a10ab52a1a90a1907f6714ea8af52a02c8a17",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/storage-batch.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/storage-batch.inc",
+      "bytes": 2278,
+      "sha256": "32b6ad0e507db3b087748fd3b03ad2de73504fb6746b7afbcae5ca97fe44f90f",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/store-front.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/store-front.asm",
+      "bytes": 5060,
+      "sha256": "41607eb03602e45f80c306bd77910a3334ee7acaf68354605b601eb38581345f",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/native/store-loader.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/native/store-loader.asm",
+      "bytes": 2098,
+      "sha256": "10fa06a13b0c26bee9bcbb664cdd5dc1a39de09b04a5ba0b8a5992b96849c100",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/qualification/README.md",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/qualification/README.md",
+      "bytes": 1644,
+      "sha256": "d672b57213a9aaa144a1056d862c147ecf96c831a0e2114eeb0f0481d2876a88",
+      "kind": "DOCUMENTATION_SOURCE"
+    },
+    {
+      "original_path": "monitors/qualification/clock-fault-constants.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/qualification/clock-fault-constants.inc",
+      "bytes": 646,
+      "sha256": "4a2920697b93331cea58d7dcfff7e83bd4f6bb488cfedf4b5cf7bfb27019d1c1",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/qualification/clock-fault-transport.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/qualification/clock-fault-transport.inc",
+      "bytes": 6485,
+      "sha256": "a58c98758324a4c54c3e2d2a66e2d89f4fc9009a1c016e32450cf2a24c3b87c5",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/reference/bank-maint-2.4.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/reference/bank-maint-2.4.inc",
+      "bytes": 131094,
+      "sha256": "b5ca6a53c0284aba7a6b85c6829159d3648d5d153b0eab4b0bd11dda223e8911",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/reference/sram-work-b35.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/reference/sram-work-b35.inc",
+      "bytes": 99714,
+      "sha256": "9e45a8908b47a6122c165e929801098853257118fa05cfbe370f0838a59f4d3d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/adapter.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/adapter.inc",
+      "bytes": 5280,
+      "sha256": "62bafc2d3a3a4700cff10add943676312ac7c880d3e5c6be2662f9cad5a2b227",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/edu-read.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/edu-read.inc",
+      "bytes": 576,
+      "sha256": "48d4cdd4b35f70df0533e763fe4ea95373b6c677d4e8b7b5107d1397e5c3369c",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/layout.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/layout.inc",
+      "bytes": 2072,
+      "sha256": "bf7a5b2b2ac861a0755207ad21a91c1c2ade6c7f7497ae365428b5165c3b0afa",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/mona.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/mona.asm",
+      "bytes": 15941,
+      "sha256": "1dc446d06019d7cb7c32ba8f5b8b9745dbbfa85fd1335a89e31da584388f20bb",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/monitor-ui.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/monitor-ui.inc",
+      "bytes": 642,
+      "sha256": "a912132463622ce74efb83862ae02de0d8d87950df5ddfbf99b85f7d06a9b8eb",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/program-layout.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/program-layout.inc",
+      "bytes": 1128,
+      "sha256": "a7062d19e91c0d4717cf6defa0c33beea6e60b2b5b23c0de03d4c3b8fe400ec1",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/program-provider.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/program-provider.asm",
+      "bytes": 25642,
+      "sha256": "6d42364ed00981d6e7d4a46a5184cdfa431da0b97852994fb822bc29f7fad099",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/rtc-read.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/rtc-read.inc",
+      "bytes": 8311,
+      "sha256": "10804aa1f46b950ea3a8b00bbc45c77e49b51fe2c45e9c61a06adeb6ebd5ad2c",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/service-apps.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/service-apps.inc",
+      "bytes": 6780,
+      "sha256": "87768c169d0d5515bbe8e0ce43bc1721b66e1e2234715a8ec8a34154c092d9ac",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/service-flash-transfer.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/service-flash-transfer.inc",
+      "bytes": 2552,
+      "sha256": "cb864f2e8066eabf8f2b05403c720ee3280b5a22b84a0277c41d7a5b124fbf75",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/service-map.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/service-map.inc",
+      "bytes": 8799,
+      "sha256": "fface96ef27b09be894757222a84d71adee26bdf5e25ed8a59633a12c8aa75cd",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/service-transfer.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/service-transfer.inc",
+      "bytes": 2289,
+      "sha256": "bd458b0cb043f5761ad021f53a8d5471f4f9715c85b333c68ef0225e02fe6cf2",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/services.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/services.asm",
+      "bytes": 9226,
+      "sha256": "de4edd1f9d7c10fcf9cc301067fcbf818959f8e845b5a641182e8817b6b92c5b",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/workbench-clock.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/workbench-clock.inc",
+      "bytes": 715,
+      "sha256": "fbfb365b5cf865c5e685ea22ce996419d3b153028bf30171b8b3974cf3f50800",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/workbench-native.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/workbench-native.inc",
+      "bytes": 3152,
+      "sha256": "dac8fc8bc7478ead167322fb45d6265f520e6fcaf7275f0786f696f7ac6c3928",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/workbench-store.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/workbench-store.inc",
+      "bytes": 10815,
+      "sha256": "270040cad48089cab0b9a84c1e673b5a07137da60a0f38a34e436d8e2330b545",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/src/workbench.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/src/workbench.asm",
+      "bytes": 23837,
+      "sha256": "a3ef444654a9e8c0acb31c6317c595f0ae3b0d808003f0b204ec8ebc495ead84",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/status/status-core.asm",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/status/status-core.asm",
+      "bytes": 7621,
+      "sha256": "0824f411c410fb78c64e40e7c4b0cd1a49789727f99a3bc591fd7822db26de8d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/status/status-mon-sram.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/status/status-mon-sram.inc",
+      "bytes": 2391,
+      "sha256": "3ae966eaafbf608b616f7a7aecdb9de4d365d50208f84c5516b71e1b0d697b27",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "monitors/status/status-mon.inc",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/monitors/status/status-mon.inc",
+      "bytes": 3216,
+      "sha256": "e32a64d1cc4c20a8cb13fa577a9dc680ec31f3a947ec22df2797bcd76533f9da",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tests/console_tk_smoke.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tests/console_tk_smoke.py",
+      "bytes": 3803,
+      "sha256": "5908dedd3ce6fb38b32ef47cf07883d5fb3400cbbd49338c94d2d2db789546f0",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tests/test_console.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tests/test_console.py",
+      "bytes": 11651,
+      "sha256": "0eaccdfbce81be1b27f0e4c22c5348f40b0487e341be564ad2a2ca2c8fb6623d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tests/test_factory_image.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tests/test_factory_image.py",
+      "bytes": 2411,
+      "sha256": "d7654ac275f0aa507c9582975406f44aaccef7bcff3abacbe8391cc8afc61416",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_bank_features.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_bank_features.py",
+      "bytes": 10886,
+      "sha256": "b3259eb06069632063c188e6bc0c1a68ccf47cd6d025815afa07b0361db91324",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_edu_settings.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_edu_settings.py",
+      "bytes": 3715,
+      "sha256": "6cbddf5dc4ad0334ec7b7f530dd6586fde8c51dc2e51591c525816cac0bdb20c",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_flash_dispatch.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_flash_dispatch.py",
+      "bytes": 5481,
+      "sha256": "5bd0a4bbb0bf526d0c7ea5007123437be4ea40166816de9239cd874bd1912399",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_flash_status_correction.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_flash_status_correction.py",
+      "bytes": 10138,
+      "sha256": "f5adee30a226f1075a9f8552e5ce374fe655ec5abb4fa5bf5d565496ec9395bd",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_flash_transfer.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_flash_transfer.py",
+      "bytes": 7677,
+      "sha256": "3cbc118d1af0ed6c367dc47773e312a9f261b5f757a53cc68a0310a71288f42d",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_mona.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_mona.py",
+      "bytes": 15734,
+      "sha256": "1a8256191456b3b1f6ab99f056dcfbf4723f264e73511605129fdf0f27a8a0be",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_named_edu.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_named_edu.py",
+      "bytes": 11376,
+      "sha256": "bcd925b87d5ff40b74102d8953116be12aabfad5de572ea522ff045793edced9",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_native_apps.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_native_apps.py",
+      "bytes": 13419,
+      "sha256": "468615304e98e9099911984b096f8fbb79541c20e9b19a0948f6662c240e0d31",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_program.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_program.py",
+      "bytes": 3777,
+      "sha256": "ad48a917937ba64dd98287c6272b7f34149b0c181f576ed4c2c1ad73f3c846ba",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_s19_loader.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_s19_loader.py",
+      "bytes": 3678,
+      "sha256": "3e4e8d945b40c936e0917cc37cb45e1ae32c84a96eb62ae98e9647a3911bbae0",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_services.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_services.py",
+      "bytes": 20821,
+      "sha256": "53797bff303c3ad4c044541f815e4541ccd7676df5950b69472d2dc1d07bf483",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_sram_work.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_sram_work.py",
+      "bytes": 7427,
+      "sha256": "914be798ff31a712eb8e92d65bdcc79efcaadab9b4ccafcc60ef41ec453961d4",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_startup_presentation.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_startup_presentation.py",
+      "bytes": 4333,
+      "sha256": "a50eeec4de538188fbe24555f51e49bbc96c474907c512f106457b4eb9fdca2b",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_storage_batch.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_storage_batch.py",
+      "bytes": 5636,
+      "sha256": "039200521b74e8060c3593fb3ff8863f2b87201b346262e130d2e90d4f4653bb",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_storage_install.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_storage_install.py",
+      "bytes": 10558,
+      "sha256": "23cbf1ea1339022a7965eba98e1f829b112385a91882df6995dd8b389baf7f91",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_storage_loader.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_storage_loader.py",
+      "bytes": 3231,
+      "sha256": "3fa385da5716eee828754ea05ab670bdcea9d8aed97ec5e5c4842d233d3eb333",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_store_front.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_store_front.py",
+      "bytes": 4506,
+      "sha256": "a294681062ea6149dc9b439e877dc63e3d57d91d000a087e5ba3a444a9b8230c",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/build_workbench.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/build_workbench.py",
+      "bytes": 12764,
+      "sha256": "a6288e0218016065bf65ced50207b1549cdc0080340c194543ea5480281d3333",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/console_core.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/console_core.py",
+      "bytes": 14136,
+      "sha256": "ec011501205671265b1448739c7afa2dfcd1f1e9251f8f477abd26251d30e04a",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/named_transfer_source.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/named_transfer_source.py",
+      "bytes": 4485,
+      "sha256": "72f512ffdb31b9d1424f6a802dab422b956163ac0141dc4ce03fe85e86227a8c",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/nf_compact_images.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/nf_compact_images.py",
+      "bytes": 6324,
+      "sha256": "23fb2ec28ec679a7dfb33a015ae5ed20f9b3818f9ccd423ac6cbaa4706861175",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/nf_console.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/nf_console.py",
+      "bytes": 18702,
+      "sha256": "87fc69068c142520744b6d7ceb96e68092e7ee8f59d5077b987cdf3f9fc32dcd",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/nf_factory_image.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/nf_factory_image.py",
+      "bytes": 4726,
+      "sha256": "c5f28f062e604e11958c76aab63049a1d95056896698c642e9d921a2b09fb3c6",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/nf_native_images.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/nf_native_images.py",
+      "bytes": 4320,
+      "sha256": "2d4096840c097a1565afc94b6b28bb9f8a9da1d78b14a96d2bffeec10b1c97ea",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/pack_transfer_artifacts.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/pack_transfer_artifacts.py",
+      "bytes": 3134,
+      "sha256": "1ea69f093794e1ef449350c045249d7c1b83d7d09b97ea110f672aa720caaa96",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/package_compact_candidate.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/package_compact_candidate.py",
+      "bytes": 18210,
+      "sha256": "ca25a41522aff3028030faa3fcb061f872f01abd0092e36eea61ca1956ba9d15",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/package_unified_candidate.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/package_unified_candidate.py",
+      "bytes": 11179,
+      "sha256": "77994aac2767a5945776458c0b0b8cbe1f736c0852a8bafb9f80488f83dc2fe2",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/port_bank_maint.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/port_bank_maint.py",
+      "bytes": 5040,
+      "sha256": "2b3609609144fb3e51208ee8df8a333010e1821f7959d3bfc67312b955700925",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/port_sram_work.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/port_sram_work.py",
+      "bytes": 3708,
+      "sha256": "9ede0788251e2208c635abf267e441734fe2539a2786c1bed23b6fc19ccacc67",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/sram_named_source.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/sram_named_source.py",
+      "bytes": 4621,
+      "sha256": "a4a81800095ea63c1da756e36c6c37d7e6ca10cec2fb3e94d1cf9425568f07d7",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/status_extents.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/status_extents.py",
+      "bytes": 1563,
+      "sha256": "4875d07a1b099b6ad8528fa2c91d4333468f27065a57089b7ef1a426fc13b621",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    },
+    {
+      "original_path": "tools/storage_compact.py",
+      "stored_path": "archive/uncommitted/2026-11-04/foundation-development/tools/storage_compact.py",
+      "bytes": 1802,
+      "sha256": "38c9dece3433c3bda2fbdc139ccaba05a1b27f78b42e52517372f53cd39d2b44",
+      "kind": "SOURCE_OR_SOURCE_CONFIGURATION"
+    }
+  ],
+  "excluded_entries": 144,
+  "exclusion_policy": "BUILD/generated binaries/capture data/results/private inventories are not committed"
+}

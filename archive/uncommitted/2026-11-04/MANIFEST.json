@@ -25,6 +25,11 @@
       "label": "foundation-bootstrap",
       "source_files": 59,
       "manifest": "archive/uncommitted/2026-11-04/foundation-bootstrap/WORKTREE_SNAPSHOT.json"
+    },
+    {
+      "label": "foundation-development",
+      "source_files": 208,
+      "manifest": "archive/uncommitted/2026-11-04/foundation-development/WORKTREE_SNAPSHOT.json"
     }
   ]
 }

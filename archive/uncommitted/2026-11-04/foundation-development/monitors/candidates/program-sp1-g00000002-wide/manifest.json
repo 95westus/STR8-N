@@ -1,0 +1,35 @@
+{
+  "component": "PROGRAM provider",
+  "generation": "00000002",
+  "status": "BUILD_ONLY_NOT_EXECUTION_QUALIFIED",
+  "artifact": {
+    "filename": "STR8N-PROGRAM-SP1-6B00.bin",
+    "sha256": "20fa5594b75d1b3e0daf6c59c3759d21cf8970e9b1b5ca29861e66615f63a40c",
+    "bytes": 3328,
+    "linked_bytes": 3307,
+    "free_bytes": 19
+  },
+  "source_sha256": {
+    "monitors/src/program-provider.asm": "d95c1f723cab1103a1e1ae22e5056c24461c9e602958475985acb59c0ed85a30",
+    "monitors/src/program-layout.inc": "92b9cbd78425b1c1258330b7aab80fea533e9ac586a624495b26eddf50e7f7ff",
+    "monitors/src/program-layout-check.inc": "f284c2c1c8fcc9c8dc101a9d4c13c2c9f4cf3fd736696047fe3a946dc0bd1dda",
+    "monitors/src/program-spi.inc": "6d92a6280c9982793f04d0bc5accd8f333b2f2c1a680ed6080f8dddec0580d5b",
+    "monitors/src/workbench-layout.inc": "89cda8ac276cf35d991094a0a3898f9ccef9689b68f7b68839d1b5260fcfc8a7",
+    "monitors/src/workbench-interface.inc": "eb9293c14ffa08d63085d8518473415fd4b9706f8ae944c25fa3559587ba94a1",
+    "monitors/src/batch-interface.inc": "7eddb4f63346f541c8fa207be5059c2e5b9511a4f97371c617d0fd1ec925da0c",
+    "monitors/src/monitor-ui.inc": "ace5912c158b1333b32af5572bd9091bd96fc60e44b80c918660656113c30dad"
+  },
+  "entries": {
+    "API": "6B11",
+    "SP_READ64": "758C",
+    "W_SPI_GUARD": "756A"
+  },
+  "origin": "6B00",
+  "end_exclusive": "7800",
+  "F_rebuilt": false,
+  "CPU_simulations": 0,
+  "build_passes": 1,
+  "assembler_linker_invocations": 2,
+  "format": "SS1/SS2 primary; SP/01 slots, CRC/commit last; no format/delete/reclaim",
+  "writes": "PROGRAM directory0040-023F or payload0800-boundary only; no mode write or WORKSPACE write"
+}

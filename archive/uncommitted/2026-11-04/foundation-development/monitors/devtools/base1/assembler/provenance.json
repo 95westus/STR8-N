@@ -1,0 +1,10 @@
+{
+  "reference": {
+    "assembler\\asm-app.asm": "34664a74dfb89f15d8da2b259cf96d2ee5d8ca0a2567295d858c570263686774",
+    "assembler\\layout.inc": "f3aa85f02c2d0e7d98c5d0cd2b1798ef842ab8ee255a8860c9faf38966f0504d",
+    "assembler\\source-equ.inc": "d68c2a2630c90fc2b9eff6cffd66b0621a97481916ec52b223c21e55a4de7b30"
+  },
+  "source_reference": "5f9272f86e522a1301f4dfa7deb770d6ab02c0f76f88ed3fd411f3a7ea49f2c9",
+  "foundation_changed": false,
+  "status": "PORT_SOURCE_NOT_LIVE"
+}

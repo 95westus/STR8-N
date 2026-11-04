@@ -1,0 +1,30 @@
+; Named native apps share a loader; MAINT retains the storage shell.
+WC_MAINT:
+        JSR W_END_ARGS
+        BCC W_UNHANDLED
+        LDA BQ_MAGIC
+        CMP #BQ_ON
+        BNE WC_INTERACTIVE
+        LDA #1
+        STA BQ_PROVIDER
+        JMP W_HANDLED
+WC_INTERACTIVE:
+        LDA W_BANK
+        JMP W_ENTER_SHELL
+WC_COMMAND:
+        JSR W_END_ARGS
+        BCC WN_QUERY_RETURN
+        JMP W_NATIVE_CLOCK
+WC_FLASH:
+        JSR W_END_ARGS
+        BCC WN_QUERY_RETURN
+        JMP W_NATIVE_BOARD
+WC_MAINT_APP:
+        JSR W_END_ARGS
+        BCC WN_QUERY_RETURN
+        JMP W_NATIVE_MAINT
+WC_WORD: DB "CLOCK",0
+WC_MAINT_WORD: DB "MAINT",0
+WC_FLASH_WORD: DB "FLASH",0
+WC_BOOT_WORD: DB "BOOT",0
+WC_TIME_WORD: DB "TIME",0

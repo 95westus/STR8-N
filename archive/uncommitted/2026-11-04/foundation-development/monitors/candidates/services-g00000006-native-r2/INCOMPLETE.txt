@@ -1,0 +1,1 @@
+Repackaging stopped before manifest: external provenance path unsupported. Do not install. Final candidate is services-g00000006-native-r3.
