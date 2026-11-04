@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "published": true,
+  "release": "STR8N-F 0.3.0",
+  "tag": "v0.3.0",
+  "url": "https://github.com/95westus/STR8N-F/releases/tag/v0.3.0",
+  "published_at_UTC": "2026-10-29T04:35:49Z",
+  "published_at_America_Chicago": "2026-10-28T23:35:49-05:00",
+  "source_commit": "a5f1d83f6a7017eb30e6268c6e0b1fd12fce6a8d",
+  "assets": {
+    "EXTRACTION_RECEIPT.json": {
+      "bytes": 2300,
+      "sha256": "e6ddadc1d28931716ab63ded41377cc2251d75946932fdb7541fc3492066e19b"
+    },
+    "PACKAGE_RECEIPT.json": {
+      "bytes": 1115,
+      "sha256": "f50a6b15ccf4a945349c1436f65bbdf23ca906bb8c5ffac166025714423f4f3f"
+    },
+    "SHA256SUMS.txt": {
+      "bytes": 278,
+      "sha256": "9f7fd01b5b92444e5d8a6b2dec1679f540c0655c1e0a59b6acb1f99a75cd2fc0"
+    },
+    "STR8N-F-BASE1-0.3.0-source.zip": {
+      "bytes": 529511,
+      "sha256": "128b5d74ace51aa61083112cfaf0c1ab03049b4fad4ecfc21d4d0a81e332e3aa"
+    },
+    "STR8N-F-BASE1-0.3.0-source.zip.sha256": {
+      "bytes": 98,
+      "sha256": "ffdf2fbe771f2ca52d2c9af94d7b84475b9c8ee78ff5a9be3a0239ebf4e46cb4"
+    },
+    "STR8N-F-BASE1-0.3.0.zip": {
+      "bytes": 243843,
+      "sha256": "3c3631ec8de5dfead44e3b54a8e885a82c3d508f90b04f7d3d18ce70a91a7a4f"
+    },
+    "STR8N-F-BASE1-0.3.0.zip.sha256": {
+      "bytes": 91,
+      "sha256": "ff5998a387fa7fe4097fa39a09589327f1b4688af05b3277b927d85cd04bbb82"
+    },
+    "STR8N-F-BOOT-4096.bin": {
+      "bytes": 4096,
+      "sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1"
+    },
+    "STR8N-F-BOOT-4096.bin.sha256": {
+      "bytes": 89,
+      "sha256": "f01fd291e13153fe12f8c3dbab59b13695cbffc01cbd2e80e9f477e27a70e76b"
+    }
+  },
+  "GitHub_asset_digests_verified": true,
+  "freeze_CI": "PASSED",
+  "firmware_builds": 0,
+  "CPU_simulations": 0,
+  "board_access": false,
+  "F_frozen": true,
+  "Mona": "PLANNED; no binary included",
+  "final_ZIP_live_trial": "NOT_RUN",
+  "earlier_rc1_existing_SNBT_trial": "PASSED_2609; exact runtime files unchanged",
+  "other_packaged_routes": "NOT_RUN; release notes preserve limits"
+}

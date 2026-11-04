@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "load": "0200",
+  "entry": "0200",
+  "end": "4544",
+  "bytes": 17221,
+  "sha256": "28eabc8fc8158f1df88e8426d2566b021440f83514c9dbb5c76b4096eaa93e85",
+  "F_sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1",
+  "core_input_sha256": "522f2e39261d294d7bbf46617639ade3f947a3d8697fdafd19888cd7053dad54",
+  "library_sha256": "ae8295ef4a097250176988c49ac7fb8816e5ff9c36831bd821b32b15c6b152a2",
+  "core_patches": [
+    "FI_FRAGMENTS RAM pointers",
+    "Q to public F reset $7E64"
+  ],
+  "stored_FLASH_required": false,
+  "stored_MAINT_required": false,
+  "MON_required": false,
+  "MAINT_RO_sha256": "63ca93828a2e5b31150cf4a72fa7453916b3c3f2597197886f31823ed055c41b",
+  "hardware_qualification": "See board retirement receipt"
+}

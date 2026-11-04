@@ -1,0 +1,40 @@
+RTC physical seconds display - enabled November 1, 2026
+
+Live-qualified and enabled: 2205, 2512, 2604.
+2609 is owner-held, unresponsive after a loader mismatch, with RAM restoration
+pending. The owner declined a CPU reset. Do not open its port or clear its
+restoration/owner-hold guards without a new owner recovery instruction.
+
+During each 62-second drift collection, the eight LEDs show BCD seconds:
+four red LEDs = tens in binary; four green LEDs = units in binary.
+At actual RTC seconds 00, all-red/all-green frames alternate about every
+100 ms. This is a binary LED indication, not a seven-segment numeral.
+The 794-byte temporary RAM collector reads the RTC without setting it.
+Nine evenly spaced accepted readings feed the drift campaign; all polling
+observations and LED readback evidence remain in observations.jsonl.
+
+Saved-data audits verify the exact uploaded/restored image, allowed serial
+commands, RAM backups, both zero-second flash phases, LED/control restoration,
+NIST reference quality, CPU/USB identity and original monitor prompt.
+No clock, trim, PF acknowledgement/history, EEPROM, flash, firmware, saved
+settings or baseline changes are part of this mode. EEPROM history is retained
+but is not freshly scanned by this transport.
+
+Native 2512 uses its established bounded M RAM transport. Legacy 2205 and
+2604 use L/S-records. Never use M RAM writes on 2604. Do not generalize bare
+L/S19 loading to BASE1 monitors: bare L can select the raw BIN loader.
+The initial mismatch changed two 2512 low-RAM bytes; they were restored and
+verified against its hash-checked owner backup. The 2609 mismatch remains
+blocked and has not been reset or power-cycled.
+
+Configuration: output/qualification/rtc-led-seconds.json
+Qualification: output/qualification/rtc-led-seconds-enabled-20261101/qualification.json
+Pinned image: BUILD/rtc-led-seconds-r1/collector.bin
+Image SHA256: 9782c1c4b26b906a44bcb9ecf5dd817ae09b28c612eb88dccb58bb8fa23ee71b
+Dispatcher: tools/rtc_led_mode.py; collector: tools/rtc_led_collect.py
+Schedule: unchanged hourly anchor and extra random 2512 read; 2609 excluded
+through owner_blocked_boards. Other unavailable boards retain random catch-ups.
+
+Offline checks: 18 complete CPU/I2C/LED cases covering both CPU models and
+all 60 seconds/both flash phases; six host lifecycle cases, including both
+RAM transports and failed restoration; 12 schedule/owner-hold cases.

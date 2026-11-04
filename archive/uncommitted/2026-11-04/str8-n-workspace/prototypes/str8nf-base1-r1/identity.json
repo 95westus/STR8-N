@@ -1,0 +1,14 @@
+{
+  "product": "STR8N-F",
+  "F_version": "0.3.0",
+  "F_generation": "00000001",
+  "profile": "BASE1",
+  "private_contract": "PR05",
+  "public_ABI_major": 2,
+  "identity_format": 1,
+  "descriptor_bytes": 64,
+  "locator_address": "F03C",
+  "SNBT_monitor_generation": "8000000F",
+  "generation_policy": "F generation identifies F bytes only; OS generation and journal sequence are independent",
+  "status_policy": "F identifies boot/recovery only; OS and board-service status belong to the running image"
+}

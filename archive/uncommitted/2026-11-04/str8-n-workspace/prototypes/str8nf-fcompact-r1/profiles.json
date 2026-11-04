@@ -1,0 +1,44 @@
+{
+  "format": 1,
+  "shared": {
+    "generation": "8000000F",
+    "bootstrap": "STR8N-F-BOOT-4096.bin",
+    "config": "STR8N-F-CONFIG-RAM.bin",
+    "opaque_installer": "STR8N-F-OPAQUE-RAM.bin",
+    "maintenance": "STR8N-F-MAINT-RO-RAM.bin",
+    "readback": "STR8N-F-READBACK-RAM.bin",
+    "boot_records": "SNBT C/D; preserve existing records and wear history",
+    "installation": "Inventory and verify existing components; write only an admitted changed target",
+    "saved_boot_policy": "Preserve; never manufacture settings from a board profile",
+    "RAM": "Fresh escrow before tools; restore and independently verify afterward"
+  },
+  "boards": {
+    "2512": {
+      "cpu": "65c02",
+      "monitor_flavor": "BASE",
+      "installed_components": {
+        "B3:F": "STR8N-F-BOOT-4096.bin",
+        "B3:A": "STR8N-F-MON-BASE-A.bin",
+        "B3:B": "STR8N-F-MON-BASE-B.bin",
+        "B0:8": "STR8N-F-FLASH-8000.bin"
+      },
+      "preserve": ["All opaque sectors", "B0:9 owner erase", "Boot policy", "RAM", "Wear history"],
+      "optional_components": ["VX1", "ES1"],
+      "FLASH_installed": true
+    },
+    "2609": {
+      "cpu": "65c816-e",
+      "monitor_flavor": "VX1",
+      "installed_components": {
+        "B3:F": "STR8N-F-BOOT-4096.bin",
+        "B3:A": "STR8N-F-MON-VX1-A.bin",
+        "B3:B": "STR8N-F-MON-VX1-B.bin",
+        "B3:E": "STR8N-F-VX1-E.bin",
+        "B3:8": "STR8N-F-ES1-8.bin"
+      },
+      "preserve": ["Entire B0 WDC backup", "All opaque sectors", "VX1", "ES1", "External SRAM", "Boot policy", "RAM", "Wear history"],
+      "optional_components": ["FLASH at an explicitly assigned location"],
+      "FLASH_installed": false
+    }
+  }
+}

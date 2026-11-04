@@ -1,0 +1,89 @@
+{
+  "identity": "b15 unified component extraction",
+  "artifacts": {
+    "STR8N-F-MON-BASE-A.bin": {
+      "bytes": 4096,
+      "sha256": "27b273ad66562d150071c058fa20ded2a5f307588ed73d6deeec0670c0b00474",
+      "predecessor_sha256": "27b273ad66562d150071c058fa20ded2a5f307588ed73d6deeec0670c0b00474",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-MON-BASE-B.bin": {
+      "bytes": 4096,
+      "sha256": "4d3fe3ad2ad301c610daefcb257823d6c919ca1df4c4e959ec2b0a33e0684b3d",
+      "predecessor_sha256": "4d3fe3ad2ad301c610daefcb257823d6c919ca1df4c4e959ec2b0a33e0684b3d",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-MON-VX1-A.bin": {
+      "bytes": 4096,
+      "sha256": "0cbaa80b6d9d168775cb25c737271f9eb104aa760402a7ec3fd1fae0fae89c04",
+      "predecessor_sha256": "0cbaa80b6d9d168775cb25c737271f9eb104aa760402a7ec3fd1fae0fae89c04",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-MON-VX1-B.bin": {
+      "bytes": 4096,
+      "sha256": "e9b765c31b6c5fc3b67b58e0251a2205bec46dc2d6fa48c45c67db59820632b7",
+      "predecessor_sha256": "e9b765c31b6c5fc3b67b58e0251a2205bec46dc2d6fa48c45c67db59820632b7",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-VX1-E.bin": {
+      "bytes": 4096,
+      "sha256": "2948c4c7019a6e9f5a3b6407ecf414035360354cff36f1641cc065fcd8beeef3",
+      "predecessor_sha256": "2948c4c7019a6e9f5a3b6407ecf414035360354cff36f1641cc065fcd8beeef3",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-VERSION-RAM.bin": {
+      "bytes": 417,
+      "sha256": "09977db9f7052bd03fd4f47f455a031dae960acb4626c5146127b7ebf2e7626b",
+      "predecessor_sha256": "09977db9f7052bd03fd4f47f455a031dae960acb4626c5146127b7ebf2e7626b",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-MAINT-RO-RAM.bin": {
+      "bytes": 3572,
+      "sha256": "453e753370c04a3a16a0f2a80dabd0f9c43dba0d85b2bb4ff4c5de5d9850aa8f",
+      "predecessor_sha256": "c85272650bd4b7db11f7094d8d65fc5c976d576dfd946b00c1cdd9dc6f8b1154",
+      "change": "Generic same-length banner and its CRC"
+    },
+    "STR8N-F-ES1-8.bin": {
+      "bytes": 4096,
+      "sha256": "b5b2664deb0e3ed8d8038a18b6057f09da73f0e258cf50c07b94d2f8f99a6e3b",
+      "predecessor_sha256": "b5b2664deb0e3ed8d8038a18b6057f09da73f0e258cf50c07b94d2f8f99a6e3b",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-EDU-SRAM-RAM.bin": {
+      "bytes": 1349,
+      "sha256": "8cddb6eb8c85a9c958e84bca3c45ec8c9fa3fa3d4ed862a8044f8edbaaf1a138",
+      "predecessor_sha256": "d9e3454f0caa6b3b50ddfd376c313e08f919fd4091e25276394153f21c1f89f8",
+      "change": "Generic same-length banner and its CRC"
+    },
+    "STR8N-F-FLASH-8000.bin": {
+      "bytes": 4096,
+      "sha256": "3ec86d34bbcdbb4bef12074e263ffcd850e04f974981b1f7f237e4f77c941c79",
+      "predecessor_sha256": "3ec86d34bbcdbb4bef12074e263ffcd850e04f974981b1f7f237e4f77c941c79",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-FLASH-8000-RAM.bin": {
+      "bytes": 3204,
+      "sha256": "8ffcc03d95a1606eac2327027903b7a0c765a37800e9f439677adaaebc6283ef",
+      "predecessor_sha256": "8ffcc03d95a1606eac2327027903b7a0c765a37800e9f439677adaaebc6283ef",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-FLASH-9000.bin": {
+      "bytes": 8192,
+      "sha256": "1974289f6bada03eeba3b3fccc0de349a77b298a31de8bed877a465754a4b948",
+      "predecessor_sha256": "1974289f6bada03eeba3b3fccc0de349a77b298a31de8bed877a465754a4b948",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-FLASH-9000-RAM.bin": {
+      "bytes": 3204,
+      "sha256": "e1860950f12245703b1357bfb8fb43df032d5ea44164f198fe20df406c14f3e3",
+      "predecessor_sha256": "e1860950f12245703b1357bfb8fb43df032d5ea44164f198fe20df406c14f3e3",
+      "change": "Byte-identical extraction"
+    },
+    "STR8N-F-READBACK-RAM.bin": {
+      "bytes": 2476,
+      "sha256": "6833aae9c7eca2d343ac86cec7e6de8ced8464a3e27c6f5880fe621c43c57975",
+      "predecessor_sha256": "6833aae9c7eca2d343ac86cec7e6de8ced8464a3e27c6f5880fe621c43c57975",
+      "change": "Byte-identical extraction"
+    }
+  }
+}

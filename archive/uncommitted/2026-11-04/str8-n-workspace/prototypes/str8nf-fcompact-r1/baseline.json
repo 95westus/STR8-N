@@ -1,0 +1,24 @@
+{
+  "identity": "b15c1 PR05 F compaction candidate",
+  "compatibility": "PR05",
+  "generation": "8000000F",
+  "execution_qualified": false,
+  "artifacts": {
+    "STR8N-F-BOOT-4096.bin": {
+      "bytes": 4096,
+      "sha256": "ccb923340528a0764102fc270e39dd07c95a76569e19c4f60169e081712164d3"
+    },
+    "STR8N-F-CONFIG-RAM.bin": {
+      "bytes": 2735,
+      "sha256": "95f12ec03516ef13b45db6a753d2a6a5011b8b7dd463b08c43f41d85dcda2944"
+    },
+    "STR8N-F-OPAQUE-RAM.bin": {
+      "bytes": 2412,
+      "sha256": "30399835017a978049c42ea24454c9dc0c32670afb9d91da8f2eeb9e37cf45aa"
+    },
+    "STR8N-F-DEMO-RAM.bin": {
+      "bytes": 485,
+      "sha256": "81c1a70350175f9028600130db230b2a36e25197171ec5215da06f0d2ec789ee"
+    }
+  }
+}

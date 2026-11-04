@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.asm text eol=lf
+*.inc text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.s19 text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.bin binary
+*.zip binary

@@ -1,0 +1,26 @@
+{
+  "identity": "b15 direct-source extraction",
+  "compatibility": "PR04",
+  "generation": "8000000F",
+  "firmware_identity_unchanged": true,
+  "artifacts": {
+    "STR8N-F-BOOT-4096.bin": {
+      "bytes": 4096,
+      "sha256": "1a1db354d49d8a9a555be1100b74f3e4b0ed14d3156f3a333086853a845717b8"
+    },
+    "STR8N-F-CONFIG-RAM.bin": {
+      "bytes": 2728,
+      "sha256": "3b661b867a7bd36f2aa4ec4e2e67e2e0b11c04c55b501233a87d4a87b9964914",
+      "predecessor_sha256": "9d98ce51026f1a2f88f4ee1a34ab5a6d853d17371a98d34035b6923ee98e921d",
+      "change": "Same-length 2609 -> STR8 banner only; no instruction/address change"
+    },
+    "STR8N-F-OPAQUE-RAM.bin": {
+      "bytes": 2412,
+      "sha256": "0bc4e1a897b098d0a199b759265ae6f800cdf44287e3f797f0df1fa11dfccdb2"
+    },
+    "STR8N-F-DEMO-RAM.bin": {
+      "bytes": 485,
+      "sha256": "81c1a70350175f9028600130db230b2a36e25197171ec5215da06f0d2ec789ee"
+    }
+  }
+}

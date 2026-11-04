@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "profile": "MIN1",
+  "private_F_compatibility": "PR05",
+  "F_sha256": "ccb923340528a0764102fc270e39dd07c95a76569e19c4f60169e081712164d3",
+  "sector_bytes": 4096,
+  "opaque_sectors": {
+    "B0": ["8", "9", "A", "B", "C", "D", "E", "F"],
+    "B1": ["8", "9", "A", "B", "C", "D", "E", "F"],
+    "B2": ["8", "9", "A", "B", "C", "D", "E", "F"],
+    "B3": ["8", "9", "A", "B", "E"]
+  },
+  "journal_sectors": ["B3:C", "B3:D"],
+  "recovery_sector": "B3:F",
+  "opaque_bytes": 118784,
+  "requires_MON": false,
+  "requires_EDU": false,
+  "opaque_policy": "Explicit target and verified preimage; usable does not imply erased or unowned",
+  "factory_default": "S",
+  "factory_enabled_banks": "00",
+  "existing_owner_policy": "Preserve images, settings and history; no automatic reformat or B0 backup copy"
+}

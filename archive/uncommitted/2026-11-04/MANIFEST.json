@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "base_commit": "8db5df33981e5a97b0274bea4f96fc2056a7703d",
+  "branch": "codex/preserve-uncommitted-20261104",
+  "scope": "Changed source/docs only; separate worktree variants; excluded artifacts/data stay local",
+  "main_advanced": false,
+  "F_rebuilt": false,
+  "groups": [
+    {
+      "label": "str8-n-workspace",
+      "source_files": 1112,
+      "manifest": "archive/uncommitted/2026-11-04/str8-n-workspace/WORKTREE_SNAPSHOT.json"
+    }
+  ]
+}

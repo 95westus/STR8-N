@@ -1,0 +1,46 @@
+{
+  "identity": {
+    "product": "STR8N-F",
+    "F_version": "0.3.0",
+    "F_generation": "00000001",
+    "profile": "BASE1",
+    "private_contract": "PR05",
+    "public_ABI_major": 2,
+    "identity_format": 1,
+    "descriptor_bytes": 64,
+    "locator_address": "F03C",
+    "SNBT_monitor_generation": "8000000F",
+    "generation_policy": "F generation identifies F bytes only; OS generation and journal sequence are independent",
+    "status_policy": "F identifies boot/recovery only; OS and board-service status belong to the running image"
+  },
+  "compatibility": "PR05",
+  "F_generation": "00000001",
+  "frozen": true,
+  "execution_qualified": false,
+  "artifacts": {
+    "STR8N-F-BOOT-4096.bin": {
+      "bytes": 4096,
+      "sha256": "8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1"
+    },
+    "STR8N-F-CONFIG-RAM.bin": {
+      "bytes": 2740,
+      "sha256": "34a1c736838e9da4267c591711e8462ffdc807fe29b78e0f9998df7d1b8a4472"
+    },
+    "STR8N-F-OPAQUE-RAM.bin": {
+      "bytes": 2412,
+      "sha256": "4550ec2ad154730f0cd1225cb1875347fdd8a6c50d302de7959a5d35d920b69e"
+    },
+    "STR8N-F-DEMO-RAM.bin": {
+      "bytes": 487,
+      "sha256": "635c569a7fe5ba5c1643ba78b63f9256eaa2c57ba4f0d657070132195fdad4cd"
+    },
+    "STR8N-F-MAP-RAM.bin": {
+      "bytes": 4472,
+      "sha256": "63ca93828a2e5b31150cf4a72fa7453916b3c3f2597197886f31823ed055c41b"
+    },
+    "STR8N-F-READBACK-RAM.bin": {
+      "bytes": 3078,
+      "sha256": "0c04b65ed2354e564d5cec6e2bc113d58934889b35b076586ef14c466fb3a774"
+    }
+  }
+}

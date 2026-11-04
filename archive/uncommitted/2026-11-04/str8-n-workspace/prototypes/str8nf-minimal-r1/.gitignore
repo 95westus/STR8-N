@@ -1,0 +1,14 @@
+/build/
+/dist/
+/private/
+/backups/
+__pycache__/
+*.pyc
+*.obj
+*.lst
+*.map
+*.sym
+*.log.json
+.env
+.env.*
+*.partial

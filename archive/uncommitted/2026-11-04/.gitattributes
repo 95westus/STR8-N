@@ -1,0 +1,2 @@
+# Preserve exact byte hashes of saved source variants, including CRLF.
+* -text

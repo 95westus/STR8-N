@@ -1,0 +1,64 @@
+{
+  "identity": "b15c1 PR05 F compaction candidate",
+  "compatibility": "PR05",
+  "generation": "8000000F",
+  "execution_qualified": false,
+  "artifacts": {
+    "STR8N-F-MON-BASE-A.bin": {
+      "bytes": 4096,
+      "sha256": "78e86a57a2b569d3d0e6c6c0a4322e91d92532f9f3d1b4e0e51a51d7b1d2e885"
+    },
+    "STR8N-F-MON-BASE-B.bin": {
+      "bytes": 4096,
+      "sha256": "1030ac2c18f883234a67ab96bc28bbc9e646d61144aa3eea8692f9b5e2473ce5"
+    },
+    "STR8N-F-MON-VX1-A.bin": {
+      "bytes": 4096,
+      "sha256": "d581e20ff58e530ba27963d412eb3aa191fb946fb738150a3c6de8959104b778"
+    },
+    "STR8N-F-MON-VX1-B.bin": {
+      "bytes": 4096,
+      "sha256": "1159222617708e7a5ab1a42a46cb0ee86ac721f3945fe1c953972f294ade1885"
+    },
+    "STR8N-F-VX1-E.bin": {
+      "bytes": 4096,
+      "sha256": "a7db537e7f29ab46fc1f494f9bd2984680d8a04c0526cafeacb54eeee36433b8"
+    },
+    "STR8N-F-VERSION-RAM.bin": {
+      "bytes": 417,
+      "sha256": "09977db9f7052bd03fd4f47f455a031dae960acb4626c5146127b7ebf2e7626b"
+    },
+    "STR8N-F-MAINT-RO-RAM.bin": {
+      "bytes": 3579,
+      "sha256": "0a77d06d9bd95ec5cb5159895e74ed1c7b49a2dac7127f04678475de5f26eefb"
+    },
+    "STR8N-F-ES1-8.bin": {
+      "bytes": 4096,
+      "sha256": "091320e0fa5539e45f8637e6e399f2136569d00698545e0915a203e16545e184"
+    },
+    "STR8N-F-EDU-SRAM-RAM.bin": {
+      "bytes": 1356,
+      "sha256": "d42ec824cf1bea3df60c9f5549c7b67bf349a7a0aeea1d0281e74511fae3a65a"
+    },
+    "STR8N-F-FLASH-8000.bin": {
+      "bytes": 4096,
+      "sha256": "fa542f98276db451ef3b76c4b22d14cd40e0e14dfff6a493508224f664aeece9"
+    },
+    "STR8N-F-FLASH-8000-RAM.bin": {
+      "bytes": 3211,
+      "sha256": "49beb6181a2a37f7261de3824045767331ef8a0eb3ec1aef5f2a9585d04e25ff"
+    },
+    "STR8N-F-FLASH-9000.bin": {
+      "bytes": 8192,
+      "sha256": "3e246ce01121496f3239a984ee4ab8c79d0b94d454e4e93ad5c5d2c5a5d76be3"
+    },
+    "STR8N-F-FLASH-9000-RAM.bin": {
+      "bytes": 3211,
+      "sha256": "cdbb6546c5a212e29a7c42a9ed5e45f5e600dd5a9eab4a007569751f5a4b6714"
+    },
+    "STR8N-F-READBACK-RAM.bin": {
+      "bytes": 2476,
+      "sha256": "bf5338a7cf8d5cbeba2846aeb594d30415b729ccaa33b60c5d005827933d7913"
+    }
+  }
+}

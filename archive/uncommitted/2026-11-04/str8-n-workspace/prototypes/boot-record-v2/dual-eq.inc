@@ -1,0 +1,10 @@
+; PR03 private console state, outside the line, writer and application RAM.
+DC_OWNER EQU $7C29
+DC_LAST EQU $7C2A
+DC_BINARY EQU $7C2B
+DC_NEXT EQU $7C2C
+DC_DROP EQU $7C2D
+DC_TX_LOST EQU $7C2E
+DC_SKIP EQU $7C2F
+DC_TX_CHAR EQU V2_RX_CHAR
+; V2_CONSOLE is an enable mask: 1 FT245, 2 ACIA, 3 BOTH.

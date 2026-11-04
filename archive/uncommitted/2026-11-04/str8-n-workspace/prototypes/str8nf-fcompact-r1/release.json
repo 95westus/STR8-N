@@ -1,0 +1,15 @@
+{
+  "project": "STR8N-F",
+  "version": "0.2.1-dev-fcompact-r1",
+  "tag": "unpublished-fcompact-r1",
+  "prerelease": true,
+  "status": "layout-candidate-not-hardware-qualified",
+  "firmware_lineage": "b15c1 / PR05 / 8000000F",
+  "repository": "https://github.com/95westus/STR8N-F",
+  "hardware_flashed_for_this_release": false,
+  "release_scope": "Unpublished F layout candidate with matching PR05 tools; no hardware or execution qualification",
+  "assembly_builds_for_this_release": 1,
+  "CPU_simulations_for_this_release": 0,
+  "main_asset": "STR8N-F-b15c1-PR05-fcompact-r1.zip",
+  "source_asset": null
+}

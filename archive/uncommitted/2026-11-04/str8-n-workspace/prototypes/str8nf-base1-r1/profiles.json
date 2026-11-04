@@ -1,0 +1,8 @@
+{
+  "format": 1,
+  "profile": "BASE1",
+  "layout": "layout.json",
+  "installed_board_profiles": false,
+  "policy": "Generic owner-assigned images; no automatic MON, provider or B0-backup allocation",
+  "historical_profiles": "Previous MIN1/v0.2.0 checkpoints remain separate"
+}
