@@ -1,0 +1,15 @@
+{
+  "project": "STR8N-F",
+  "version": "0.2.0",
+  "tag": "v0.2.0",
+  "prerelease": false,
+  "status": "early-toolkit-release",
+  "firmware_lineage": "b15 / PR04 / 8000000F",
+  "repository": "https://github.com/95westus/STR8N-F",
+  "hardware_flashed_for_this_release": false,
+  "release_scope": "USB boot/recovery toolkit for compatible b15 boards and explicit F-sector provisioning",
+  "assembly_builds_for_this_release": 0,
+  "CPU_simulations_for_this_release": 0,
+  "main_asset": "STR8N-F-v0.2.0.zip",
+  "source_asset": "STR8N-F-v0.2.0-source.zip"
+}

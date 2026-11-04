@@ -20,6 +20,11 @@
       "label": "legacy-b34",
       "source_files": 51,
       "manifest": "archive/uncommitted/2026-11-04/legacy-b34/WORKTREE_SNAPSHOT.json"
+    },
+    {
+      "label": "foundation-bootstrap",
+      "source_files": 59,
+      "manifest": "archive/uncommitted/2026-11-04/foundation-bootstrap/WORKTREE_SNAPSHOT.json"
     }
   ]
 }

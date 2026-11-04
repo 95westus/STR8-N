@@ -1,0 +1,31 @@
+name: Release integrity
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      cpu_models:
+        description: Run CPU models only for a concrete issue requiring them
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python tools/make_release.py --out dist/kit
+  targeted-models:
+    if: github.event_name == 'workflow_dispatch' && inputs.cpu_models
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python tests/test_boot_and_opaque.py --build firmware --out build/manual-core
+      - run: python tests/test_system.py --build firmware --out build/manual-system
