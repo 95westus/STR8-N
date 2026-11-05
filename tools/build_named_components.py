@@ -423,6 +423,14 @@ if len(sys.argv)>1 and sys.argv[1] in ('backup','verify','plan','restore','load'
 main()
 ''', encoding='utf-8')
     (out/'README.md').write_text(README, encoding='utf-8')
+    # Public worked-example source only; compiled examples are a separate tested build.
+    for source in sorted((ROOT/'examples').rglob('*')):
+        if source.is_file():
+            if source.suffix not in ('.asm','.s','.cfg','.json','.md','.txt'):
+                raise ValueError('Unexpected worked-example source: '+str(source))
+            destination=out/'examples'/source.relative_to(ROOT/'examples')
+            destination.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(source,destination)
     copy_documentation(out)
     save(out/'COMPONENTS.json', dict(schema=1, family='STR8-N', status='NAMING_CANDIDATE_NOT_LIVE_QUALIFIED',
         board_access=False, commands_changed=False, copyright=COPYRIGHT, Foundation_sha256=sha(foundation),
@@ -445,6 +453,11 @@ MON/UTIL/DEV have no dedicated published release yet. Preserved downloads:
 [Foundation 0.3.0](https://github.com/95westus/STR8-N/releases/tag/v0.3.0),
 [MON preview](https://github.com/95westus/STR8-N/releases/tag/mon-g8-tools-preview1),
 [release index](https://github.com/95westus/STR8-N/blob/main/RELEASE_INDEX.md).
+
+[Worked examples](examples/README.md) provide credited Microchess DEV ASM
+source and an OSI BASIC Foundation adapter. When the separately verified
+example build is included, examples/payload/ contains RAM/S19/AP02 Microchess
+and the two-sector opaque B0 BASIC image. No examples are installed by extraction.
 
 Commands and prompts stay short: CONFIG, FLASH, CLOCK, MAINT, MEMORY, ASM,
 DBG; R ASM / R DBG, C B, B bank entry, C bank, Q, ASM> and DBG> retain their

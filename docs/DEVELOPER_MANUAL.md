@@ -35,7 +35,12 @@ through the recovery raw BIN loader.
 
 ## Assemble and run
 
-In ASM, type the numbered lines from `examples/HELLO.asm`:
+For a complete game assembled by the current DEV ASM, see the
+[Microchess worked example](EXAMPLES.md): attributed source parts, checked S19
+exports, PC save/restore, AS/1 source persistence and a RAM-copy AP/02 wrapper.
+The same guide links OSI BASIC as an opaque B0 Foundation-call example.
+
+In ASM, type these numbered source lines:
 
 ```text
 10 ; Print a marker, then return through Foundation HOLD.

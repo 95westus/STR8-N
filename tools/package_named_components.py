@@ -35,6 +35,33 @@ def package(build, output, *, label='str8n-components-base1-pr05-sanitized-revie
     for folder in ('tools','terminal'):
         members.update(p.relative_to(build).as_posix() for p in (build/folder).rglob('*.py'))
     members.update(p.relative_to(build).as_posix() for p in (build/'docs').glob('*.md'))
+    examples=build/'examples'
+    if examples.exists():
+        inventory=examples/'EXAMPLES-MANIFEST.json'
+        actual={p.relative_to(examples).as_posix() for p in examples.rglob('*') if p.is_file()}
+        if inventory.is_file():
+            example_manifest=json.loads(inventory.read_text())
+            if example_manifest['F_rebuilt'] or example_manifest['Foundation_sha256']!=manifest['Foundation_sha256']:
+                raise ValueError('Examples do not match frozen Foundation')
+            if actual!=set(example_manifest['artifacts'])|{'EXAMPLES-MANIFEST.json'}:
+                raise ValueError('Unexpected/missing example package files')
+            for file,info in example_manifest['artifacts'].items():
+                body=(examples/file).read_bytes()
+                if len(body)!=info['bytes'] or hashlib.sha256(body).hexdigest()!=info['sha256']:
+                    raise ValueError('Changed example: '+file)
+            for cpu in ('65c02','65c816-e'):
+                tested=json.loads((examples/f'tests-examples-{cpu}.json').read_text())
+                if not tested['passed']:raise ValueError('Example checks failed: '+cpu)
+                asm_sha=next(info['sha256'] for info in manifest['artifacts'].values()
+                             if info['component']=='ASM' and info.get('load')=='0200')
+                if tested['DEV_ASM_sha256']!=asm_sha:
+                    raise ValueError('Examples were tested with a different DEV ASM')
+                for file,digest in tested['example_payload_sha256'].items():
+                    if hashlib.sha256((examples/'payload'/file).read_bytes()).hexdigest()!=digest:
+                        raise ValueError('Example report does not cover shipped bytes: '+file)
+        elif any(Path(file).suffix not in ('.asm','.s','.cfg','.json','.md','.txt') for file in actual):
+            raise ValueError('Compiled examples require a verified examples manifest')
+        members.update('examples/'+file for file in actual)
     for file in ('tests-memory-65c02.json','tests-memory-65c816-e.json','REUSED-TESTS.json','SOURCE-RECONSTRUCTION.json','MON-SERVICES-RECONSTRUCTION.json','UTIL-DEV-RECONSTRUCTION.json','RELEASE-CANDIDATE.json','HOST-TESTS.json'):
         if (build/file).is_file():
             members.add(file)

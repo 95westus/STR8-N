@@ -8,6 +8,11 @@ for current source and releases, and [file/transfer formats](FILE_FORMATS.md)
 before selecting a BIN or S-record. F remains frozen; current optional
 components have separate versions and qualification.
 
+[Worked examples](EXAMPLES.md) add an OSI BASIC opaque B0 image and a Microchess
+DEV ASM/RAM/AP02 workflow. They use public Foundation RAM calls and retain
+upstream copyrights; they are later optional candidates, not additions to the
+unchanged Foundation 0.3.0 release ZIP or frozen F binary.
+
 STR8-N F supplies the boot/recovery foundation. Your opaque image supplies
 the application, language, monitor or operating environment. The preserved
 Foundation 0.3.0 kit has no mandatory MON payload. Optional STR8-N MON and

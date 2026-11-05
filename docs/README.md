@@ -11,6 +11,7 @@ component versions and preserved release downloads. Read
 | MON and on-board utilities | [MON/UTIL manual](NATIVE_UTILITIES_MANUAL.md), [component names](COMPONENT_NAMING.md), [image contract](IMAGE_CONTRACT.md) |
 | PC terminal and memory | [Terminal](SERIAL_CONSOLE.md), [optional board profiles](BOARD_PROFILES.md), [MEMORY backup/restore/load/offload](MEMORY_UTILITY.md) |
 | DEV | [ASM/DBG manual](DEVELOPER_MANUAL.md), [historical first RAM increment](ASM_DBG_BASE1_RAM.md) |
+| Worked examples | [Microchess ASM/RAM/AP02 and OSI BASIC opaque B0](EXAMPLES.md) |
 | Recovery and flash transfer | [BASE1 readback/RAM restore](RECOVERY_BASE1.md), [readback overview](READBACK.md), [OPAQUE host](OPAQUE_HOST.md), [OIP1 protocol](OPAQUE_PROTOCOL.md) |
 | Source and packaging | [Current build/verification](CONSOLIDATION_SOURCE_REVIEW.md), [build/freeze policy](BUILD.md), [build helpers](BUILD_HELPERS.md), [development policy](DEVELOPMENT.md) |
 | Acceptance limits | [Current qualification scope](QUALIFICATION_SCOPE.md), [MEMORY acceptance summary](MEMORY_ACCEPTANCE_SUMMARY.md), [export evidence scope](EXPORT_EVIDENCE_SCOPE.md) |

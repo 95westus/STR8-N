@@ -19,6 +19,9 @@ Foundation 0.3.0 is F's version, not a shared version for MON, UTIL and DEV.
 Start with the [F / MON / UTIL / DEV guide](docs/COMPONENT_GUIDE.md),
 [documentation index](docs/README.md) and
 [BIN / S19 / S29 and transfer formats](docs/FILE_FORMATS.md) for board and PC workflows.
+The [worked examples](examples/README.md) cover copyrighted Microchess assembled
+in DEV ASM, RAM/S19 save/restore and AP/02, plus an OSI BASIC opaque B0 port
+using public Foundation calls. Installation remains explicit and separately qualified.
 
 - **F:** [Foundation manual](docs/USER_MANUAL.md),
   [frozen 0.3.0 release](https://github.com/95westus/STR8-N/releases/tag/v0.3.0),

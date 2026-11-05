@@ -21,3 +21,10 @@ full-system image is interchangeable with BASE1 or a current RAM/AP component.
 No new flash/erase/reset, serial-port connection or F assembly is part of the
 repository merge. F remains SHA-256
 8f4d35ac66730daa773515980983fcf442be3b1bdf1e523d3752ec3615657cc1.
+
+The optional [Microchess and OSI BASIC examples](EXAMPLES.md) have separate
+65C02/65C816-emulation model reports tied to their exact payloads. These cover
+actual DEV ASM source assembly, gameplay/AP02 entry, and BASIC's public-ABI
+adapter with reserved-RAM checks. Their Foundation endpoints are modeled;
+physical serial/installation, arbitrary source edits and native 816 execution
+are not qualified by those reports. Example images are never auto-installed.
