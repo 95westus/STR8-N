@@ -1,5 +1,10 @@
 # F identity and stability contract
 
+The display family is STR8-N F; the frozen machine identity remains STR8N-F.
+See [F / MON / UTIL / DEV](COMPONENT_GUIDE.md) for source/releases and
+[file formats](FILE_FORMATS.md) for programmer versus RAM BINs and S-records.
+F's identity, bytes, source pins and ABI are unchanged by these docs.
+
 Product STR8N-F; F version 0.3.0; F generation 00000001; profile BASE1;
 private compatibility PR05; public ABI major 2; descriptor format 1.
 

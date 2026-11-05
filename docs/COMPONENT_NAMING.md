@@ -3,6 +3,10 @@
 The family name is **STR8-N**. Component display names, release filenames and
 current documentation use the same hierarchy:
 
+The [component guide](COMPONENT_GUIDE.md) links source and releases for each
+group. [File formats](FILE_FORMATS.md) explains board/PC BIN and S-record use;
+an extension or component name does not select a load/entry address.
+
 | Group | Display name | Short commands |
 | --- | --- | --- |
 | Foundation | STR8-N F | Existing recovery commands |

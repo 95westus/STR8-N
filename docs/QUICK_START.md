@@ -1,5 +1,9 @@
 # Quick start
 
+This is the F/CONFIG boot workflow. [F / MON / UTIL / DEV](COMPONENT_GUIDE.md)
+links current source, releases and PC tools. Check [file formats](FILE_FORMATS.md)
+before using a raw BIN or S-record; newer component kits retain frozen F.
+
 Start with matching frozen BASE1 / PR05 F already installed, or follow
 [explicit F-sector provisioning](INSTALLATION.md). Keep owner backups and saved
 wear history. The kit does not flash or reconfigure a board automatically.
@@ -21,7 +25,10 @@ The tools borrow RAM starting at $0200. Preserve application RAM independently
 before loading a tool if it matters. Raw L executes after an idle gap, without
 declared length/transfer CRC; an interrupted transfer can execute a partial tool.
 
-Send `STR8N-F-CONFIG-RAM.bin`. At `RAM CONFIG ? B C I W Q>`:
+Use the current named kit's Terminal CONFIG preset (F6), or send
+`payload/str8n-util-config-0.3.0-base1-pr05-ram.bin`. The preserved Foundation
+0.3.0 kit calls its CONFIG packet `STR8N-F-CONFIG-RAM.bin`.
+At `RAM CONFIG ? B C I W Q>`:
 
 ```text
 B
@@ -52,5 +59,6 @@ not open a port or automatically install an image. Verify every image sector
 before enabling the entry. Preserve B0 if it contains a WDC backup.
 
 BASE1 requires no monitor. A/B sectors are owner space; optional monitor-shaped
-images have separate compatibility requirements. Old b15 MON/FLASH execution
-under BASE1 remains unqualified. See installation.
+images have separate compatibility requirements. Current optional MON, UTIL
+and DEV are described in the [MON/UTIL manual](NATIVE_UTILITIES_MANUAL.md);
+historical b15 MON/FLASH images are not interchangeable with them.

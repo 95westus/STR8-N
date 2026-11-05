@@ -12,6 +12,11 @@ rebuild_devtools.py (UTIL/DEV). Their generated assembly, maps and staging belon
 under the chosen output directory. package_named_components.py makes the kit.
 test_product_names.py and test_memory_tool.py exercise the current payloads.
 
+Future named kits include the public top-level Markdown guides under `docs/`
+and a README linking F / MON / UTIL / DEV and [file formats](FILE_FORMATS.md).
+Links to source-only files point to the canonical repository when those files
+are absent from a binary kit. This documentation step changes no payload bytes.
+
 Older build_*.py, port_*.py and adapter/codec helpers remain for source provenance
 and shared algorithms. Some individual historical command-line entry points
 refer to old staging layouts or BUILD paths. Their presence does not make them

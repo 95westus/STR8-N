@@ -1,5 +1,12 @@
 # BASE1 independent readback and owner-RAM restoration
 
+This is STR8-N UTIL READBACK above frozen F. See
+[component/source/releases](COMPONENT_GUIDE.md) and [file formats](FILE_FORMATS.md).
+The current named packet is
+`payload/str8n-util-readback-0.3.0-base1-pr05-ram.bin`; the Foundation release
+uses the original `STR8N-F-READBACK-RAM.bin` name below. Its protocol and memory
+layout remain distinct from legacy b15 readback and the broader MEMORY agent.
+
 Recovery assumes [golden F](GOLDEN_F_RECOVERY_SCOPE.md): valid, verified and
 unchanged. REC> runs in F, and the RAM service below relies on matching F CRC
 routines. Neither is a promised recovery path for erased or corrupted F.

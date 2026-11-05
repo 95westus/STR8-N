@@ -1,5 +1,11 @@
 # STR8-N UTIL MEMORY — PC memory utility
 
+See [F / MON / UTIL / DEV](COMPONENT_GUIDE.md) for source/releases and
+[file formats](FILE_FORMATS.md) for BIN versus S-record input. MEMORY is a PC
+CLI plus a temporary on-board UTIL agent; its region files are raw bytes.
+It does not parse `.s19`, `.srec` or `.s29` text or infer a destination address
+from a filename. Keep the complete backup directory and its manifest together.
+
 `python -B tools/str8n-util-memory.py` provides **backup, restore, load, offload,
 verify, plan and inspect** through one CLI. Backup images stay on the PC.
 The matching temporary RAM agent needs no new resident flash installation.
@@ -54,13 +60,20 @@ to build the RAM image. Host-only directory operations use the standard library.
 The frozen BASE1 / PR05 Foundation is reused, never rebuilt or changed.
 
 ```powershell
-python -B tools/build_memory_agent.py --out BUILD/memory-agent-v1
+python -B tools/build_named_components.py --out build/components
 python -B tools/str8n-util-memory.py --help
 ```
 
-The builder requires a new output directory. To rebuild, use a fresh directory
-and pass it using `--agent` to the host tool. The manifest binds the agent to
-the exact frozen Foundation SHA-256 and its private recovery entry.
+The builder requires a new output directory. From a source checkout, pass
+`--agent build/components/memory-agent-build` explicitly for serial commands,
+as below, so the host uses that build rather than a historical BUILD default.
+Alternatively run the named kit's root `str8n-util-memory.py`; its launcher
+selects the kit-local agent automatically. The manifest binds the agent to the
+exact frozen Foundation SHA-256 and its private recovery entry.
+
+`tools/build_memory_agent.py --out build/memory-agent-dev` remains a separate
+agent-development build. It is not the complete named component kit; use its
+own output with an explicit `--agent` when testing that candidate.
 
 Copy `firmware/memory-agent/profile.example.json` to a private location. Fill
 in the actual board ID, COM port, FTDI USB serial and CPU (`65c02` or
@@ -80,22 +93,22 @@ The following examples use your private profile, not the unfilled example.
 
 ```powershell
 # Complete PC backup. Result: output/memory/backup-01/backup/
-python -B tools/str8n-util-memory.py backup --profile output/my-board.json --out output/memory/backup-01
+python -B tools/str8n-util-memory.py backup --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/backup-01
 
 # Inspect hashes/sizes without connecting to a board.
 python -B tools/str8n-util-memory.py inspect output/memory/backup-01/backup
 
 # Compare current board memory to the backup.
-python -B tools/str8n-util-memory.py verify output/memory/backup-01/backup --profile output/my-board.json --out output/memory/verify-01
+python -B tools/str8n-util-memory.py verify output/memory/backup-01/backup --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/verify-01
 
 # Prepare a restore plan and fresh preimages; no storage write.
-python -B tools/str8n-util-memory.py plan output/memory/backup-01/backup --profile output/my-board.json --out output/memory/plan-01
+python -B tools/str8n-util-memory.py plan output/memory/backup-01/backup --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/plan-01
 
 # Restore, saving fresh preimages and a per-block receipt before each write.
-python -B tools/str8n-util-memory.py restore output/memory/backup-01/backup --profile output/my-board.json --out output/memory/restore-01 --write
+python -B tools/str8n-util-memory.py restore output/memory/backup-01/backup --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/restore-01 --write
 
 # Select only SPI SRAM data and its addressing mode.
-python -B tools/str8n-util-memory.py restore output/memory/backup-01/backup --regions spi-sram,spi-mode --profile output/my-board.json --out output/memory/spi-restore-01 --write
+python -B tools/str8n-util-memory.py restore output/memory/backup-01/backup --regions spi-sram,spi-mode --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/spi-restore-01 --write
 ```
 
 Restore requires the same board identity as the backup. `restore` without
@@ -126,10 +139,10 @@ of flash without requiring a Foundation sector in the input file. A full
 `offload` produces the same complete raw binary layout as a backup region.
 
 ```powershell
-python -B tools/str8n-util-memory.py offload spi-sram output/my-sram.bin --profile output/my-board.json --out output/memory/export-01
-python -B tools/str8n-util-memory.py load spi-sram output/my-sram.bin --profile output/my-board.json --out output/memory/import-01 --write
-python -B tools/str8n-util-memory.py load flash output/my-124KiB.bin --profile output/my-board.json --out output/memory/flash-import-01 --write
-python -B tools/str8n-util-memory.py load spi-sram output/payload.bin --offset 0x10000 --profile output/my-board.json --out output/memory/partial-import-01 --write
+python -B tools/str8n-util-memory.py offload spi-sram output/my-sram.bin --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/export-01
+python -B tools/str8n-util-memory.py load spi-sram output/my-sram.bin --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/import-01 --write
+python -B tools/str8n-util-memory.py load flash output/my-124KiB.bin --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/flash-import-01 --write
+python -B tools/str8n-util-memory.py load spi-sram output/payload.bin --offset 0x10000 --agent build/components/memory-agent-build --profile output/my-board.json --out output/memory/partial-import-01 --write
 ```
 
 Both operations preserve unrelated owner RAM. To load CPU owner RAM, use
@@ -187,8 +200,8 @@ CPU tests require an already installed local py65 dependency; 816 tests also
 require the local py65816 model. No dependencies are downloaded:
 
 ```powershell
-python -B tools/test_memory_tool.py --build BUILD/memory-agent-v1 --deps tmp/migration-python
-python -B tools/test_memory_tool.py --build BUILD/memory-agent-v1 --cpu 65c816-e --deps tmp/migration-python --deps-816 tmp/p1-clean/BUILD/test-deps-816
+python -B tools/test_memory_tool.py --build build/components/memory-agent-build --deps tests/vendor
+python -B tools/test_memory_tool.py --build build/components/memory-agent-build --cpu 65c816-e --deps tests/vendor --deps-816 tests/vendor
 ```
 
 Tests execute the assembled loader and RAM agent. Flash command sequences and

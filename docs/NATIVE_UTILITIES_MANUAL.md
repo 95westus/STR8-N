@@ -1,4 +1,17 @@
-# Unified STR8-N operator manual — candidate4
+# STR8-N MON / UTIL — operator manual
+
+See [F / MON / UTIL / DEV](COMPONENT_GUIDE.md) for current source and downloads,
+[file formats](FILE_FORMATS.md) for BIN/S-record routing, and
+[qualification scope](QUALIFICATION_SCOPE.md) for the current named candidate.
+The command reference below derives from compact candidate4; its historical
+package paths and acceptance claims apply to those original bytes.
+
+In a current named kit, `COMPONENTS.json` and `NATIVE-COMPONENTS.json` map the
+payloads. Use `payload/str8n-util-maint-2.4-ram.bin` in place of `rec/MAINT.bin`,
+`payload/str8n-util-flash-g00000002-ram.bin` in place of `rec/FLASH.bin`, and
+the canonical DEV RAM names in the [DEV manual](DEVELOPER_MANUAL.md).
+Launch `python str8n-terminal.py` from the kit root. The Foundation guide is
+[USER_MANUAL.md](USER_MANUAL.md); named kits do not use a `foundation/` subtree.
 
 Current compact profile, November 2, 2026. This is an unpublished candidate
 above **STR8N-F 0.3.0 g00000001 / BASE1 / PR05**. F is exactly 4096 frozen
@@ -6,10 +19,10 @@ bytes. MON A/B are **STR8-N 0.1.0-dev g00000010**, using the approved
 Traditional presentation. The same feature profile runs on W65C02SXB/65C02
 and W65C816SXB/65C816 emulation, with optional matching EDU hardware.
 
-This manual describes the extracted ZIP. Its Foundation instructions are in
-`foundation/docs/USER_MANUAL.md`; the Python terminal is `terminal.py`.
+For the historical extracted candidate4 ZIP, Foundation instructions were in
+`foundation/docs/USER_MANUAL.md` and the terminal was `terminal.py`.
 See [developer tools](DEVELOPER_MANUAL.md), [terminal keys](SERIAL_CONSOLE.md)
-and [qualification and remaining gates](UNIFIED_CANDIDATE_STATUS.md).
+and [qualification and remaining gates](QUALIFICATION_SCOPE.md).
 
 ## Start and identify
 
@@ -48,15 +61,15 @@ profile; they are not resident named applications.
 
 ## Python terminal and RAM loading
 
-From the extracted directory:
+From the current named kit directory, with Python/Tk installed:
 
 ```text
-python -m pip install -r requirements-console.txt
-python terminal.py
+python -m pip install pyserial==3.5
+python str8n-terminal.py
 ```
 
 Python 3.11+, Tk and pyserial 3.5 are required. Windows users may double-click
-`Start-Terminal.cmd`. Select the correct port/baud and connect with F10 or the
+`Start-Terminal.cmd` in historical kits that include it. Select the correct port/baud and connect with F10 or the
 button. The terminal does not connect, reset or flash on startup.
 
 | Key | Action |
@@ -331,7 +344,13 @@ tools are not returning BATCH jobs. A queue never supplies YES to a write
 confirmation. Ctrl-C/ESC cancels where supported. A loaded large program can
 borrow the workbench area; the accepted return path reloads its services.
 
-## Prepare a reviewed installation; no automatic flashing
+## Historical candidate4 installation reference
+
+The following paths and preparer command describe the original candidate4
+package. For the current named kit use its manifests and
+[build/packaging guide](CONSOLIDATION_SOURCE_REVIEW.md); do not apply an old
+catalog or installer to newly named payloads. No new installation is qualified
+by this documentation update.
 
 First reach published Foundation BASE1/PR05 using its manual/migrator. F.bin in
 this ZIP is the unchanged published F, not a full-system programmer image.
@@ -372,7 +391,7 @@ operations. `tools/nf_factory_image.py` prepares board-matched WDC F-only/full-B
 restoration images without a port; real factory restoration removes Foundation
 and remains a separate unqualified gate. No vendor firmware is distributed.
 
-## Acceptance boundaries
+## Historical acceptance boundaries
 
 The current compact bytes and REC tools passed on 2512/2604 (65C02) and 2609
 (816 emulation). Developer g2 RAM/installed acceptance includes broader 65C02
@@ -386,7 +405,8 @@ MAINT sector editor/CRC and copy/compare checks used RAM; flash operations
 were query, refusal or cancellation only. All flash banks and SPI metadata
 remained exact, and owner RAM/ZP/cache/hooks were restored. The companion
 `ACCEPTANCE-2512.json` records physical-key versus button coverage; the ZIP
-remains unchanged. See `UNIFIED_CANDIDATE_STATUS.md`. Source-only rebuilding,
+remains unchanged. Public limits are in [qualification scope](QUALIFICATION_SCOPE.md).
+The original private `UNIFIED_CANDIDATE_STATUS.md` is not distributed here. Source-only rebuilding,
 physical factory restoration, native816, physical changed-trim/latched-event
 cases, and a persistent EDU-save/named-X REC front door remain separate gates.
 Published Foundation downloads and historical candidates remain unchanged.

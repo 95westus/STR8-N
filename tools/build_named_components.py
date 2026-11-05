@@ -28,6 +28,31 @@ def save(path, value):
     path.write_text(json.dumps(value, indent=2)+'\n', encoding='utf-8')
 
 
+def copy_documentation(out):
+    """Include public guides; point source-only links back to the repository."""
+    destination = out/'docs'
+    destination.mkdir(exist_ok=True)
+    sources = sorted((ROOT/'docs').glob('*.md'))
+    bundled = {path.resolve() for path in sources}
+    for source in sources:
+        def target(match):
+            link = match.group(1)
+            if '://' in link or link.startswith('#'):
+                return link
+            path, separator, fragment = link.partition('#')
+            origin = (source.parent/path).resolve()
+            if origin in bundled or (destination/path).exists():
+                return link
+            if origin.exists() and origin.is_relative_to(ROOT):
+                kind = 'tree' if origin.is_dir() else 'blob'
+                return ('https://github.com/95westus/STR8-N/'+kind+'/main/'
+                        +origin.relative_to(ROOT).as_posix()+separator+fragment)
+            return link
+        text = re.sub(r'(?<=\]\()([^\s)]+)(?=\))', target,
+                      source.read_text(encoding='utf-8'))
+        (destination/source.name).write_text(text, encoding='utf-8', newline='\n')
+
+
 def replace_text(body, old, new, minimum=1):
     old, new = old.encode('ascii'), new.encode('ascii')
     if len(new) > len(old) or body.count(old) < minimum:
@@ -394,9 +419,7 @@ if len(sys.argv)>1 and sys.argv[1] in ('backup','verify','plan','restore','load'
 main()
 ''', encoding='utf-8')
     (out/'README.md').write_text(README, encoding='utf-8')
-    (out/'docs').mkdir()
-    for name in ('COMPONENT_NAMING.md','MEMORY_UTILITY.md','MEMORY_ACCEPTANCE_SUMMARY.md','REPOSITORY_CONSOLIDATION_PLAN.md','BOARD_PROFILES.md','QUALIFICATION_SCOPE.md'):
-        shutil.copyfile(ROOT/'docs'/name,out/'docs'/name)
+    copy_documentation(out)
     save(out/'COMPONENTS.json', dict(schema=1, family='STR8-N', status='NAMING_CANDIDATE_NOT_LIVE_QUALIFIED',
         board_access=False, commands_changed=False, copyright=COPYRIGHT, Foundation_sha256=sha(foundation),
         artifacts=entries, source_inputs=consumed, reconstructed_inputs=reconstruction['inputs']))
@@ -409,6 +432,15 @@ README = '''# STR8-N components
 STR8-N F is Foundation (BASE1/PR05). STR8-N MON has slots A and B.
 STR8-N UTIL contains CONFIG, FLASH, CLOCK, MAINT and MEMORY.
 STR8-N DEV contains ASM and DBG. Each component retains its own version.
+
+Start with [the documentation index](docs/README.md),
+[component/source/releases](docs/COMPONENT_GUIDE.md) and
+[BIN/S19/S29 formats](docs/FILE_FORMATS.md). UTIL also includes MAP, OPAQUE,
+READBACK and DEMO. F remains 0.3.0 g00000001 / BASE1 / PR05; current named
+MON/UTIL/DEV have no dedicated published release yet. Preserved downloads:
+[Foundation 0.3.0](https://github.com/95westus/STR8-N/releases/tag/v0.3.0),
+[MON preview](https://github.com/95westus/STR8-N/releases/tag/mon-g8-tools-preview1),
+[release index](https://github.com/95westus/STR8-N/blob/main/RELEASE_INDEX.md).
 
 Commands and prompts stay short: CONFIG, FLASH, CLOCK, MAINT, MEMORY, ASM,
 DBG; R ASM / R DBG, C B, B bank entry, C bank, Q, ASM> and DBG> retain their

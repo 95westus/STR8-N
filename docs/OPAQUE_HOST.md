@@ -1,5 +1,12 @@
 # BASE1 OPAQUE host helper
 
+OPAQUE belongs to STR8-N UTIL. See [component/source/releases](COMPONENT_GUIDE.md)
+and [BIN/S-record/protocol files](FILE_FORMATS.md). A current named kit uses
+`payload/str8n-util-opaque-0.3.0-base1-pr05-ram.bin`; preserved Foundation kits
+use `STR8N-F-OPAQUE-RAM.bin`. Run this host from the matching repository or
+Foundation kit; the named component kit does not bundle the migration/OIP hosts.
+F remains frozen.
+
 `tools/nf_opaque.py` talks only to the already loaded **OPAQUE BASE1 / PR05**
 RAM tool. It does not upload RAM, reset the board, initialize journals, select
 a default boot image or start an application. This host helper and the new

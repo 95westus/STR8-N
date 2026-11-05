@@ -1,5 +1,10 @@
 # Optional local board labels
 
+This is a PC Terminal feature in the STR8-N UTIL workflow. See
+[component/source/releases](COMPONENT_GUIDE.md) and [terminal/file formats](FILE_FORMATS.md).
+Terminal label profiles and MEMORY device/layout profiles have different
+schemas; use the profile required by each tool. F remains frozen.
+
 The terminal has no embedded board inventory. It lists available serial ports
 without opening them. Without a profile, USB identity is shown as unknown.
 F10 still opens the selected port; selecting a profile never connects or probes.
@@ -13,7 +18,7 @@ identifiers only:
 ```
 
 ```powershell
-python tools/nf_console.py --board-profiles path/to/local-profiles.json
+python tools/str8n-terminal.py --kit build/components --board-profiles path/to/local-profiles.json
 # In a built kit:
 python str8n-terminal.py --board-profiles path/to/local-profiles.json
 ```

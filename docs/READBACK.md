@@ -1,27 +1,30 @@
-# Binary export and fixed-range RAM restoration
+# STR8-N UTIL READBACK — BASE1 binary export
 
-Load `STR8N-F-READBACK-RAM.bin` at $0200 through F raw L. The bootstrap copies
-the service to reserved $6800 workspace and prints `RAM SERVICE> `.
-There is no flash writer. Use a binary-capable host, not a text-only capture.
+Use the PR05 service described in [BASE1 recovery/readback](RECOVERY_BASE1.md).
+In a current named kit its packet is
+`payload/str8n-util-readback-0.3.0-base1-pr05-ram.bin`; the preserved Foundation
+kit calls it `STR8N-F-READBACK-RAM.bin`. Match the manifest hash to the client.
+The service prints `RAM SERVICE BASE1> ` and requires frozen F BASE1 / PR05.
+Older b15 `RAM SERVICE>` clients and their $64FF RAM limit are incompatible.
 
-| Binary command | Result |
-|---|---|
-| F followed by one bank byte 00-03 | 32768 flash bytes, CRC16 little endian, prompt |
-| M | RAM $0200-$64FF (25344 bytes), CRC16 little endian, prompt |
-| Z | Zero page $00-$DF (224 bytes), CRC16 little endian, prompt |
-| W then 25344 RAM bytes and CRC16 little endian | Restore that fixed range; prompt only after CRC verification |
-| Q | Return to REC with text consoles restored to BOTH |
-| J | Restart F using the saved default |
+| Binary command | BASE1 result |
+| --- | --- |
+| F then bank byte 00–03 | 32768 flash bytes, CRC16 little endian, prompt |
+| M | Owner RAM $0200–$66FF (25856 bytes), CRC16, prompt |
+| Z | Owner zero page $00–$DF (224 bytes), CRC16, prompt |
+| W then 25856 bytes and CRC16 | Write the fixed owner RAM range as bytes arrive; return a prompt only if CRC/RX checks pass |
+| Y then 224 bytes and CRC16 | Validate staged bytes, then restore owner zero page |
+| Q / J | Return to recovery / restart through F |
 
-Commands have no line endings. A B0 export starts with bytes 46 00, not the
-text F00. CRC is CCITT polynomial 1021, initial FFFF, no reflection/final XOR.
-The prompt is excluded. Incomplete transfers or CRC failure may stop the
-service; preserve the capture and use the established recovery procedure.
+These commands have no line endings. Capture binary bytes with a matching
+host, not a text transcript. CRC covers the payload; prompts are excluded.
+See the recovery guide for staging, error handling and exact restoration scope.
+The service does not write flash or capture a suspended CPU state.
+W is not atomic: a failed or interrupted transfer may already have changed
+part of owner RAM. Y stages/checks all owner zero-page bytes before copying.
 
-The initial load overwrites its own low-RAM prefix. A later M export contains
-that loaded prefix, not the previous bytes. Owner RAM needs an earlier
-independent capture. W intentionally replaces the supplied fixed range and
-must use matching owner data. Q/J do not restore borrowed RAM automatically.
-
-The service requires matching b15 F/RAM services. It is not a universal
-WDCMONv2, g0034 or native-816 reader. The kit manifest gives its hash and size.
+Loading the packet borrows RAM; capture original owner RAM before uploading
+any helper. A later dump cannot recover the overwritten prefix, and Q/J does
+not undo borrowed RAM. F remains frozen. For SPI SRAM, EEPROM and combined
+PC backup/restore use [UTIL MEMORY](MEMORY_UTILITY.md). See
+[file formats](FILE_FORMATS.md) and [component/source/releases](COMPONENT_GUIDE.md).

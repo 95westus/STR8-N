@@ -1,5 +1,10 @@
 # Opaque image contract
 
+See [F / MON / UTIL / DEV](COMPONENT_GUIDE.md) for source/releases and
+[file formats](FILE_FORMATS.md) for raw BIN, S-record and sector-image routing.
+An opaque image is owner-supplied; it does not inherit MON/AP/02 compatibility
+or a load address from its extension. F stays frozen at BASE1 / PR05.
+
 An opaque image supplies its own code, data and interface. F selects its
 physical bank and jumps to the saved entry. It does not interpret BASIC,
 Forth, filesystem metadata or an application's internal directory.

@@ -1,10 +1,17 @@
-# ASM/DBG BASE1: first 2512 RAM increment
+# Historical ASM/DBG BASE1: first 2512 RAM increment
+
+This dated record retains the original BUILD paths, trial scope and candidate
+identities. Use [STR8-N DEV ASM/DBG](DEVELOPER_MANUAL.md) for current operation,
+[component/source/releases](COMPONENT_GUIDE.md) for current files and
+[formats](FILE_FORMATS.md) for RAM BIN versus S19 export. Named-kit acceptance
+limits are in [qualification scope](QUALIFICATION_SCOPE.md); private detailed
+trial records referenced below are not distributed in this source edition.
 
 November 2, 2026. The owner requested ASM/DBG on2512 before further fleet
 rollout. Work is active. This is a separate developer increment above frozen
 Foundation0.3.0 g1 BASE1/PR05; it does not modify Candidate3 or published files.
 The preserved rc1 sources/reference boards remain intact. The subsequent
-[initial2512 RAM workflow passed](ASM_DBG_2512_RAM_ACCEPTANCE.md). Flash
+initial2512 RAM workflow passed (private record `ASM_DBG_2512_RAM_ACCEPTANCE.md`). Flash
 installation and the broader developer feature gates remain open.
 
 ## Concrete candidates
@@ -19,7 +26,8 @@ retains the existing numbered editing, NEW/LIST/PASTE, labels/local labels,
 EQU, directives, assembly, diagnostics, LST/SYMS, DUMP/S19 and QUIT. Its output
 is0200-1FFF, source2000-37FF, symbols3800-3FFF and state6500-66FF. The PROGRAM
 adapter implements AS/1 source save/load using the admitted SP/g3 provider;
-positive persistence subsequently [passed its approved320-byte fixture](ASM_AS1_PROGRAM_ACCEPTANCE.md). It checks
+positive persistence subsequently passed its approved320-byte fixture (private
+record `ASM_AS1_PROGRAM_ACCEPTANCE.md`). It checks
 load0200, restore-only entry and capsule bounds before loading source. Flash
 source persistence explicitly returns unavailable in RAM1 because loading
 the current flash workbench would overwrite the resident RAM assembler.
@@ -68,7 +76,8 @@ F rebuild or MON/workbench rebuild was run.
 ## Before installation or shipping
 
 The initial RAM workflow and positive AS/1 PROGRAM persistence/fault/
-cancellation cases passed. The later [2512 flash preview](ASM_DBG_FLASH_PREVIEW.md)
+cancellation cases passed. The later 2512 flash preview (private record
+`ASM_DBG_FLASH_PREVIEW.md`)
 adds normal MON/APPS/R launch paths and a separately reviewed installation.
 The [SF/1 FLASH-source increment](ASM_FLASH_SOURCE_INCREMENT.md) subsequently
 passed and is installed on2512. The reduced RAM layout is also used
@@ -76,4 +85,5 @@ by this RAM-staged preview; it is not the later full-RAM XIP memory budget.
 Qualify the paired816-sensitive path later without replacing the reference
 boards. Package and test a later extracted developer kit after those gates.
 
-Historic technical plan: [ASM/DBG follow-on plan](MON_ASM_DBG_RELEASE_GATE.md).
+Historic technical plan: private `MON_ASM_DBG_RELEASE_GATE.md`. Current public
+scope is summarized in [qualification scope](QUALIFICATION_SCOPE.md).

@@ -1,11 +1,12 @@
-This document retains earlier console qualification history. The sanitized
-terminal is version 0.1.3 and uses optional local board profiles; see
-[BOARD_PROFILES.md](BOARD_PROFILES.md). Its new host behavior is checked offline.
-Earlier hardware acceptance does not qualify these host changes.
+# STR8-N Terminal — PC-side serial and file transfer
 
-# STR8N-F Serial Console 0.1.0
+The current Terminal is version 0.1.3 and uses optional local board profiles;
+see [BOARD_PROFILES.md](BOARD_PROFILES.md). Its host behavior is checked offline.
+The qualification history below applies to the stated older artifacts.
+See [F / MON / UTIL / DEV](COMPONENT_GUIDE.md) for source and releases, and
+[file formats](FILE_FORMATS.md) for raw BIN, RAM S19 and flash-sector routing.
 
-The Python console is included in the BASE1 candidate kit. It provides an ASCII
+The Python Terminal is included in the named component kit. It provides an ASCII
 terminal and function-key transfers to recovery's RAM loader. Every shortcut
 also has a button; laptops may require Fn. Console versioning is independent of
 the frozen F version and generation.
@@ -14,8 +15,8 @@ Install Python 3.11+ with Tk support, extract the complete candidate ZIP, and ru
 these commands from its directory:
 
 ```text
-python -m pip install -r requirements-console.txt
-python tools/nf_console.py
+python -m pip install pyserial==3.5
+python str8n-terminal.py
 ```
 
 On Windows, `py` may replace `python`. On Linux, Tk may require your distribution's
@@ -25,7 +26,10 @@ Windows/2512/FT245; other hosts/adapters remain unqualified.
 
 Select the board's port and baud rate (default 115200, 8N1), close any terminal
 already using that port, then press F10. You can preselect with
-`python tools/nf_console.py --port COM4 --baud 115200`; this does not connect.
+`python str8n-terminal.py --port COMx --baud 115200`; this does not connect.
+From a source checkout use `python tools/str8n-terminal.py --kit build/components`
+after the [named build](CONSOLIDATION_SOURCE_REVIEW.md). The preserved Foundation
+0.3.0 ZIP instead uses `python tools/nf_console.py` and its original filenames.
 The console requests DTR/RTS off and no flow control, sends no reset or probe,
 and never connects automatically. USB adapters may still toggle modem lines
 when opened; this needs hardware acceptance with the actual adapter.
@@ -44,6 +48,13 @@ when opened; this needs hardware acceptance with the actual adapter.
 | F10 | Connect/disconnect |
 | F11 | Clear the local display |
 | F12 | Ctrl-C; cancel before the first payload byte |
+| Shift+F2 / Shift+F3 | Choose `.s19`/`.srec` / send at MON's RAM S0/S1/S9 prompt |
+
+For RAM S-records, enter `S19` at MON first. The Terminal validates all records;
+the on-board loader checks each record before writing $0200–$66FF. It reports
+the S9 entry without running it. `.s29` and S2/S3/S7/S8 records are not supported
+by this route. Dense flash S19 uses a separate FLASH protocol. See
+[file formats](FILE_FORMATS.md) before converting or selecting a file.
 
 For example, enter recovery on the board and wait for `REC>`. If it was already
 waiting before you connected, press Enter once to obtain a fresh prompt. Press
@@ -87,9 +98,11 @@ journals. Logging is off until requested.
 Function keys only connect, send terminal input or load RAM tools. They do not
 erase/program flash, save boot settings or run migration automatically.
 CONFIG and OPAQUE can write when you explicitly issue their commands. The
-verbose WDC migrator remains a separate CLI. Migration is not a function-key
-action. The candidate includes it and the programmer-F and SNBT-upgrade CLIs;
-disconnect the terminal before using their port. Leave board 2205 alone.
+WDC migrator remains a separate CLI. Migration is not a function-key action.
+Use the matching Foundation kit for migration/initial F provisioning and
+disconnect the Terminal before another CLI owns its port.
+
+## Historical console qualification
 
 Release acceptance must exercise physical keys/buttons, Ctrl-C before payload,
 normal BIN loading, disconnect deferral, and actual adapter timing on an

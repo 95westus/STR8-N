@@ -1,8 +1,17 @@
 # OIP1 opaque sector protocol
 
-This describes the matching `STR8N-F-OPAQUE-RAM.bin`. The supplied Python packet helper is offline: it builds files and opens no port. It is not an automatic flashing client.
+This describes STR8-N UTIL OPAQUE on BASE1 / PR05. The named kit calls its RAM
+packet `payload/str8n-util-opaque-0.3.0-base1-pr05-ram.bin`; the preserved
+Foundation release uses `STR8N-F-OPAQUE-RAM.bin`. F stays frozen. See
+[component/source/releases](COMPONENT_GUIDE.md) and [file formats](FILE_FORMATS.md).
+The Python packet helper below is offline: it builds files and opens no port.
+The separate [OPAQUE host](OPAQUE_HOST.md) performs paced live transactions.
 
-Load the RAM tool through `REC>` / `L`. At `INSTALLER I Q>`, `I` begins a transaction and `Q` restarts through F. Wait for `SEND OIP1 HEADER` before sending a 20-byte header. For a write, wait for `SEND 4096` before sending the 4096 payload bytes. Do not concatenate a header and payload into one unpaced terminal send.
+Load the RAM tool through `REC>` / `L`. At `OPAQUE BASE1 / PR05 I Q>`, `I`
+begins a transaction and `Q` restarts through F. A named wrapper may print an
+additional component/copyright line first. Wait for `SEND OIP1 HEADER` before
+sending a 20-byte header. For a write, wait for `SEND 4096` before sending the
+4096 payload bytes. Do not concatenate header and payload into one unpaced send.
 
 | Header offset | Bytes | Meaning |
 |---|---:|---|
@@ -33,11 +42,16 @@ After obtaining and verifying `before.bin` and preparing exactly one `after.bin`
 python tools/oip.py replace --bank 1 --sector 9000 --before before.bin --image after.bin --out build/write-b1-9
 ```
 
-The output includes `header.bin`, a manifest and, for replace, `payload.bin`. Header/payload are deliberately separate files. A new output directory is required. Both the helper and device reject protected B3:A/B/C/D/F targets. B0 is allowed by the protocol, so an owner WDC backup in B0 must be preserved by choosing another target.
+The output includes `header.bin`, a manifest and, for replace, `payload.bin`.
+Header/payload are separate files. A new output directory is required.
+Current BASE1 permits B0/B1/B2:8–F and B3:8/9/A/B/E; B3:C/D/F remain protected.
+Allowed sectors can still contain an owner's monitor, provider or backup.
+Select targets from the actual inventory and preserve each preimage.
 
-The 0.2.0 helper prepares packets; it is not an automatic live installer.
-Use the explicit paced procedure above with independent preimage/payload
-verification and binary capture for reads. The matching
-[READBACK RAM service](READBACK.md) exports complete banks with CRC. Preserve
-owner RAM before loading tools. A general automated admission/escrow/transfer
-client remains future work.
+The old 0.2.0 helper/tool had different B3 protections and prompt text; use its
+own release documentation with those original bytes. For current BASE1 use
+the paced [OPAQUE host](OPAQUE_HOST.md) or the explicit procedure above, with
+independent preimage/payload verification and binary capture for reads. The
+[READBACK service](RECOVERY_BASE1.md) exports complete banks with CRC;
+[UTIL MEMORY](MEMORY_UTILITY.md) provides broader PC backup/restore. Preserve
+owner RAM before loading any helper. These are distinct protocols and clients.

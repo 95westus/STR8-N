@@ -16,6 +16,10 @@ Foundation 0.3.0 is F's version, not a shared version for MON, UTIL and DEV.
 
 ## Guides and downloads
 
+Start with the [F / MON / UTIL / DEV guide](docs/COMPONENT_GUIDE.md),
+[documentation index](docs/README.md) and
+[BIN / S19 / S29 and transfer formats](docs/FILE_FORMATS.md) for board and PC workflows.
+
 - **F:** [Foundation manual](docs/USER_MANUAL.md),
   [frozen 0.3.0 release](https://github.com/95westus/STR8-N/releases/tag/v0.3.0),
   [BASE1 operator kit](https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0.zip)

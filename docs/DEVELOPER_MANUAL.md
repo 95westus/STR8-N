@@ -1,10 +1,24 @@
-# ASM/DBG g2 — unified candidate4
+# STR8-N DEV ASM / DBG — operator manual
+
+DEV is a separate component group above frozen F, alongside MON and UTIL.
+See [current source/releases](COMPONENT_GUIDE.md),
+[BIN/S-record formats](FILE_FORMATS.md) and
+[qualification scope](QUALIFICATION_SCOPE.md). The workflows below retain the
+compact candidate4 memory/launch contracts; historical acceptance does not
+qualify later rebuilt or renamed bytes automatically.
+
+Current named-kit RAM packets are
+`payload/str8n-dev-asm-0.6-dev-g00000002-ram.bin` and
+`payload/str8n-dev-dbg-g00000002-ram.bin`. Historical `developer/ASM-RAM.bin`
+and `developer/DBG-RAM.bin` paths below belong to the earlier candidate ZIP.
+Use `COMPONENTS.json` and `NATIVE-COMPONENTS.json` for current hashes,
+CPU variants, paired sectors and placement.
 
 These are optional developer tools in the compact unified profile above
 frozen Foundation 0.3.0 BASE1/PR05 and MON A/B g00000010. They are included
 in this candidate, rather than postponed as a separate release. See the
 [operator manual](NATIVE_UTILITIES_MANUAL.md) for installation/ownership and
-[acceptance boundaries](UNIFIED_CANDIDATE_STATUS.md) for remaining gates.
+[acceptance boundaries](QUALIFICATION_SCOPE.md) for remaining gates.
 
 ## Launch and return
 
@@ -118,7 +132,11 @@ and cache. Save application work before interactive use; Q/QUIT is not an
 automatic owner-RAM restore. Qualification escrowed/restored application RAM,
 ZP, cache and hooks independently.
 
-## Evidence
+## Historical evidence
+
+The original evidence and candidate ZIP names below describe their exact
+tested artifacts. Raw/private evidence is not bundled with the current named
+kit. Current public limits are recorded in [qualification scope](QUALIFICATION_SCOPE.md).
 
 65C02 RAM/installed/extracted developer candidate2 checks passed on 2512.
 Thirteen RAM groups and installed checks passed on 2609 in emulation; the

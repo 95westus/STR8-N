@@ -1,5 +1,11 @@
 # Installation routes and preservation
 
+This guide covers establishing frozen F and preserving owner state. Use the
+[component guide](COMPONENT_GUIDE.md) for current MON/UTIL/DEV source and releases,
+and [file formats](FILE_FORMATS.md) to distinguish programmer F, RAM packets,
+sector images and S-records. Current component-kit construction is separate
+from the preserved Foundation 0.3.0 installation kit described below.
+
 Use the complete 0.3.0 operator ZIP, including its Python terminal, hosts,
 prebuilt engines, manifests and guides. Reviewed source paths passed on
 2512/65C02/FT245, and the unchanged rc1 existing-SNBT package route passed on
@@ -64,7 +70,9 @@ another owner's history.
 
 B0-B2 and B3:8/9/A/B/E are owner space. Optional monitor-shaped images may
 occupy A/B, but are not required. Retained b15 MON/FLASH execution under BASE1
-remains unqualified. This release supplies no mandatory MON image. Mona remains planned.
+remains unqualified. Foundation 0.3.0 supplies no mandatory MON image. Current
+optional STR8-N MON and UTIL/DEV have separate source, manifests and acceptance
+limits; see the [MON/UTIL manual](NATIVE_UTILITIES_MANUAL.md).
 
 Install/verify an image before enabling it with CONFIG. OPAQUE protects C/D/F.
 Keep recovery as default while replacing a boot image; save the intended

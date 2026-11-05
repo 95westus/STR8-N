@@ -1,41 +1,55 @@
-# BASE1 build and freeze policy
+# STR8-N build and Foundation freeze policy
 
-`python tools/verify_base1.py` checks existing files only. It does not assemble,
-emulate, open a port or flash a device. Historical CPU reports are not current
-BASE1 qualification.
+Use the [current source build/verification recipe](CONSOLIDATION_SOURCE_REVIEW.md)
+for the F / MON / UTIL / DEV kit. [Build helpers](BUILD_HELPERS.md) identifies
+current entry points and historical scripts. The [component guide](COMPONENT_GUIDE.md)
+links source/releases; [file formats](FILE_FORMATS.md) distinguishes PC files,
+RAM executables, S-records and installed sectors.
 
-The identity build compiled F once and built affected CONFIG, OPAQUE, DEMO,
-MAP and READBACK against it. Worker/vector images were unchanged; NFM1/NFA1
-were reused. No reproduction build or CPU model ran.
-
-F_FREEZE.json now locks F. For a later source change requiring RAM assembly:
-
-```text
-python tools/build_base1.py --only map --out build/new-map
+```powershell
+python -B tools/verify_base1.py
+python -B tools/verify_component_inputs.py
+python -B tools/build_named_components.py --out build/components
 ```
 
-Selections: config, opaque, demo, map, readback. Use a fresh output directory.
-Unselected payloads and frozen F are reused with hashes checked. Inspect the
-output manifest before promoting changed RAM files. WDC tools are required
-only for actual assembly; no installation or publication is automatic.
+Use a new output directory. WDC02AS/WDCLN are needed for non-F assembly.
+The current recipe reconstructs all 32 non-F inputs and emits 34 payloads;
+F is reused unchanged. COMPONENTS.json records component identity, size and
+SHA-256. NATIVE-COMPONENTS.json records sector/CPU targets. Neither file
+installs anything or assigns owner space on a board.
 
-Old F/full-system builder paths are retired or redirect to the canonical RAM
-builder. Initial-F mode is already consumed. A future boot defect needs a new,
-reviewed F generation and reference proof, not an override of this lock.
+## Frozen Foundation
 
-The release kit also carries Serial Console 0.1.0, its pinned pyserial
-requirement and [operator guide](SERIAL_CONSOLE.md). Host-only console changes
-need no assembly. For a changed console, run `python -m unittest tests.test_console`
-and `python tests/console_tk_smoke.py` (Tk display required, fake worker). Record those checks
-separately from firmware qualification; do not rerun unrelated CPU suites.
-Package the existing files once with
-`python tools/package_base1.py --out dist/fresh-candidate-directory`.
-This checks frozen inputs and copies files without rebuilding firmware.
-The kit includes the scoped 2512 BASE1, native-console, WDC, programmer-F,
-opaque and C/D recovery receipts. Packaging
-refuses a receipt whose tested console hashes no longer match; raw captures and
-backups are never included. Inspect the ZIP's console/dependency/guide, evidence
-and MANIFEST hashes. The reviewed 2512 cases passed. Before public release,
-complete the [pending migration test from the extracted ZIP](RELEASE_WORKFLOW.md).
-Other platforms/layouts retain their separate qualification limits. No automatic
-flashing, publication or 2205 access is part of packaging.
+`tools/verify_base1.py` checks files only. It does not assemble, emulate,
+open a port or flash. F_FREEZE.json pins F 0.3.0 g00000001 / BASE1 / PR05,
+its 4096-byte image and protected source. Current documentation, host tools,
+MON, UTIL and DEV work keeps those bytes and the ABI unchanged.
+
+A selected RAM-helper development build can use, for example:
+
+```powershell
+python -B tools/build_base1.py --only map --out build/new-map
+```
+
+Selections are config, opaque, demo, map and readback. Unselected helpers and
+F are reused with hashes checked. This produces helper-development outputs,
+not a complete current named kit. Never invoke initial-F mode or bypass the
+freeze lock for an ordinary component/documentation change.
+
+A concrete Foundation defect or contract requirement would need a separately
+reviewed successor generation, a compatibility decision and relevant physical
+boot/recovery/update qualification. Preserve the 0.3.0 tag, image and lock.
+There is no scheduled unfreeze.
+
+## Check and package
+
+Run the checks in the [source recipe](CONSOLIDATION_SOURCE_REVIEW.md), then
+package those verified outputs with `tools/package_named_components.py`.
+Packaging reads existing payloads and receipts; it does not rebuild F, connect
+to a board or publish a release. The current named kit remains a development
+candidate; [qualification limits](QUALIFICATION_SCOPE.md) stay explicit.
+
+The preserved Foundation 0.3.0 ZIP uses its own original build/packaging files,
+filenames and receipts. Its release commands are not a replacement for the
+current named-kit recipe. Keep generated BUILD/output files, private captures
+and board profiles out of source commits.

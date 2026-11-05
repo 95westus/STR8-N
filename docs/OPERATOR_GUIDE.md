@@ -1,7 +1,9 @@
 # Operator guide
 
-Start with the [quick start](QUICK_START.md). The [unified source guide](UNIFIED_SYSTEM.md)
-covers optional component development. Compatible boards use the same CONFIG RAM BIN.
+Start with [F / MON / UTIL / DEV](COMPONENT_GUIDE.md) and the
+[quick start](QUICK_START.md). The [file-format guide](FILE_FORMATS.md) covers
+board BIN/S-record loading and PC backup files. Compatible boards use the
+matching CONFIG RAM BIN; optional components retain their own versions.
 
 ## The boot choices
 
@@ -24,7 +26,9 @@ The DEMO prints CPU and F capability information, calculates $1234+$0001 and ech
 
 ## Inspect and save CONFIG
 
-Load `STR8N-F-CONFIG-RAM.bin`. Its prompt is `RAM CONFIG ? B C I W Q>`.
+Use the named Terminal's CONFIG preset or
+`payload/str8n-util-config-0.3.0-base1-pr05-ram.bin`. In the preserved Foundation
+kit this is `STR8N-F-CONFIG-RAM.bin`. Its prompt is `RAM CONFIG ? B C I W Q>`.
 
 | Command | Effect |
 |---|---|

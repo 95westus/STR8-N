@@ -1,22 +1,23 @@
-# Mona: optional monitor direction
+# STR8-N MON — optional monitors above Foundation
 
-Mona is the chosen name for a future BASE1-compatible monitor or launcher.
-It is separate from STR8N-F, and no Mona binary is included in 0.3.0.
+The optional monitor family is **STR8-N MON**, with A/B identifying slots.
+Earlier planning/source used Mona; existing source identifiers are preserved.
+Current source and the preserved MON preview are linked from the
+[component guide](COMPONENT_GUIDE.md). Foundation 0.3.0 itself needs no monitor.
 
-STR8N-F stays the frozen 4096-byte bootstrap/recovery foundation. Mona may
-show richer board/service status, offer application and subsystem menus,
-hand over to an application, or deliberately return to recovery. Missing
-optional hardware must be reported as unavailable. Mona owns its own name,
-version and generation; these do not change F's identity or journal sequence.
+F remains the frozen 4096-byte boot/recovery platform, BASE1 / PR05. MON owns
+its own version/generation, board/service display and interactive commands.
+`REC> A` or `REC> B` launches the matching installed monitor; a `B3>` prompt
+then identifies the selected data bank. CONFIG `C B` saves MON B as default.
+An opaque bank entry has a different launch contract.
 
-MON A and MON B can provide different personalities. The current A/B boot
-path requires the existing monitor image header, CRC and PR05 contract;
-the labels do not make an arbitrary opaque image monitor-compatible.
-Ordinary opaque images boot through a configured bank entry. The retained
-g0034 monitor's ABI and provider dependencies still need review before it
-can be used under BASE1.
+MON A/B require matching headers, CRC and PR05 compatibility. Ordinary opaque
+images boot through configured bank entries; arbitrary bytes do not become a
+monitor by occupying slot A/B. Historical g0034 or b15 full-system monitors
+retain their own ABI/provider requirements.
 
-Trees such as Applications / Hardware / Maintenance belong in Mona or another
-optional image. LED, buzzer, SPI workspace/message services and additional
-service discovery remain proposed extensions, not additions to the 0.3.0
-F ABI. Implementations must be qualified separately.
+Use the [MON/UTIL manual](NATIVE_UTILITIES_MANUAL.md), [file formats](FILE_FORMATS.md)
+and current manifests for commands, RAM packets and installed sector images.
+Optional hardware/services must be admitted separately. Proposed features in
+older plans do not extend F's frozen ABI. The current named MON/UTIL/DEV kit
+remains a development candidate with [scoped qualification](QUALIFICATION_SCOPE.md).

@@ -1,4 +1,12 @@
-# N/F migration hosts — 0.3.0
+# STR8-N F migration hosts — Foundation 0.3.0
+
+These PC hosts establish or inspect the frozen Foundation installation; they
+are separate from the current named MON/UTIL/DEV kit. See
+[component/source/releases](../docs/COMPONENT_GUIDE.md) and
+[BIN/S-record/backup formats](../docs/FILE_FORMATS.md). Use generated
+`migrator.bin`/`migrator.s19` only with the matched WDC migration procedure.
+They are not interchangeable with F raw `L`, MON RAM S19 or a programmer F image.
+Migration does not unfreeze or rebuild F.
 
 `nf_migrate.py` prepares and inspects an exact private migration plan. It has
 **no serial import, port-opening command, device execution, reset or flash

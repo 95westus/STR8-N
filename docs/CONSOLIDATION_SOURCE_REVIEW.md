@@ -4,6 +4,11 @@ Main is the Foundation-based STR8-N F / MON / UTIL / DEV source tree. Source
 recipes reconstruct all 32 non-F binary inputs and check their accepted hashes.
 The intentionally frozen 4096-byte F platform input is reused unchanged.
 
+See [component/source/releases](COMPONENT_GUIDE.md), the
+[documentation index](README.md) and [file/transfer formats](FILE_FORMATS.md)
+for Foundation, on-board commands and PC tools. Current builds and preserved
+release downloads have separate manifests and qualification scopes.
+
 ## Build
 
 With Python and the external WDC02AS/WDCLN tools installed, from the repository
@@ -43,6 +48,8 @@ requirements and are not redistributed.
 SOURCE-RECONSTRUCTION.json records all 32 exact input comparisons. The MON/
 services and UTIL/DEV receipts record detailed source builds. Generated assembly,
 maps and staging live under the output directory and are not source inputs.
+Assembler/linker `.s19` intermediates are address-bearing text, not alternate
+raw BINs; inspect the declared target and record types before any transfer.
 Only source reconstruction satisfies the five helper dependencies; the older
 published helper BINs remain for static platform checks and historical provenance.
 

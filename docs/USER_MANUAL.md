@@ -1,12 +1,17 @@
-# STR8N-F 0.3.0 user manual
+# STR8-N F 0.3.0 — Foundation user manual
 
-> Give me 4KB, I can give you 4 boards.
+**4KB of firmware. One board. Up to four boot environments.**
 
-With ~32KB RAM shared by four selectable bank environments.
+Compatible images run one at a time, sharing the board's CPU, RAM and peripherals.
+This is F's release-specific guide. See [F / MON / UTIL / DEV](COMPONENT_GUIDE.md)
+for current source and releases, and [file/transfer formats](FILE_FORMATS.md)
+before selecting a BIN or S-record. F remains frozen; current optional
+components have separate versions and qualification.
 
-STR8N-F supplies the boot/recovery foundation. Your opaque image supplies
-the application, language, monitor or operating environment. The optional
-monitor name **Mona** is planned; no Mona program is included in this release.
+STR8-N F supplies the boot/recovery foundation. Your opaque image supplies
+the application, language, monitor or operating environment. The preserved
+Foundation 0.3.0 kit has no mandatory MON payload. Optional STR8-N MON and
+UTIL/DEV source now live alongside F on `main`; see the component guide above.
 
 ## 1. What to download
 
@@ -17,7 +22,7 @@ Use the [0.3.0 release](https://github.com/95westus/STR8-N/releases/tag/v0.3.0).
 | `F.bin` | Exactly 4096 bytes of frozen F, for a flash programmer |
 | `STR8N-F-BASE1-0.3.0.zip` | Complete operator kit: terminal, WDC migration hosts/RAM programs, CONFIG, OPAQUE, MAP, READBACK and DEMO |
 | `STR8N-F-BASE1-0.3.0-source.zip` | Source, image example and build recipes; no assembler needed to use the operator kit |
-| `STR8N-F-0.3.0-MANUAL.md` | This manual as a standalone downloadable file |
+| `STR8N-F-0.3.0-MANUAL.md` | Original release edition of the manual; later main documentation may differ |
 | `SHA256SUMS.txt` | Original ZIPs and canonical BIN hashes |
 | `START_HERE_SHA256SUMS.txt` | Hashes for the added `F.bin` alias and this downloadable manual |
 
@@ -35,7 +40,9 @@ Both BIN names have SHA-256:
 ```
 
 Extract the complete operator ZIP and run commands from its top directory.
-The manual and `F.bin` are release addenda; the original ZIPs stay unchanged.
+The downloadable manual and `F.bin` are release addenda; the original ZIPs stay
+unchanged. Filenames and commands below describe that preserved release kit.
+New named kits use `str8n-util-*-ram.bin` and their own manifests and launchers.
 
 ## 2. Host setup and terminal
 
