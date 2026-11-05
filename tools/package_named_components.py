@@ -3,11 +3,14 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import zipfile
 
 
-def package(build, output):
+def package(build, output, *, label='str8n-components-base1-pr05-sanitized-review-r1'):
     build, output = Path(build).resolve(), Path(output).resolve()
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*', label):
+        raise ValueError('Package label must be a single directory name')
     manifest = json.loads((build/'COMPONENTS.json').read_text())
     members = set(manifest['artifacts'])
     for file, info in manifest['artifacts'].items():
@@ -21,6 +24,7 @@ def package(build, output):
         members.add(f'tests-{cpu}.json')
     members.update(('README.md','LICENSE','THIRD_PARTY_NOTICES.md','COMPONENTS.json','NATIVE-COMPONENTS.json','product-names.json',
                     'preset-assets.json','str8n-terminal.py','str8n-util-memory.py',
+                    'requirements-console.txt','firmware/memory-agent/profile.example.json',
                     'memory-agent-build/manifest.json'))
     agent = json.loads((build/'memory-agent-build/manifest.json').read_text())
     members.add('memory-agent-build/'+agent['file'])
@@ -31,10 +35,9 @@ def package(build, output):
     for folder in ('tools','terminal'):
         members.update(p.relative_to(build).as_posix() for p in (build/folder).rglob('*.py'))
     members.update(p.relative_to(build).as_posix() for p in (build/'docs').glob('*.md'))
-    for file in ('tests-memory-65c02.json','tests-memory-65c816-e.json','REUSED-TESTS.json','SOURCE-RECONSTRUCTION.json','MON-SERVICES-RECONSTRUCTION.json','UTIL-DEV-RECONSTRUCTION.json'):
+    for file in ('tests-memory-65c02.json','tests-memory-65c816-e.json','REUSED-TESTS.json','SOURCE-RECONSTRUCTION.json','MON-SERVICES-RECONSTRUCTION.json','UTIL-DEV-RECONSTRUCTION.json','RELEASE-CANDIDATE.json','HOST-TESTS.json'):
         if (build/file).is_file():
             members.add(file)
-    label = 'str8n-components-base1-pr05-sanitized-review-r1'
     with zipfile.ZipFile(output,'x',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
         for file in sorted(members):
             archive.write(build/file,label+'/'+file)
@@ -57,5 +60,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--build',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--label',default='str8n-components-base1-pr05-sanitized-review-r1',
+                        help='Single root directory name inside the ZIP')
     args=parser.parse_args()
-    package(args.build,args.out)
+    package(args.build,args.out,label=args.label)

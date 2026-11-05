@@ -382,6 +382,10 @@ def build(out, base=BASE):
     (out/'product-names.json').write_bytes((ROOT/'tools/product_names.json').read_bytes())
     shutil.copyfile(ROOT/'LICENSE',out/'LICENSE')
     shutil.copyfile(ROOT/'THIRD_PARTY_NOTICES.md',out/'THIRD_PARTY_NOTICES.md')
+    shutil.copyfile(ROOT/'requirements-console.txt',out/'requirements-console.txt')
+    (out/'firmware/memory-agent').mkdir(parents=True)
+    shutil.copyfile(ROOT/'firmware/memory-agent/profile.example.json',
+                    out/'firmware/memory-agent/profile.example.json')
     save(out/'preset-assets.json', presets)
     (out/'terminal').mkdir()
     console = read('terminal/nf_console.py').decode()
@@ -450,6 +454,11 @@ Launch python str8n-terminal.py for STR8-N Terminal. F5/F6/F7/F8 select the
 canonical MAP/CONFIG/OPAQUE/DEMO files through preset-assets.json.
 Launch python str8n-util-memory.py --help for the PC memory utility. Both
 launchers open no board connection on --help or --version.
+Install PC dependencies with python -m pip install -r requirements-console.txt;
+Python 3.11+ with Tk is required for Terminal. Copy
+firmware/memory-agent/profile.example.json to a private location and fill in
+the actual device/layout before MEMORY serial operations. The template
+contains placeholders and is not a detected or approved board configuration.
 
 payload/ contains canonical lowercase product filenames. COMPONENTS.json maps
 each file to its component, placement, size and SHA-256. NATIVE-COMPONENTS.json
