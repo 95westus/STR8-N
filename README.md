@@ -3,15 +3,38 @@
 STR8-N combines the frozen Foundation with monitors, utilities and ASM/DBG for
 WDC W65C02SXB and W65C816SXB boards (65C816 emulation mode).
 
-| Group | Components | Source and guide |
+| Group | Components | Current source |
 | --- | --- | --- |
-| Foundation | **STR8-N F**, BASE1 / PR05 | [Frozen platform](docs/USER_MANUAL.md), `src/core`, `src/include`, `F_FREEZE.json` |
-| Monitors | **STR8-N MON**, slots A/B | `monitors/native`, `monitors/src`, [native utilities](docs/NATIVE_UTILITIES_MANUAL.md) |
-| Utilities | CONFIG, FLASH, CLOCK, MAINT, MEMORY, MAP, OPAQUE, READBACK, DEMO | [Component names](docs/COMPONENT_NAMING.md), [MEMORY](docs/MEMORY_UTILITY.md), `tools` |
-| Development | **STR8-N DEV ASM / DBG** | `monitors/devtools/base1/assembler`, `monitors/devtools/base1/debugger`, [ASM/DBG](docs/ASM_DBG_BASE1_RAM.md) |
+| **F** — Foundation | STR8-N F 0.3.0 / BASE1 / PR05 | [Core](src/core), [public includes](src/include), [freeze manifest](F_FREEZE.json) |
+| **MON** — Monitors | STR8-N MON, slots A/B | [Monitor source](monitors/src), [native components and shared services](monitors/native) |
+| **UTIL** — Utilities | CONFIG, FLASH, CLOCK, MAINT, MEMORY, MAP, OPAQUE, READBACK, DEMO | [Host tools and build recipes](tools), [native utilities](monitors/native), [RAM helpers](src/core) |
+| **DEV** — Development | STR8-N DEV ASM / DBG | [Assembler](monitors/devtools/base1/assembler), [debugger](monitors/devtools/base1/debugger) |
 
 Commands stay short: `CONFIG`, `FLASH`, `CLOCK`, `MAINT`, `MEMORY`, `R ASM`,
 `R DBG`, `C A` and `C B`. Components keep their own versions/generations.
+Foundation 0.3.0 is F's version, not a shared version for MON, UTIL and DEV.
+
+## Guides and downloads
+
+- **F:** [Foundation manual](docs/USER_MANUAL.md),
+  [frozen 0.3.0 release](https://github.com/95westus/STR8-N/releases/tag/v0.3.0),
+  [BASE1 operator kit](https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0.zip)
+  and [release source kit](https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0-source.zip).
+- **MON:** [Monitor/native utilities guide](docs/NATIVE_UTILITIES_MANUAL.md)
+  and [preserved MON preview release](https://github.com/95westus/STR8-N/releases/tag/mon-g8-tools-preview1).
+  Build current MON from the linked source using the recipe below.
+- **UTIL:** [Component guide](docs/COMPONENT_NAMING.md),
+  [MEMORY backup/restore guide](docs/MEMORY_UTILITY.md) and
+  [current component build/package recipe](docs/CONSOLIDATION_SOURCE_REVIEW.md).
+- **DEV:** [ASM/DBG guide](docs/ASM_DBG_BASE1_RAM.md) and
+  [current component build/package recipe](docs/CONSOLIDATION_SOURCE_REVIEW.md).
+
+The current named MON/UTIL/DEV kit is a development candidate built from `main`;
+it has no dedicated published release yet. The
+[release index](RELEASE_INDEX.md) links the preserved Foundation, MON preview and
+historical full-system downloads. Those packages retain their original component
+versions and qualification scope; they do not contain every current change on
+`main`.
 
 ## Build and use
 
