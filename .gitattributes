@@ -9,3 +9,6 @@
 *.yml text eol=lf
 *.bin binary
 *.zip binary
+# Preserve the original archived Microchess source and its complete notice.
+examples/microchess/Microchess6502-upstream.txt -text
+examples/microchess/LICENSE.txt -text
