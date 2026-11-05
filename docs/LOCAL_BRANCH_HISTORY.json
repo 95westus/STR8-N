@@ -1,0 +1,592 @@
+{
+  "schema": 1,
+  "repository": "95westus/STR8-N",
+  "main_unchanged_at": "31991c84d3620f55375b80e703d6de272be5ffb7",
+  "policy": "Only unpublished history filtered; original source blobs, authors, dates, messages and logical parents retained. BUILD/private capture/generated outputs omitted.",
+  "original_histories_retained_in_local_bundles": true,
+  "existing_public_refs_unchanged": true,
+  "branches": [
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/beta1-release",
+      "original_commit": "e4fb6f9813e89dd2f0b26a8effc2866ab763dedd",
+      "destination_ref": "refs/heads/codex/beta1-release",
+      "published_commit": "e4fb6f9813e89dd2f0b26a8effc2866ab763dedd",
+      "history_filtered": false,
+      "action": "ALREADY_PRESERVED"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/beta35-rc1-checkpoint",
+      "original_commit": "6b536771768ad2d2a311799605250b73d6c360d0",
+      "destination_ref": "refs/heads/codex/beta35-rc1-checkpoint",
+      "published_commit": "6b536771768ad2d2a311799605250b73d6c360d0",
+      "history_filtered": false,
+      "action": "ALREADY_PRESERVED"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/experimental-extensions",
+      "original_commit": "b6e55f21eaf3455494b700b8b1b18bd8ddbc26c1",
+      "destination_ref": "refs/heads/codex/experimental-extensions",
+      "published_commit": "0cb0699dcb61bb13d1b6dab1aadfcb73f1fd051f",
+      "history_filtered": true,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/flash-recovery",
+      "original_commit": "6f5ca06ba330b8d9f464e6c49387653d18842da5",
+      "destination_ref": "refs/heads/codex/flash-recovery",
+      "published_commit": "6f5ca06ba330b8d9f464e6c49387653d18842da5",
+      "history_filtered": false,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/rc1-main-merge",
+      "original_commit": "678c9e3e93e50a975480357caa27e4427199fafa",
+      "destination_ref": "refs/heads/codex/rc1-main-merge",
+      "published_commit": "678c9e3e93e50a975480357caa27e4427199fafa",
+      "history_filtered": false,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/rc1-powerfail-utc",
+      "original_commit": "0d3169b0564a127415b7ade9e2186ccbb0712228",
+      "destination_ref": "refs/heads/codex/rc1-powerfail-utc",
+      "published_commit": "0d3169b0564a127415b7ade9e2186ccbb0712228",
+      "history_filtered": false,
+      "action": "ALREADY_PRESERVED"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/v2-beta33-asm",
+      "original_commit": "e97d785bf8f86a8f703c7dd02f58397d525873a7",
+      "destination_ref": "refs/heads/codex/v2-beta33-asm",
+      "published_commit": "d85ea3473763d231bf9c0c2c10e8ee021695f3d1",
+      "history_filtered": true,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/v2-beta34-asm-summary",
+      "original_commit": "e97d785bf8f86a8f703c7dd02f58397d525873a7",
+      "destination_ref": "refs/heads/codex/v2-beta34-asm-summary",
+      "published_commit": "d85ea3473763d231bf9c0c2c10e8ee021695f3d1",
+      "history_filtered": true,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/v2-flash-config",
+      "original_commit": "8855c9446cbe5cfb1f7cba31accb775b081735eb",
+      "destination_ref": "refs/heads/codex/v2-flash-config",
+      "published_commit": "8855c9446cbe5cfb1f7cba31accb775b081735eb",
+      "history_filtered": false,
+      "action": "ALREADY_PRESERVED"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/codex/v2.1-alpha",
+      "original_commit": "02d8c39dd26b36bf97e3b9c25c628b7ea219c7c2",
+      "destination_ref": "refs/heads/codex/v2.1-alpha",
+      "published_commit": "43ba70a837fd2b6cc1e83663c2baf44962a2e8f8",
+      "history_filtered": true,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/main",
+      "original_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "destination_ref": "refs/heads/archive/local/str8-n/main",
+      "published_commit": "864543777ae9b621771a6f56dfa2fd6035ca4490",
+      "history_filtered": true,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/v2",
+      "original_commit": "88214abafd9f7c7e8e7ef421f9c0ffdd2ea585dc",
+      "destination_ref": "refs/heads/archive/local/str8-n/v2",
+      "published_commit": "bab33ff9c52d1535963afaaa3f9e527fadf5fce5",
+      "history_filtered": true,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "str8-n",
+      "original_ref": "refs/heads/v2.0a24c1",
+      "original_commit": "76ef29804c3a9fe857ecc13ce4474394f94ced42",
+      "destination_ref": "refs/heads/v2.0a24c1",
+      "published_commit": "76ef29804c3a9fe857ecc13ce4474394f94ced42",
+      "history_filtered": false,
+      "action": "ALREADY_PRESERVED"
+    },
+    {
+      "source_clone": "foundation-bootstrap",
+      "original_ref": "refs/heads/main",
+      "original_commit": "5beb513db4d11be1cfae5791277cfd6202d15a14",
+      "destination_ref": "refs/heads/archive/local/foundation-bootstrap/main",
+      "published_commit": "5beb513db4d11be1cfae5791277cfd6202d15a14",
+      "history_filtered": false,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "foundation-development",
+      "original_ref": "refs/heads/codex/identify-sxb-edu",
+      "original_commit": "d2800ab11e7c268e9c422cde925289a819fd32d2",
+      "destination_ref": "refs/heads/codex/identify-sxb-edu",
+      "published_commit": "d2800ab11e7c268e9c422cde925289a819fd32d2",
+      "history_filtered": false,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "foundation-development",
+      "original_ref": "refs/heads/codex/mona-monb",
+      "original_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "destination_ref": "refs/heads/codex/mona-monb",
+      "published_commit": "9a713a2368f70f33fdb550bf7acb79af2fd81bed",
+      "history_filtered": true,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "foundation-development",
+      "original_ref": "refs/heads/codex/nf-v0.2.0",
+      "original_commit": "06a58a29c318b0a8093c267eaf30cc3d80c7d626",
+      "destination_ref": "refs/heads/codex/nf-v0.2.0",
+      "published_commit": "06a58a29c318b0a8093c267eaf30cc3d80c7d626",
+      "history_filtered": false,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "foundation-development",
+      "original_ref": "refs/heads/codex/nf030-readme-label",
+      "original_commit": "254cea04ceb0e000178b17195a6f40690789ee82",
+      "destination_ref": "refs/heads/codex/nf030-readme-label",
+      "published_commit": "254cea04ceb0e000178b17195a6f40690789ee82",
+      "history_filtered": false,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "foundation-development",
+      "original_ref": "refs/heads/codex/str8nf-base1",
+      "original_commit": "88764d295c768d9dc0c11c2366b179be1d3fecbe",
+      "destination_ref": "refs/heads/codex/str8nf-base1",
+      "published_commit": "88764d295c768d9dc0c11c2366b179be1d3fecbe",
+      "history_filtered": false,
+      "action": "CREATE_BRANCH"
+    },
+    {
+      "source_clone": "foundation-development",
+      "original_ref": "refs/heads/main",
+      "original_commit": "4f19e7fcc8fc2e2e54a47fe91e2b9a3058aaca37",
+      "destination_ref": "refs/heads/archive/str8n-f/main",
+      "published_commit": "4f19e7fcc8fc2e2e54a47fe91e2b9a3058aaca37",
+      "history_filtered": false,
+      "action": "ALREADY_PRESERVED"
+    }
+  ],
+  "commit_map": [
+    {
+      "original_commit": "b15a09351d519cfb74a9f03795acbe87274dad8f",
+      "published_commit": "e41e58bbe34bdd8075ccbc21ebb1e52e6f6a54bc",
+      "original_parents": [
+        "dc0c78f40570b8e133f4687cba67972382c0b36c"
+      ],
+      "published_parents": [
+        "dc0c78f40570b8e133f4687cba67972382c0b36c"
+      ],
+      "rewritten": true,
+      "subject": "Add EEPROM settings and EDU display through alpha30"
+    },
+    {
+      "original_commit": "e57c17c5cdfd71279589c84732f3517d2ab29ecb",
+      "published_commit": "ef87274e43a07c3bd9b3e30b3ed766cca05cba55",
+      "original_parents": [
+        "b15a09351d519cfb74a9f03795acbe87274dad8f"
+      ],
+      "published_parents": [
+        "e41e58bbe34bdd8075ccbc21ebb1e52e6f6a54bc"
+      ],
+      "rewritten": true,
+      "subject": "Add alpha31 SPI inventory and memory retention display"
+    },
+    {
+      "original_commit": "40e93e68441e629ef07b7363a6637b9dcba8962f",
+      "published_commit": "4a93a874482b45f02d27752df8dbbe161e12868b",
+      "original_parents": [
+        "e57c17c5cdfd71279589c84732f3517d2ab29ecb"
+      ],
+      "published_parents": [
+        "ef87274e43a07c3bd9b3e30b3ed766cca05cba55"
+      ],
+      "rewritten": true,
+      "subject": "Add EDU crypto inventory, serial number, and alpha34 VIA labels"
+    },
+    {
+      "original_commit": "88214abafd9f7c7e8e7ef421f9c0ffdd2ea585dc",
+      "published_commit": "bab33ff9c52d1535963afaaa3f9e527fadf5fce5",
+      "original_parents": [
+        "40e93e68441e629ef07b7363a6637b9dcba8962f"
+      ],
+      "published_parents": [
+        "4a93a874482b45f02d27752df8dbbe161e12868b"
+      ],
+      "rewritten": true,
+      "subject": "Add startup section headings and VT102 screen clearing in alpha35/36"
+    },
+    {
+      "original_commit": "b6e55f21eaf3455494b700b8b1b18bd8ddbc26c1",
+      "published_commit": "0cb0699dcb61bb13d1b6dab1aadfcb73f1fd051f",
+      "original_parents": [
+        "e4fb6f9813e89dd2f0b26a8effc2866ab763dedd"
+      ],
+      "published_parents": [
+        "e4fb6f9813e89dd2f0b26a8effc2866ab763dedd"
+      ],
+      "rewritten": true,
+      "subject": "Preserve manager RTS and registration work as experimental extensions"
+    },
+    {
+      "original_commit": "e97d785bf8f86a8f703c7dd02f58397d525873a7",
+      "published_commit": "d85ea3473763d231bf9c0c2c10e8ee021695f3d1",
+      "original_parents": [
+        "266c360835663553f1ddaf3d30d12301683c99d4"
+      ],
+      "published_parents": [
+        "266c360835663553f1ddaf3d30d12301683c99d4"
+      ],
+      "rewritten": true,
+      "subject": "Checkpoint beta32 board alignment and support tools; record stopped soak"
+    },
+    {
+      "original_commit": "e38e950903754017900add3cbed1f8679b05a474",
+      "published_commit": "9b96f9e2fbc22a2b5f4ccc3a11e35f33c6a6622e",
+      "original_parents": [
+        "e97d785bf8f86a8f703c7dd02f58397d525873a7"
+      ],
+      "published_parents": [
+        "d85ea3473763d231bf9c0c2c10e8ee021695f3d1"
+      ],
+      "rewritten": true,
+      "subject": "Start v2.1 alpha uniform ABI directory and combined system query"
+    },
+    {
+      "original_commit": "ff6bfbf9a9469d8322ef4c98b392cab779bb4f00",
+      "published_commit": "6650517ba079bda7218ad8f3ef0391646835b6f8",
+      "original_parents": [
+        "e38e950903754017900add3cbed1f8679b05a474"
+      ],
+      "published_parents": [
+        "9b96f9e2fbc22a2b5f4ccc3a11e35f33c6a6622e"
+      ],
+      "rewritten": true,
+      "subject": "Record extended v2.1 ABI and named-object-store goals"
+    },
+    {
+      "original_commit": "e5c5b4a28ae50ee40128b06a406843ebf5348a2d",
+      "published_commit": "c3c74cf0cffea2f8795cf8cd74c0277c2cf251c2",
+      "original_parents": [
+        "ff6bfbf9a9469d8322ef4c98b392cab779bb4f00"
+      ],
+      "published_parents": [
+        "6650517ba079bda7218ad8f3ef0391646835b6f8"
+      ],
+      "rewritten": true,
+      "subject": "Record separate storage transfer allocation and commit geometry goals"
+    },
+    {
+      "original_commit": "02d8c39dd26b36bf97e3b9c25c628b7ea219c7c2",
+      "published_commit": "43ba70a837fd2b6cc1e83663c2baf44962a2e8f8",
+      "original_parents": [
+        "e5c5b4a28ae50ee40128b06a406843ebf5348a2d"
+      ],
+      "published_parents": [
+        "c3c74cf0cffea2f8795cf8cd74c0277c2cf251c2"
+      ],
+      "rewritten": true,
+      "subject": "Plan four-board beta32 migration fixtures and verified restore paths"
+    },
+    {
+      "original_commit": "3e7600b58a519ccde14bbea9404d69ab76986e3c",
+      "published_commit": "73198c7278b87fc16bcc0dd2f09c75bd2c67fc56",
+      "original_parents": [
+        "5ae5aa30ac103f664073a93187e1f40a5b2ff80e"
+      ],
+      "published_parents": [
+        "5ae5aa30ac103f664073a93187e1f40a5b2ff80e"
+      ],
+      "rewritten": true,
+      "subject": "Add prompted WDC backup destinations and NFM2 B0 copy candidate"
+    },
+    {
+      "original_commit": "7f2ff42454d50ed7540a9981e75db9e98d9f8884",
+      "published_commit": "1abaa0de4b592bdc25325036f204e0837beadc1e",
+      "original_parents": [
+        "3e7600b58a519ccde14bbea9404d69ab76986e3c"
+      ],
+      "published_parents": [
+        "73198c7278b87fc16bcc0dd2f09c75bd2c67fc56"
+      ],
+      "rewritten": true,
+      "subject": "Prepare preserving 2512 WDC backup-copy trial scope"
+    },
+    {
+      "original_commit": "58c0f25bcbefed57e1e5463eea68843e15a1682c",
+      "published_commit": "47b78e59623e9d78a74e1942cc65785315a8dad7",
+      "original_parents": [
+        "7f2ff42454d50ed7540a9981e75db9e98d9f8884"
+      ],
+      "published_parents": [
+        "1abaa0de4b592bdc25325036f204e0837beadc1e"
+      ],
+      "rewritten": true,
+      "subject": "Record preserving 2512 WDC backup-copy acceptance"
+    },
+    {
+      "original_commit": "ba4b7217cb3e53b289fd2b49355078b952d89564",
+      "published_commit": "7111642ab702574f4a4d9d2d850a5fe96ea62b52",
+      "original_parents": [
+        "58c0f25bcbefed57e1e5463eea68843e15a1682c"
+      ],
+      "published_parents": [
+        "47b78e59623e9d78a74e1942cc65785315a8dad7"
+      ],
+      "rewritten": true,
+      "subject": "Qualify RAM-only WDC B0 debugger handoff and HOLD return"
+    },
+    {
+      "original_commit": "de5b08c913737c179e650fdb8657cd3de67a09aa",
+      "published_commit": "2469a1415a6e6056114f821c545b563bc6023a65",
+      "original_parents": [
+        "ba4b7217cb3e53b289fd2b49355078b952d89564"
+      ],
+      "published_parents": [
+        "7111642ab702574f4a4d9d2d850a5fe96ea62b52"
+      ],
+      "rewritten": true,
+      "subject": "Prepare preserving 2512 WDC default-boot launcher trial"
+    },
+    {
+      "original_commit": "fde8f827bc245a52257cae8206313a213bb61b5f",
+      "published_commit": "09435c3addd913c5884a32353e02e8a17734bbcd",
+      "original_parents": [
+        "de5b08c913737c179e650fdb8657cd3de67a09aa"
+      ],
+      "published_parents": [
+        "2469a1415a6e6056114f821c545b563bc6023a65"
+      ],
+      "rewritten": true,
+      "subject": "Qualify 2512 saved-default WDC launcher boot and restoration"
+    },
+    {
+      "original_commit": "984af3bb25977253233cf9c45aa6174139cbda5e",
+      "published_commit": "2b4b9cb1fd5dd73b237574a9f878d52e75ae9ed0",
+      "original_parents": [
+        "fde8f827bc245a52257cae8206313a213bb61b5f"
+      ],
+      "published_parents": [
+        "09435c3addd913c5884a32353e02e8a17734bbcd"
+      ],
+      "rewritten": true,
+      "subject": "Record 2609 inventory and prepare MON A g8 scope choices"
+    },
+    {
+      "original_commit": "80f285865d418498e1571e14a5a7d61a33d87295",
+      "published_commit": "eb2e1a1fbc3e3703b8680955df8cabf3623f6e96",
+      "original_parents": [
+        "984af3bb25977253233cf9c45aa6174139cbda5e"
+      ],
+      "published_parents": [
+        "2b4b9cb1fd5dd73b237574a9f878d52e75ae9ed0"
+      ],
+      "rewritten": true,
+      "subject": "Qualify permanent 2609 MON A g8 and preserve RTC continuity"
+    },
+    {
+      "original_commit": "2dab5c310a027d2c8d982838693f0c0a46aea368",
+      "published_commit": "f16a22f4ff597b08d647d553c6f056db9b60e995",
+      "original_parents": [
+        "80f285865d418498e1571e14a5a7d61a33d87295"
+      ],
+      "published_parents": [
+        "eb2e1a1fbc3e3703b8680955df8cabf3623f6e96"
+      ],
+      "rewritten": true,
+      "subject": "Bring compact profile and release roadmap current with 2609 MON A"
+    },
+    {
+      "original_commit": "13e3682b4cb974af204ae474770208c158c439d4",
+      "published_commit": "8e91a38d458f570653442c7788061328ba0f9a23",
+      "original_parents": [
+        "2dab5c310a027d2c8d982838693f0c0a46aea368"
+      ],
+      "published_parents": [
+        "f16a22f4ff597b08d647d553c6f056db9b60e995"
+      ],
+      "rewritten": true,
+      "subject": "Review one-erase 2512 current-g4 AP02 qualification scope"
+    },
+    {
+      "original_commit": "5f4457e42139aa70015f89f5d7d3da68e521d2ed",
+      "published_commit": "0d9d7cc90ced6f4e098238cfd1d2ce5034ef17b7",
+      "original_parents": [
+        "13e3682b4cb974af204ae474770208c158c439d4"
+      ],
+      "published_parents": [
+        "8e91a38d458f570653442c7788061328ba0f9a23"
+      ],
+      "rewritten": true,
+      "subject": "Qualify 2512 current-g4 AP02 launch with one restoration erase"
+    },
+    {
+      "original_commit": "e961de852030cb7007b0880d0c228f08e80b7855",
+      "published_commit": "d1b38f9bd066fb4ffcfd0696084a69a464aebb0d",
+      "original_parents": [
+        "5f4457e42139aa70015f89f5d7d3da68e521d2ed"
+      ],
+      "published_parents": [
+        "0d9d7cc90ced6f4e098238cfd1d2ce5034ef17b7"
+      ],
+      "rewritten": true,
+      "subject": "Set unified b35 shipping contract and build shared command names"
+    },
+    {
+      "original_commit": "76fbe012082cb4486cc788a19b49e2e3d54cca9b",
+      "published_commit": "4db88691f8044fcf4d36b853b9e71b4257cf0e82",
+      "original_parents": [
+        "e961de852030cb7007b0880d0c228f08e80b7855"
+      ],
+      "published_parents": [
+        "d1b38f9bd066fb4ffcfd0696084a69a464aebb0d"
+      ],
+      "rewritten": true,
+      "subject": "Install and qualify native CLOCK FLASH and shared monitor utilities"
+    },
+    {
+      "original_commit": "fe27422b5f69d9a7de241118bf687160fadfb779",
+      "published_commit": "34840c889541674abe4712cdf52c57d3e4d0427a",
+      "original_parents": [
+        "76fbe012082cb4486cc788a19b49e2e3d54cca9b"
+      ],
+      "published_parents": [
+        "4db88691f8044fcf4d36b853b9e71b4257cf0e82"
+      ],
+      "rewritten": true,
+      "subject": "Record extracted native candidate package checkpoint"
+    },
+    {
+      "original_commit": "f4fe32d633d8f87fe5e728cee149f3fb6655c836",
+      "published_commit": "4ccb2f81732f1a7f148341d654a57e95b80a9901",
+      "original_parents": [
+        "fe27422b5f69d9a7de241118bf687160fadfb779"
+      ],
+      "published_parents": [
+        "34840c889541674abe4712cdf52c57d3e4d0427a"
+      ],
+      "rewritten": true,
+      "subject": "Complete returning BATCH and independent wide PROGRAM handoff"
+    },
+    {
+      "original_commit": "032efeb75d8143609d4f3a342cce61b42debda82",
+      "published_commit": "7d814cbc6a908005ce4cdbc58f3c7a39934eac0e",
+      "original_parents": [
+        "f4fe32d633d8f87fe5e728cee149f3fb6655c836"
+      ],
+      "published_parents": [
+        "4ccb2f81732f1a7f148341d654a57e95b80a9901"
+      ],
+      "rewritten": true,
+      "subject": "Record extracted BATCH candidate 2 package checkpoint"
+    },
+    {
+      "original_commit": "5878762bc2007132b7e3a39f4c874b7206a32f2c",
+      "published_commit": "e7dcef35cb5bfed74769899758ca801ff07edeaa",
+      "original_parents": [
+        "032efeb75d8143609d4f3a342cce61b42debda82"
+      ],
+      "published_parents": [
+        "7d814cbc6a908005ce4cdbc58f3c7a39934eac0e"
+      ],
+      "rewritten": true,
+      "subject": "Restore familiar APPS catalogue and named tool workflow on 2512"
+    },
+    {
+      "original_commit": "d60601c97dbbf1aaadc89d32141c595df1762705",
+      "published_commit": "aa3973367124d37911aaa50fcfbf6240a1413e6f",
+      "original_parents": [
+        "5878762bc2007132b7e3a39f4c874b7206a32f2c"
+      ],
+      "published_parents": [
+        "e7dcef35cb5bfed74769899758ca801ff07edeaa"
+      ],
+      "rewritten": true,
+      "subject": "Set full BANK MAINT reference and prepare front-door repairs"
+    },
+    {
+      "original_commit": "4bdd38e4454ac597280b64a0af3c8b1c5d93c898",
+      "published_commit": "9a713a2368f70f33fdb550bf7acb79af2fd81bed",
+      "original_parents": [
+        "d60601c97dbbf1aaadc89d32141c595df1762705"
+      ],
+      "published_parents": [
+        "aa3973367124d37911aaa50fcfbf6240a1413e6f"
+      ],
+      "rewritten": true,
+      "subject": "Add shared startup STATUS and qualify MON gC on 2512 and 2609"
+    },
+    {
+      "original_commit": "4d767620bae3b1ec2bbbfae4324537022788bcab",
+      "published_commit": "604abf63d747a0afbc68b7246d9a71a7a5c913f6",
+      "original_parents": [
+        "35b2649f5d4fe33fd276068e6ae5aa50c5c71bab"
+      ],
+      "published_parents": [
+        "35b2649f5d4fe33fd276068e6ae5aa50c5c71bab"
+      ],
+      "rewritten": true,
+      "subject": "Consolidate host build, installer and resident development workflows"
+    },
+    {
+      "original_commit": "c7caf3bfef8a670cf937b5a6077e49fa47b42ee1",
+      "published_commit": "18f8babf53dd75e0f6401785f2e188fa5d214601",
+      "original_parents": [
+        "4d767620bae3b1ec2bbbfae4324537022788bcab"
+      ],
+      "published_parents": [
+        "604abf63d747a0afbc68b7246d9a71a7a5c913f6"
+      ],
+      "rewritten": true,
+      "subject": "Checkpoint RC1 g0034 recovery and STR8N-F documentation"
+    },
+    {
+      "original_commit": "68899963a35fc88f11ab6eb8c7592fd64604d6c3",
+      "published_commit": "b169ce352ee3190fbe7ae4b7abf675a0d13ad56b",
+      "original_parents": [
+        "c7caf3bfef8a670cf937b5a6077e49fa47b42ee1"
+      ],
+      "published_parents": [
+        "18f8babf53dd75e0f6401785f2e188fa5d214601"
+      ],
+      "rewritten": true,
+      "subject": "Integrate RTC tick alignment paper and host/board tools"
+    },
+    {
+      "original_commit": "4f3aee9151bb70ef7c07a03888e9472be3881bfb",
+      "published_commit": "864543777ae9b621771a6f56dfa2fd6035ca4490",
+      "original_parents": [
+        "68899963a35fc88f11ab6eb8c7592fd64604d6c3"
+      ],
+      "published_parents": [
+        "b169ce352ee3190fbe7ae4b7abf675a0d13ad56b"
+      ],
+      "rewritten": true,
+      "subject": "Checkpoint STR8-N naming, copyright and memory tools"
+    }
+  ],
+  "filtered_unpublished_commits": 33,
+  "original_commit_ids_change_when_filtered": true,
+  "original_signatures_not_reissued": true,
+  "uncommitted_source_snapshots": "main:archive/uncommitted/2026-11-04"
+}
