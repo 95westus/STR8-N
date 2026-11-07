@@ -1,9 +1,24 @@
 # Qualification scope
 
-The current firmware bytes reproduce the qualified named-component reference:
-34 payloads, including frozen F. All 32 non-F inputs rebuild from source and
-are compared by size and SHA-256 before use. The current source/Git/archive
-workflow has passed 68 CPU-model tests on 65C02 and 65C816 emulation, 29 host
+## Combined RC3 candidate
+
+The combined RC3 flash payloads passed readback comparison on boards 2205,
+2512, 2604 and 2609. The Stage 3 kit retains all 44 BIN/S19/S29/S-record
+payloads from unified RC3 byte for byte, including the frozen 4 KiB F.
+Its PC RTC sampler passed live collection on both supported CPU modes.
+Confirmed SET passed on 65C02 from Stage 2 and on 65C816 emulation from
+Stage 3, using identical RTC tool and sampler bytes.
+
+Physical TRIM qualification on both CPU modes remains open. The
+[combined RC3 release record](RC3_RELEASE.md) gives archive identities,
+the SET accuracy limit, remaining checks and the final package procedure.
+
+## Earlier source-consolidation checkpoint
+
+At this earlier checkpoint, firmware reproduced the qualified named-component
+reference of 34 payloads, including frozen F. All 32 non-F inputs rebuilt from
+source and were compared by size and SHA-256 before use. The source/Git/archive
+workflow passed 68 CPU-model tests on 65C02 and 65C816 emulation, 29 host
 unit tests and a hidden fake-worker Tk smoke. Repository consolidation changes
 source organization/docs and history; it does not add a physical board trial.
 

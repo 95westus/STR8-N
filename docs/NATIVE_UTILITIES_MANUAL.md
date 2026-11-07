@@ -118,9 +118,11 @@ sector is not permission to replace an owner image or reserved shared service.
 
 ## Installed tools and layout
 
+See the [bank-by-bank ownership and dependency guide](FLASH_AREAS.md).
+
 | Region | Current use |
 | --- | --- |
-| B0:A/B | ASM g2, CPU-matched AP/02 image |
+| B0:A/B | ASM g2, shared AP/02 image |
 | B0:C/D | DBG g2 and paired SF/1 provider at D800–DFFF |
 | B1:A | Shared MON flash-transfer workers |
 | B1:B–D | Native SRAM/WORK services |
@@ -138,10 +140,10 @@ F and C/D, leaving nine fully erased sectors (36 KiB) on the cleaned reference
 boards: B0:8/9/E/F, B1:8/9/E/F and B2:E. Generic user boards may contain owner
 images there; the kit does not assume they are disposable.
 
-ASM/DBG are installed with both their sectors, not just their AP/02 headers.
-Choose CPU02 envelopes for 65C02 and CPU16 for 816 emulation. The executable
-bodies are common; the CPU envelope/checksum fields differ. Native 816 mode
-is outside this candidate. Current SRAM sizes/settings remain board-specific.
+Install both sectors for each of ASM and DBG. The same files serve the
+65C02 and 65C816 in emulation mode. Update the dispatcher at B3:E000 before
+installing the shared AP/02 headers in B0:A000 and B0:C000. SRAM sizes and
+saved settings remain board-specific.
 
 ## MAINT.bin: full BANK MAINT editor
 
@@ -265,6 +267,12 @@ clock output/alarm guards apply. `EUI` reads identity; `ACCEPT EUI` confirms
 accepting a changed device. ACK/CLEAR and BATTERY administration have explicit
 confirmations described by HELP. The health caveat remains on startup.
 
+**Caution for UTC SET.** SET adjusts the calendar to a whole second. The
+[PC sync workflow](RTC_PC_WORKFLOW.md) accepts a measured offset interval
+within ±1 second of UTC. SET can move an already-close clock farther from
+UTC. For sub-second work, use separate tick-phase alignment and verify the
+resulting offset.
+
 SET must archive latched power-fail evidence before RTCWKDAY clears it and
 refuses enabled alarms. After a failed SET inspect STATUS before retrying.
 TIME does not set the clock. A battery-warning stage advancing can append a
@@ -333,7 +341,7 @@ NFCOPY records and retired flash copies are not preloaded by this candidate.
 ## APPS, BATCH, ASM and DBG
 
 APPS shows native routes and installed AP/02 entries. `APP ASM`/`R ASM` and
-`APP DBG`/`R DBG` launch CPU-matched tools from B0:A/B and C/D. ASM is a
+`APP DBG`/`R DBG` launch the same tools from B0:A/B and C/D on either CPU. ASM is a
 65C02 cross-assembler on both CPUs. The 816 debugger qualifies the common
 8-bit emulation subset, refuses reassigned/unsupported opcodes for S/N and
 is not a native 816 debugger. See [DEVELOPER_MANUAL.md](DEVELOPER_MANUAL.md).
@@ -366,7 +374,7 @@ bank captures, prepare sectors locally:
 python tools/nf_compact_images.py --cpu 65c02 --current-b0 private/B0.bin --current-b1 private/B1.bin --current-b2 private/B2.bin --current-b3 private/B3.bin --out private/plan
 ```
 
-Use `--cpu 65c816e` for W65C816SXB emulation. This prepares twenty active
+Use `--cpu 65c816e` for W65C816SXB emulation with that historical catalog. This prepares twenty active
 component sectors, excluding F and C/D. B3:9 combines its 3072-byte history
 code prefix with that board's exact final 1024 metadata bytes. B0 developer
 envelopes follow the explicit CPU choice. All four captures and valid SNBT

@@ -15,8 +15,10 @@ sha=lambda b:hashlib.sha256(b).hexdigest()
 def prepare(root,captures,cpu,out,retire=False):
     root,out=Path(root).resolve(),Path(out).resolve()
     catalog=json.loads((root/'NATIVE-COMPONENTS.json').read_text())
-    if catalog.get('schema')!=3 or cpu not in ('65c02','65c816e'):
-        raise ValueError('Compact schema 3 and explicit --cpu 65c02|65c816e required')
+    if catalog.get('schema')!=3 or cpu not in (None,'65c02','65c816e'):
+        raise ValueError('Compact schema 3 required')
+    if cpu is None and any('variants' in item for item in catalog['targets']):
+        raise ValueError('Older CPU-specific catalog requires --cpu 65c02|65c816e')
     if set(captures)!=set(range(4)) or any(v is None for v in captures.values()):
         raise ValueError('All four --current-b0/b1/b2/b3 captures are required for occupied-image review')
     banks={b:Path(p).read_bytes() for b,p in captures.items()}
@@ -52,7 +54,7 @@ def prepare(root,captures,cpu,out,retire=False):
             info=dict(address=f'{off+0x8000:04X}',sequence=int.from_bytes(row[8:12],'little'),sha256=sha(row));old_rows.append(info)
             if row!=state[off:off+256]:replaced.append(info)
     rotations=[s for op in ops for s in op['journal_sector_erases']]
-    plan=dict(schema=3,status='PLAN_ONLY_NO_DEVICE_ACCESS',CPU=cpu,F_writes=0,MON_generation='00000010',direct_C_D_payloads=False,serial_access=False,retire_obsolete_requested=retire,
+    plan=dict(schema=3,status='PLAN_ONLY_NO_DEVICE_ACCESS',CPU=cpu or 'shared',F_writes=0,MON_generation='00000010',direct_C_D_payloads=False,serial_access=False,retire_obsolete_requested=retire,
         source_bank_sha256={f'B{b}':sha(v) for b,v in banks.items()},targets=[x[2] for x in prepared],component_erases=sum(x[2]['requires_replace'] for x in prepared),journal_sector_erases=rotations,journal_appends=sum(len(x['journal_appends']) for x in ops),
         total_erases=sum(x[2]['requires_replace'] for x in prepared)+len(rotations),journal_before=before,journal_after=after,old_journal_rows=old_rows,old_rows_replaced_on_chip=replaced,
         RTC_metadata_preserved=True,SPI_RTC_data_or_settings_writes=False,boot_policy_changed=False,optional_default_selection_append_included=False,
@@ -70,7 +72,7 @@ def prepare(root,captures,cpu,out,retire=False):
     return plan
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,default=ROOT);p.add_argument('--cpu',choices=('65c02','65c816e'),required=True)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,default=ROOT);p.add_argument('--cpu',choices=('65c02','65c816e'),help='Required for older CPU-specific catalogs')
     for b in range(4):p.add_argument(f'--current-b{b}',type=Path,required=True)
     p.add_argument('--retire-obsolete',action='store_true',help='Also propose clearing all 9 designated legacy/free sectors; review every occupied preimage')
     p.add_argument('--out',type=Path,required=True);a=p.parse_args();prepare(a.root,{b:getattr(a,f'current_b{b}') for b in range(4)},a.cpu,a.out,a.retire_obsolete)

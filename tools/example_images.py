@@ -38,10 +38,10 @@ def s19(body,load,entry):
     return b''.join(record(1,load+i,body[i:i+24]) for i in range(0,len(body),24))+record(9,entry)
 
 
-def ap02(body,*,load=0x200,entry=0x200,base=0x8000,cpu=2,name='UCHESS'):
+def ap02(body,*,load=0x200,entry=0x200,base=0x8000,cpu=0,name='UCHESS'):
     if not body or load&255 or not 0x200<=load<=entry<load+len(body)<=0x6700:
         raise ValueError('Use a page-aligned owner-RAM load and entry within its bytes')
-    if base not in range(0x8000,0xf000,0x1000) or cpu not in (2,0x16):
+    if base not in range(0x8000,0xf000,0x1000) or cpu not in (0,2,0x16):
         raise ValueError('Invalid flash base or CPU; native 816 is unsupported')
     if not re.fullmatch(r'[A-Z][A-Z0-9_-]{0,10}',name):raise ValueError('Use a short uppercase AP name')
     pages=(len(body)+255)//256
@@ -71,7 +71,9 @@ def main():
     a=sub.add_parser('ap02');a.add_argument('--ram',type=Path,required=True)
     for flag,default in [('load',0x200),('entry',0x200),('base',0x8000)]:
         a.add_argument('--'+flag,type=lambda x:int(x,16),default=default)
-    a.add_argument('--cpu',choices=['65c02','65c816-e'],required=True)
+    cpus={'shared':0,'65c02':2,'65c816-e':0x16}
+    a.add_argument('--cpu',choices=cpus,default='shared',
+                   help='Shared requires the updated AP/02 dispatcher')
     a.add_argument('--name',default='UCHESS');a.add_argument('--out',type=Path,required=True)
     args=p.parse_args();args.out.mkdir(parents=True,exist_ok=False)
     if args.command=='join-s19':
@@ -87,7 +89,7 @@ def main():
         (args.out/'program.bin').write_bytes(body);(args.out/'program.s19').write_bytes(s19(body,load,args.entry))
     else:
         body=ap02(args.ram.read_bytes(),load=args.load,entry=args.entry,base=args.base,
-                  cpu=2 if args.cpu=='65c02' else 0x16,name=args.name)
+                  cpu=cpus[args.cpu],name=args.name)
         (args.out/'program-ap02-sector.bin').write_bytes(body)
     manifest={'operation':args.command,'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest(),
               'board_access':False,'F_rebuilt':False,'status':'OFFLINE_ONLY_NO_INSTALLATION'}

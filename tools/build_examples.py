@@ -89,8 +89,7 @@ def microchess(out):
         origin=end
     # AP/02 B1:8000 loader copies the assembled game to RAM, then runs it.
     from example_images import ap02
-    for cpu in (2,0x16):
-        (out/f'microchess-ap02-b1-8000-cpu{cpu:02x}.bin').write_bytes(ap02(body,cpu=cpu))
+    (out/'microchess-ap02-b1-8000.bin').write_bytes(ap02(body))
     return dict(bytes=len(body),sha256=sha(body),load='0200',entry='0200',
                 end=f'{0x1ff+len(body):04X}',parts=parts,symbols=symbols)
 

@@ -97,20 +97,19 @@ limitations remain; this is a historical program, not a modern rules library.
 From the kit root, package the actual assembled RAM BIN:
 
 ```powershell
-python examples/tools/example_images.py ap02 --ram my-chess/program.bin --load 0200 --entry 0200 --base 8000 --cpu 65c02 --name UCHESS --out my-chess-ap02
+python examples/tools/example_images.py ap02 --ram my-chess/program.bin --load 0200 --entry 0200 --base 8000 --name UCHESS --out my-chess-ap02
 ```
 
-Use `--cpu 65c816-e` for an emulation-mode envelope. The output is one 4096-byte
-AP/02 sector, intended here for **B1:$8000**. Its entry `$8020` copies the game
-to RAM and jumps to `$0200`; the 32-byte header is not executable code. Both
-CPU envelopes and CRCs are provided in `examples/payload/` as well. RAM
-programs that do not fit the one-sector wrapper are refused by this helper.
+The shared envelope requires the updated AP/02 dispatcher and works on both
+CPUs. The output is one 4096-byte sector for **B1:$8000**. Its entry `$8020`
+copies the game to RAM and jumps to `$0200`. The same file is available in
+`examples/payload/`. The helper rejects RAM programs that exceed the
+one-sector wrapper.
 
 Inventory B1:$8000, save its exact preimage and confirm ownership before
 using the matched OPAQUE installer. Do not install it over a stored program
 or a WDC backup. After approved installation and independent readback, MON
-`APPS` should list UCHESS; `R UCHESS` / `APP UCHESS` selects the matching CPU
-envelope. The model check validates headers/CRCs and runs the real AP entry;
+`APPS` should list UCHESS. Use `R UCHESS` or `APP UCHESS` to launch it. The model check validates headers/CRCs and runs the real AP entry;
 physical MON admission/installation remains a separate trial. No example
 build, join or AP/02 command opens a port or flashes anything.
 

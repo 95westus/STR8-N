@@ -83,8 +83,7 @@ def check_asm(build,kit,cpu,report):
         assert not (restored.keys() & values.keys())
         restored.update(values)
     assert bytes(restored[i] for i in range(0x200,0x200+len(expected)))==expected
-    for cpu_code in (2,0x16):
-        assert ap02(bytes(joined),cpu=cpu_code)==(build/f'microchess-ap02-b1-8000-cpu{cpu_code:02x}.bin').read_bytes()
+    assert ap02(bytes(joined))==(build/'microchess-ap02-b1-8000.bin').read_bytes()
     (build/'microchess-assembled-in-dev-asm.bin').write_bytes(joined)
     return proof
 
@@ -101,15 +100,12 @@ def check_chess(build,cpu):
     m.run(b'C');assert m.memory[0x10+15]==0x13 and m.memory[0x10+31]==0x63
     m.run(b'Q');assert m.exited==0x7e67
     assert bytes(m.memory[0x200:0x200+len(body)])==body
-    for code in (2,0x16):
-        image=(build/f'microchess-ap02-b1-8000-cpu{code:02x}.bin').read_bytes()
-        import binascii
-        assert image[:8]==b'AP\x02 PR05' and image[15]==code
-        assert int.from_bytes(image[28:30],'little')==binascii.crc_hqx(image[:28],65535)
-        end=int.from_bytes(image[8:10],'little')
-        assert int.from_bytes(image[30:32],'little')==binascii.crc_hqx(image[32:end],65535)
-    code=0x16 if cpu.__module__.startswith('py65816') else 2
-    image=(build/f'microchess-ap02-b1-8000-cpu{code:02x}.bin').read_bytes()
+    image=(build/'microchess-ap02-b1-8000.bin').read_bytes()
+    import binascii
+    assert image[:8]==b'AP\x02 PR05' and image[15]==0
+    assert int.from_bytes(image[28:30],'little')==binascii.crc_hqx(image[:28],65535)
+    end=int.from_bytes(image[8:10],'little')
+    assert int.from_bytes(image[30:32],'little')==binascii.crc_hqx(image[32:end],65535)
     ap=Machine(cpu,image,0x8000,0x8020)
     assert b'(c) 1976-2005 Peter Jennings' in ap.run()
     assert bytes(ap.memory[0x200:0x200+len(body)])==body

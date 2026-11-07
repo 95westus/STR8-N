@@ -26,7 +26,7 @@ def assemble(stage,stem,origin,end,transform=True):
     return bytes(memory[a] for a in range(origin,symbols[end])),symbols
 
 
-def dispatcher(stage,support):
+def dispatcher(stage,support,*,legacy_cpu_tags=False):
     stage.mkdir(parents=True,exist_ok=False)
     for path in support.glob('*.inc'):shutil.copyfile(path,stage/path.name)
     text=(ROOT/'monitors/src/services.asm').read_text(encoding='utf-8')
@@ -56,6 +56,21 @@ DT_NOT_APP:
     text=text.replace('SERVICE_LOADER_TAIL',str(length-256))
     text=text.replace('"WORKBENCH_GENERATION_BYTES"',','.join(f'${v:02X}' for v in (14).to_bytes(4,'little')))
     apps=(ROOT/'monitors/src/service-apps.inc').read_text(encoding='utf-8')
+    if legacy_cpu_tags:
+        # Reproduce the pinned pre-shared dispatcher input for the named build.
+        shared = '''AP_CPU_MATCH:
+        LDA S_BUFFER+15
+        BEQ AP_CPU_ACCEPT
+        CPX S_BUFFER+15
+        BNE AP_BAD
+AP_CPU_ACCEPT:'''
+        legacy = '''AP_CPU_MATCH:
+        TXA
+        CMP S_BUFFER+15
+        BNE AP_BAD'''
+        if apps.count(shared) != 1:
+            raise ValueError('AP/02 CPU gate moved')
+        apps = apps.replace(shared, legacy)
     a=apps.index('AP_NATIVE_TEXT:');b=apps.index('AP_MISSING_TEXT:',a)
     # The qualified REC cleanup retained this field's width and directed
     # FLASH/MAINT users to their standalone RAM packets.
@@ -162,7 +177,7 @@ def rebuild(out,clock_source):
     bundle[0x2c00:0x3000]=(out/'STATUS/STATUS-AC00.bin').read_bytes()
     for index,address in enumerate((0x8000,0x9000,0xa000)):
         record(f'native/payload/B2-{address:04X}.bin',bytes(bundle[index*4096:(index+1)*4096]))
-    record('native/payload/B3-E000.bin',dispatcher(out/'DISPATCHER',out/'SERVICES/staging/E'))
+    record('native/payload/B3-E000.bin',dispatcher(out/'DISPATCHER',out/'SERVICES/staging/E',legacy_cpu_tags=True))
     rtc,history=rtc_services(out/'RTC',clock_source)
     record('native/payload/B3-8000.bin',rtc)
     record('native/payload/B3-9000.bin',history)

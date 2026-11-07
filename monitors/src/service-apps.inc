@@ -186,9 +186,11 @@ AP_HEADER_MAGIC:
         CPX #$16
         BNE AP_BAD
 AP_CPU_MATCH:
-        TXA
-        CMP S_BUFFER+15
+        LDA S_BUFFER+15
+        BEQ AP_CPU_ACCEPT
+        CPX S_BUFFER+15
         BNE AP_BAD
+AP_CPU_ACCEPT:
         LDA S_BUFFER+27
         BNE AP_BAD
         JSR S_CRC_INIT
