@@ -51,6 +51,7 @@ Calendar or trim writes start a new drift segment.
 | `str8n-components-base1-pr05-rc3-unified.zip` | `0309f3677f2a6a3e18a8976a5ebcc16289aed9c7c93242a41936d6cd8f5302fe` |
 | `str8n-components-base1-pr05-rc3-release-stage2.zip` | `3472c851a8b83c6378e3877246565ea3edfc8b817830820813188ee2a4789999` |
 | `str8n-components-base1-pr05-rc3-release-stage3.zip` | `4d1e4ec528b318c2a4c8194c88e479704e5affa51fe17105f9f2847d9a604811` |
+| `str8n-components-base1-pr05-rc3-release-review-r1.zip` | `ba84a6fe6fb97ca77cea42c4c3a7aea145df3a345a262ff72403d8f8c84607ef` |
 
 Stage 3 has 235 members. It includes the UTC SET caution, RTC workflow,
 flash dependency guide, release index and accompanying notices. Verification
@@ -67,9 +68,9 @@ All 44 original RC3 firmware/example payloads match byte for byte.
 | Drift calculation | Passed offline | Synthetic +12.2 ppm clock recommends −12, with host checks for ambiguous measurements |
 | Confirmed SET on 65C02 | Passed | 2512 using Stage 2, with RAM and zero page restored |
 | Confirmed SET on 65C816 emulation | Passed | 2609 using the exact Stage 3 extraction, with RAM and zero page restored |
-| Confirmed TRIM on 65C02 | Open | Requires a supported proposal and verified register readback through the packaged tool |
-| Confirmed TRIM on 65C816 emulation | Open | Same packaged write and preservation checks on this CPU mode |
-| Final source checkpoint and release ZIP | Open | Commit the scoped release inputs, verify the final extraction and record final asset hashes |
+| Confirmed TRIM on 65C02 | Passed controlled write-routine test | 2512, review ZIP, explicit −12 → −11 → −12 targets, register readback and owner RAM/zero-page restoration |
+| Confirmed TRIM on 65C816 emulation | Passed controlled write-routine test | 2609, review ZIP, explicit −14 → −13 → −14 targets, register readback and owner RAM/zero-page restoration |
+| Source checkpoint and release ZIP | Recorded per archive | RELEASE-SOURCE.json identifies the source commit; the external verification receipt and SHA256SUMS.txt record the final assets and extraction checks |
 | Release publication | Open | Review final notes, source identity, assets and checksums before tagging and publication |
 
 The 65C02 SET result passed the ±1 second check while increasing its offset.
@@ -77,26 +78,38 @@ The 2609 SET result measured +160 to +258 ms before and +158 to +251 ms
 after. Those intervals overlap. Both cases verify the confirmed write path
 and restoration within the stated accuracy criterion.
 
+Both TRIM tests invoked the unmodified packaged `rtc.apply` routine with
+explicit owner-selected temporary targets. The 65C02 test read back raw
+OSCTRIM `0B` at −11 and `0C` after restoring −12. The 65C816 emulation test
+read back `0D` at −13 and `0E` after restoring −14, with 94 sampler
+observations at each written setting. Control and outage evidence were
+preserved. Both restored owner RAM, zero page and the original `REC>`
+prompt, then released the serial port. The CLI's calibration calculation
+and proposal gates retain their separate offline coverage. These physical
+tests supply evidence for the confirmed write routine and restoration.
+Earlier observations are retained, and each write starts a new drift
+segment; collection continues at the restored settings.
+
 The RTC host script SHA-256 is
 `9abb3e0e2006496b9f100f2beb76595f09ba79d75261f71c613d89b87ff569c5`.
 The 649-byte sampler SHA-256 is
 `f06ea23de7687911f17b0554763b0ae1c018b5cd5487ef567a23b1e8721c4e4a`.
-These match between Stage 2 and Stage 3. Hardware evidence belongs to the
-archive used for that run. The retained Stage 3 archive records its pending
-gates at build time. The completed 2609 result is recorded separately in its
-hardware-verification receipt.
+These match between Stage 2, Stage 3 and the review ZIP. Both physical TRIM
+tests used review ZIP SHA-256
+`ba84a6fe6fb97ca77cea42c4c3a7aea145df3a345a262ff72403d8f8c84607ef`.
+Hardware evidence belongs to the archive used for that run. Retained
+archives record their qualification status at build time; subsequent
+completed results are recorded separately in hardware-verification receipts.
 
 ## Final package procedure
 
-1. Complete the physical TRIM checks on both CPU modes. Record the input
-   series, reference, drift interval, selected value, confirmation, register
-   readback, RAM/zero-page restoration, final prompt and released serial port.
-   Apply a calibration change when the evidence supports one setting.
-2. Update this status and the release notes from verified results. Update the
-   final package's README and RELEASE-STAGE.json to agree. COMPONENTS.json
-   currently retains the earlier naming-candidate qualification label.
-   Correct that label for the final candidate and describe its verified
-   payload scope. Keep every artifact size/hash entry tied to its bytes.
+1. Carry forward the completed physical SET and controlled TRIM results on
+   both CPU modes. Keep calibration decisions separate and apply a calibration
+   change only when the measured interval supports one setting.
+2. Update the package's README, RELEASE-STAGE.json and COMPONENTS.json from
+   verified results. Describe the tested payload scope and explicit controlled
+   TRIM targets consistently. Keep every artifact size/hash entry tied to its
+   bytes. Retain older archives unchanged as historical evidence.
 3. Commit the scoped release source, PC RTC tools, sampler source and guides.
    Record the source commit used to assemble the kit. Include LICENSE and
    the separate example/vendor notices. Keep board profiles, raw captures,

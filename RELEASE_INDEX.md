@@ -30,8 +30,10 @@ payloads. Live read-only sampling passed in both CPU modes. In Stage 3,
 physical SET on 65C02 passed the PC tool's ±1 second check while increasing
 the measured offset from UTC. Sub-second synchronization uses separate
 tick-phase alignment. Physical SET on 65C816 emulation passed from the exact
-Stage 3 ZIP, with owner RAM and zero page restored. Physical TRIM qualification
-on both CPU modes remains open.
+Stage 3 ZIP, with owner RAM and zero page restored. The packaged TRIM routine
+passed a controlled −12 → −11 → −12 round trip on 65C02 from the review ZIP.
+It also passed −14 → −13 → −14 on 65C816 emulation, with register readback
+and owner RAM/zero-page restoration.
 
 The [combined RC3 release notes and qualification checklist](docs/RC3_RELEASE.md)
 record the tested archive, completed checks and remaining release work.

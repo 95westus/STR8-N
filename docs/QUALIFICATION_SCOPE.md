@@ -9,7 +9,10 @@ Its PC RTC sampler passed live collection on both supported CPU modes.
 Confirmed SET passed on 65C02 from Stage 2 and on 65C816 emulation from
 Stage 3, using identical RTC tool and sampler bytes.
 
-Physical TRIM qualification on both CPU modes remains open. The
+The packaged TRIM routine passed controlled −12 → −11 → −12 on 65C02
+and −14 → −13 → −14 on 65C816 emulation, with the original trim and owner
+RAM/zero page restored. Both used explicit owner-selected test targets.
+Calibration-driven CLI decisions retain their measurement gates. The
 [combined RC3 release record](RC3_RELEASE.md) gives archive identities,
 the SET accuracy limit, remaining checks and the final package procedure.
 

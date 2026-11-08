@@ -100,8 +100,13 @@ before attempting another operation.
 Live read-only sampling passed on both CPU modes. The confirmed CLOCK command
 sequences are covered by host simulations. Physical SET passed the PC check
 on 65C02 from Stage 2 and on 65C816 emulation from the exact Stage 3 ZIP.
-The RTC tool and sampler bytes match between those stages. Physical TRIM
-qualification on both CPU modes remains open. See the
+The RTC tool and sampler bytes match between those stages. On 65C02, the
+packaged TRIM routine passed an owner-selected temporary −12 → −11 → −12
+round trip with register readback and RAM/zero-page restoration. Those test
+targets were supplied explicitly to the write routine. The normal CLI still
+requires a calibration-supported proposal before applying a change.
+The same packaged routine passed −14 → −13 → −14 on 65C816 emulation,
+including register readback and RAM/zero-page restoration. See the
 [combined RC3 qualification record](RC3_RELEASE.md) for package identity and
 the remaining release checks.
 
