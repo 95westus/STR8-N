@@ -106,6 +106,59 @@ class NamingTests(unittest.TestCase):
                     self.assertIn(b'STR8-N DEV DBG g2', image)
                     self.assertIn(b'Copyright (c) 2026 95west.us/wlp1963; MIT',image)
 
+    def test_shared_ap02_dispatcher_admission(self):
+        stage = OUT/'shared-dispatcher'
+        sy = symbols(stage/'image.map')
+        target = next(t for t in self.catalog['targets']
+                      if (t['bank'], t['address']) == (3, 'E000'))
+        dispatcher = (OUT/target['file']).read_bytes()
+        self.assertEqual(crc(dispatcher), 0)
+        self.assertEqual(dispatcher[:8], b'MS\x01\x10PR05')
+        self.assertEqual(self.catalog['shared_AP02_CPU_tag'], '00')
+        self.assertTrue(all('variants' not in t for t in self.catalog['targets']))
+
+        def admitted(image, board_cpu):
+            memory = bytearray(65536)
+            memory[0xe000:0xf000] = dispatcher
+            memory[0x7e88:0x7e8b] = bytes((0xa2, board_cpu, 0x60))  # LDX #cpu / RTS
+            buffer, address = sy['S_BUFFER'], sy['S_ADDR']
+            origin = int.from_bytes(image[10:12], 'little') & 0xf000
+            memory[buffer:buffer+64] = image[:64]
+            memory[sy['AP_PAGE']] = origin >> 8
+            cpu = MPU(memory=memory)
+            cpu.pc = sy['AP_VALIDATE']
+            cpu.stPushWord(0x02ff)
+            for _ in range(1_500_000):
+                if cpu.pc == 0x0300:
+                    return bool(cpu.p & cpu.CARRY)
+                if cpu.pc == sy['S_READ64']:
+                    # Model the read-only banked transport. Actual header,
+                    # address bounds, name and both CRC routines execute.
+                    offset = int.from_bytes(memory[address:address+2], 'little')-origin
+                    memory[buffer:buffer+64] = image[offset:offset+64].ljust(64, b'\xff')
+                    cpu.pc = (cpu.stPopWord()+1) & 0xffff
+                else:
+                    cpu.step()
+            self.fail('AP/02 validation did not return')
+
+        board_cpu = 0x16 if MPU.__module__.startswith('py65816') else 2
+        for role in ('ASM', 'DBG'):
+            image = self.pair(role, '65c02')
+            self.assertEqual(image, self.pair(role, '65c816e'))
+            self.assertEqual(image[15], 0)
+            self.assertTrue(admitted(image, board_cpu))
+        image = bytearray(self.pair('ASM', '65c02'))
+        self.assertFalse(admitted(image, 0x42))
+        image[32] ^= 1
+        self.assertFalse(admitted(image, board_cpu))
+        image[32] ^= 1
+        image[28] ^= 1
+        self.assertFalse(admitted(image, board_cpu))
+        for tag, expected in ((board_cpu, True), (0x16 if board_cpu == 2 else 2, False), (0xff, False)):
+            image[15] = tag
+            image[28:30] = crc(image[:28]).to_bytes(2, 'little')
+            self.assertEqual(admitted(image, board_cpu), expected)
+
     def run_print(self, memory, pc, stop, limit=100000, print_addresses=(0x7e6d,)):
         cpu = MPU(memory=memory, pc=pc)
         cpu.pc = pc
@@ -152,7 +205,7 @@ class NamingTests(unittest.TestCase):
     def test_expanded_asm_name(self):
         sys.path.insert(0, str(ROOT/'tools'))
         from build_bank_features import expand
-        sy = symbols(OUT/'asm-65c02/asm.map')
+        sy = symbols(OUT/'asm-shared/asm.map')
         image = self.pair('ASM','65c02')
         packed = image[sy['DT_PACKED']-0xa000:sy['DT_PACKED_END']-0xa000]
         ram = self.artifact('ASM', True)

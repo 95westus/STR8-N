@@ -1,0 +1,12 @@
+{
+  "source_url": "https://benlo.com/files/Microchess6502.txt",
+  "upstream_sha256": "0dd323338f8ed4f233a1f2c9012ef124030b8940fadf04f48c957b695cf81f31",
+  "preserved_license": "LICENSE.txt",
+  "credits": [
+    "Peter Jennings, original Microchess",
+    "Daryl Rictor, serial board interface (2002)",
+    "Bill Forster, OCR corrections (2005)",
+    "STR8-N port, 95west.us/wlp1963"
+  ],
+  "previous_port": "Preserved STR8-N Microchess ASM example; current port retains public PUTC/GETC/HOLD bindings."
+}

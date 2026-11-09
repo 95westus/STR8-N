@@ -19,6 +19,9 @@ Foundation 0.3.0 is F's version, not a shared version for MON, UTIL and DEV.
 Start with the [F / MON / UTIL / DEV guide](docs/COMPONENT_GUIDE.md),
 [documentation index](docs/README.md) and
 [BIN / S19 / S29 and transfer formats](docs/FILE_FORMATS.md) for board and PC workflows.
+The [worked examples](examples/README.md) cover copyrighted Microchess assembled
+in DEV ASM, RAM/S19 save/restore and AP/02, plus an OSI BASIC opaque B0 port
+using public Foundation calls. Installation remains explicit and separately qualified.
 
 - **F:** [Foundation manual](docs/USER_MANUAL.md),
   [frozen 0.3.0 release](https://github.com/95westus/STR8-N/releases/tag/v0.3.0),
@@ -26,15 +29,16 @@ Start with the [F / MON / UTIL / DEV guide](docs/COMPONENT_GUIDE.md),
   and [release source kit](https://github.com/95westus/STR8-N/releases/download/v0.3.0/STR8N-F-BASE1-0.3.0-source.zip).
 - **MON:** [Monitor/native utilities guide](docs/NATIVE_UTILITIES_MANUAL.md)
   and [preserved MON preview release](https://github.com/95westus/STR8-N/releases/tag/mon-g8-tools-preview1).
-  Build current MON from the linked source using the recipe below.
+  Use the combined RC3 download linked below for the current published kit, or build from source.
 - **UTIL:** [Component guide](docs/COMPONENT_NAMING.md),
   [MEMORY backup/restore guide](docs/MEMORY_UTILITY.md) and
   [current component build/package recipe](docs/CONSOLIDATION_SOURCE_REVIEW.md).
 - **DEV:** [ASM/DBG guide](docs/ASM_DBG_BASE1_RAM.md) and
   [current component build/package recipe](docs/CONSOLIDATION_SOURCE_REVIEW.md).
 
-The current named MON/UTIL/DEV kit is a development candidate built from `main`;
-it has no dedicated published release yet. The
+The combined [RC3 prerelease](https://github.com/95westus/STR8-N/releases/tag/components-base1-pr05-rc3) provides the reviewed named MON/UTIL/DEV
+kit with frozen F, PC tools and examples. See the [ZIP contents](docs/RC3_RELEASE.md)
+and its matching source archive for the exact published scope. The
 [release index](RELEASE_INDEX.md) links the preserved Foundation, MON preview and
 historical full-system downloads. Those packages retain their original component
 versions and qualification scope; they do not contain every current change on

@@ -12,7 +12,7 @@ Current named-kit RAM packets are
 `payload/str8n-dev-dbg-g00000002-ram.bin`. Historical `developer/ASM-RAM.bin`
 and `developer/DBG-RAM.bin` paths below belong to the earlier candidate ZIP.
 Use `COMPONENTS.json` and `NATIVE-COMPONENTS.json` for current hashes,
-CPU variants, paired sectors and placement.
+paired sectors and placement.
 
 These are optional developer tools in the compact unified profile above
 frozen Foundation 0.3.0 BASE1/PR05 and MON A/B g00000010. They are included
@@ -29,13 +29,19 @@ DBG uses X; program HOLD also returns to MON. Neither is a returning BATCH job.
 
 Install ASM across B0:A/B and DBG across B0:C/D. The latter includes the exact
 SF/1 source provider at D800–DFFF; do not substitute an old debugger tail.
-CPU02 and CPU16 AP/02 envelopes have the same executable bodies. CPU16 selects
-65C816 **emulation**, not native-mode operation. Do not send AP/02 images
-through the recovery raw BIN loader.
+The ASM and DBG AP/02 headers use CPU tag `$00` for the shared 65C02 and
+65C816 emulation profile. Install the B3:E000 dispatcher first. It also accepts
+older CPU-specific `$02` and `$16` headers on their matching CPUs. Load the
+standalone DEV RAM packets through the recovery raw BIN loader.
 
 ## Assemble and run
 
-In ASM, type the numbered lines from `examples/HELLO.asm`:
+For a complete game assembled by the current DEV ASM, see the
+[Microchess worked example](EXAMPLES.md): attributed source parts, checked S19
+exports, PC save/restore, AS/1 source persistence and a RAM-copy AP/02 wrapper.
+The same guide links OSI BASIC as an opaque B0 Foundation-call example.
+
+In ASM, type these numbered source lines:
 
 ```text
 10 ; Print a marker, then return through Foundation HOLD.

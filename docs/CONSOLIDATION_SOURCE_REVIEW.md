@@ -40,6 +40,13 @@ python -B tests/console_tk_smoke.py
 python -B tools/package_named_components.py --build build/components --out str8n-components.zip
 ```
 
+Named kits include `requirements-console.txt` and the placeholder MEMORY
+profile at `firmware/memory-agent/profile.example.json`. Real profiles and
+captures remain private. Packaging accepts `--label` for a candidate's ZIP
+root directory; component versions and frozen F do not change with that label.
+If supplied by release preparation, `RELEASE-CANDIDATE.json` and `HOST-TESTS.json`
+are included alongside the component/CPU-test manifests.
+
 The CPU suites have 13 naming and 21 MEMORY cases on each CPU. Host unit tests
 and hidden fake-worker Tk checks open no serial ports. The vendored py65 and
 py65816 copies retain their separate BSD licenses. WDC executables are external

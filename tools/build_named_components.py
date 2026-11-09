@@ -244,7 +244,7 @@ def build(out, base=BASE):
     inputs = json.loads((base/'CANDIDATE-MANIFEST.json').read_text())['files']
     from rebuild_component_inputs import rebuild
     reconstructed, clock_source, reconstruction = rebuild(out/'reconstructed-inputs')
-    from rebuild_mon_services import rebuild as rebuild_services
+    from rebuild_mon_services import dispatcher, rebuild as rebuild_services
     service_inputs, service_receipt = rebuild_services(out/'reconstructed-services', clock_source)
     reconstructed.update(service_inputs)
     reconstruction['inputs'] += service_receipt['inputs']
@@ -322,7 +322,25 @@ def build(out, base=BASE):
     workbench[0x1efe:0x1f00] = crc(workbench[0x300:0x1efe]).to_bytes(2, 'big')
     for i, name in enumerate(workbench_names):
         data[name] = bytes(workbench[i*4096:(i+1)*4096])
+    dispatcher_path = 'native/payload/B3-E000.bin'
+    data[dispatcher_path] = dispatcher(out/'shared-dispatcher', out/'reconstructed-services/SERVICES/staging/E')
+    named_dev = {}
+    for component, address, builder, args in (
+            ('ASM', 0xa000, rebuild_asm, (asm, out/'asm-shared', generated['asm_template'])),
+            ('DBG', 0xc000, rebuild_dbg, (out/'dbg-shared', generated['dbg_template']))):
+        first = bytearray(read(f'native/payload/B0-{address:04X}-65c02.bin'))
+        second = read(f'native/payload/B0-{address:04X}-65c816e.bin')
+        differences = [i for i, (a, b) in enumerate(zip(first, second)) if a != b]
+        if differences != [15, 28, 29] or (first[15], second[15]) != (2, 0x16):
+            raise ValueError('CPU-specific DEV images differ beyond the AP/02 CPU tag and CRC')
+        first[15] = 0
+        first[28:30] = crc(first[:28]).to_bytes(2, 'little')
+        tail = data[f'native/payload/B0-{address+4096:04X}.bin']
+        named_dev[component] = builder(bytes(first)+tail, *args)
     catalog = json.loads(json.dumps(old_catalog))
+    catalog['shared_AP02_CPU_tag'] = '00'
+    # Shared launchers depend on the backward-compatible dispatcher.
+    catalog['targets'].sort(key=lambda item: item.get('file') != dispatcher_path)
     for item in catalog['targets']:
         bank, address = item['bank'], int(item['address'], 16)
         component = ('MON' if bank == 3 and address in (0xa000, 0xb000) else
@@ -333,35 +351,22 @@ def build(out, base=BASE):
             suffix = 'slot-'+('a' if address == 0xa000 else 'b')
         else:
             suffix = f'b{bank}-{address:04x}'
-        if 'variants' in item:
-            for cpu, info in item['variants'].items():
-                body = read(info['file'])
-                if component == 'ASM':
-                    second = data['native/payload/B0-B000.bin']
-                    body = rebuild_asm(body+second, asm, out/('asm-'+cpu), generated['asm_template'])[:4096]
-                else:
-                    second = data['native/payload/B0-D000.bin']
-                    body = rebuild_dbg(body+second,out/('dbg-'+cpu), generated['dbg_template'])[:4096]
-                file = put(component, suffix+'-'+cpu, body, bank=bank, address=item['address'])
-                info.update(file=file, sha256=sha(body))
+        original = read(item['file']) if 'file' in item else None
+        if component in named_dev:
+            offset = 4096 if address in (0xb000, 0xd000) else 0
+            body = named_dev[component][offset:offset+4096]
+        elif component == 'MON':
+            body = replace_text(original,
+                'STR8-N F 0.3.0  Foundation  gen 00000001\r\nRecovery / opaque-image boot\r\n',
+                'STR8-N F 0.3.0 gen 00000001\r\n'+COMPACT_COPYRIGHT+'\r\n')
+            body = bytearray(body)
+            body[18:20] = crc(body[:18]+body[32:]).to_bytes(2,'little')
+            body = bytes(body)
         else:
             body = data[item['file']]
-            if component == 'ASM':
-                # Rebuilt wrapper's packed ASM stream extends through sector B.
-                named = rebuild_asm(read('native/payload/B0-A000-65c02.bin')+body, asm, out/'asm-shared', generated['asm_template'])
-                body = named[4096:]
-            elif component == 'DBG':
-                first = read('native/payload/B0-C000-65c02.bin')
-                body = rebuild_dbg(first+body,out/'dbg-shared', generated['dbg_template'])[4096:]
-            elif component == 'MON':
-                body = replace_text(body,
-                    'STR8-N F 0.3.0  Foundation  gen 00000001\r\nRecovery / opaque-image boot\r\n',
-                    'STR8-N F 0.3.0 gen 00000001\r\n'+COMPACT_COPYRIGHT+'\r\n')
-                body = bytearray(body)
-                body[18:20] = crc(body[:18]+body[32:]).to_bytes(2,'little')
-                body = bytes(body)
-            file = put(component, suffix, body, bank=bank, address=item['address'], unchanged=body==read(item['file']))
-            item.update(file=file, sha256=sha(body))
+        item.pop('variants', None)
+        file = put(component, suffix, body, bank=bank, address=item['address'], unchanged=body==original)
+        item.update(file=file, sha256=sha(body))
     erased = read('native/payload/ERASED-4096.bin')
     blank_file = put('ERASED', '4096', erased, unchanged=True)
     for item in catalog['retirement_targets']:
@@ -382,6 +387,10 @@ def build(out, base=BASE):
     (out/'product-names.json').write_bytes((ROOT/'tools/product_names.json').read_bytes())
     shutil.copyfile(ROOT/'LICENSE',out/'LICENSE')
     shutil.copyfile(ROOT/'THIRD_PARTY_NOTICES.md',out/'THIRD_PARTY_NOTICES.md')
+    shutil.copyfile(ROOT/'requirements-console.txt',out/'requirements-console.txt')
+    (out/'firmware/memory-agent').mkdir(parents=True)
+    shutil.copyfile(ROOT/'firmware/memory-agent/profile.example.json',
+                    out/'firmware/memory-agent/profile.example.json')
     save(out/'preset-assets.json', presets)
     (out/'terminal').mkdir()
     console = read('terminal/nf_console.py').decode()
@@ -419,6 +428,14 @@ if len(sys.argv)>1 and sys.argv[1] in ('backup','verify','plan','restore','load'
 main()
 ''', encoding='utf-8')
     (out/'README.md').write_text(README, encoding='utf-8')
+    # Public worked-example source only; compiled examples are a separate tested build.
+    for source in sorted((ROOT/'examples').rglob('*')):
+        if source.is_file():
+            if source.suffix not in ('.asm','.s','.cfg','.json','.md','.txt'):
+                raise ValueError('Unexpected worked-example source: '+str(source))
+            destination=out/'examples'/source.relative_to(ROOT/'examples')
+            destination.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(source,destination)
     copy_documentation(out)
     save(out/'COMPONENTS.json', dict(schema=1, family='STR8-N', status='NAMING_CANDIDATE_NOT_LIVE_QUALIFIED',
         board_access=False, commands_changed=False, copyright=COPYRIGHT, Foundation_sha256=sha(foundation),
@@ -442,6 +459,11 @@ MON/UTIL/DEV have no dedicated published release yet. Preserved downloads:
 [MON preview](https://github.com/95westus/STR8-N/releases/tag/mon-g8-tools-preview1),
 [release index](https://github.com/95westus/STR8-N/blob/main/RELEASE_INDEX.md).
 
+[Worked examples](examples/README.md) provide credited Microchess DEV ASM
+source and an OSI BASIC Foundation adapter. When the separately verified
+example build is included, examples/payload/ contains RAM/S19/AP02 Microchess
+and the two-sector opaque B0 BASIC image. No examples are installed by extraction.
+
 Commands and prompts stay short: CONFIG, FLASH, CLOCK, MAINT, MEMORY, ASM,
 DBG; R ASM / R DBG, C B, B bank entry, C bank, Q, ASM> and DBG> retain their
 existing meanings. Names do not change entry addresses or make headers executable.
@@ -450,10 +472,17 @@ Launch python str8n-terminal.py for STR8-N Terminal. F5/F6/F7/F8 select the
 canonical MAP/CONFIG/OPAQUE/DEMO files through preset-assets.json.
 Launch python str8n-util-memory.py --help for the PC memory utility. Both
 launchers open no board connection on --help or --version.
+Install PC dependencies with python -m pip install -r requirements-console.txt;
+Python 3.11+ with Tk is required for Terminal. Copy
+firmware/memory-agent/profile.example.json to a private location and fill in
+the actual device/layout before MEMORY serial operations. The template
+contains placeholders and is not a detected or approved board configuration.
 
 payload/ contains canonical lowercase product filenames. COMPONENTS.json maps
 each file to its component, placement, size and SHA-256. NATIVE-COMPONENTS.json
-retains the existing sector/CPU catalog format with the new filenames.
+lists one set of sector payloads for both 65C02 and 65C816 emulation.
+Update the B3:E000 dispatcher before installing the shared ASM and DBG
+launchers. The new dispatcher also accepts the earlier CPU-specific headers.
 CLOCK's three sector files are installed together using the existing reviewed
 native-loader workflow. They are not standalone raw recovery executables.
 

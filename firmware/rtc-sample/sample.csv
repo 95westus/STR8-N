@@ -1,0 +1,5 @@
+segment,device,server,reference_unix,offset_low_s,offset_high_s,control_hex,trim_hex,outage_hex
+example,synthetic,example.invalid,1760000000,0.195,0.205,80,00,0000000000000000
+example,synthetic,example.invalid,1760043200,0.72204,0.73204,80,00,0000000000000000
+example,synthetic,example.invalid,1760086400,1.24908,1.25908,80,00,0000000000000000
+example,synthetic,example.invalid,1760129600,1.77612,1.78612,80,00,0000000000000000
