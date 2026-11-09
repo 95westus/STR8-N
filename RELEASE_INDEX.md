@@ -2,49 +2,39 @@
 
 Foundation and historical full-system firmware remain distinct release lines. Original tags and asset bytes are preserved. No component version or hardware qualification is reset by consolidation.
 
-## Next combined release
+## Current combined release: RC3
 
-Use the firmware payloads from `str8n-components-base1-pr05-rc3-unified.zip`.
-The reference ZIP SHA-256 is
-`0309f3677f2a6a3e18a8976a5ebcc16289aed9c7c93242a41936d6cd8f5302fe`.
-Live readback on 2205, 2512, 2604 and 2609 matched all 20 component ranges and
-frozen Foundation 0.3.0. The four boards share 119 KiB of identical flash.
-The RTC metadata and boot/wear journals are board-specific. The same ASM and
-DBG launchers support 65C02 and 65C816 emulation.
+[STR8-N components BASE1/PR05 RC3](https://github.com/95westus/STR8-N/releases/tag/components-base1-pr05-rc3) was published as a prerelease on
+November 8, 2026 (America/Chicago), from source commit
+`fbbc14c692fcb51f0cee3b6eca8da4aa3f59d89d`.
 
-Include PC tools and operator instructions for UTC time synchronization and
-RTC trim calculation. The sync workflow should show the reference source,
-measured offset and uncertainty, then apply and verify a confirmed correction.
-Trim calculation should report drift, the observation interval, uncertainty,
-and the proposed trim. Applying a trim is a separate confirmed operation.
-Qualify the extracted clock tools on both supported CPU modes with separate
-evidence for the read, calculation and confirmed write paths.
+- [Reviewed operator ZIP](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/str8n-components-base1-pr05-rc3-release-final-r1.zip) — 476,110 bytes, 237 files.
+- [Matching source ZIP](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/str8n-components-base1-pr05-rc3-release-final-r1-source.zip) — 5,417,280 bytes, 2,021 committed files.
+- [SHA-256 checksums](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/SHA256SUMS.txt),
+  [packaging verification](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/FINAL-VERIFICATION.json) and
+  [final review](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/INDEPENDENT-REVIEW.json).
 
-Keep the RC3 ZIP and its checksum as the reference. After adding the clock
-tools and guides, compare every firmware payload in the final ZIP against RC3
-and record the new ZIP checksum. Use synthetic examples in the public kit and
-keep board captures and settings private.
+The operator kit contains frozen F, MON A/B, native shared services, UTIL RAM
+and installed tools, DEV ASM/DBG, Terminal, MEMORY backup/restore, PC RTC tools,
+Microchess and OSI BASIC examples, manuals and notices. See the
+[ZIP contents and qualification record](docs/RC3_RELEASE.md) and
+[flash ownership/dependency guide](docs/FLASH_AREAS.md) before installation.
 
-Stage 2 adds the [PC RTC workflow](docs/RTC_PC_WORKFLOW.md) to the RC3
-payloads. Live read-only sampling passed in both CPU modes. In Stage 3,
-physical SET on 65C02 passed the PC tool's ±1 second check while increasing
-the measured offset from UTC. Sub-second synchronization uses separate
-tick-phase alignment. Physical SET on 65C816 emulation passed from the exact
-Stage 3 ZIP, with owner RAM and zero page restored. The packaged TRIM routine
-passed a controlled −12 → −11 → −12 round trip on 65C02 from the review ZIP.
-It also passed −14 → −13 → −14 on 65C816 emulation, with register readback
-and owner RAM/zero-page restoration.
+All 44 firmware/example payloads match the four-board RC3 reference. Physical
+SET and controlled TRIM passed on 65C02 and 65C816 emulation. Nine RTC host tests
+passed final review. Components retain their individual versions. F remains
+0.3.0 g00000001 / BASE1 / PR05 with its frozen 4 KiB hash.
 
-The [combined RC3 release notes and qualification checklist](docs/RC3_RELEASE.md)
-record the tested archive, completed checks and remaining release work.
-
-Use the [flash ownership and dependency guide](docs/FLASH_AREAS.md) as the
-operator map for the combined kit.
+Published ZIPs retain their reviewed bytes, including build-time local-candidate
+metadata. Publication is recorded here and on GitHub; the tag and matching
+source ZIP identify the release source. Later documentation commits do not
+change that source checkpoint or the downloaded archives.
 
 ## Published releases
 
-| Release | Origin | Original assets | Line |
+| Release | Origin | Assets | Line |
 | --- | --- | ---: | --- |
+| [components-base1-pr05-rc3](https://github.com/95westus/STR8-N/releases/tag/components-base1-pr05-rc3) | 95westus/STR8-N | 5 | Combined F / MON / UTIL / DEV prerelease |
 | [nf-v0.3.0](https://github.com/95westus/STR8-N/releases/tag/nf-v0.3.0) | 95westus/STR8-N | 0 | Foundation announcement (link only) |
 | [v2.0rc1-v1g-r9](https://github.com/95westus/STR8-N/releases/tag/v2.0rc1-v1g-r9) | 95westus/STR8-N | 2 | Historical full system |
 | [v2.0rc1-v1g-r8](https://github.com/95westus/STR8-N/releases/tag/v2.0rc1-v1g-r8) | 95westus/STR8-N | 2 | Historical full system |

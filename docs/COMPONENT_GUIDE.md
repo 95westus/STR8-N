@@ -27,7 +27,8 @@ short commands and prompts. See the [component names](COMPONENT_NAMING.md).
   Current MON source and the named candidate can differ from that release.
 - **UTIL / DEV:** Current named components are built from `main` using the
   [source build and packaging recipe](CONSOLIDATION_SOURCE_REVIEW.md).
-  The current named MON/UTIL/DEV kit has no dedicated published release yet.
+  The combined [RC3 prerelease](https://github.com/95westus/STR8-N/releases/tag/components-base1-pr05-rc3) supplies the reviewed operator kit
+  and matching source ZIP. See [ZIP contents and qualification](RC3_RELEASE.md).
 
 [All releases](https://github.com/95westus/STR8-N/releases) and the
 [release index](https://github.com/95westus/STR8-N/blob/main/RELEASE_INDEX.md)

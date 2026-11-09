@@ -1,9 +1,9 @@
 # Qualification scope
 
-## Combined RC3 candidate
+## Published combined RC3 prerelease
 
 The combined RC3 flash payloads passed readback comparison on boards 2205,
-2512, 2604 and 2609. The Stage 3 kit retains all 44 BIN/S19/S29/S-record
+2512, 2604 and 2609. The published final RC3 kit retains all 44 BIN/S19/S29/S-record
 payloads from unified RC3 byte for byte, including the frozen 4 KiB F.
 Its PC RTC sampler passed live collection on both supported CPU modes.
 Confirmed SET passed on 65C02 from Stage 2 and on 65C816 emulation from
@@ -14,7 +14,9 @@ and −14 → −13 → −14 on 65C816 emulation, with the original trim and ow
 RAM/zero page restored. Both used explicit owner-selected test targets.
 Calibration-driven CLI decisions retain their measurement gates. The
 [combined RC3 release record](RC3_RELEASE.md) gives archive identities,
-the SET accuracy limit, remaining checks and the final package procedure.
+the SET accuracy limit, published downloads and the completed package procedure.
+The final offline review verified source identity, manifests, checksums, links,
+launcher help and nine RTC host tests. Published archives remain unchanged.
 
 ## Earlier source-consolidation checkpoint
 

@@ -1,7 +1,9 @@
 # Combined RC3 release notes and qualification
 
-This draft describes STR8-N F, MON, UTIL and DEV for the combined BASE1/PR05
-candidate. The qualification status below was reviewed on November 7, 2026.
+The combined BASE1/PR05 [RC3 prerelease](https://github.com/95westus/STR8-N/releases/tag/components-base1-pr05-rc3) was published on
+November 8, 2026 (America/Chicago). Its reviewed source checkpoint is
+`fbbc14c692fcb51f0cee3b6eca8da4aa3f59d89d`. Components retain their own versions.
+Published archives and the release tag remain unchanged by these documentation updates.
 
 ## Contents and operator workflow
 
@@ -44,7 +46,40 @@ step wide, and one unique supported setting. Its authorized current trim is
 −12. Collection continues while the evidence permits multiple settings.
 Calendar or trim writes start a new drift segment.
 
-## Tested archives
+## Published downloads and ZIP contents
+
+- [Operator ZIP](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/str8n-components-base1-pr05-rc3-release-final-r1.zip): 476,110 bytes; 237 files.
+- [Matching source ZIP](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/str8n-components-base1-pr05-rc3-release-final-r1-source.zip): 5,417,280 bytes; 2,021 files.
+- [Checksums](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/SHA256SUMS.txt), [packaging receipt](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/FINAL-VERIFICATION.json)
+  and [final review receipt](https://github.com/95westus/STR8-N/releases/download/components-base1-pr05-rc3/INDEPENDENT-REVIEW.json).
+
+| Operator ZIP area | Files | Contents |
+| --- | ---: | --- |
+| `payload/` | 32 | Frozen F 0.3.0; MON 0.1.0-dev g00000010 slots A/B; ASM 0.6-dev g00000002 and DBG g00000002 RAM/sector images; CLOCK 1.10; CONFIG, FLASH, MAINT, MAP, MEMORY, OPAQUE, READBACK, DEMO and shared service images |
+| `examples/` | 107 | Microchess source, RAM/S19/AP02 images and reports; OSI BASIC source/adapter and B0 opaque images; licenses and notices |
+| `docs/` | 60 | Operator, installation, memory, RTC and DEV guides; flash dependencies, qualification limits and release notices |
+| `rtc/` | 5 | Read-only sampler BIN/S19, assembly source, manifest and synthetic drift CSV |
+| `tools/` | 8 | Host RTC, timing, memory, terminal and supporting Python code |
+| Other areas | 5 | Memory-agent build inputs, terminal support and example board profile |
+| Root | 20 | Terminal and MEMORY launchers, dependencies, license, README, release index, presets and provenance/artifact manifests |
+
+Extraction installs nothing on a board. Select the matching loader and preserve
+board-local metadata and journals. Examples and standalone recovery tools retain
+their separate qualification limits. Native 65C816 mode is outside this scope.
+The matching source ZIP contains the complete release checkpoint; the operator
+ZIP contains the runtime kit plus selected sources and guides.
+
+Operator SHA-256: `da36e59d3dea8a98aa7115d8cb9878443b82221d4f14a3b5a9e778cd133dc79b`.
+Source SHA-256: `c5a24424a7ff424a73080c8c69ab02b666065c270b78c7029d439957aad0cc3f`.
+
+The archives preserve their reviewed local-candidate metadata, including
+`published: false` and pending-publication text, as a build-time snapshot.
+The GitHub prerelease and this record establish publication. No firmware or
+archive bytes were changed for publication. Final review passed all nine RTC
+host tests using tests from the matching source ZIP, plus launcher help,
+source identity, manifests, checksums, local links and controlled TRIM receipts.
+
+## Tested predecessor archives
 
 | Archive | SHA-256 |
 | --- | --- |
@@ -71,7 +106,7 @@ All 44 original RC3 firmware/example payloads match byte for byte.
 | Confirmed TRIM on 65C02 | Passed controlled write-routine test | 2512, review ZIP, explicit −12 → −11 → −12 targets, register readback and owner RAM/zero-page restoration |
 | Confirmed TRIM on 65C816 emulation | Passed controlled write-routine test | 2609, review ZIP, explicit −14 → −13 → −14 targets, register readback and owner RAM/zero-page restoration |
 | Source checkpoint and release ZIP | Recorded per archive | RELEASE-SOURCE.json identifies the source commit; the external verification receipt and SHA256SUMS.txt record the final assets and extraction checks |
-| Release publication | Open | Review final notes, source identity, assets and checksums before tagging and publication |
+| Release publication | Published prerelease | [components-base1-pr05-rc3](https://github.com/95westus/STR8-N/releases/tag/components-base1-pr05-rc3); five assets; uploaded ZIP hashes and source tag verified |
 
 The 65C02 SET result passed the ±1 second check while increasing its offset.
 The 2609 SET result measured +160 to +258 ms before and +158 to +251 ms
@@ -101,7 +136,7 @@ Hardware evidence belongs to the archive used for that run. Retained
 archives record their qualification status at build time; subsequent
 completed results are recorded separately in hardware-verification receipts.
 
-## Final package procedure
+## Completed final package procedure
 
 1. Carry forward the completed physical SET and controlled TRIM results on
    both CPU modes. Keep calibration decisions separate and apply a calibration
